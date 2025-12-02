@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     host: true,
     port: Number(process.env.PORT) || 5173,
-    allowedHosts: ['.replit.dev', 'localhost'],
+    // allow spock.replit.dev used by Replit previews in some regions
+    allowedHosts: ['.replit.dev', '.spock.replit.dev', 'localhost'],
   },
 })
