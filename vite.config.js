@@ -15,7 +15,7 @@ export default defineConfig({
     host: true,
     // Use the Replit-provided PORT when available
     port: Number(process.env.PORT) || 5173,
-    // allow the specific Replit host (exact string from the error)
-    allowedHosts: ['78109730-b6b0-40f3-a5dd-e9e3c64dabe3-00-2r9qj9d8i27lx.spock.replit.dev'],
+    // Allow any Replit subdomain (wildcard for dev environments)
+    allowedHosts: ['.replit.dev', 'localhost'],
   },
 })
