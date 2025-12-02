@@ -15,8 +15,7 @@ export default defineConfig({
     host: true,
     // Use the Replit-provided PORT when available
     port: Number(process.env.PORT) || 5173,
-    // Allow common Replit subdomains (wildcard for dev environments)
-    // include spock.replit.dev which Replit uses for some workspaces
-    allowedHosts: ['.replit.dev', '.spock.replit.dev', 'localhost'],
+    // Allow ALL hosts - simplest fix for Replit
+    allowedHosts: 'all',
   },
 })
