@@ -19,8 +19,6 @@ export function AppRoutes() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
-        {/* /pricing redirects to landing page pricing section */}
-        <Route path="/pricing" element={<HomePage />} />
         <Route path="/activate" element={<ActivationPage />} />
         <Route path="/checkout/:planId" element={<CheckoutPage />} />
         <Route path="/terms" element={<TermsPage />} />

@@ -9,13 +9,15 @@ export function SiteNav() {
           <span>SHIBUYA</span>
         </Link>
         <nav>
-          <Link to="/pricing" className="nav-link">Pricing</Link>
-          <Link to="/enterprise" className="nav-link">Enterprise</Link>
+          <a href="/#pricing" className="nav-link">Pricing</a>
+          <Link to="/dashboard" className="nav-link" onClick={() => localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')}>
+            Demo
+          </Link>
         </nav>
         <div className="site-nav__cta">
-          <Link to="/pricing" className="btn btn-primary">
+          <a href="/#pricing" className="btn btn-primary">
             Get Your Report
-          </Link>
+          </a>
         </div>
       </div>
     </header>
