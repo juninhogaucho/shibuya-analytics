@@ -1,13 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export function SiteNav() {
-  const navigate = useNavigate()
-  
-  const handleTryDemo = () => {
-    localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')
-    navigate('/dashboard')
-  }
-
   return (
     <header className="site-nav">
       <div className="site-nav__inner">
@@ -16,13 +9,13 @@ export function SiteNav() {
           <span>SHIBUYA</span>
         </Link>
         <nav>
-          <Link to="/#pricing" className="nav-link">Pricing</Link>
-          <Link to="/activate" className="nav-link">Login</Link>
+          <Link to="/pricing" className="nav-link">Pricing</Link>
+          <Link to="/enterprise" className="nav-link">Enterprise</Link>
         </nav>
         <div className="site-nav__cta">
-          <button className="btn btn-demo" onClick={handleTryDemo}>
-            Try Demo
-          </button>
+          <Link to="/pricing" className="btn btn-primary">
+            Get Your Report
+          </Link>
         </div>
       </div>
     </header>

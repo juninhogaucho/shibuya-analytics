@@ -1,81 +1,73 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'https://api.medallion.studio'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'
 
 // Stripe checkout URLs - will be configured once Stripe is set up
 export const CHECKOUT_URLS = {
-  steve: '/checkout/steve',           // $99 one-time report
-  stevePlus: '/checkout/steve-plus',  // $149 report + 2 calls
-  david: '/checkout/david',           // $250/mo subscription
+  steve: '/checkout/steve',           // €99 one-time report
+  stevePlus: '/checkout/steve-plus',  // €149 report + 2 calls
 }
 
 // Keep old name for compatibility during migration
 export const ODOO_CHECKOUT_URLS = CHECKOUT_URLS
 
+// Plan ID to key mapping for checkout
+export const PLAN_KEYS: Record<string, keyof typeof PRICING> = {
+  'steve': 'steve',
+  'steve-plus': 'stevePlus',
+}
+
 // Pricing configuration
 export const PRICING = {
   steve: {
     id: 'steve',
-    name: 'Edge Autopsy',
+    name: 'The Reality Check',
     price: 99,
-    currency: 'USD',
+    currency: 'EUR',
     type: 'one-time' as const,
-    description: 'One PDF diagnosis, Discipline Tax, cohort benchmark. Delivered within 72 hours, no dashboard login.',
+    description: 'A brutally honest PDF diagnosis of your trading. We show you exactly where you\'re bleeding money, and it\'s probably not where you think.',
     perks: [
-      'Full Medallion engine analysis',
-      'Shadow Boxing snapshot included',
-      'Email + Loom breakdown',
+      'Complete discipline tax breakdown (the real cost of your emotional trades)',
+      'Edge portfolio analysis (which setups actually make you money)',
+      'Written and analyzed by a real human, not AI',
+      'Delivered within 72 hours',
     ],
   },
   stevePlus: {
     id: 'steve-plus',
-    name: 'Edge Autopsy Pro',
+    name: 'The Deep Dive',
     price: 149,
-    currency: 'USD',
+    currency: 'EUR',
     type: 'one-time' as const,
-    description: 'Two reports, two 1:1 calls, priority queue. Perfect for traders who want live teardown feedback.',
+    description: 'Two reports + two 1:1 video calls. We don\'t just show you the problem, we work through solutions together.',
     perks: [
-      'Everything in $99 tier',
-      '2x coaching calls scheduled automatically',
-      'Personalized rules preview',
+      'Everything in The Reality Check',
+      'Two PDF reports (initial + 30-day follow-up)',
+      'Two 30-min video calls with a real human',
+      'Personalized trading rules based on YOUR patterns',
+      'Priority support via email',
     ],
     featured: true,
-  },
-  david: {
-    id: 'david',
-    name: 'Full Access',
-    price: 250,
-    currency: 'USD',
-    type: 'subscription' as const,
-    interval: 'month' as const,
-    description: 'Full dashboard, append trades model, Margin of Safety coach, Edge Portfolio, Investor Packet.',
-    perks: [
-      'Unlimited uploads with append flow',
-      'Non real-time alerts + Sunday digest',
-      'Capital-ready bundle & loyalty unlocks',
-      'Shadow Boxing prop firm simulator',
-      'Slump Prescription automation',
-    ],
   },
 }
 
 export const VALUE_PROPS = [
   {
-    title: 'Margin of Safety Coach',
+    title: 'See Where You Actually Bleed Money',
     body:
-      'Every Sunday David receives Monte Carlo drift, current BQL state, and a plain-language plan. We hit before the week starts to plug the deprivation gap.',
+      'We calculate your "Discipline Tax" - the exact euro amount you lose to revenge trades, oversizing, and overtrading. Not vague percentages. Real numbers that hurt to look at.',
   },
   {
-    title: 'Shadow Boxing Simulator',
+    title: 'Know Which Setups Actually Work',
     body:
-      'We feed his trades through FTMO, FundedNext, and more. “You would have passed $100k challenges 3 times in 6 months.” Capital readiness becomes obvious.',
+      'Your Edge Portfolio shows which strategies are making you money (PRIME), which are break-even (STABLE), and which are quietly destroying your account (DECAYED).',
   },
   {
-    title: 'Slump Prescription',
+    title: 'Get a Real Plan, Not Generic Advice',
     body:
-      'When BQL screams EMOTIONAL TRAINWRECK, we prescribe hard limits: max trades, banned assets, enforced size cap. Automated risk manager mode.',
+      'No "manage your emotions better" nonsense. We give you specific rules: "Don\'t trade GBP pairs after a loss" or "Max 3 trades until your mental state improves."',
   },
   {
-    title: 'Edge Portfolio',
+    title: 'Understand Your Patterns',
     body:
-      'AFMA treats strategies like employees. London Breakout is DECAYED, Asian Range is PRIME. David rebalances edges instead of blaming himself.',
+      'We use quant-level behavioral analysis to show you patterns you can\'t see yourself. When do you overtrade? Which pairs trigger your worst decisions?',
   },
 ]

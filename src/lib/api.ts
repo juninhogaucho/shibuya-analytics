@@ -135,48 +135,48 @@ const DEMO_DATA = {
     bql_state: 'MEDIOCRE',
     bql_score: 0.58, // 58% emotional influence detected
     // Monte Carlo: Expected PnL minus luck = your true edge value
-    monte_carlo_drift: 4218, // You're $4,218 ahead of pure luck
+    monte_carlo_drift: 892, // You're $892 ahead of pure luck
     ruin_probability: 0.034, // 3.4% chance of blowing account
     // The money you earned then gave back through discipline failures
-    discipline_tax_30d: 1847, // Lost $1,847 to revenge trades, overtrading, etc.
+    discipline_tax_30d: 810, // Lost $810 to revenge trades, overtrading, etc.
     discipline_tax_breakdown: {
-      revenge_trades: 892,
-      overtrading: 523,
-      size_violations: 432,
+      revenge_trades: 420,
+      overtrading: 235,
+      size_violations: 155,
     },
     sharpe_scenario: 1.67,
-    pnl_gross: 8945,
-    pnl_net: 7098,
-    total_trades: 147,
-    winning_trades: 89,
+    pnl_gross: 3081, // Sum of all winning trades
+    pnl_net: 2271, // Gross minus discipline tax (3081 - 810)
+    total_trades: 30,
+    winning_trades: 20,
     // The real edges in your trading
     edge_portfolio: [
       { 
         name: 'London Session FVG', 
         status: 'PRIME' as const, 
         win_rate: 71, 
-        pnl: 4230,
-        trades: 34,
+        pnl: 1230,
+        trades: 12,
         avg_rr: 2.1,
-        action: 'Increase allocation to 1.0R. This is your money-maker.' 
+        action: 'Based on YOUR data: This is your best setup. You win 71% of the time here. Consider taking more of these and fewer of your weaker setups.' 
       },
       { 
         name: 'NY AM Reversal', 
         status: 'STABLE' as const, 
         win_rate: 58, 
-        pnl: 1890,
-        trades: 41,
+        pnl: 890,
+        trades: 10,
         avg_rr: 1.4,
-        action: 'Maintain 0.5R. Watch for decay in high-VIX environments.' 
+        action: 'Based on YOUR data: You\'re profitable here but not crushing it. Your win rate drops when VIX is high. Consider sitting out during high volatility days.' 
       },
       { 
         name: 'Asian Range Break', 
         status: 'DECAYED' as const, 
         win_rate: 39, 
-        pnl: -1640,
-        trades: 28,
+        pnl: -640,
+        trades: 8,
         avg_rr: 0.8,
-        action: '🛑 STOP trading this. Lost $1,640 in 28 trades. Bench for 3 weeks.' 
+        action: 'Based on YOUR data: You\'ve lost €640 on this setup in the last 30 days. Stop trading it immediately. Every trade here is costing you money.' 
       },
     ],
     // Recent costly mistakes with specific details
@@ -241,7 +241,7 @@ const DEMO_DATA = {
         id: '5', 
         type: 'info' as const, 
         title: '📈 Edge Portfolio Update', 
-        body: 'NY AM Reversal has been upgraded from DECAYED to STABLE after 8 consecutive weeks of positive expectancy. You can resume trading it at 0.5R.',
+        body: 'NY AM Reversal has been upgraded from DECAYED to STABLE after 8 consecutive weeks of positive performance. You can resume trading it with small size.',
         severity: 'low' as const, 
         timestamp: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(), 
         acknowledged: true,
@@ -262,7 +262,7 @@ const DEMO_DATA = {
         sharpe: 2.3,
         max_dd_pct: 3.2,
         best_month: 'October (+$2,140)',
-        action: 'Increase allocation to 1.0R. This edge alone funds your subscription 17x over.' 
+        action: 'YOUR ACTION: This is your moneymaker. You made $4,230 in 34 trades. Consider taking more of these and cutting your decayed setups.' 
       },
       { 
         name: 'NY AM Reversal', 
@@ -275,7 +275,7 @@ const DEMO_DATA = {
         sharpe: 1.4,
         max_dd_pct: 5.1,
         best_month: 'September (+$890)',
-        action: 'Maintain 0.5R. Performance drops 40% when VIX >25. Add VIX filter.' 
+        action: 'YOUR ACTION: Keep trading but watch your VIX filter. Your win rate drops 40% when VIX is above 25. Skip it on high-volatility days.' 
       },
       { 
         name: 'Asian Range Break', 
@@ -288,7 +288,7 @@ const DEMO_DATA = {
         sharpe: -0.8,
         max_dd_pct: 12.3,
         best_month: 'None (negative all 3 months)',
-        action: '🛑 BENCHED. Stop trading immediately. Review in FXReplay for 2 weeks before reconsidering.' 
+        action: 'YOUR ACTION: Stop immediately. You\'ve lost $1,640 on 28 trades. This setup has been negative for 3 straight months. It\'s not coming back.' 
       },
       { 
         name: 'News Fade (NFP/CPI)', 
@@ -301,7 +301,7 @@ const DEMO_DATA = {
         sharpe: 1.1,
         max_dd_pct: 4.8,
         best_month: 'November (+$480)',
-        action: 'Keep at 0.25R. Small sample size. Need 20+ trades to confirm.' 
+        action: 'YOUR ACTION: Promising but unproven. Only 12 trades. Keep size small until you have 25+ trades to confirm it works.' 
       },
       { 
         name: 'Friday PM Scalps', 
@@ -314,7 +314,7 @@ const DEMO_DATA = {
         sharpe: -0.5,
         max_dd_pct: 8.7,
         best_month: 'None',
-        action: '🛑 BENCHED. Fatigue trading. Your Friday win rate is 31% vs 59% Mon-Thu.' 
+        action: 'YOUR ACTION: Your Friday afternoon trading is -$890. Your Friday win rate is 31% vs 59% Mon-Thu. You\'re tired. Stop trading Fridays after 2pm.' 
       },
     ],
     summary: {
@@ -323,7 +323,7 @@ const DEMO_DATA = {
       decayed: 2,
       stable: 2,
       total_pnl: 4310,
-      recommendation: 'Your portfolio is unbalanced. 98% of profits come from London FVG. Kill the 2 decayed edges NOW—they cost you $2,530 and masked your real skill. If you only traded PRIME + STABLE edges at proper sizing, projected monthly PnL jumps from $2,366 to $4,180.',
+      recommendation: 'Your portfolio is unbalanced. 98% of profits come from London FVG. Kill the 2 decayed edges NOW, they cost you $2,530 and masked your real skill. If you only traded PRIME + STABLE edges at proper sizing, projected monthly PnL jumps from $2,366 to $4,180.',
     },
   },
   slump: {
@@ -333,18 +333,18 @@ const DEMO_DATA = {
     drawdown_pct: 8.4,
     days_in_slump: 3,
     prescription: {
-      message: 'You are in a verified slump. Your last 7 trades were losses totaling $2,180. BQL score spiked from 0.34 to 0.81 in 48 hours. This is not a trading problem—it\'s a state management problem. Follow this prescription for the next 72 hours.',
+      message: 'You are in a verified slump. Your last 7 trades were losses totaling $2,180. BQL score spiked from 0.34 to 0.81 in 48 hours. This is not a trading problem, it\'s a state management problem. Follow this prescription for the next 72 hours.',
       max_trades_per_session: 2,
       banned_assets: ['GBP/JPY', 'NAS100', 'XAU/USD'],
       position_cap_pct: 25,
       cooldown_hours: 4,
       rules: [
         'Maximum 2 trades per session (you averaged 6.3 during this slump)',
-        'Position size capped at 25% of normal (0.25R instead of 1R)',
-        'No trading GBP/JPY, NAS100, or XAU/USD—these are your "tilt pairs"',
+        'Position size capped at 25% of your normal size',
+        'No trading GBP/JPY, NAS100, or XAU/USD, these are your "tilt pairs"',
         'Mandatory 4-hour cooldown between sessions',
         'Must journal BEFORE placing any trade (screenshot required)',
-        'If you hit daily loss limit ($400), you\'re done for 48 hours—non-negotiable',
+        'If you hit daily loss limit ($400), you\'re done for 48 hours, non-negotiable',
       ],
       recovery_criteria: [
         '3 consecutive winning trades OR',
@@ -447,12 +447,44 @@ const DEMO_DATA = {
       consistency: 71,
       drawdown_control: 58,
       profit_factor: 1.8,
-      recommendation: 'You\'re 62% ready for funded capital. Main blocker: drawdown control. Your max DD of 6.2% fails 2 firms outright. Reduce position sizing to 0.75R and you become 78% ready.',
+      recommendation: 'You\'re 62% ready for funded capital. Main blocker: drawdown control. Your max drawdown of 6.2% fails 2 firms outright. Reduce position sizing by 25% and you become 78% ready.',
     },
   },
 }
 
 // Auth
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface LoginResponse {
+  success: boolean
+  api_key?: string
+  customer_id?: string
+  email?: string
+  name?: string
+  tier?: string
+  error?: string
+}
+
+export async function login(payload: LoginRequest): Promise<LoginResponse> {
+  const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
+  if (data.success && data.api_key) {
+    localStorage.setItem('shibuya_api_key', data.api_key)
+  }
+  return data
+}
+
+export async function register(payload: LoginRequest & { name?: string }): Promise<LoginResponse> {
+  const { data } = await http.post<LoginResponse>('/v1/auth/register', payload)
+  if (data.success && data.api_key) {
+    localStorage.setItem('shibuya_api_key', data.api_key)
+  }
+  return data
+}
+
+// Legacy activation (kept for backwards compatibility)
 export async function requestActivation(payload: ActivationPayload) {
   const { data } = await http.post<ActivationResponse>('/v1/trader/activations/verify', payload)
   if (data.activationToken) {
@@ -537,6 +569,35 @@ export async function uploadTradesCSV(file: File): Promise<{ status: string; tra
   return data
 }
 
+// Submit parsed trades (from paste flow)
+export async function submitParsedTrades(payload: { trades: unknown[]; rawText: string }): Promise<{ status: string; trades_uploaded: number }> {
+  if (isDemoMode()) {
+    await new Promise(resolve => setTimeout(resolve, 800))
+    // Simulate counting trades from raw text
+    const lineCount = payload.rawText.trim().split('\n').filter(l => l.trim()).length
+    return { status: 'demo', trades_uploaded: lineCount }
+  }
+  const { data } = await http.post('/v1/dashboard/trades/submit', payload)
+  return data
+}
+
+// Public website contact form
+export interface ContactMessagePayload {
+  name: string
+  email: string
+  message: string
+  source?: 'landing' | 'dashboard'
+}
+
+export async function submitContactMessage(payload: ContactMessagePayload): Promise<{ status: string }> {
+  if (isDemoMode()) {
+    await new Promise(resolve => setTimeout(resolve, 400))
+    return { status: 'queued' }
+  }
+  const { data } = await http.post<{ status: string }>('/v1/site/contact', payload)
+  return data
+}
+
 // Helper to check if authenticated
 export function isAuthenticated(): boolean {
   return !!localStorage.getItem('shibuya_api_key')
@@ -546,6 +607,7 @@ export function isAuthenticated(): boolean {
 export interface CheckoutSessionRequest {
   plan_id: string
   email: string
+  name: string
   success_url?: string
   cancel_url?: string
 }

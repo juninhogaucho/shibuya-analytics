@@ -1,6 +1,23 @@
 import { useState, useRef } from 'react'
-import { parseTradePaste, uploadTradesCSV } from '../../lib/api'
+import { parseTradePaste, uploadTradesCSV, submitParsedTrades } from '../../lib/api'
 import { InfoTooltip } from '../../components/ui/Tooltip'
+
+interface ParsedTrade {
+  timestamp: string
+  symbol: string
+  side: string
+  size: number
+  entry_price?: number
+  exit_price?: number
+  pnl?: number
+}
+
+interface ParsePreview {
+  rowsParsed: number
+  symbols: string[]
+  issues?: string[]
+  trades?: ParsedTrade[]
+}
 
 const SAMPLE_PLACEHOLDER = `2024-01-15 09:32 EURUSD BUY 1.0 1.0875 1.0892
 2024-01-15 11:45 GBPUSD SELL 0.5 1.2650 1.2635`
@@ -17,6 +34,7 @@ export function AppendTradesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [parsedPreview, setParsedPreview] = useState<ParsePreview | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const downloadTemplate = () => {
@@ -38,12 +56,13 @@ export function AppendTradesPage() {
       setLoading(true)
       setError(null)
       setSuccess(null)
+      setParsedPreview(null)
       
       const preview = await parseTradePaste({ body: paste })
       
       const feedbackNotes = [
-        `${preview.rowsParsed} rows detected`,
-        `Symbols: ${preview.symbols.join(', ')}`,
+        `✓ ${preview.rowsParsed} rows detected`,
+        `✓ Symbols: ${preview.symbols.join(', ')}`,
       ]
       
       if (preview.issues && preview.issues.length > 0) {
@@ -51,11 +70,46 @@ export function AppendTradesPage() {
       }
       
       setNotes(feedbackNotes)
+      setParsedPreview(preview) // Store for confirmation
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse trades')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleConfirmUpload = async () => {
+    if (!parsedPreview) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const result = await submitParsedTrades({ 
+        trades: parsedPreview.trades || [],
+        rawText: paste 
+      })
+      
+      setSuccess(`🎉 Successfully uploaded ${result.trades_uploaded} trades!`)
+      setNotes([
+        `${result.trades_uploaded} trades added to your account`,
+        '📊 Analytics updated - check Overview for new insights',
+        '💡 Edge Portfolio recalculated',
+      ])
+      
+      // Clear form after successful upload
+      setPaste('')
+      setParsedPreview(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload trades')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCancelUpload = () => {
+    setParsedPreview(null)
+    setNotes([])
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,18 +235,45 @@ export function AppendTradesPage() {
             Trades
             <textarea
               value={paste}
-              onChange={(e) => setPaste(e.target.value)}
+              onChange={(e) => {
+                setPaste(e.target.value)
+                // Clear preview if user changes text
+                if (parsedPreview) {
+                  setParsedPreview(null)
+                  setNotes([])
+                }
+              }}
               placeholder={SAMPLE_PLACEHOLDER}
               disabled={loading}
             />
           </label>
-          <button 
-            className="btn btn-secondary" 
-            onClick={handleParse} 
-            disabled={!paste.trim() || loading}
-          >
-            {loading ? 'Parsing...' : 'Parse & preview trades'}
-          </button>
+          
+          {!parsedPreview ? (
+            <button 
+              className="btn btn-secondary" 
+              onClick={handleParse} 
+              disabled={!paste.trim() || loading}
+            >
+              {loading ? '⏳ Parsing...' : '🔍 Parse & preview trades'}
+            </button>
+          ) : (
+            <div className="confirm-actions">
+              <button 
+                className="btn btn-primary" 
+                onClick={handleConfirmUpload} 
+                disabled={loading}
+              >
+                {loading ? '⏳ Uploading...' : `✅ Confirm upload (${parsedPreview.rowsParsed} trades)`}
+              </button>
+              <button 
+                className="btn btn-secondary" 
+                onClick={handleCancelUpload}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
         
         <div className="glass-panel">

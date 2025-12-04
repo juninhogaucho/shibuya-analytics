@@ -1,12 +1,13 @@
 import { InfoTooltip } from './Tooltip'
+import type { ReactNode } from 'react'
 
 interface MetricCardProps {
   label: string
   value: string
   delta?: string
   tone?: 'primary' | 'danger' | 'success'
-  caption?: string
-  tooltip?: string
+  caption?: ReactNode
+  tooltip?: ReactNode
 }
 
 export function MetricCard({ label, value, delta, tone = 'primary', caption, tooltip }: MetricCardProps) {

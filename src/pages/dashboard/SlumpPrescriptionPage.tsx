@@ -3,6 +3,35 @@ import { getSlumpPrescription } from '../../lib/api'
 import { SkeletonCard, Skeleton, SkeletonMetricCard } from '../../components/ui/Skeleton'
 import type { SlumpPrescription } from '../../lib/types'
 
+// Function to explain WHY each rule is recommended
+function getRuleExplanation(rule: string): string {
+  const ruleLower = rule.toLowerCase()
+  
+  if (ruleLower.includes('max') && ruleLower.includes('trade')) {
+    return 'When you\'re in a slump, more trades = more losses. Limiting trade count forces you to be selective and only take your best setups.'
+  }
+  if (ruleLower.includes('cooldown') || ruleLower.includes('wait')) {
+    return 'After a loss, your decision-making is compromised for several hours. This cooldown prevents revenge trading and lets your emotions reset.'
+  }
+  if (ruleLower.includes('position') || ruleLower.includes('size') || ruleLower.includes('lot')) {
+    return 'Smaller positions mean smaller losses during drawdowns. This preserves capital so you can recover when your edge returns.'
+  }
+  if (ruleLower.includes('avoid') || ruleLower.includes('banned') || ruleLower.includes('stop trading')) {
+    return 'Historical data shows these assets trigger your worst losses during slumps. Temporarily avoiding them reduces damage.'
+  }
+  if (ruleLower.includes('session') || ruleLower.includes('london') || ruleLower.includes('new york') || ruleLower.includes('asian')) {
+    return 'Your performance varies by session. This constraint focuses you on sessions where you historically perform better during drawdowns.'
+  }
+  if (ruleLower.includes('journal') || ruleLower.includes('review')) {
+    return 'Journaling forces conscious decision-making and helps break the autopilot mode that leads to impulsive trades.'
+  }
+  if (ruleLower.includes('profit') || ruleLower.includes('daily')) {
+    return 'During slumps, small consistent wins rebuild confidence. This target prevents overtrading to chase bigger gains.'
+  }
+  
+  return 'Based on your historical patterns during similar drawdown periods, following this rule reduces your losses.'
+}
+
 export function SlumpPrescriptionPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -70,11 +99,11 @@ export function SlumpPrescriptionPage() {
   return (
     <div className="dashboard-stack">
       <header className="section-header">
-        <p className="badge">Automated Triage</p>
-        <h1>Slump Prescription</h1>
+        <p className="badge">Pattern Recognition</p>
+        <h1>Slump Remediation</h1>
         <p className="text-muted">
-          When BQL detects emotional degradation, we generate specific prescriptions based on your history.
-          This is your automated risk manager stepping in when you can't.
+          When your trading patterns match historical slump conditions, we suggest specific constraints to protect capital. 
+          These are guardrails derived from your own past behavior.
         </p>
       </header>
 
@@ -85,7 +114,7 @@ export function SlumpPrescriptionPage() {
           <h3>{data.bql_state.replace('_', ' ')}</h3>
           <p>
             {data.is_slump 
-              ? `You are in a verified slump. ${data.consecutive_losses || 0} consecutive losses, ${data.drawdown_pct?.toFixed(1) || 0}% drawdown, ${data.days_in_slump || 0} days.` 
+              ? `Your metrics suggest a slump phase. ${data.consecutive_losses || 0} consecutive losses, ${data.drawdown_pct?.toFixed(1) || 0}% drawdown, ${data.days_in_slump || 0} days.` 
               : 'You are trading within healthy parameters. Keep it up!'}
           </p>
         </div>
@@ -95,7 +124,7 @@ export function SlumpPrescriptionPage() {
         <>
           {/* Main Prescription Message */}
           <section className="glass-panel prescription-main">
-            <h2>🩺 Your Prescription</h2>
+            <h2>🛡️ Suggested Protocol</h2>
             <p className="prescription-message">{data.prescription.message}</p>
           </section>
 
@@ -119,12 +148,17 @@ export function SlumpPrescriptionPage() {
             </article>
           </div>
 
-          {/* Rules List */}
+          {/* Rules List with WHY explanations */}
           <section className="glass-panel prescription-card">
-            <h3>📋 Your Rules for the Next 72 Hours</h3>
-            <ul className="rule-list">
+            <h3>📋 Recommended Constraints (Next 72h)</h3>
+            <ul className="rule-list-detailed">
               {data.prescription.rules.map((rule, idx) => (
-                <li key={idx}>{rule}</li>
+                <li key={idx} className="rule-item">
+                  <div className="rule-text">{rule}</div>
+                  <div className="rule-why">
+                    {getRuleExplanation(rule)}
+                  </div>
+                </li>
               ))}
             </ul>
           </section>
@@ -132,8 +166,8 @@ export function SlumpPrescriptionPage() {
           {/* Banned Assets */}
           {data.prescription.banned_assets.length > 0 && (
             <section className="glass-panel">
-              <h3>🚫 Banned Assets</h3>
-              <p className="text-muted">Do NOT trade these until you recover. These are your "tilt pairs":</p>
+              <h3>🚫 High-Risk Assets</h3>
+              <p className="text-muted">Historically, these assets have contributed most to your drawdowns during similar periods:</p>
               <div className="banned-list">
                 {data.prescription.banned_assets.map((asset) => (
                   <span key={asset} className="banned-tag">{asset}</span>
@@ -166,8 +200,8 @@ export function SlumpPrescriptionPage() {
 
       {!data.is_slump && (
         <section className="glass-panel healthy-state">
-          <h3>🎯 Current Trading Guidelines</h3>
-          <p>Your current state is healthy. Here are your standard operating parameters:</p>
+          <h3>🎯 Current Focus Areas</h3>
+          <p>Your metrics are currently stable. Recommended focus areas:</p>
           <ul className="guidelines-list">
             <li>Follow your edge conditions as defined in Edge Portfolio</li>
             <li>Respect fatigue limits based on your historical patterns</li>
