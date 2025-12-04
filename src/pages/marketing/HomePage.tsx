@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver'
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -8,6 +9,8 @@ export function HomePage() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
   const [contactSubmitted, setContactSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  
+  const { observe } = useIntersectionObserver()
 
   const handleExploreDemo = () => {
     localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')
@@ -65,7 +68,7 @@ export function HomePage() {
           HERO - Direct, pain-focused, clear value
           ============================================ */}
       <section className="landing-hero">
-        <div className="landing-hero__content">
+        <div className="landing-hero__content animate-on-scroll" ref={observe}>
           <p className="landing-hero__eyebrow">For FX, Index CFDs, Metals & Crypto traders</p>
           <h1 className="landing-hero__headline">
             You're not losing to the market.<br />
@@ -93,7 +96,7 @@ export function HomePage() {
         </div>
         
         {/* Social Proof Strip - specific, believable */}
-        <div className="landing-proof">
+        <div className="landing-proof animate-on-scroll" ref={observe}>
           <div className="landing-proof__item">
             <span className="landing-proof__number">€847</span>
             <span className="landing-proof__label">Average monthly loss to revenge trades alone</span>
@@ -112,10 +115,36 @@ export function HomePage() {
       </section>
 
       {/* ============================================
+          THE EQUATION - Credibility / Methodology Hook
+          ============================================ */}
+      <section className="landing-section landing-section--dark">
+        <div className="landing-equation animate-on-scroll" ref={observe}>
+          <div className="equation-formula">
+            <span className="eq-pnl">PnL</span> = 
+            (<span className="eq-edge">Edge</span> + <span className="eq-luck">Luck</span>) − 
+            <span className="eq-behavior">Behavior</span>
+          </div>
+          <p className="equation-explain">
+            We use robust regression to filter out the <span className="eq-luck">Luck</span>.<br />
+            We isolate the <span className="eq-behavior">Behavior</span> that's costing you money.<br />
+            What remains is your <span className="eq-edge">True Edge</span>.
+          </p>
+        </div>
+        
+        <div className="landing-stat-highlight animate-on-scroll" ref={observe}>
+          <div className="stat-big">
+            <span className="stat-big__value">€3,418</span>
+            <span className="stat-big__label">The average "Discipline Tax" we find in new uploads</span>
+            <span className="stat-big__sub">Money already earned, then given back to the market.</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
           PROBLEM - Articulate their pain (visceral)
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
           <span className="landing-eyebrow">Sound familiar?</span>
           <h2>You know exactly what's killing your account.</h2>
           <p className="landing-section__subtitle">
@@ -125,29 +154,29 @@ export function HomePage() {
         </div>
         
         <div className="landing-problems">
-          <div className="landing-problem">
+          <div className="landing-problem animate-on-scroll" ref={observe}>
             <div className="landing-problem__icon">🔥</div>
             <h3>The revenge trade</h3>
             <p>"Just one more to get back to breakeven." That -€340 becomes -€890 before you close the laptop. We've all been there.</p>
           </div>
-          <div className="landing-problem">
+          <div className="landing-problem animate-on-scroll" ref={observe}>
             <div className="landing-problem__icon">📏</div>
             <h3>The "I feel good" size-up</h3>
             <p>Your rules say 0.5 lots. But this setup looks perfect, so you go 1.5. It loses. Of course it does.</p>
           </div>
-          <div className="landing-problem">
+          <div className="landing-problem animate-on-scroll" ref={observe}>
             <div className="landing-problem__icon">⚡</div>
             <h3>The 11-trade Tuesday</h3>
             <p>3 trades max was the plan. 11 trades later, you're wondering what just happened. Again.</p>
           </div>
-          <div className="landing-problem">
-            <div className="landing-problem__icon">�</div>
+          <div className="landing-problem animate-on-scroll" ref={observe}>
+            <div className="landing-problem__icon">📉</div>
             <h3>The setup that stopped working</h3>
             <p>That "London FVG" hasn't worked in months. But you keep taking it anyway, hoping it comes back.</p>
           </div>
         </div>
         
-        <div className="landing-problem-cta">
+        <div className="landing-problem-cta animate-on-scroll" ref={observe}>
           <p>The problem isn't your strategy. It's the gap between what you know and what you do.</p>
           <p><strong>We measure that gap. In euros.</strong></p>
         </div>
@@ -157,7 +186,7 @@ export function HomePage() {
           WHAT WE ACTUALLY DO - Clear, simple
           ============================================ */}
       <section className="landing-section landing-section--accent">
-        <div className="landing-section__header">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
           <span className="landing-eyebrow">How it works</span>
           <h2>We put a number on your bad habits.</h2>
           <p className="landing-section__subtitle">
@@ -167,21 +196,21 @@ export function HomePage() {
         </div>
         
         <div className="landing-features">
-          <div className="landing-feature">
+          <div className="landing-feature animate-on-scroll" ref={observe}>
             <div className="landing-feature__number">01</div>
             <div className="landing-feature__content">
               <h3>Export your trades</h3>
               <p>MT4, MT5, cTrader, TradingView, any broker. Just export a CSV — takes 2 minutes.</p>
             </div>
           </div>
-          <div className="landing-feature">
+          <div className="landing-feature animate-on-scroll" ref={observe}>
             <div className="landing-feature__number">02</div>
             <div className="landing-feature__content">
               <h3>We analyze everything</h3>
               <p>Behavioral patterns, emotional triggers, position sizing violations, overtrading windows. All of it.</p>
             </div>
           </div>
-          <div className="landing-feature">
+          <div className="landing-feature animate-on-scroll" ref={observe}>
             <div className="landing-feature__number">03</div>
             <div className="landing-feature__content">
               <h3>You get a diagnosis</h3>
@@ -195,27 +224,76 @@ export function HomePage() {
           VALUE - What the report shows (concrete)
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
           <span className="landing-eyebrow">What you'll learn</span>
           <h2>The report that tells you what your journal can't</h2>
         </div>
         
         <div className="landing-benefits">
-          <div className="landing-benefit">
+          <div className="landing-benefit animate-on-scroll" ref={observe}>
             <h3>💰 Your Discipline Tax</h3>
             <p>The exact euro amount you lost to emotional mistakes last month. Broken down by type: revenge trades, oversizing, overtrading. No vague percentages — real money.</p>
           </div>
-          <div className="landing-benefit">
+          <div className="landing-benefit animate-on-scroll" ref={observe}>
             <h3>📊 Your Edge Portfolio</h3>
             <p>Which of your setups are actually profitable (keep trading), which are break-even (review), and which are quietly bleeding you dry (stop immediately).</p>
           </div>
-          <div className="landing-benefit">
+          <div className="landing-benefit animate-on-scroll" ref={observe}>
             <h3>🩺 Your Trading Prescription</h3>
             <p>Not "manage your emotions better." Real rules: "Don't trade GBP after a loss." "Max 3 trades before noon." "Never size up on Fridays." Specific to YOU.</p>
           </div>
-          <div className="landing-benefit">
+          <div className="landing-benefit animate-on-scroll" ref={observe}>
             <h3>⏰ Your Danger Zones</h3>
             <p>The exact times, days, and conditions when you make your worst decisions. Once you see the pattern, you can't unsee it.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
+          DATA COMPARISON - Before/After Proof
+          ============================================ */}
+      <section className="landing-section landing-section--dark">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
+          <span className="landing-eyebrow">Results</span>
+          <h2>Data doesn't lie.</h2>
+          <p className="landing-section__subtitle">
+            What happens when you finally see the cost of your emotions.
+          </p>
+        </div>
+        
+        <div className="data-comparison">
+          <div className="data-card data-card--before animate-on-scroll" ref={observe}>
+            <div className="data-card__badge">Before Shibuya</div>
+            <div className="data-row">
+              <span>Sortino Ratio</span>
+              <span className="data-val negative">0.38</span>
+            </div>
+            <div className="data-row">
+              <span>Monthly P&L</span>
+              <span className="data-val neutral">+€1,200</span>
+            </div>
+            <div className="data-highlight negative">
+              <span>Discipline Tax</span>
+              <strong>−€3,418</strong>
+            </div>
+            <p className="data-quote">"I thought I was disciplined. The data proved I wasn't."</p>
+          </div>
+
+          <div className="data-card data-card--after animate-on-scroll" ref={observe}>
+            <div className="data-card__badge">After 3 Months</div>
+            <div className="data-row">
+              <span>Sortino Ratio</span>
+              <span className="data-val positive">2.84</span>
+            </div>
+            <div className="data-row">
+              <span>Monthly P&L</span>
+              <span className="data-val positive">+€4,100</span>
+            </div>
+            <div className="data-highlight positive">
+              <span>Discipline Tax</span>
+              <strong>−€890</strong>
+            </div>
+            <p className="data-quote">"Seeing the number made me fix it. It wasn't my strategy — it was me."</p>
           </div>
         </div>
       </section>
@@ -224,7 +302,7 @@ export function HomePage() {
           PRICING - Urgent, clear value
           ============================================ */}
       <section className="landing-section landing-section--dark" id="pricing">
-        <div className="landing-section__header">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
           <span className="landing-eyebrow">Get your report</span>
           <h2>Find out what you're really losing.</h2>
           <p className="landing-section__subtitle">
@@ -234,7 +312,7 @@ export function HomePage() {
         </div>
         
         <div className="landing-pricing landing-pricing--two">
-          <div className="landing-price-card">
+          <div className="landing-price-card animate-on-scroll" ref={observe}>
             <div className="landing-price-card__header">
               <h3>The Reality Check</h3>
               <div className="landing-price-card__price">
@@ -257,7 +335,7 @@ export function HomePage() {
             </Link>
           </div>
 
-          <div className="landing-price-card landing-price-card--featured">
+          <div className="landing-price-card landing-price-card--featured glow-effect animate-on-scroll" ref={observe}>
             <div className="landing-price-card__badge">Most Popular</div>
             <div className="landing-price-card__header">
               <h3>The Deep Dive</h3>
@@ -288,7 +366,7 @@ export function HomePage() {
           COMING SOON - Real-time Dashboard
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header">
+        <div className="landing-section__header animate-on-scroll" ref={observe}>
           <span className="landing-eyebrow">Coming Q1 2026</span>
           <h2>Real-time tracking is on the way</h2>
           <p className="landing-section__subtitle">
