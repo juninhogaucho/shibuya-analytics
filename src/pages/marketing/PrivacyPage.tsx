@@ -64,7 +64,7 @@ export function PrivacyPage() {
 
         <h3>7. Contact</h3>
         <p>
-          For privacy-related inquiries or to exercise your rights, contact us at privacy@shibuya-analytics.com
+          For privacy-related inquiries or to exercise your rights, contact us at support@shibuya-analytics.com
         </p>
       </div>
     </Section>

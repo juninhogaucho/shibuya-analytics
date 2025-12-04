@@ -559,21 +559,25 @@ button {
   border-color: rgba(59, 130, 246, 0.5);
   box-shadow: 0 25px 60px rgba(59, 130, 246, 0.2);
   position: relative;
+  margin-top: 15px; /* Ensure space for the badge */
 }
 
 .pricing-card__badge {
   position: absolute;
-  top: -12px;
+  top: -15px; /* Move it up slightly more */
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-primary);
   color: #fff;
-  padding: 0.25rem 1rem;
+  padding: 0.35rem 1.2rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  white-space: nowrap;
 }
 
 .pricing-card__price .price-type {

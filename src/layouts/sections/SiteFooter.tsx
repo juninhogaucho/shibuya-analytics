@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 const FOOTER_LINKS = [
   { label: 'Home', to: '/' },
   { label: 'Pricing', to: '/pricing' },
-  { label: 'Enterprise', to: '/enterprise' },
 ]
 
 const LEGAL_LINKS = [
