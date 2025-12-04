@@ -715,13 +715,6 @@ export function HomePage() {
             whileHover={{ y: -8, boxShadow: "0 20px 60px rgba(59, 130, 246, 0.35)" }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <motion.div 
-              className="landing-price-card__badge"
-              initial={{ scale: 0, rotate: -10 }}
-              whileInView={{ scale: 1, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
-            >most popular</motion.div>
             <div className="landing-price-card__header">
               <h3>The Deep Dive</h3>
               <div className="landing-price-card__price">
