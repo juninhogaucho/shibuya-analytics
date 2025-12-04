@@ -2017,8 +2017,9 @@ button {
   color: #ffffff;
   font-size: 0.85rem;
   line-height: 1.5;
-  z-index: 1000;
+  z-index: 9999;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 .tooltip-arrow {
@@ -2033,7 +2034,7 @@ button {
   left: 50%;
   transform: translateX(-50%);
   border-width: 6px 6px 0 6px;
-  border-color: rgba(255, 255, 255, 0.12) transparent transparent transparent;
+  border-color: #1a1a2e transparent transparent transparent;
 }
 
 .tooltip-arrow--bottom {
@@ -2041,7 +2042,7 @@ button {
   left: 50%;
   transform: translateX(-50%);
   border-width: 0 6px 6px 6px;
-  border-color: transparent transparent rgba(255, 255, 255, 0.12) transparent;
+  border-color: transparent transparent #1a1a2e transparent;
 }
 
 .tooltip-arrow--left {
@@ -2049,7 +2050,7 @@ button {
   top: 50%;
   transform: translateY(-50%);
   border-width: 6px 0 6px 6px;
-  border-color: transparent transparent transparent rgba(255, 255, 255, 0.12);
+  border-color: transparent transparent transparent #1a1a2e;
 }
 
 .tooltip-arrow--right {
@@ -2057,7 +2058,7 @@ button {
   top: 50%;
   transform: translateY(-50%);
   border-width: 6px 6px 6px 0;
-  border-color: transparent rgba(255, 255, 255, 0.12) transparent transparent;
+  border-color: transparent #1a1a2e transparent transparent;
 }
 
 /* Landing Enhancements */
@@ -3701,22 +3702,6 @@ button {
   align-items: center;
 }
 
-.tooltip-content {
-  position: absolute;
-  z-index: 1000;
-  padding: 0.75rem 1rem;
-  background: #1a1a2e;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-xs);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #ffffff;
-  white-space: normal;
-  max-width: 400px;
-  width: max-content;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  animation: tooltipFadeIn var(--duration-fast) var(--ease-out);
-}
 
 @keyframes tooltipFadeIn {
   from { opacity: 0; transform: translateY(4px) translateX(-50%); }
