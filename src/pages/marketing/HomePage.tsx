@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { useIntersectionObserver } from '../../hooks/useIntersectionObserver'
+import { motion } from 'motion/react'
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -10,7 +10,53 @@ export function HomePage() {
   const [contactSubmitted, setContactSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   
-  const { observe } = useIntersectionObserver()
+  // Animation variants for staggered reveals
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1
+      }
+    }
+  }
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" as const }
+    }
+  }
+  
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: "easeOut" as const }
+    }
+  }
+  
+  const slideInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: "easeOut" as const }
+    }
+  }
+  
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" as const }
+    }
+  }
 
   const handleExploreDemo = () => {
     localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')
@@ -68,233 +114,542 @@ export function HomePage() {
           HERO - Direct, pain-focused, clear value
           ============================================ */}
       <section className="landing-hero">
-        <div className="landing-hero__content animate-on-scroll" ref={observe}>
-          <p className="landing-hero__eyebrow">For FX, Index CFDs, Metals & Crypto traders</p>
-          <h1 className="landing-hero__headline">
+        <motion.div 
+          className="landing-hero__content"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <motion.p className="landing-hero__eyebrow" variants={itemVariants}>
+            For FX, Index CFDs, Metals & Crypto traders
+          </motion.p>
+          <motion.h1 className="landing-hero__headline" variants={itemVariants}>
             You're not losing to the market.<br />
             <span className="text-gradient">You're losing to yourself.</span>
-          </h1>
-          <p className="landing-hero__subhead">
+          </motion.h1>
+          <motion.p className="landing-hero__subhead" variants={itemVariants}>
             We analyze your trades and calculate exactly how much money you're leaving on the table 
             to revenge trading, oversizing, and overtrading. Then we show you how to stop.
-          </p>
-          <div className="landing-hero__cta">
-            <a href="#pricing" className="landing-btn landing-btn--primary">
+          </motion.p>
+          <motion.div className="landing-hero__cta" variants={itemVariants}>
+            <motion.a 
+              href="#pricing" 
+              className="landing-btn landing-btn--primary"
+              whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(59, 130, 246, 0.5)" }}
+              whileTap={{ scale: 0.98 }}
+            >
               Get Your Report — €99
-            </a>
-            <button className="landing-btn landing-btn--secondary" onClick={handleExploreDemo}>
-              See a Sample Report
-            </button>
-          </div>
-          <p className="landing-hero__trust">
+            </motion.a>
+          </motion.div>
+          <motion.p className="landing-hero__trust" variants={itemVariants}>
             <span className="trust-check">✓</span> Written by humans, not AI
             <span className="trust-sep">•</span>
             <span className="trust-check">✓</span> Delivered in 72 hours
             <span className="trust-sep">•</span>
             <span className="trust-check">✓</span> No subscription, no login
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
         {/* Social Proof Strip - specific, believable */}
-        <div className="landing-proof animate-on-scroll" ref={observe}>
-          <div className="landing-proof__item">
+        <motion.div 
+          className="landing-proof"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.div className="landing-proof__item" variants={itemVariants}>
             <span className="landing-proof__number">€847</span>
             <span className="landing-proof__label">Average monthly loss to revenge trades alone</span>
-          </div>
+          </motion.div>
           <div className="landing-proof__divider"></div>
-          <div className="landing-proof__item">
+          <motion.div className="landing-proof__item" variants={itemVariants}>
             <span className="landing-proof__number">3.2x</span>
             <span className="landing-proof__label">Average position size on losing trades vs winners</span>
-          </div>
+          </motion.div>
           <div className="landing-proof__divider"></div>
-          <div className="landing-proof__item">
+          <motion.div className="landing-proof__item" variants={itemVariants}>
             <span className="landing-proof__number">47%</span>
             <span className="landing-proof__label">Of traders overtrade by 2x their own rules</span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ============================================
           THE EQUATION - Credibility / Methodology Hook
           ============================================ */}
       <section className="landing-section landing-section--dark">
-        <div className="landing-equation animate-on-scroll" ref={observe}>
-          <div className="equation-formula">
-            <span className="eq-pnl">PnL</span> = 
-            (<span className="eq-edge">Edge</span> + <span className="eq-luck">Luck</span>) − 
-            <span className="eq-behavior">Behavior</span>
-          </div>
-          <p className="equation-explain">
-            We use robust regression to filter out the <span className="eq-luck">Luck</span>.<br />
-            We isolate the <span className="eq-behavior">Behavior</span> that's costing you money.<br />
-            What remains is your <span className="eq-edge">True Edge</span>.
-          </p>
-        </div>
+        <motion.div 
+          className="landing-equation"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={containerVariants}
+        >
+          <motion.div 
+            className="equation-formula"
+            variants={scaleIn}
+          >
+            <motion.span 
+              className="eq-pnl"
+              initial={{ opacity: 0, scale: 0.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >PnL</motion.span>
+            <span className="eq-equals"> = (</span>
+            <motion.span 
+              className="eq-edge"
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+            >Edge</motion.span>
+            <span className="eq-plus"> + </span>
+            <motion.span 
+              className="eq-luck"
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >Luck</motion.span>
+            <span className="eq-close">) − </span>
+            <motion.span 
+              className="eq-behavior"
+              initial={{ opacity: 0, scale: 1.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8, duration: 0.5, type: "spring", stiffness: 200 }}
+            >Behavior</motion.span>
+          </motion.div>
+          
+          <motion.div 
+            className="equation-explain-wrapper"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={containerVariants}
+          >
+            <motion.p className="equation-explain-line" variants={slideInLeft}>
+              <span className="eq-step">→</span> We use robust regression to filter out the <span className="eq-luck">Luck</span>.
+            </motion.p>
+            <motion.p className="equation-explain-line" variants={slideInLeft}>
+              <span className="eq-step">→</span> We isolate the <span className="eq-behavior">Behavior</span> that's costing you money.
+            </motion.p>
+            <motion.p className="equation-explain-line" variants={slideInLeft}>
+              <span className="eq-step">→</span> What remains is your <span className="eq-edge">True Edge</span>.
+            </motion.p>
+          </motion.div>
+        </motion.div>
         
-        <div className="landing-stat-highlight animate-on-scroll" ref={observe}>
-          <div className="stat-big">
-            <span className="stat-big__value">€3,418</span>
+        <motion.div 
+          className="landing-stat-highlight"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <motion.div 
+            className="stat-big"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.span 
+              className="stat-big__value"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >€3,418</motion.span>
             <span className="stat-big__label">The average "Discipline Tax" we find in new uploads</span>
             <span className="stat-big__sub">Money already earned, then given back to the market.</span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ============================================
           PROBLEM - Articulate their pain (visceral)
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">Sound familiar?</span>
-          <h2>You know exactly what's killing your account.</h2>
-          <p className="landing-section__subtitle">
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>Sound familiar?</motion.span>
+          <motion.h2 variants={itemVariants}>You know exactly what's killing your account.</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             You've read the books. You've backtested. You've journaled. But the same mistakes keep happening.
             Here's the brutal part: you can see yourself doing it, and you still can't stop.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="landing-problems">
-          <div className="landing-problem animate-on-scroll" ref={observe}>
-            <div className="landing-problem__icon">🔥</div>
+        <motion.div 
+          className="landing-problems"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div 
+            className="landing-problem"
+            variants={itemVariants}
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.div 
+              className="landing-problem__icon"
+              animate={{ rotate: [0, -5, 5, 0] }}
+              transition={{ repeat: Infinity, duration: 2, repeatDelay: 3 }}
+            >🔥</motion.div>
             <h3>The revenge trade</h3>
             <p>"Just one more to get back to breakeven." That -€340 becomes -€890 before you close the laptop. We've all been there.</p>
-          </div>
-          <div className="landing-problem animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-problem"
+            variants={itemVariants}
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <div className="landing-problem__icon">📏</div>
             <h3>The "I feel good" size-up</h3>
             <p>Your rules say 0.5 lots. But this setup looks perfect, so you go 1.5. It loses. Of course it does.</p>
-          </div>
-          <div className="landing-problem animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-problem"
+            variants={itemVariants}
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <div className="landing-problem__icon">⚡</div>
             <h3>The 11-trade Tuesday</h3>
             <p>3 trades max was the plan. 11 trades later, you're wondering what just happened. Again.</p>
-          </div>
-          <div className="landing-problem animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-problem"
+            variants={itemVariants}
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <div className="landing-problem__icon">📉</div>
             <h3>The setup that stopped working</h3>
             <p>That "London FVG" hasn't worked in months. But you keep taking it anyway, hoping it comes back.</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
-        <div className="landing-problem-cta animate-on-scroll" ref={observe}>
+        <motion.div 
+          className="landing-problem-cta"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
           <p>The problem isn't your strategy. It's the gap between what you know and what you do.</p>
           <p><strong>We measure that gap. In euros.</strong></p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ============================================
           WHAT WE ACTUALLY DO - Clear, simple
           ============================================ */}
       <section className="landing-section landing-section--accent">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">How it works</span>
-          <h2>We put a number on your bad habits.</h2>
-          <p className="landing-section__subtitle">
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>How it works</motion.span>
+          <motion.h2 variants={itemVariants}>We put a number on your bad habits.</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             Send us your trades. We run them through the same behavioral analysis hedge funds use.
             You get a PDF that tells you exactly what's costing you money — and how to stop.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="landing-features">
-          <div className="landing-feature animate-on-scroll" ref={observe}>
-            <div className="landing-feature__number">01</div>
+        <motion.div 
+          className="landing-features"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div className="landing-feature" variants={slideInLeft}>
+            <motion.div 
+              className="landing-feature__number"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >01</motion.div>
             <div className="landing-feature__content">
               <h3>Export your trades</h3>
               <p>MT4, MT5, cTrader, TradingView, any broker. Just export a CSV — takes 2 minutes.</p>
             </div>
-          </div>
-          <div className="landing-feature animate-on-scroll" ref={observe}>
-            <div className="landing-feature__number">02</div>
+          </motion.div>
+          <motion.div className="landing-feature" variants={slideInLeft}>
+            <motion.div 
+              className="landing-feature__number"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >02</motion.div>
             <div className="landing-feature__content">
               <h3>We analyze everything</h3>
               <p>Behavioral patterns, emotional triggers, position sizing violations, overtrading windows. All of it.</p>
             </div>
-          </div>
-          <div className="landing-feature animate-on-scroll" ref={observe}>
-            <div className="landing-feature__number">03</div>
+          </motion.div>
+          <motion.div className="landing-feature" variants={slideInLeft}>
+            <motion.div 
+              className="landing-feature__number"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >03</motion.div>
             <div className="landing-feature__content">
               <h3>You get a diagnosis</h3>
               <p>"You lost €847 to revenge trades. They happen between 2-4pm after a loss. Here's how to stop."</p>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ============================================
           VALUE - What the report shows (concrete)
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">What you'll learn</span>
-          <h2>The report that tells you what your journal can't</h2>
-        </div>
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>What you'll learn</motion.span>
+          <motion.h2 variants={itemVariants}>The report that tells you what your journal can't</motion.h2>
+        </motion.div>
         
-        <div className="landing-benefits">
-          <div className="landing-benefit animate-on-scroll" ref={observe}>
+        <motion.div 
+          className="landing-benefits"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div 
+            className="landing-benefit"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02, boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)" }}
+          >
             <h3>💰 Your Discipline Tax</h3>
             <p>The exact euro amount you lost to emotional mistakes last month. Broken down by type: revenge trades, oversizing, overtrading. No vague percentages — real money.</p>
-          </div>
-          <div className="landing-benefit animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-benefit"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02, boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)" }}
+          >
             <h3>📊 Your Edge Portfolio</h3>
             <p>Which of your setups are actually profitable (keep trading), which are break-even (review), and which are quietly bleeding you dry (stop immediately).</p>
-          </div>
-          <div className="landing-benefit animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-benefit"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02, boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)" }}
+          >
             <h3>🩺 Your Trading Prescription</h3>
             <p>Not "manage your emotions better." Real rules: "Don't trade GBP after a loss." "Max 3 trades before noon." "Never size up on Fridays." Specific to YOU.</p>
-          </div>
-          <div className="landing-benefit animate-on-scroll" ref={observe}>
+          </motion.div>
+          <motion.div 
+            className="landing-benefit"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02, boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)" }}
+          >
             <h3>⏰ Your Danger Zones</h3>
             <p>The exact times, days, and conditions when you make your worst decisions. Once you see the pattern, you can't unsee it.</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ============================================
-          DATA COMPARISON - Before/After Proof
+          DATA COMPARISON - Before/After Proof (Side by Side)
           ============================================ */}
-      <section className="landing-section landing-section--dark">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">Results</span>
-          <h2>Data doesn't lie.</h2>
-          <p className="landing-section__subtitle">
+      <section className="landing-section landing-section--dark data-section">
+        <motion.div 
+          className="landing-section__header landing-section__header--center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>Results</motion.span>
+          <motion.h2 variants={itemVariants}>Data doesn't lie.</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             What happens when you finally see the cost of your emotions.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="data-comparison">
-          <div className="data-card data-card--before animate-on-scroll" ref={observe}>
-            <div className="data-card__badge">Before Shibuya</div>
-            <div className="data-row">
-              <span>Sortino Ratio</span>
-              <span className="data-val negative">0.38</span>
-            </div>
-            <div className="data-row">
-              <span>Monthly P&L</span>
-              <span className="data-val neutral">+€1,200</span>
-            </div>
-            <div className="data-highlight negative">
-              <span>Discipline Tax</span>
-              <strong>−€3,418</strong>
-            </div>
-            <p className="data-quote">"I thought I was disciplined. The data proved I wasn't."</p>
+        <div className="data-comparison-wrapper">
+          {/* VS Divider */}
+          <div className="data-vs-divider">
+            <span>VS</span>
           </div>
+          
+          <div className="data-comparison-grid">
+            {/* BEFORE Card */}
+            <motion.div 
+              className="data-card-new data-card-new--before"
+              initial={{ opacity: 0, x: -100, rotateY: -15 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -5 }}
+            >
+              <div className="data-card-new__header">
+                <span className="data-card-new__badge data-card-new__badge--danger">Before Shibuya</span>
+                <span className="data-card-new__icon">📉</span>
+              </div>
+              
+              <div className="data-card-new__metrics">
+                <motion.div 
+                  className="data-metric"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <span className="data-metric__label">Sortino Ratio</span>
+                  <span className="data-metric__value data-metric__value--bad">0.38</span>
+                </motion.div>
+                
+                <motion.div 
+                  className="data-metric"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <span className="data-metric__label">Monthly P&L</span>
+                  <span className="data-metric__value data-metric__value--neutral">+€1,200</span>
+                </motion.div>
+              </div>
+              
+              <motion.div 
+                className="data-card-new__tax data-card-new__tax--danger"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+              >
+                <span className="data-tax__label">Discipline Tax</span>
+                <span className="data-tax__value">−€3,418</span>
+                <span className="data-tax__subtext">Lost to emotions</span>
+              </motion.div>
+              
+              <motion.p 
+                className="data-card-new__quote"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+              >
+                "I thought I was disciplined. The data proved I wasn't."
+              </motion.p>
+            </motion.div>
 
-          <div className="data-card data-card--after animate-on-scroll" ref={observe}>
-            <div className="data-card__badge">After 3 Months</div>
-            <div className="data-row">
-              <span>Sortino Ratio</span>
-              <span className="data-val positive">2.84</span>
-            </div>
-            <div className="data-row">
-              <span>Monthly P&L</span>
-              <span className="data-val positive">+€4,100</span>
-            </div>
-            <div className="data-highlight positive">
-              <span>Discipline Tax</span>
-              <strong>−€890</strong>
-            </div>
-            <p className="data-quote">"Seeing the number made me fix it. It wasn't my strategy — it was me."</p>
+            {/* AFTER Card */}
+            <motion.div 
+              className="data-card-new data-card-new--after"
+              initial={{ opacity: 0, x: 100, rotateY: 15 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -5 }}
+            >
+              <div className="data-card-new__header">
+                <span className="data-card-new__badge data-card-new__badge--success">After 3 Months</span>
+                <span className="data-card-new__icon">📈</span>
+              </div>
+              
+              <div className="data-card-new__metrics">
+                <motion.div 
+                  className="data-metric"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <span className="data-metric__label">Sortino Ratio</span>
+                  <motion.span 
+                    className="data-metric__value data-metric__value--good"
+                    initial={{ scale: 0.5 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
+                  >2.84</motion.span>
+                  <span className="data-metric__change">↑ 647%</span>
+                </motion.div>
+                
+                <motion.div 
+                  className="data-metric"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <span className="data-metric__label">Monthly P&L</span>
+                  <motion.span 
+                    className="data-metric__value data-metric__value--good"
+                    initial={{ scale: 0.5 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+                  >+€4,100</motion.span>
+                  <span className="data-metric__change">↑ 242%</span>
+                </motion.div>
+              </div>
+              
+              <motion.div 
+                className="data-card-new__tax data-card-new__tax--success"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+              >
+                <span className="data-tax__label">Discipline Tax</span>
+                <span className="data-tax__value">−€890</span>
+                <span className="data-tax__subtext">↓ €2,528 saved/month</span>
+              </motion.div>
+              
+              <motion.p 
+                className="data-card-new__quote"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+              >
+                "Seeing the number made me fix it. It wasn't my strategy — it was me."
+              </motion.p>
+            </motion.div>
           </div>
+          
+          {/* Bottom impact summary */}
+          <motion.div 
+            className="data-impact-summary"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8 }}
+          >
+            <div className="impact-stat">
+              <span className="impact-stat__value">+€2,900</span>
+              <span className="impact-stat__label">Monthly improvement</span>
+            </div>
+            <div className="impact-stat">
+              <span className="impact-stat__value">74%</span>
+              <span className="impact-stat__label">Less emotional trading</span>
+            </div>
+            <div className="impact-stat">
+              <span className="impact-stat__value">3 months</span>
+              <span className="impact-stat__label">Time to transformation</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -302,17 +657,34 @@ export function HomePage() {
           PRICING - Urgent, clear value
           ============================================ */}
       <section className="landing-section landing-section--dark" id="pricing">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">Get your report</span>
-          <h2>Find out what you're really losing.</h2>
-          <p className="landing-section__subtitle">
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>Get your report</motion.span>
+          <motion.h2 variants={itemVariants}>Find out what you're really losing.</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             Most traders we analyze are losing €500-2,000/month to the same 2-3 mistakes.
             A €99 report pays for itself the first week you stop making them.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="landing-pricing landing-pricing--two">
-          <div className="landing-price-card animate-on-scroll" ref={observe}>
+        <motion.div 
+          className="landing-pricing landing-pricing--two"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div 
+            className="landing-price-card"
+            variants={slideInLeft}
+            whileHover={{ y: -8, boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)" }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <div className="landing-price-card__header">
               <h3>The Reality Check</h3>
               <div className="landing-price-card__price">
@@ -330,13 +702,26 @@ export function HomePage() {
               <li>✓ Personalized rules to stop the bleeding</li>
               <li>✓ Written by a human, delivered in 72 hours</li>
             </ul>
-            <Link to="/checkout/steve" className="landing-btn landing-btn--secondary landing-btn--full">
-              Get The Reality Check
-            </Link>
-          </div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link to="/checkout/steve" className="landing-btn landing-btn--secondary landing-btn--full">
+                Get The Reality Check
+              </Link>
+            </motion.div>
+          </motion.div>
 
-          <div className="landing-price-card landing-price-card--featured glow-effect animate-on-scroll" ref={observe}>
-            <div className="landing-price-card__badge">Most Popular</div>
+          <motion.div 
+            className="landing-price-card landing-price-card--featured"
+            variants={slideInRight}
+            whileHover={{ y: -8, boxShadow: "0 20px 60px rgba(59, 130, 246, 0.35)" }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <motion.div 
+              className="landing-price-card__badge"
+              initial={{ scale: 0, rotate: -10 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+            >most popular</motion.div>
             <div className="landing-price-card__header">
               <h3>The Deep Dive</h3>
               <div className="landing-price-card__price">
@@ -354,11 +739,13 @@ export function HomePage() {
               <li>✓ Custom trading rules for YOUR patterns</li>
               <li>✓ Priority email support</li>
             </ul>
-            <Link to="/checkout/steve-plus" className="landing-btn landing-btn--primary landing-btn--full">
-              Get The Deep Dive
-            </Link>
-          </div>
-        </div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link to="/checkout/steve-plus" className="landing-btn landing-btn--primary landing-btn--full">
+                Get The Deep Dive
+              </Link>
+            </motion.div>
+          </motion.div>
+        </motion.div>
         
       </section>
 
@@ -366,43 +753,74 @@ export function HomePage() {
           COMING SOON - Real-time Dashboard
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header animate-on-scroll" ref={observe}>
-          <span className="landing-eyebrow">Coming Q1 2026</span>
-          <h2>Real-time tracking is on the way</h2>
-          <p className="landing-section__subtitle">
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>Coming Q1 2026</motion.span>
+          <motion.h2 variants={itemVariants}>Real-time tracking is on the way</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             Launching as a €250/mo subscription for traders who want ongoing accountability, not just a one-time diagnosis.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="landing-roadmap">
-          <div className="roadmap-item">
-            <div className="roadmap-icon">🔄</div>
+        <motion.div 
+          className="landing-roadmap"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div className="roadmap-item" variants={itemVariants} whileHover={{ scale: 1.03 }}>
+            <motion.div 
+              className="roadmap-icon"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            >🔄</motion.div>
             <h3>Real-time sync</h3>
             <p>Connect your broker. Trades auto-import. No more CSV uploads.</p>
-          </div>
-          <div className="roadmap-item">
-            <div className="roadmap-icon">🚨</div>
+          </motion.div>
+          <motion.div className="roadmap-item" variants={itemVariants} whileHover={{ scale: 1.03 }}>
+            <motion.div 
+              className="roadmap-icon"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+            >🚨</motion.div>
             <h3>Live slump detection</h3>
             <p>We'll alert you when you're entering tilt BEFORE you blow up.</p>
-          </div>
-          <div className="roadmap-item">
+          </motion.div>
+          <motion.div className="roadmap-item" variants={itemVariants} whileHover={{ scale: 1.03 }}>
             <div className="roadmap-icon">📅</div>
             <h3>Weekly coaching alerts</h3>
             <p>Sunday evening prep. Friday review. Stay accountable without hiring a coach.</p>
-          </div>
-          <div className="roadmap-item">
+          </motion.div>
+          <motion.div className="roadmap-item" variants={itemVariants} whileHover={{ scale: 1.03 }}>
             <div className="roadmap-icon">📊</div>
             <h3>Live dashboard</h3>
             <p>Your discipline tax updating in real-time. Your edge portfolio always current.</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
-        <div className="landing-waitlist">
+        <motion.div 
+          className="landing-waitlist"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           {waitlistSubmitted ? (
-            <div className="landing-waitlist__success">
+            <motion.div 
+              className="landing-waitlist__success"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring" }}
+            >
               <span className="success-icon">✓</span>
               <p>You're on the list. We'll be in touch when the dashboard launches.</p>
-            </div>
+            </motion.div>
           ) : (
             <form onSubmit={handleWaitlistSubmit} className="landing-waitlist__form">
               <input
@@ -413,63 +831,109 @@ export function HomePage() {
                 required
                 className="landing-waitlist__input"
               />
-              <button type="submit" className="landing-btn landing-btn--primary">
+              <motion.button 
+                type="submit" 
+                className="landing-btn landing-btn--primary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 Join the Waitlist
-              </button>
+              </motion.button>
             </form>
           )}
           <p className="landing-waitlist__note">No spam. Just one email when we launch.</p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ============================================
           FAQ - Address objections
           ============================================ */}
       <section className="landing-section landing-section--dark">
-        <div className="landing-section__header">
-          <span className="landing-eyebrow">FAQ</span>
-          <h2>Questions you're probably asking</h2>
-        </div>
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>FAQ</motion.span>
+          <motion.h2 variants={itemVariants}>Questions you're probably asking</motion.h2>
+        </motion.div>
         
-        <div className="landing-faq">
+        <motion.div 
+          className="landing-faq"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={containerVariants}
+        >
           {faqs.map((faq, index) => (
-            <div 
+            <motion.div 
               key={index} 
               className={`faq-item ${openFaq === index ? 'faq-item--open' : ''}`}
               onClick={() => setOpenFaq(openFaq === index ? null : index)}
+              variants={itemVariants}
+              whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.03)" }}
             >
               <div className="faq-question">
                 <span>{faq.q}</span>
-                <span className="faq-toggle">{openFaq === index ? '−' : '+'}</span>
+                <motion.span 
+                  className="faq-toggle"
+                  animate={{ rotate: openFaq === index ? 45 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >{openFaq === index ? '−' : '+'}</motion.span>
               </div>
               {openFaq === index && (
-                <div className="faq-answer">
+                <motion.div 
+                  className="faq-answer"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <p>{faq.a}</p>
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* ============================================
           CONTACT FORM - Questions/Suggestions
           ============================================ */}
       <section className="landing-section">
-        <div className="landing-section__header">
-          <span className="landing-eyebrow">Get in touch</span>
-          <h2>Questions? Ideas? Just want to chat?</h2>
-          <p className="landing-section__subtitle">
+        <motion.div 
+          className="landing-section__header"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.span className="landing-eyebrow" variants={itemVariants}>Get in touch</motion.span>
+          <motion.h2 variants={itemVariants}>Questions? Ideas? Just want to chat?</motion.h2>
+          <motion.p className="landing-section__subtitle" variants={itemVariants}>
             We're building this for traders like you. Your feedback shapes what we build next.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="landing-contact">
+        <motion.div 
+          className="landing-contact"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
           {contactSubmitted ? (
-            <div className="landing-waitlist__success">
+            <motion.div 
+              className="landing-waitlist__success"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring" }}
+            >
               <span className="success-icon">✓</span>
               <p>Message received. We'll get back to you within 24 hours.</p>
-            </div>
+            </motion.div>
           ) : (
             <form onSubmit={handleContactSubmit} className="contact-form">
               <div className="form-row">
@@ -498,30 +962,77 @@ export function HomePage() {
                 className="landing-waitlist__input contact-textarea"
                 rows={4}
               />
-              <button type="submit" className="landing-btn landing-btn--primary">
+              <motion.button 
+                type="submit" 
+                className="landing-btn landing-btn--primary"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 Send Message
-              </button>
+              </motion.button>
               <p className="contact-routing-hint">Opens your email client. We reply within 24 hours.</p>
             </form>
           )}
-        </div>
+        </motion.div>
       </section>
 
       {/* ============================================
           FOOTER CTA - Drive to purchase
           ============================================ */}
-      <section className="landing-final">
-        <h2>Stop guessing. Start knowing.</h2>
-        <p>Find out exactly what's costing you money — and get a plan to fix it.</p>
-        <div className="landing-final__ctas">
-          <a href="#pricing" className="landing-btn landing-btn--primary landing-btn--large">
+      <motion.section 
+        className="landing-final"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+        >Stop guessing. Start knowing.</motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >Find out exactly what's costing you money — and get a plan to fix it.</motion.p>
+        <motion.div 
+          className="landing-final__ctas"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <motion.a 
+            href="#pricing" 
+            className="landing-btn landing-btn--primary landing-btn--large"
+            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(59, 130, 246, 0.5)" }}
+            whileTap={{ scale: 0.98 }}
+          >
             Get Your Report — €99
-          </a>
-          <button className="landing-btn landing-btn--ghost landing-btn--large" onClick={handleExploreDemo}>
-            See Sample Dashboard First
-          </button>
-        </div>
-      </section>
+          </motion.a>
+        </motion.div>
+        
+        <motion.div 
+          className="landing-final__demo"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          <span className="demo-divider-text">or explore first</span>
+          <motion.button 
+            className="landing-btn landing-btn--ghost" 
+            onClick={handleExploreDemo}
+            whileHover={{ scale: 1.05, borderColor: "rgba(16, 185, 129, 0.5)" }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span className="demo-icon">🎯</span> Explore Sample Dashboard
+          </motion.button>
+        </motion.div>
+      </motion.section>
     </div>
   )
 }
