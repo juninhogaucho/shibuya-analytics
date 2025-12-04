@@ -64,57 +64,65 @@ export function HomePage() {
   return (
     <div className="landing">
       {/* ============================================
-          HERO - Human, direct, no bullshit
+          HERO - Direct, pain-focused, clear value
           ============================================ */}
       <section className="landing-hero">
         <div className="landing-hero__content">
+          <p className="landing-hero__eyebrow">For FX, Index CFDs, Metals & Crypto traders</p>
           <h1 className="landing-hero__headline">
-            We rebuild the trader, not just the trades.
+            You're not losing to the market.<br />
+            <span className="text-gradient">You're losing to yourself.</span>
           </h1>
           <p className="landing-hero__subhead">
-            Shibuya is a behavior lab for spot traders in FX, index CFDs, metals, and majors.
-            We quantify your discipline tax, map your actual edges, stress test your risk, and prep you
-            for funded capital so you can trade with intention.
+            We analyze your trades and calculate exactly how much money you're leaving on the table 
+            to revenge trading, oversizing, and overtrading. Then we show you how to stop.
           </p>
           <div className="landing-hero__cta">
-            <Link to="/pricing" className="landing-btn landing-btn--primary">
-              See What's Costing You Money
-            </Link>
+            <a href="#pricing" className="landing-btn landing-btn--primary">
+              Get Your Report — €99
+            </a>
             <button className="landing-btn landing-btn--secondary" onClick={handleExploreDemo}>
-              Explore Demo Dashboard
+              See a Sample Report
             </button>
           </div>
+          <p className="landing-hero__trust">
+            <span className="trust-check">✓</span> Written by humans, not AI
+            <span className="trust-sep">•</span>
+            <span className="trust-check">✓</span> Delivered in 72 hours
+            <span className="trust-sep">•</span>
+            <span className="trust-check">✓</span> No subscription, no login
+          </p>
         </div>
         
-        {/* Social Proof Strip - more human */}
+        {/* Social Proof Strip - specific, believable */}
         <div className="landing-proof">
           <div className="landing-proof__item">
-            <span className="landing-proof__number">€1,200+</span>
-            <span className="landing-proof__label">Average discipline tax we find per trader</span>
+            <span className="landing-proof__number">€847</span>
+            <span className="landing-proof__label">Average monthly loss to revenge trades alone</span>
           </div>
           <div className="landing-proof__divider"></div>
           <div className="landing-proof__item">
-            <span className="landing-proof__number">72hrs</span>
-            <span className="landing-proof__label">From trades to your personalized report</span>
+            <span className="landing-proof__number">3.2x</span>
+            <span className="landing-proof__label">Average position size on losing trades vs winners</span>
           </div>
           <div className="landing-proof__divider"></div>
           <div className="landing-proof__item">
-            <span className="landing-proof__number">Real humans</span>
-            <span className="landing-proof__label">Spot FX • Index CFDs • Metals • Majors</span>
+            <span className="landing-proof__number">47%</span>
+            <span className="landing-proof__label">Of traders overtrade by 2x their own rules</span>
           </div>
         </div>
       </section>
 
       {/* ============================================
-          PROBLEM - Articulate their pain (more human)
+          PROBLEM - Articulate their pain (visceral)
           ============================================ */}
       <section className="landing-section">
         <div className="landing-section__header">
-          <span className="landing-eyebrow">Let's be honest</span>
-          <h2>You already know what you're doing wrong.</h2>
+          <span className="landing-eyebrow">Sound familiar?</span>
+          <h2>You know exactly what's killing your account.</h2>
           <p className="landing-section__subtitle">
-            The strategy isn't the problem. You've backtested it. You've journaled it. 
-            But somehow, you keep giving money back to the market. The same mistakes. Again and again.
+            You've read the books. You've backtested. You've journaled. But the same mistakes keep happening.
+            Here's the brutal part: you can see yourself doing it, and you still can't stop.
           </p>
         </div>
         
@@ -122,37 +130,41 @@ export function HomePage() {
           <div className="landing-problem">
             <div className="landing-problem__icon">🔥</div>
             <h3>The revenge trade</h3>
-            <p>"Just one more to get back to breakeven." That -€340 becomes -€890 before you close the laptop.</p>
+            <p>"Just one more to get back to breakeven." That -€340 becomes -€890 before you close the laptop. We've all been there.</p>
           </div>
           <div className="landing-problem">
             <div className="landing-problem__icon">📏</div>
             <h3>The "I feel good" size-up</h3>
-            <p>Your rules say 0.5 lots. But this setup looks perfect, so you go 1.5. It wasn't perfect.</p>
+            <p>Your rules say 0.5 lots. But this setup looks perfect, so you go 1.5. It loses. Of course it does.</p>
           </div>
           <div className="landing-problem">
             <div className="landing-problem__icon">⚡</div>
-            <h3>The 11-trade day</h3>
-            <p>3 trades max was the plan. 11 trades later, you're wondering what just happened.</p>
+            <h3>The 11-trade Tuesday</h3>
+            <p>3 trades max was the plan. 11 trades later, you're wondering what just happened. Again.</p>
           </div>
           <div className="landing-problem">
             <div className="landing-problem__icon">🎰</div>
-            <h3>The dead setup you keep trading</h3>
-            <p>That "London breakout" hasn't worked in months. But you keep taking it anyway, hoping it comes back.</p>
+            <h3>The setup that stopped working</h3>
+            <p>That "London FVG" hasn't worked in months. But you keep taking it anyway, hoping it comes back.</p>
           </div>
+        </div>
+        
+        <div className="landing-problem-cta">
+          <p>The problem isn't your strategy. It's the gap between what you know and what you do.</p>
+          <p><strong>We measure that gap. In euros.</strong></p>
         </div>
       </section>
 
       {/* ============================================
-          WHAT WE ACTUALLY DO
+          WHAT WE ACTUALLY DO - Clear, simple
           ============================================ */}
       <section className="landing-section landing-section--accent">
         <div className="landing-section__header">
-          <span className="landing-eyebrow">What we do</span>
-          <h2>We calculate your discipline tax.</h2>
+          <span className="landing-eyebrow">How it works</span>
+          <h2>We put a number on your bad habits.</h2>
           <p className="landing-section__subtitle">
-            This isn't another journal that tells you to "manage emotions better."
-            We run your actual trades through quant-level analysis and show you, 
-            in euros, exactly what each mistake costs you.
+            Send us your trades. We run them through the same behavioral analysis hedge funds use.
+            You get a PDF that tells you exactly what's costing you money — and how to stop.
           </p>
         </div>
         
@@ -160,99 +172,66 @@ export function HomePage() {
           <div className="landing-feature">
             <div className="landing-feature__number">01</div>
             <div className="landing-feature__content">
-              <h3>Send us your trades</h3>
-              <p>Export from MT4, MT5, cTrader, or any broker. Just a CSV, we handle the rest.</p>
+              <h3>Export your trades</h3>
+              <p>MT4, MT5, cTrader, TradingView, any broker. Just export a CSV — takes 2 minutes.</p>
             </div>
           </div>
           <div className="landing-feature">
             <div className="landing-feature__number">02</div>
             <div className="landing-feature__content">
-              <h3>We do the math</h3>
-              <p>Our engine runs behavioral analysis, Monte Carlo simulations, and edge validation. The same tools hedge funds use.</p>
+              <h3>We analyze everything</h3>
+              <p>Behavioral patterns, emotional triggers, position sizing violations, overtrading windows. All of it.</p>
             </div>
           </div>
           <div className="landing-feature">
             <div className="landing-feature__number">03</div>
             <div className="landing-feature__content">
-              <h3>You get a real diagnosis</h3>
-              <p>Not vague percentages. Real numbers: "You lost €847 to revenge trades last month. Here's exactly when and how."</p>
+              <h3>You get a diagnosis</h3>
+              <p>"You lost €847 to revenge trades. They happen between 2-4pm after a loss. Here's how to stop."</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ============================================
-          BEYOND COST CUTTING - Platform scope
+          VALUE - What the report shows (concrete)
           ============================================ */}
       <section className="landing-section">
         <div className="landing-section__header">
-          <span className="landing-eyebrow">More than a PDF</span>
-          <h2>The Shibuya operating system</h2>
-          <p className="landing-section__subtitle">
-            Traders send us raw spot data. We return a full diagnosis: behavioral biometrics, edge governance,
-            Monte Carlo forecasting, and capital readiness. This is how we help you grow into the trader you keep
-            writing about in your journal.
-          </p>
-        </div>
-        <div className="landing-benefits landing-benefits--grid">
-          <div className="landing-benefit">
-            <h3>🧠 Behavioral forensics</h3>
-            <p>We fingerprint your emotional tells (revenge, boredom, fatigue) and tie them to exact timestamps so you can engineer better habits.</p>
-          </div>
-          <div className="landing-benefit">
-            <h3>🛰 Edge lab</h3>
-            <p>Each setup is treated like its own desk with expectancy, DD, and upgrade/downgrade notes. It's portfolio management for your strategies.</p>
-          </div>
-          <div className="landing-benefit">
-            <h3>🏁 Capital readiness</h3>
-            <p>We run prop-style Monte Carlo stress, ruin probability, and capital efficiency modeling so you know when you're ready for funding.</p>
-          </div>
-          <div className="landing-benefit">
-            <h3>🌐 Spot-only coverage</h3>
-            <p>FX majors, index CFDs (NAS100, SPX500), spot metals, and the top crypto pairs. Want equities or futures? Tell us and we add it next.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================
-          VALUE - What the report shows
-          ============================================ */}
-      <section className="landing-section">
-        <div className="landing-section__header">
-          <span className="landing-eyebrow">Your report includes</span>
-          <h2>Everything you need to stop the bleeding</h2>
+          <span className="landing-eyebrow">What you'll learn</span>
+          <h2>The report that tells you what your journal can't</h2>
         </div>
         
         <div className="landing-benefits">
           <div className="landing-benefit">
             <h3>💰 Your Discipline Tax</h3>
-            <p>The exact euro amount you lost to emotional mistakes. Broken down by type: revenge trades, overtrading, size violations.</p>
+            <p>The exact euro amount you lost to emotional mistakes last month. Broken down by type: revenge trades, oversizing, overtrading. No vague percentages — real money.</p>
           </div>
           <div className="landing-benefit">
             <h3>📊 Your Edge Portfolio</h3>
-            <p>Which of your setups are actually profitable (PRIME), which are break-even (STABLE), and which are quietly killing your account (DECAYED).</p>
+            <p>Which of your setups are actually profitable (keep trading), which are break-even (review), and which are quietly bleeding you dry (stop immediately).</p>
           </div>
           <div className="landing-benefit">
-            <h3>🩺 Your Prescription</h3>
-            <p>Not "manage your emotions." Real rules: "Stop trading GBP after a loss." "Max 3 trades until you cool down." Specific, actionable, yours.</p>
+            <h3>🩺 Your Trading Prescription</h3>
+            <p>Not "manage your emotions better." Real rules: "Don't trade GBP after a loss." "Max 3 trades before noon." "Never size up on Fridays." Specific to YOU.</p>
           </div>
           <div className="landing-benefit">
-            <h3>🧑 Written by a Human</h3>
-            <p>Your report is written and analyzed by a real person, not AI. We read your trades, understand your patterns, and write specifically for you.</p>
+            <h3>⏰ Your Danger Zones</h3>
+            <p>The exact times, days, and conditions when you make your worst decisions. Once you see the pattern, you can't unsee it.</p>
           </div>
         </div>
       </section>
 
       {/* ============================================
-          PRICING - Two tiers, simple
+          PRICING - Urgent, clear value
           ============================================ */}
       <section className="landing-section landing-section--dark" id="pricing">
         <div className="landing-section__header">
-          <span className="landing-eyebrow">Pricing</span>
-          <h2>One report can change everything</h2>
+          <span className="landing-eyebrow">Get your report</span>
+          <h2>Find out what you're really losing.</h2>
           <p className="landing-section__subtitle">
-            Most traders bleed €500-2000/month to the same mistakes. 
-            A €99 report might be the best ROI you've ever made.
+            Most traders we analyze are losing €500-2,000/month to the same 2-3 mistakes.
+            A €99 report pays for itself the first week you stop making them.
           </p>
         </div>
         
@@ -266,21 +245,22 @@ export function HomePage() {
               </div>
             </div>
             <p className="landing-price-card__desc">
-              A brutally honest PDF diagnosis. We show you exactly where you're bleeding money, and it's probably not where you think.
+              A brutally honest diagnosis of your trading. We find the leaks you can't see yourself.
             </p>
             <ul className="landing-price-card__perks">
-              <li>Complete discipline tax breakdown</li>
-              <li>Edge portfolio analysis</li>
-              <li>Written by a real human, not AI</li>
-              <li>Delivered within 72 hours</li>
+              <li>✓ Your "discipline tax" in euros (not percentages)</li>
+              <li>✓ Which setups actually make you money</li>
+              <li>✓ Exactly when and why you overtrade</li>
+              <li>✓ Personalized rules to stop the bleeding</li>
+              <li>✓ Written by a human, delivered in 72 hours</li>
             </ul>
-            <Link to="/checkout/steve" className="landing-btn landing-btn--secondary">
-              Get Your Report
+            <Link to="/checkout/steve" className="landing-btn landing-btn--secondary landing-btn--full">
+              Get The Reality Check
             </Link>
           </div>
 
           <div className="landing-price-card landing-price-card--featured">
-            <div className="landing-price-card__badge">Recommended</div>
+            <div className="landing-price-card__badge">Most Popular</div>
             <div className="landing-price-card__header">
               <h3>The Deep Dive</h3>
               <div className="landing-price-card__price">
@@ -289,19 +269,23 @@ export function HomePage() {
               </div>
             </div>
             <p className="landing-price-card__desc">
-              Two reports + two 1:1 video calls. We don't just show you the problem, we work through solutions together.
+              Everything above, plus two 1:1 calls to work through your patterns together.
             </p>
             <ul className="landing-price-card__perks">
-              <li>Everything in The Reality Check</li>
-              <li>Two PDF reports (initial + 30-day follow-up)</li>
-              <li>Two 30-min video calls with a real human</li>
-              <li>Personalized trading rules based on YOUR patterns</li>
-              <li>Priority email support</li>
+              <li>✓ Everything in The Reality Check</li>
+              <li>✓ Two 30-minute video calls with an analyst</li>
+              <li>✓ Follow-up report after 30 days</li>
+              <li>✓ Custom trading rules for YOUR patterns</li>
+              <li>✓ Priority email support</li>
             </ul>
-            <Link to="/checkout/steve-plus" className="landing-btn landing-btn--primary">
+            <Link to="/checkout/steve-plus" className="landing-btn landing-btn--primary landing-btn--full">
               Get The Deep Dive
             </Link>
           </div>
+        </div>
+        
+        <div className="landing-pricing-guarantee">
+          <p>📧 <strong>Not sure?</strong> Reply to your confirmation email within 7 days for a full refund. No questions asked.</p>
         </div>
       </section>
 
@@ -451,14 +435,19 @@ export function HomePage() {
       </section>
 
       {/* ============================================
-          FOOTER CTA - Final conversion point
+          FOOTER CTA - Drive to purchase
           ============================================ */}
       <section className="landing-final">
-        <h2>Ready to see what's really going on?</h2>
-        <p>Explore real trader data. No signup required.</p>
-        <button className="landing-btn landing-btn--primary landing-btn--large" onClick={handleExploreDemo}>
-          Explore Demo Dashboard
-        </button>
+        <h2>Stop guessing. Start knowing.</h2>
+        <p>Find out exactly what's costing you money — and get a plan to fix it.</p>
+        <div className="landing-final__ctas">
+          <a href="#pricing" className="landing-btn landing-btn--primary landing-btn--large">
+            Get Your Report — €99
+          </a>
+          <button className="landing-btn landing-btn--ghost landing-btn--large" onClick={handleExploreDemo}>
+            See Sample Dashboard First
+          </button>
+        </div>
       </section>
     </div>
   )

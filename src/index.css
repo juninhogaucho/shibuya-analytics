@@ -5698,6 +5698,135 @@ button {
 
 .checkout-process ol {
   list-style: none;
+
+/* ============================================
+   NEW LANDING PAGE ENHANCEMENTS
+   ============================================ */
+
+/* Hero Eyebrow */
+.landing-hero__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 1.25rem;
+}
+
+/* Text gradient for impact */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Trust strip under CTA */
+.landing-hero__trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.trust-check {
+  color: var(--color-success);
+}
+
+.trust-sep {
+  opacity: 0.4;
+}
+
+/* Problem section CTA */
+.landing-problem-cta {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+}
+
+.landing-problem-cta p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+.landing-problem-cta p:last-child {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+/* Full width button */
+.landing-btn--full {
+  width: 100%;
+  text-align: center;
+}
+
+/* Ghost button */
+.landing-btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.landing-btn--ghost:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Pricing guarantee */
+.landing-pricing-guarantee {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.landing-pricing-guarantee p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.landing-pricing-guarantee strong {
+  color: var(--color-text);
+}
+
+/* Final CTA multiple buttons */
+.landing-final__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .landing-final__ctas {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .landing-final__ctas .landing-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .landing-hero__trust {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .trust-sep {
+    display: none;
+  }
+}
   padding: 0;
   margin: 0;
 }
