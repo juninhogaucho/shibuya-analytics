@@ -13,10 +13,11 @@ export default defineConfig({
   server: {
     // Bind to all interfaces
     host: true,
-    // Use the port provided by the environment, fallback to 5173
-    port: Number(process.env.PORT) || 5173,
-    // Allow Vite to pick an alternative port if taken
-    strictPort: false,
+    // Pin a single dev port to avoid conflicts/SSL reuse confusion
+    port: 3000,
+    // Do not auto-switch ports; fail fast so we know
+    strictPort: true,
+    https: false,
   },
   build: {
     // Generate source maps for debugging in production

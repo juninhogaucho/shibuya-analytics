@@ -57,7 +57,7 @@ export function TermsPage() {
 
         <h3>8. Contact</h3>
         <p>
-          For questions about these terms, contact us at legal@shibuya-analytics.com
+          For questions about these terms, contact us at support@shibuya-analytics.com
         </p>
       </div>
     </Section>

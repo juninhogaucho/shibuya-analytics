@@ -101,6 +101,11 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
 body, .glass-panel, .btn, .sidebar-link, .nav-link, .metric-card {
   transition: 
     background-color var(--duration-normal) var(--ease-out),
@@ -112,8 +117,12 @@ body, .glass-panel, .btn, .sidebar-link, .nav-link, .metric-card {
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   color: #f5f7ff;
   background-color: var(--color-bg);
+  overflow-x: hidden;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -229,6 +238,23 @@ button {
   border-radius: 999px;
   padding: 0.65rem 1.5rem;
   font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .site-nav__inner {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .site-nav nav {
+    flex: initial;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 1rem;
+    order: 3;
+  }
+  .site-nav__cta {
+    display: none;
+  }
 }
 
 .site-footer {
@@ -2883,25 +2909,27 @@ button {
 }
 
 .landing-btn--primary {
-  background: #fff;
+  background: linear-gradient(135deg, #fff 0%, #e8ecf0 100%);
   color: #000;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
 }
 
 .landing-btn--primary:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
 }
 
 .landing-btn--secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .landing-btn--secondary:hover {
   border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
 }
 
 .landing-btn--large {
@@ -2949,12 +2977,12 @@ button {
 }
 
 .landing-section--dark {
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient(180deg, rgba(8, 8, 15, 0.95) 0%, rgba(5, 5, 8, 0.98) 100%);
   margin: 0 calc(-1 * clamp(1rem, 4vw, 2rem));
   padding-left: clamp(1rem, 4vw, 2rem);
   padding-right: clamp(1rem, 4vw, 2rem);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   overflow: visible;
 }
 
@@ -3006,14 +3034,16 @@ button {
 
 .landing-problem {
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(145deg, rgba(15, 15, 25, 0.6), rgba(8, 8, 15, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  transition: border-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .landing-problem:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .landing-problem__icon {
@@ -3081,9 +3111,15 @@ button {
 
 .landing-benefit {
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(145deg, rgba(15, 15, 25, 0.6), rgba(8, 8, 15, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.landing-benefit:hover {
+  border-color: rgba(59, 130, 246, 0.25);
+  transform: translateY(-2px);
 }
 
 .landing-benefit h3 {
@@ -3150,19 +3186,25 @@ button {
 
 .landing-price-card {
   padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(15, 15, 25, 0.7), rgba(8, 8, 15, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: visible; /* Ensure badge isn't clipped */
+  overflow: visible;
+  transition: all 0.3s ease;
+}
+
+.landing-price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .landing-price-card--featured {
   border-color: var(--color-primary);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(10, 10, 15, 0.95));
-  margin-top: 0; /* Reset any margin that might clip badge */
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.12), rgba(15, 15, 25, 0.95));
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.1);
 }
 
 .landing-price-card__badge {
@@ -5528,8 +5570,16 @@ button {
 }
 
 .faq-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
+  padding: 0.25rem 1rem;
+  margin: 0 -1rem;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .faq-question {
@@ -5613,11 +5663,17 @@ button {
 }
 
 .roadmap-item {
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(145deg, rgba(15, 15, 25, 0.6), rgba(8, 8, 15, 0.8));
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   padding: 1.5rem;
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.roadmap-item:hover {
+  border-color: rgba(59, 130, 246, 0.25);
+  transform: translateY(-2px);
 }
 
 .roadmap-icon {
@@ -6025,14 +6081,13 @@ button {
 }
 
 .data-comparison-grid {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
   align-items: stretch;
 }
 
 .data-comparison-grid > * {
-  flex: 1;
   min-width: 0;
 }
 
@@ -6282,8 +6337,8 @@ button {
 
 @media (max-width: 768px) {
   .data-comparison-grid {
-    flex-direction: column;
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
   .data-vs-divider {
@@ -6291,31 +6346,61 @@ button {
     top: auto;
     left: auto;
     transform: none;
-    margin: -1rem auto;
-    width: 50px;
-    height: 50px;
-    font-size: 0.75rem;
+    margin: 0 auto;
+    width: 44px;
+    height: 44px;
+    font-size: 0.7rem;
   }
   
   .data-impact-summary {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    padding: 1.5rem;
   }
   
   .data-card-new {
-    padding: 1.75rem;
+    padding: 1.5rem;
+    border-radius: 16px;
   }
   
   .data-metric__value {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
   
   .data-tax__value {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+  
+  .data-card-new__quote {
+    font-size: 0.85rem;
+  }
+  
+  .data-section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
   }
 }
 
 @media (max-width: 600px) {
+  .landing {
+    padding: 0 1rem;
+  }
+  
+  .landing-hero {
+    min-height: auto;
+    padding: 3rem 0 2rem;
+  }
+  
+  .landing-hero__headline {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+  
+  .landing-hero__subhead {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
   .landing-final__ctas {
     flex-direction: column;
     align-items: center;
@@ -6329,14 +6414,176 @@ button {
   .landing-hero__trust {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.35rem;
   }
   
   .trust-sep {
     display: none;
   }
-}
-  padding: 0;
-  margin: 0;
+  
+  .landing-section {
+    padding: 2.5rem 0;
+  }
+  
+  .landing-section__header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .landing-section__subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .landing-problems {
+    gap: 1rem;
+  }
+  
+  .landing-problem {
+    padding: 1.25rem;
+  }
+  
+  .landing-problem h3 {
+    font-size: 1rem;
+  }
+  
+  .landing-problem p {
+    font-size: 0.9rem;
+  }
+  
+  .landing-proof {
+    margin-top: 2rem;
+    padding: 1.5rem 0;
+  }
+  
+  .landing-proof__number {
+    font-size: 1.35rem;
+  }
+  
+  .landing-proof__label {
+    font-size: 0.75rem;
+  }
+  
+  .landing-feature {
+    gap: 0.75rem;
+  }
+  
+  .landing-feature__number {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .landing-feature__content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .landing-feature__content p {
+    font-size: 0.9rem;
+  }
+  
+  .landing-benefit {
+    padding: 1.25rem;
+  }
+  
+  .landing-benefit h3 {
+    font-size: 1rem;
+  }
+  
+  .landing-benefit p {
+    font-size: 0.85rem;
+  }
+  
+  .landing-price-card {
+    padding: 1.5rem;
+  }
+  
+  .landing-price-amount {
+    font-size: 2.25rem;
+  }
+  
+  .landing-price-card__perks li {
+    font-size: 0.85rem;
+    padding: 0.35rem 0;
+  }
+  
+  .landing-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .landing-btn--large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .roadmap-item {
+    padding: 1.25rem;
+  }
+  
+  .roadmap-item h3 {
+    font-size: 1rem;
+  }
+  
+  .roadmap-item p {
+    font-size: 0.85rem;
+  }
+  
+  .faq-item {
+    padding: 1rem 0;
+  }
+  
+  .faq-question span {
+    font-size: 0.95rem;
+  }
+  
+  .faq-answer p {
+    font-size: 0.9rem;
+  }
+  
+  .landing-waitlist__form {
+    flex-direction: column;
+  }
+  
+  .landing-waitlist__input {
+    min-width: 100%;
+  }
+  
+  .contact-form .form-row {
+    flex-direction: column;
+  }
+  
+  .landing-final {
+    padding: 3rem 0;
+  }
+  
+  .landing-final h2 {
+    font-size: 1.5rem;
+  }
+  
+  .landing-final p {
+    font-size: 0.95rem;
+  }
+  
+  .stat-big {
+    padding: 1.5rem;
+  }
+  
+  .stat-big__value {
+    font-size: 2.5rem;
+  }
+  
+  .stat-big__label {
+    font-size: 0.95rem;
+  }
+  
+  .equation-formula {
+    font-size: 1.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  
+  .equation-explain-line {
+    font-size: 0.9rem;
+  }
 }
 
 .checkout-process li {
