@@ -1,52 +1,97 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ===== CSS Custom Properties - Dark Theme (Default) ===== */
 :root {
-  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   
   /* Colors - Dark Theme */
-  --color-bg: #050505;
-  --color-bg-elevated: #0a0a0f;
-  --color-panel: #0f0f12;
-  --color-panel-muted: #111118;
-  --color-border: #1f1f2b;
-  --color-text: #f8fafc;
-  --color-text-muted: #a1a1b5;
+  --color-bg: #020204; /* Darker, almost black */
+  --color-bg-elevated: #0A0A0F;
+  --color-panel: #0E0E12;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #EDEDED;
+  --color-text-muted: #888888;
   --color-primary: #3b82f6;
-  --color-primary-light: #60a5fa;
-  --color-danger: #ef4444;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-purple: #a855f7;
-  --color-gold: #fbbf24;
-  --color-silver: #94a3b8;
-  --color-bronze: #cd7f32;
+  --color-primary-glow: rgba(59, 130, 246, 0.5);
   
   /* Radii */
-  --radius-lg: 32px;
-  --radius-md: 20px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
+  --radius-lg: 12px; /* Tighter radius for a more modern feel */
+  --radius-md: 8px;
+  --radius-sm: 4px;
   
   /* Shadows */
-  --shadow-soft: 0 25px 80px rgba(12, 15, 30, 0.65);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.15);
-  
-  /* Animations */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  --shadow-glow: 0 0 40px -10px rgba(59, 130, 246, 0.3);
   
   color: var(--color-text);
   background-color: var(--color-bg);
 }
+
+/* Grid Background Pattern */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-glow-white {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass-panel {
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.landing-btn--primary {
+  background: white;
+  color: black;
+  border: 1px solid white;
+}
+
+.landing-btn--primary:hover {
+  background: #e5e5e5;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.landing-btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.landing-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 
 /* ===== Light Theme ===== */
 [data-theme="light"] {
@@ -5787,6 +5832,9 @@ button {
 
 .checkout-process ol {
   list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
 /* ============================================
    NEW LANDING PAGE ENHANCEMENTS
@@ -6695,5 +6743,219 @@ button {
   animation: float 10s ease-in-out infinite alternate;
   z-index: -1;
   pointer-events: none;
+}
+
+
+/* =========================================
+   SHIBUYA 2.0 VISUAL UPGRADE
+   ========================================= */
+
+/* Grid Background Pattern */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+/* Text Glows */
+.text-glow-blue {
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.text-glow-white {
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+/* Bento Grid Card */
+.bento-card {
+  background: rgba(13, 13, 18, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.bento-card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Dot Pattern Background */
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Landing Page Enhancements */
+.landing {
+  background: linear-gradient(180deg, #0a0a0e 0%, #000000 100%);
+}
+
+.landing-section {
+  padding: 5rem 2rem;
+  position: relative;
+}
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 2px solid transparent;
+}
+
+.landing-btn--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-color: #3b82f6;
+}
+
+.landing-btn--primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+}
+
+.landing-btn--secondary {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.landing-btn--secondary:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+/* Improved Mobile Styles */
+@media (max-width: 768px) {
+  .landing-section {
+    padding: 3rem 1.5rem;
+  }
+
+  .landing-hero {
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+  
+  h1, .landing-hero__headline {
+    font-size: clamp(2rem, 8vw, 3rem) !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 {
+    font-size: clamp(1.75rem, 6vw, 2.5rem) !important;
+  }
+  
+  .landing-hero__subhead,
+  .text-xl {
+    font-size: 1.125rem !important;
+    line-height: 1.6 !important;
+  }
+  
+  .landing-proof {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .landing-proof__divider {
+    display: none;
+  }
+  
+  .glass-panel {
+    padding: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .flex-col,
+  .sm\\:flex-row {
+    flex-direction: column !important;
+    gap: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High contrast text */
+@media (prefers-contrast: high) {
+  .text-gray-400,
+  .text-gray-300 {
+    color: #e5e7eb !important;
+  }
 }
 

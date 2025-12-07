@@ -3,6 +3,7 @@ import { PublicLayout } from '../layouts/PublicLayout'
 import { DashboardLayout } from '../layouts/DashboardLayout'
 import { AuthGuard } from '../components/AuthGuard'
 import { HomePage } from '../pages/marketing/HomePage'
+import { SolutionsPage } from '../pages/marketing/SolutionsPage'
 import { ActivationPage } from '../pages/marketing/ActivationPage'
 import { CheckoutPage } from '../pages/marketing/CheckoutPage'
 import { TermsPage } from '../pages/marketing/TermsPage'
@@ -19,6 +20,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/solutions" element={<SolutionsPage />} />
         <Route path="/activate" element={<ActivationPage />} />
         <Route path="/checkout/:planId" element={<CheckoutPage />} />
         <Route path="/terms" element={<TermsPage />} />

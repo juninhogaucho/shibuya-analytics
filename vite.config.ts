@@ -17,7 +17,6 @@ export default defineConfig({
     port: 3000,
     // Do not auto-switch ports; fail fast so we know
     strictPort: true,
-    https: false,
   },
   build: {
     // Generate source maps for debugging in production
