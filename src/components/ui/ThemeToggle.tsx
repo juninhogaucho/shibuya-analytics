@@ -1,4 +1,5 @@
 import { useTheme } from '../../context/ThemeContext'
+import { motion } from 'motion/react'
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -6,17 +7,22 @@ export function ThemeToggle() {
 
   return (
     <button 
-      className="theme-toggle"
       onClick={toggleTheme}
-      aria-label={isDark ? 'Dark mode locked' : 'Switch theme'}
+      className="relative inline-flex h-9 w-16 items-center rounded-full bg-gray-200 p-1 transition-colors dark:bg-gray-800 border border-gray-300 dark:border-gray-700"
+      aria-label="Toggle theme"
     >
-      <span className={`theme-toggle-icon ${isDark ? 'active' : ''}`}>
-        🌙
-      </span>
-      <span className={`theme-toggle-icon ${!isDark ? 'active' : ''}`}>
-        ☀️
-      </span>
-      <span className="theme-toggle-slider" data-theme={theme} />
+      <span className="sr-only">Toggle theme</span>
+      <motion.div
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-900"
+        animate={{ x: isDark ? 28 : 0 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      >
+        {isDark ? (
+          <span className="text-sm">🌙</span>
+        ) : (
+          <span className="text-sm">☀️</span>
+        )}
+      </motion.div>
     </button>
   )
 }

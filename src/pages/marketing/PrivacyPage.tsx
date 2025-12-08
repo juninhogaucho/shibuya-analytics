@@ -5,7 +5,7 @@ export function PrivacyPage() {
     <Section
       eyebrow="Legal"
       title="Privacy Policy"
-      description="Last updated: December 2024"
+      description="Last updated: December 2025"
     >
       <div className="legal-content glass-panel">
         <h3>1. What We Collect</h3>

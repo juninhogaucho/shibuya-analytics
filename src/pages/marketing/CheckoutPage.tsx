@@ -54,7 +54,7 @@ export function CheckoutPage() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!email || !name) {
@@ -63,7 +63,7 @@ export function CheckoutPage() {
     }
 
     // Store order details locally
-    localStorage.setItem('shibuya_order', JSON.stringify({
+    const orderData = {
       email,
       name,
       plan: plan.id,
@@ -73,26 +73,40 @@ export function CheckoutPage() {
       csvAttached: !!csvFile,
       csvName: csvFile?.name || null,
       timestamp: new Date().toISOString(),
-    }))
-
-    // Email notification to yourself about the order
-    const subject = encodeURIComponent(`🎯 New Order: ${plan.name} - ${name}`)
-    const body = encodeURIComponent(
-      `NEW ORDER RECEIVED\n` +
-      `==================\n\n` +
-      `Plan: ${plan.name} (€${plan.price})\n` +
-      `Name: ${name}\n` +
-      `Email: ${email}\n` +
-      `Platform: ${tradingPlatform || 'Not specified'}\n` +
-      `CSV: ${csvFile ? `Yes (${csvFile.name})` : 'Will send via email'}\n\n` +
-      `---\n` +
-      `Next: Customer will pay via Stripe Payment Link.\n` +
-      `After payment, send them CSV upload instructions.`
-    )
+    }
     
-    // Open mailto in background (emails you about the new order)
-    const mailtoLink = `mailto:orders@shibuya.trade?subject=${subject}&body=${body}`
-    window.open(mailtoLink, '_blank')
+    localStorage.setItem('shibuya_order', JSON.stringify(orderData))
+
+    // Try to send via API first
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/checkout/notify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      })
+      
+      if (!response.ok) {
+        throw new Error('API not available')
+      }
+    } catch {
+      // Fallback: Open mailto to notify about the order
+      const subject = encodeURIComponent(`🎯 New Order: ${plan.name} - ${name}`)
+      const body = encodeURIComponent(
+        `NEW ORDER RECEIVED\n` +
+        `==================\n\n` +
+        `Plan: ${plan.name} (€${plan.price})\n` +
+        `Name: ${name}\n` +
+        `Email: ${email}\n` +
+        `Platform: ${tradingPlatform || 'Not specified'}\n` +
+        `CSV: ${csvFile ? `Yes (${csvFile.name})` : 'Will send via email'}\n\n` +
+        `---\n` +
+        `Next: Customer will pay via Stripe Payment Link.\n` +
+        `After payment, send them CSV upload instructions.`
+      )
+      
+      const mailtoLink = `mailto:support@shibuya-analytics.com?subject=${subject}&body=${body}`
+      window.open(mailtoLink, '_blank')
+    }
     
     setSubmitted(true)
   }

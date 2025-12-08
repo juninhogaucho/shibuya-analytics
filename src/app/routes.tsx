@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { DashboardLayout } from '../layouts/DashboardLayout'
 import { AuthGuard } from '../components/AuthGuard'
-import { HomePage } from '../pages/marketing/HomePage'
+import HomePage from '../pages/marketing/HomePage'
 import { SolutionsPage } from '../pages/marketing/SolutionsPage'
 import { ActivationPage } from '../pages/marketing/ActivationPage'
 import { CheckoutPage } from '../pages/marketing/CheckoutPage'
@@ -14,13 +14,17 @@ import { AlertsPage } from '../pages/dashboard/AlertsPage'
 import { SlumpPrescriptionPage } from '../pages/dashboard/SlumpPrescriptionPage'
 import { EdgePortfolioPage } from '../pages/dashboard/EdgePortfolioPage'
 import { NotFoundPage } from '../pages/marketing/NotFoundPage'
+import PricingPage from '../pages/marketing/PricingPage'
 
 export function AppRoutes() {
   return (
     <Routes>
+      {/* HomePage has its own Navbar/Footer - render standalone */}
+      <Route path="/" element={<HomePage />} />
+      
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<HomePage />} />
         <Route path="/solutions" element={<SolutionsPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="/activate" element={<ActivationPage />} />
         <Route path="/checkout/:planId" element={<CheckoutPage />} />
         <Route path="/terms" element={<TermsPage />} />

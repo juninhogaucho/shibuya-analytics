@@ -5,7 +5,7 @@ export function TermsPage() {
     <Section
       eyebrow="Legal"
       title="Terms & Conditions"
-      description="Last updated: December 2024"
+      description="Last updated: December 2025"
     >
       <div className="legal-content glass-panel">
         <h3>1. Service Description</h3>

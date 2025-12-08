@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, type PropsWithChildren } from 'react'
+import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react'
 
-type Theme = 'dark'
+type Theme = 'dark' | 'light'
 
 interface ThemeContextValue {
   theme: Theme
@@ -11,18 +11,25 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: PropsWithChildren) {
-  // Always dark mode - no toggle
-  const theme: Theme = 'dark'
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Always use dark mode
+    return 'dark'
+  })
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'dark')
-    // Clean up any old light mode preference
-    localStorage.removeItem('shibuya_theme')
-  }, [])
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(theme)
+    localStorage.setItem('shibuya_theme', theme)
+  }, [theme])
 
-  // No-op functions - dark mode only
-  const toggleTheme = () => {}
-  const setTheme = () => {}
+  const toggleTheme = () => {
+    setThemeState(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme)
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

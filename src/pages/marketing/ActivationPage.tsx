@@ -11,11 +11,34 @@ export function ActivationPage() {
     event.preventDefault()
     setIsSubmitting(true)
     
-    // TODO: Send email to backend/CRM
-    // For now, just simulate a delay and show success
-    await new Promise(resolve => setTimeout(resolve, 800))
+    try {
+      // Try to send via API first
+      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email,
+          source: 'activation_page',
+          timestamp: new Date().toISOString()
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error('API not available')
+      }
+    } catch {
+      // Fallback: Send mailto notification
+      const subject = encodeURIComponent('🚀 New Waitlist Signup')
+      const body = encodeURIComponent(
+        `NEW WAITLIST SIGNUP\n` +
+        `==================\n\n` +
+        `Email: ${email}\n` +
+        `Source: Activation Page\n` +
+        `Time: ${new Date().toISOString()}`
+      )
+      window.open(`mailto:support@shibuya-analytics.com?subject=${subject}&body=${body}`, '_blank')
+    }
     
-    console.log('Waitlist signup:', email)
     setSubmitted(true)
     setIsSubmitting(false)
   }

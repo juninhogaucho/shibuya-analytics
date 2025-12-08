@@ -1,15 +1,15 @@
 import { Outlet } from 'react-router-dom'
-import { SiteNav } from './sections/SiteNav'
-import { SiteFooter } from './sections/SiteFooter'
+import Navbar from '../components/landing/Navbar'
+import Footer from '../components/landing/Footer'
 
 export function PublicLayout() {
   return (
-    <div className="public-layout">
-      <SiteNav />
-      <main style={{ paddingTop: '4rem' }}>
+    <div className="public-layout min-h-screen bg-[#050505]">
+      <Navbar />
+      <main className="pt-24">
         <Outlet />
       </main>
-      <SiteFooter />
+      <Footer />
     </div>
   )
 }
