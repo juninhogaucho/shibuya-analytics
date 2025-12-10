@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-      className="fixed top-0 w-full z-50 mix-blend-difference text-white py-6"
+      className="fixed top-0 w-full z-50 bg-[#030304]/80 backdrop-blur-lg border-b border-white/5 text-white py-4 md:py-6"
     >
       <div className="w-full px-6 flex items-center justify-between">
         {/* Logo */}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const [contactForm, setContactForm] = useState({ email: '', message: '' });
@@ -119,8 +120,8 @@ const Footer: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-xs text-neutral-600 gap-4">
                 <p>&copy; 2025 Shibuya Analytics. All rights reserved.</p>
                 <div className="flex gap-8">
-                    <a href="/privacy" className="hover:text-neutral-400 transition-colors">Privacy Policy</a>
-                    <a href="/terms" className="hover:text-neutral-400 transition-colors">Terms of Service</a>
+                    <Link to="/privacy" className="hover:text-neutral-400 transition-colors">Privacy Policy</Link>
+                    <Link to="/terms" className="hover:text-neutral-400 transition-colors">Terms of Service</Link>
                 </div>
             </div>
 

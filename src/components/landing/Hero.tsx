@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-   <section className="relative min-h-screen flex flex-col pt-6 md:pt-12 pb-12 px-6 md:px-12 bg-[#050505] text-[#e5e5e5] overflow-hidden border-b border-white/5">
+    <section className="relative min-h-screen flex flex-col pt-32 pb-12 px-6 md:px-12 bg-[#050505] text-[#e5e5e5] overflow-hidden border-b border-white/5">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-white/[0.03] blur-[150px] rounded-full pointer-events-none"></div>
 
