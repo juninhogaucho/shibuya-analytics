@@ -1,5 +1,14 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'
 
+// Stripe Payment Links
+export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
+  steve: import.meta.env.VITE_STRIPE_LINK_BASIC ?? 'https://buy.stripe.com/8x28wI9O6bor63xaBt6sw00',
+  stevePlus: import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
+  basic: import.meta.env.VITE_STRIPE_LINK_BASIC ?? 'https://buy.stripe.com/8x28wI9O6bor63xaBt6sw00',
+  premium: import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
+  'steve-plus': import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
+}
+
 // Stripe checkout URLs - will be configured once Stripe is set up
 export const CHECKOUT_URLS = {
   steve: '/checkout/steve',           // €99 one-time report

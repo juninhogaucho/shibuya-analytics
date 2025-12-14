@@ -1,14 +1,7 @@
 import { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { PRICING, PLAN_KEYS } from '../../lib/constants'
+import { PRICING, PLAN_KEYS, STRIPE_PAYMENT_LINKS } from '../../lib/constants'
 import { Section } from '../../components/ui/Section'
-
-// Stripe Payment Links - create these in Stripe Dashboard (no code needed!)
-// Go to: Stripe Dashboard > Payment Links > Create
-const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  steve: 'https://buy.stripe.com/YOUR_STEVE_LINK',         // €99 Reality Check
-  stevePlus: 'https://buy.stripe.com/YOUR_STEVE_PLUS_LINK', // €149 Deep Dive
-}
 
 export function CheckoutPage() {
   const { planId } = useParams<{ planId: string }>()

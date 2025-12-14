@@ -1,12 +1,19 @@
 import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+// Simple store to track if component is mounted (SSR-safe)
+const mountedStore = {
+  getSnapshot: () => true,
+  getServerSnapshot: () => false,
+  subscribe: () => () => {},
+};
 
 export const AnimatedBeams = () => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    mountedStore.subscribe,
+    mountedStore.getSnapshot,
+    mountedStore.getServerSnapshot
+  );
 
   if (!mounted) return null;
 

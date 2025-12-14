@@ -16,12 +16,18 @@ const Navbar: React.FC = () => {
       <div className="w-full px-6 flex items-center justify-between">
         {/* Logo */}
         <div
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-2 cursor-pointer group"
           onClick={() => navigate('/')}
         >
+          <motion.img
+            whileHover={{ scale: 1.05 }}
+            src="/shibuya-logo.svg"
+            alt="Shibuya Analytics"
+            className="h-8 w-auto"
+          />
           <motion.span
             whileHover={{ scale: 1.05 }}
-            className="font-display font-bold text-xl tracking-tight text-white uppercase group-hover:text-indigo-400 transition-colors duration-300"
+            className="font-display font-bold text-lg tracking-tight text-white uppercase group-hover:text-indigo-400 transition-colors duration-300 hidden sm:inline"
           >
             SHIBUYA
           </motion.span>
@@ -41,6 +47,17 @@ const Navbar: React.FC = () => {
              >
                 <span className={`transition-colors duration-300 ${location.pathname.startsWith('/dashboard') ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Demo</span>
                 <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname.startsWith('/dashboard') ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+             </motion.button>
+             
+             <motion.button
+                onClick={() => navigate('/login')}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.75 }}
+                className="relative group uppercase text-xs py-1"
+             >
+                <span className={`transition-colors duration-300 ${location.pathname === '/login' ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Login</span>
+                <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname === '/login' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
              </motion.button>
              
              <motion.button

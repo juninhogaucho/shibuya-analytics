@@ -1,0 +1,10 @@
+# Shibuya Analytics - Robots.txt
+User-agent: *
+Allow: /
+
+# Disallow dashboard (requires auth)
+Disallow: /dashboard
+Disallow: /dashboard/*
+
+# Sitemap
+Sitemap: https://shibuya-analytics.com/sitemap.xml

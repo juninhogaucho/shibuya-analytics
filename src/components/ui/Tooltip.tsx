@@ -1,5 +1,8 @@
-import { useState, useRef, useEffect, type PropsWithChildren, type CSSProperties } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, type PropsWithChildren, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
+
+// Use useLayoutEffect on client, useEffect for SSR
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 interface TooltipProps extends PropsWithChildren {
   content: string | React.ReactNode
@@ -63,7 +66,8 @@ export function InfoPopup({ content, title, size = 14 }: InfoPopupProps) {
   const triggerRef = useRef<HTMLSpanElement>(null)
   const popupRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  // Use layout effect for DOM measurements to avoid visual jank
+  useIsomorphicLayoutEffect(() => {
     if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect()
       const viewportWidth = window.innerWidth

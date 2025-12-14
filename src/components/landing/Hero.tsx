@@ -5,13 +5,18 @@ import { useNavigate } from 'react-router-dom';
 
 const RevealText = ({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) => {
   const words = text.split(" ");
-  let globalCharIndex = 0;
+  
+  // Pre-calculate character positions to avoid mutation during render
+  const wordPositions = words.reduce<number[]>((acc, _, i) => {
+    const prevPosition = i === 0 ? 0 : acc[i - 1] + words[i - 1].length;
+    acc.push(prevPosition);
+    return acc;
+  }, []);
 
   return (
     <span className={`inline-flex flex-wrap gap-x-[0.25em] gap-y-0 ${className}`}>
       {words.map((word, i) => {
-        const currentWordStartIndex = globalCharIndex;
-        globalCharIndex += word.length;
+        const currentWordStartIndex = wordPositions[i];
 
         return (
           <span key={i} className="inline-flex overflow-hidden">
@@ -61,9 +66,6 @@ const Hero: React.FC = () => {
             </h1>
 
             <div className="max-w-xl pl-1">
-               <p className="text-xl md:text-2xl font-serif italic font-light text-neutral-300 leading-relaxed mb-8">
-                 
-               </p>
                <p className="text-base text-neutral-400 font-sans leading-relaxed mb-8 max-w-md">
                  We quantify the exact euro value of your hesitation, tilt, and oversizing. Turn your trading journal into a weapon.
                </p>

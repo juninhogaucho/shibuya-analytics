@@ -33,6 +33,9 @@ export function SiteNav() {
           <Link to="/dashboard" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors" onClick={() => localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')}>
             Demo
           </Link>
+          <Link to="/login" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+            Login
+          </Link>
         </nav>
         <div className="site-nav__cta flex items-center gap-4">
           <ThemeToggle />

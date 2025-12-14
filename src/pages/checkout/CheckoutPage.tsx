@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Mail, User, MessageSquare, Upload, FileText, X, CreditCard } from 'lucide-react';
+import { STRIPE_PAYMENT_LINKS } from '../../lib/constants';
 import Navbar from '../../components/landing/Navbar';
 import Footer from '../../components/landing/Footer';
 
@@ -10,15 +11,13 @@ const PLANS = {
   basic: {
     name: 'The Reality Check',
     price: 99,
-    // Replace with your Stripe Payment Link for €99 product
-    paymentLink: import.meta.env.VITE_STRIPE_LINK_BASIC || 'https://buy.stripe.com/8x28wI9O6bor63xaBt6sw00',
+    paymentLink: STRIPE_PAYMENT_LINKS.basic,
     description: 'Complete trading analysis report',
   },
   premium: {
     name: 'The Deep Dive',
     price: 149,
-    // Replace with your Stripe Payment Link for €149 product
-    paymentLink: import.meta.env.VITE_STRIPE_LINK_PREMIUM || 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
+    paymentLink: STRIPE_PAYMENT_LINKS.premium,
     description: 'Two reports + two 1:1  calls',
   },
 };

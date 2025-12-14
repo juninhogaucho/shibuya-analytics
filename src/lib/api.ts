@@ -484,14 +484,17 @@ export async function register(payload: LoginRequest & { name?: string }): Promi
   return data
 }
 
-// Legacy activation (kept for backwards compatibility)
-export async function requestActivation(payload: ActivationPayload) {
+// Verify activation (order code based authentication)
+export async function verifyActivation(payload: ActivationPayload): Promise<ActivationResponse> {
   const { data } = await http.post<ActivationResponse>('/v1/trader/activations/verify', payload)
   if (data.activationToken) {
     localStorage.setItem('shibuya_api_key', data.activationToken)
   }
   return data
 }
+
+// Legacy activation (kept for backwards compatibility)
+export const requestActivation = verifyActivation
 
 // Trade parsing
 export async function parseTradePaste(payload: { body: string }) {

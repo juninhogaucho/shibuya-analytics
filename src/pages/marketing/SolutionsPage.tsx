@@ -216,7 +216,7 @@ export function SolutionsPage() {
           <p className="text-gray-400 mb-8">
             Join hundreds of traders who have transformed their performance with Shibuya.
           </p>
-          <Link to="/checkout/reality-check" className="landing-btn landing-btn--primary px-8 py-3">
+          <Link to="/checkout/steve" className="landing-btn landing-btn--primary px-8 py-3">
             Get Started Now
           </Link>
         </div>

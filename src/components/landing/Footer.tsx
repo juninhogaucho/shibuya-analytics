@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../lib/constants';
 
 const Footer: React.FC = () => {
   const [contactForm, setContactForm] = useState({ email: '', message: '' });
@@ -13,7 +14,7 @@ const Footer: React.FC = () => {
     
     try {
       // Send email via API (will be handled by backend)
-      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/contact`, {
+      const response = await fetch(`${API_BASE_URL}/v1/site/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -59,9 +60,7 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold bg-white text-black">
-                S
-              </div>
+              <img src="/shibuya-logo.svg" alt="Shibuya" className="h-8 w-auto" />
               <span className="text-sm font-bold text-white tracking-wide">shibuya</span>
             </div>
             <p className="text-neutral-500 text-sm mb-8 max-w-sm leading-relaxed">

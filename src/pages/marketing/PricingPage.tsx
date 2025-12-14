@@ -66,12 +66,12 @@ const PricingPage: React.FC = () => {
             </div>
 
             <MotionLink
-              to="/checkout/basic"
+              to="/checkout/steve"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 rounded-xl border border-white/10 text-center text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-transparent transition-colors duration-300 block cursor-pointer"
             >
-              Get Basic Report
+              Get Your Report
             </MotionLink>
           </motion.div>
 
@@ -116,12 +116,12 @@ const PricingPage: React.FC = () => {
             </div>
 
             <MotionLink
-              to="/checkout/premium"
+              to="/checkout/steve-plus"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="relative z-20 w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-center text-sm font-semibold text-white shadow-[0_0_20px_-5px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_-5px_rgba(79,70,229,0.5)] transition-all block cursor-pointer"
             >
-              Get Deep Dive
+              Start Deep Dive
             </MotionLink>
           </motion.div>
         </div>

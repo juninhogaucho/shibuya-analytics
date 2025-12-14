@@ -8,6 +8,8 @@ const NAV_ITEMS = [
   { label: '🔔 Alerts', to: '/dashboard/alerts' },
   { label: '🩹 Slump Rx', to: '/dashboard/slump' },
   { label: '💎 Edge Portfolio', to: '/dashboard/edges' },
+  { label: '🥊 Shadow Boxing', to: '/dashboard/shadow-boxing' },
+  { label: '📤 Upload Trades', to: '/dashboard/upload' },
 ]
 
 export function DashboardLayout() {
