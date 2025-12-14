@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, User, MessageSquare, Upload, FileText, X, CreditCard } from 'lucide-react';
-import { STRIPE_PAYMENT_LINKS } from '../../lib/constants';
+import { ArrowLeft, Mail, User, MessageSquare, Upload, FileText, X, CreditCard, Gift, Check, AlertCircle } from 'lucide-react';
+import { STRIPE_PAYMENT_LINKS, API_BASE_URL } from '../../lib/constants';
 import Navbar from '../../components/landing/Navbar';
 import Footer from '../../components/landing/Footer';
 
@@ -29,6 +29,14 @@ interface CheckoutForm {
   referral: string;
 }
 
+interface PromoValidation {
+  valid: boolean;
+  code?: string;
+  code_type?: string;
+  dashboard_months_bonus: number;
+  message: string;
+}
+
 const CheckoutPage: React.FC = () => {
   const { plan } = useParams<{ plan: string }>();
   const [loading, setLoading] = useState(false);
@@ -41,8 +49,45 @@ const CheckoutPage: React.FC = () => {
     discord: '',
     referral: '',
   });
+  
+  // Promo code state
+  const [promoValidating, setPromoValidating] = useState(false);
+  const [promoResult, setPromoResult] = useState<PromoValidation | null>(null);
 
   const currentPlan = PLANS[plan as keyof typeof PLANS] || PLANS.basic;
+
+  // Validate promo code via API
+  const validatePromoCode = async (code: string) => {
+    if (!code.trim()) {
+      setPromoResult(null);
+      return;
+    }
+    
+    setPromoValidating(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/promo/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code.trim() })
+      });
+      
+      if (response.ok) {
+        const result: PromoValidation = await response.json();
+        setPromoResult(result);
+      } else {
+        setPromoResult({ valid: false, dashboard_months_bonus: 0, message: 'Could not validate code' });
+      }
+    } catch {
+      // API not available - accept code anyway for manual processing
+      setPromoResult({ 
+        valid: true, 
+        code: code.trim(),
+        dashboard_months_bonus: 0, 
+        message: '✓ Code recorded (will be verified after purchase)' 
+      });
+    }
+    setPromoValidating(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({
@@ -252,19 +297,48 @@ const CheckoutPage: React.FC = () => {
                 />
               </div>
 
-              {/* Referral Code (Optional) */}
+              {/* Promo/Referral Code (Optional) */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-neutral-300">
-                  Referral Code <span className="text-neutral-500">(Optional)</span>
+                <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
+                  <Gift className="w-4 h-4" />
+                  Promo or Referral Code <span className="text-neutral-500">(Optional)</span>
                 </label>
-                <input
-                  type="text"
-                  name="referral"
-                  value={form.referral}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
-                  placeholder="Enter code if you have one"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="referral"
+                    value={form.referral}
+                    onChange={handleChange}
+                    className="flex-1 px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500 uppercase"
+                    placeholder="ENTER CODE"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => validatePromoCode(form.referral)}
+                    disabled={promoValidating || !form.referral.trim()}
+                    className="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    {promoValidating ? '...' : 'Apply'}
+                  </button>
+                </div>
+                
+                {/* Promo validation result */}
+                {promoResult && (
+                  <div className={`mt-2 p-3 rounded-lg text-sm flex items-center gap-2 ${
+                    promoResult.valid 
+                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                      : 'bg-red-500/10 border border-red-500/20 text-red-400'
+                  }`}>
+                    {promoResult.valid ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                    {promoResult.message}
+                  </div>
+                )}
+                
+                {promoResult?.valid && promoResult.dashboard_months_bonus > 0 && (
+                  <div className="mt-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm">
+                    🎁 Bonus: You'll get <strong>{promoResult.dashboard_months_bonus + 1} months</strong> of dashboard access instead of 1!
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -66,8 +66,11 @@ const Hero: React.FC = () => {
             </h1>
 
             <div className="max-w-xl pl-1">
-               <p className="text-base text-neutral-400 font-sans leading-relaxed mb-8 max-w-md">
-                 We quantify the exact euro value of your hesitation, tilt, and oversizing. Turn your trading journal into a weapon.
+               <p className="text-lg text-neutral-300 font-sans leading-relaxed mb-4 max-w-xl">
+                 <span className="font-semibold text-white">Shibuya audits your trading psychology</span> — we calculate the exact euro cost of your emotional mistakes.
+               </p>
+               <p className="text-base text-neutral-400 font-sans leading-relaxed mb-8 max-w-xl">
+                 Upload your trades, get a full breakdown: how much money you lost to hesitation, tilt, oversizing, and revenge trading. Real numbers. Real accountability.
                </p>
 
                <motion.button

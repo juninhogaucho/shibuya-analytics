@@ -49,16 +49,7 @@ const Navbar: React.FC = () => {
                 <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname.startsWith('/dashboard') ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
              </motion.button>
              
-             <motion.button
-                onClick={() => navigate('/login')}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.75 }}
-                className="relative group uppercase text-xs py-1"
-             >
-                <span className={`transition-colors duration-300 ${location.pathname === '/login' ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Login</span>
-                <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname === '/login' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-             </motion.button>
+             {/* Login hidden until dashboard launch - January 2025 */}
              
              <motion.button
                 onClick={() => navigate('/pricing')}

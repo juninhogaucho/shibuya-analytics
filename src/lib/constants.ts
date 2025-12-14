@@ -2,32 +2,26 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8
 
 // Stripe Payment Links
 export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  steve: import.meta.env.VITE_STRIPE_LINK_BASIC ?? 'https://buy.stripe.com/8x28wI9O6bor63xaBt6sw00',
-  stevePlus: import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
   basic: import.meta.env.VITE_STRIPE_LINK_BASIC ?? 'https://buy.stripe.com/8x28wI9O6bor63xaBt6sw00',
   premium: import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
-  'steve-plus': import.meta.env.VITE_STRIPE_LINK_PREMIUM ?? 'https://buy.stripe.com/28EcMY1hA0JN0Jd8tl6sw01',
 }
 
-// Stripe checkout URLs - will be configured once Stripe is set up
+// Checkout URLs
 export const CHECKOUT_URLS = {
-  steve: '/checkout/steve',           // €99 one-time report
-  stevePlus: '/checkout/steve-plus',  // €149 report + 2 calls
+  basic: '/checkout/basic',
+  premium: '/checkout/premium',
 }
-
-// Keep old name for compatibility during migration
-export const ODOO_CHECKOUT_URLS = CHECKOUT_URLS
 
 // Plan ID to key mapping for checkout
 export const PLAN_KEYS: Record<string, keyof typeof PRICING> = {
-  'steve': 'steve',
-  'steve-plus': 'stevePlus',
+  'basic': 'basic',
+  'premium': 'premium',
 }
 
 // Pricing configuration
 export const PRICING = {
-  steve: {
-    id: 'steve',
+  basic: {
+    id: 'basic',
     name: 'The Reality Check',
     price: 99,
     currency: 'EUR',
@@ -40,8 +34,8 @@ export const PRICING = {
       'Delivered within 72 hours',
     ],
   },
-  stevePlus: {
-    id: 'steve-plus',
+  premium: {
+    id: 'premium',
     name: 'The Deep Dive',
     price: 149,
     currency: 'EUR',

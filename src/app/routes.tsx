@@ -31,7 +31,7 @@ export function AppRoutes() {
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/activate" element={<ActivationPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/checkout/:planId" element={<CheckoutPage />} />
+        <Route path="/checkout/:plan" element={<CheckoutPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />

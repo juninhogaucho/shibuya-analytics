@@ -1,9 +1,132 @@
-import React from 'react';
-import { Check, Star, Users, Gift } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Star, Users, Gift, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const MotionLink = motion.create(Link);
+
+// Dashboard Tier Card - Coming January 1st
+const DashboardTierCard: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [joined, setJoined] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    setSubmitting(true);
+    try {
+      // Try API first
+      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/v1/site/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          message: 'Dashboard Waitlist Signup',
+          source: 'dashboard_waitlist'
+        })
+      });
+      
+      if (!response.ok) throw new Error('API error');
+    } catch {
+      // Fallback: store locally
+      const existing = JSON.parse(localStorage.getItem('shibuya_waitlist') || '[]');
+      existing.push({ email, timestamp: new Date().toISOString() });
+      localStorage.setItem('shibuya_waitlist', JSON.stringify(existing));
+    }
+    
+    setJoined(true);
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="relative p-8 md:p-10 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-[#0f0d08]/90 to-[#0A0A0B]/90 backdrop-blur-md shadow-2xl shadow-amber-900/10 overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-50"></div>
+      
+      {/* Coming Soon Badge */}
+      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold tracking-wider text-amber-300 uppercase flex items-center gap-1 z-20">
+        <Sparkles className="w-3 h-3" />
+        January 2025
+      </div>
+
+      <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+        {/* Left: Info */}
+        <div>
+          <h3 className="text-2xl font-bold text-white mb-2">The Dashboard</h3>
+          <div className="flex items-baseline gap-2 mb-4">
+            <span className="text-4xl font-bold tracking-tight text-white font-mono">€250</span>
+            <span className="text-neutral-400 text-sm">/ month</span>
+          </div>
+          
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Real-time behavioral analytics. Upload your trades, get continuous insights. 
+            The algorithms that power our reports, now at your fingertips 24/7.
+          </p>
+
+          <div className="space-y-3">
+            {[
+              'Live BQL (Behavioral Quality) monitoring',
+              'Real-time Edge Portfolio tracking',
+              'Discipline Tax calculated automatically',
+              'Shadow Boxing: Prop firm simulations',
+              'Weekly AI-generated prescriptions',
+              'Priority access to new features'
+            ].map(item => (
+              <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
+                <div className="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="w-2.5 h-2.5 text-amber-400" />
+                </div>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Waitlist Form */}
+        <div className="bg-black/30 border border-white/5 rounded-2xl p-6">
+          {joined ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">🎉</div>
+              <h4 className="text-white font-semibold mb-2">You're on the list!</h4>
+              <p className="text-neutral-400 text-sm">We'll email you when the dashboard launches on January 1st.</p>
+            </div>
+          ) : (
+            <>
+              <h4 className="text-white font-semibold mb-2">Join the Waitlist</h4>
+              <p className="text-neutral-400 text-sm mb-4">
+                Be first to access when we launch. Early waitlist members get <span className="text-amber-400">1 week free</span>.
+              </p>
+              
+              <form onSubmit={handleWaitlist} className="space-y-3">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-amber-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-semibold text-sm transition-all disabled:opacity-50"
+                >
+                  {submitting ? 'Joining...' : 'Join Waitlist →'}
+                </button>
+              </form>
+              
+              <p className="text-xs text-neutral-500 mt-3 text-center">
+                No payment required. We'll notify you at launch.
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PricingPage: React.FC = () => {
   return (
@@ -35,7 +158,7 @@ const PricingPage: React.FC = () => {
         </motion.div>
 
         {/* PRICING CARDS */}
-        <div className="grid md:grid-cols-2 gap-8 items-stretch mb-24 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch mb-12 max-w-5xl mx-auto">
 
           {/* Standard Plan */}
           <motion.div
@@ -66,7 +189,7 @@ const PricingPage: React.FC = () => {
             </div>
 
             <MotionLink
-              to="/checkout/steve"
+              to="/checkout/basic"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 rounded-xl border border-white/10 text-center text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-transparent transition-colors duration-300 block cursor-pointer"
@@ -116,7 +239,7 @@ const PricingPage: React.FC = () => {
             </div>
 
             <MotionLink
-              to="/checkout/steve-plus"
+              to="/checkout/premium"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="relative z-20 w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-center text-sm font-semibold text-white shadow-[0_0_20px_-5px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_-5px_rgba(79,70,229,0.5)] transition-all block cursor-pointer"
@@ -125,6 +248,16 @@ const PricingPage: React.FC = () => {
             </MotionLink>
           </motion.div>
         </div>
+
+        {/* DASHBOARD TIER - COMING JANUARY 1ST */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="max-w-5xl mx-auto mb-24"
+        >
+          <DashboardTierCard />
+        </motion.div>
 
         {/* WHAT YOU GET - FIRST MONTH FREE */}
         <motion.div

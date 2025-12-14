@@ -77,7 +77,7 @@ const Pricing: React.FC = () => {
             </div>
 
             <Link
-              to="/checkout/steve"
+              to="/checkout/basic"
               className="w-full py-4 rounded-xl border border-white/10 text-center text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-transparent transition-all duration-300 flex items-center justify-center gap-2"
             >
               Get Your Report
@@ -137,7 +137,7 @@ const Pricing: React.FC = () => {
             </div>
 
             <Link
-              to="/checkout/steve-plus"
+              to="/checkout/premium"
               className="relative z-10 w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-center text-sm font-semibold text-white shadow-[0_0_20px_-5px_rgba(79,70,229,0.5)] hover:shadow-[0_0_30px_-5px_rgba(79,70,229,0.7)] transition-all flex items-center justify-center gap-2"
             >
               Start Deep Dive
