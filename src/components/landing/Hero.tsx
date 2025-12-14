@@ -58,19 +58,19 @@ const Hero: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col justify-center">
             <h1 className="font-display font-bold text-[clamp(2.5rem,9vw,9rem)] leading-[0.85] tracking-tighter uppercase text-left mb-8 flex flex-col">
               <div className="w-full">
-                <RevealText text="Your Psychology" delay={0.2} />
+                <RevealText text="Quant-Level" delay={0.2} />
               </div>
               <div className="w-full text-neutral-600">
-                <RevealText text="Is A Balance Sheet" delay={0.6} className="text-neutral-600" />
+                <RevealText text="Trade Analysis" delay={0.6} className="text-neutral-600" />
               </div>
             </h1>
 
             <div className="max-w-xl pl-1">
                <p className="text-lg text-neutral-300 font-sans leading-relaxed mb-4 max-w-xl">
-                 <span className="font-semibold text-white">Shibuya audits your trading psychology</span> — we calculate the exact euro cost of your emotional mistakes.
+                 <span className="font-semibold text-white">Upload your CSV. Get a full diagnostic in 72 hours.</span> We calculate win rates by setup, risk efficiency, position sizing violations, overtrading patterns, and the exact euro cost of your behavioral mistakes.
                </p>
                <p className="text-base text-neutral-400 font-sans leading-relaxed mb-8 max-w-xl">
-                 Upload your trades, get a full breakdown: how much money you lost to hesitation, tilt, oversizing, and revenge trading. Real numbers. Real accountability.
+                 Real quantitative metrics. Edge portfolio analysis. Discipline tax breakdowns. Pattern recognition at scale. Written by humans who've traded, not templated nonsense.
                </p>
 
                <motion.button
@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
                   onClick={() => navigate('/pricing')}
                   className="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-wider text-sm overflow-hidden"
                 >
-                   <span className="relative z-10 group-hover:text-white transition-colors duration-300">Start Audit</span>
+                   <span className="relative z-10 group-hover:text-white transition-colors duration-300">Get Your Report</span>
                    <div className="absolute inset-0 bg-indigo-600 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
                 </motion.button>
             </div>
