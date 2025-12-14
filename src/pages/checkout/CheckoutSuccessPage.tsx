@@ -96,7 +96,7 @@ const CheckoutSuccessPage: React.FC = () => {
               <div>
                 <h4 className="font-medium text-white mb-1">Report Delivery</h4>
                 <p className="text-sm text-neutral-400">
-                  Your detailed PDF report will be sent directly to your email. If you purchased the Enhanced version, we will schedule the first call, at your convenience, to further help you take your trading to the next level
+                  Your detailed PDF report will be sent directly to your email. If you purchased the Premium version, we will schedule the first call, at your convenience, to further help you take your trading to the next level
                 </p>
               </div>
             </div>

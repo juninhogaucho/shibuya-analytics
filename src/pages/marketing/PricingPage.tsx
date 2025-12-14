@@ -48,7 +48,7 @@ const DashboardTierCard: React.FC = () => {
       {/* Coming Soon Badge */}
       <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold tracking-wider text-amber-300 uppercase flex items-center gap-1 z-20">
         <Sparkles className="w-3 h-3" />
-        January 2025
+        January 2026
       </div>
 
       <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
@@ -71,7 +71,7 @@ const DashboardTierCard: React.FC = () => {
               'Real-time Edge Portfolio tracking',
               'Discipline Tax calculated automatically',
               'Shadow Boxing: Prop firm simulations',
-              'Weekly AI-generated prescriptions',
+              'Daily market prescriptions',
               'Priority access to new features'
             ].map(item => (
               <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
@@ -90,7 +90,7 @@ const DashboardTierCard: React.FC = () => {
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🎉</div>
               <h4 className="text-white font-semibold mb-2">You're on the list!</h4>
-              <p className="text-neutral-400 text-sm">We'll email you when the dashboard launches on January 1st.</p>
+              <p className="text-neutral-400 text-sm">We'll email you when the dashboard launches on January 1st, 2026.</p>
             </div>
           ) : (
             <>
