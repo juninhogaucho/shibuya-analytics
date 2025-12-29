@@ -1,0 +1,883 @@
+{
+  ".env": {
+    "path": ".env",
+    "extension": "",
+    "size": 647,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  ".env.example": {
+    "path": ".env.example",
+    "extension": ".example",
+    "size": 528,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  ".env.local": {
+    "path": ".env.local",
+    "extension": ".local",
+    "size": 83,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  ".env.production": {
+    "path": ".env.production",
+    "extension": ".production",
+    "size": 427,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  ".gitignore": {
+    "path": ".gitignore",
+    "extension": "",
+    "size": 383,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  ".replit": {
+    "path": ".replit",
+    "extension": "",
+    "size": 70,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "48H_LAUNCH_REVIEW.md": {
+    "path": "48H_LAUNCH_REVIEW.md",
+    "extension": ".md",
+    "size": 9476,
+    "type": "markdown",
+    "lines": 267,
+    "title": "\ud83d\ude80 SHIBUYA ANALYTICS - 48-HOUR LAUNCH REVIEW",
+    "sections": [
+      "\u2705 EXECUTIVE SUMMARY",
+      "\ud83d\udcca FRONTEND STATUS (shibuya_analytics)",
+      "\u2705 COMPLETE - All Pages Implemented",
+      "\u2705 COMPLETE - Core Features",
+      "\u2705 FIXED DURING REVIEW",
+      "\u2705 BUILD STATUS",
+      "\ud83d\udcca BACKEND STATUS (medallion_api)",
+      "\u2705 COMPLETE - All Endpoints Implemented",
+      "\u2705 COMPLETE - Core Features",
+      "\u2705 MODULE LOAD STATUS"
+    ],
+    "purpose": "> **Status: READY FOR LAUNCH** (with configuration required)"
+  },
+  "eslint.config.js": {
+    "path": "eslint.config.js",
+    "extension": ".js",
+    "size": 616,
+    "type": "javascript",
+    "purpose": "JavaScript file"
+  },
+  "FINAL_48H_CHECKLIST.md": {
+    "path": "FINAL_48H_CHECKLIST.md",
+    "extension": ".md",
+    "size": 7240,
+    "type": "markdown",
+    "lines": 246,
+    "title": "Shibuya Analytics - 48h Launch Checklist",
+    "sections": [
+      "\u2705 CODE STATUS: COMPLETE",
+      "Frontend (shibuya_analytics/)",
+      "Dashboard Pages",
+      "Marketing Pages",
+      "Backend (medallion_api/)",
+      "\ud83d\udd27 CONFIGURATION REQUIRED (Manual Steps)",
+      "1. Stripe Setup (Required for Payments)",
+      "2. Resend Email Setup (Required for Order Confirmations)",
+      "3. Domain & DNS Setup",
+      "4. VPS Deployment"
+    ],
+    "purpose": "**Generated:** $(date)"
+  },
+  "FROM_NOW_TO_PROD.md": {
+    "path": "FROM_NOW_TO_PROD.md",
+    "extension": ".md",
+    "size": 40218,
+    "type": "markdown",
+    "lines": 1627,
+    "title": "FROM NOW TO PRODUCTION: Complete Deployment Guide",
+    "sections": [
+      "Table of Contents",
+      "1. Pre-Deployment Inventory",
+      "1.1 Project Structure Overview",
+      "1.2 External Services Required",
+      "1.3 Files That Need Production Values",
+      "1.4 Minimum Server Requirements",
+      "2. Critical Code Changes Required",
+      "2.1 ~~CRITICAL: Orders Storage (Currently In-Memory!)~~ \u2705 RESOLVED",
+      "2.2 ~~Frontend Checkout Page Improvements~~ \u2705 RESOLVED",
+      "2.3 Disable DEV_MODE in Production"
+    ],
+    "purpose": "> \u26a0\ufe0f **SEE ALSO:** [`LAUNCH_CHECKLIST.md`](./LAUNCH_CHECKLIST.md) - The streamlined 3-hour launch tutorial."
+  },
+  "index.html": {
+    "path": "index.html",
+    "extension": ".html",
+    "size": 2416,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "LAUNCH_CHECKLIST.md": {
+    "path": "LAUNCH_CHECKLIST.md",
+    "extension": ".md",
+    "size": 11516,
+    "type": "markdown",
+    "lines": 425,
+    "title": "\ud83d\ude80 Shibuya Launch Checklist: From Now to First Customer",
+    "sections": [
+      "\u26a1 Current Status (What's Already Done)",
+      "\u2705 Backend (medallion_api)",
+      "\u2705 Frontend (shibuya_analytics)",
+      "\ud83d\udd34 CRITICAL: What You Actually Need Before Launch",
+      "1. Stripe Account Setup (30 min)",
+      "2. Resend Email Setup (15 min)",
+      "3. Domain & DNS (15 min)",
+      "4. VPS for Backend (30 min)",
+      "\ud83d\udccb Step-by-Step Launch Tutorial",
+      "Phase 1: External Services (1 hour)"
+    ],
+    "purpose": "> **Reality Check:** You're closer than the old doc suggested. This is the actual minimal-viable path."
+  },
+  "MVP_LAUNCH_CHECKLIST.md": {
+    "path": "MVP_LAUNCH_CHECKLIST.md",
+    "extension": ".md",
+    "size": 3016,
+    "type": "markdown",
+    "lines": 96,
+    "title": "Shibuya Analytics - MVP Launch Checklist",
+    "sections": [
+      "\u2705 DONE",
+      "\ud83d\udd34 YOU NEED TO DO (5 minutes)",
+      "1. Create Stripe Payment Links",
+      "2. Update Environment Variables",
+      "3. Activate FormSubmit Email",
+      "\ud83d\udccb FLOW SUMMARY",
+      "\ud83e\uddf9 OPTIONAL CLEANUP",
+      "\ud83d\ude80 QUICK DEPLOY"
+    ],
+    "purpose": "- [x] Build passes (2115 modules)"
+  },
+  "package-lock.json": {
+    "path": "package-lock.json",
+    "extension": ".json",
+    "size": 159043,
+    "type": "json",
+    "purpose": "Configuration file",
+    "keys": [
+      "name",
+      "version",
+      "lockfileVersion",
+      "requires",
+      "packages"
+    ]
+  },
+  "package.json": {
+    "path": "package.json",
+    "extension": ".json",
+    "size": 1124,
+    "type": "json",
+    "purpose": "Configuration file",
+    "keys": [
+      "name",
+      "private",
+      "version",
+      "type",
+      "scripts",
+      "dependencies",
+      "devDependencies"
+    ]
+  },
+  "postcss.config.cjs": {
+    "path": "postcss.config.cjs",
+    "extension": ".cjs",
+    "size": 88,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "README.md": {
+    "path": "README.md",
+    "extension": ".md",
+    "size": 2199,
+    "type": "markdown",
+    "lines": 52,
+    "title": "Shibuya Analytics Frontend",
+    "sections": [
+      "Key Concepts",
+      "Feature Modules",
+      "Getting Started",
+      "Commands",
+      "Architecture Notes"
+    ],
+    "purpose": "React 19 + Vite app that powers the trader-facing experience described in `docs/ARCHITECTURE.md`."
+  },
+  "SHIBUYA_LANDING_UPGRADE.md": {
+    "path": "SHIBUYA_LANDING_UPGRADE.md",
+    "extension": ".md",
+    "size": 8823,
+    "type": "markdown",
+    "lines": 337,
+    "title": "Shibuya Landing Page 2.0 - Complete Upgrade",
+    "sections": [
+      "\ud83c\udfaf Executive Summary",
+      "\u2728 What's New",
+      "1. Animated Hero Section \ud83d\ude80",
+      "2. Dashboard Preview Cards \ud83d\udcca",
+      "3. Testimonials Section \ud83d\udcac",
+      "4. Solutions Page \ud83c\udfaf",
+      "5. Improved Storytelling \ud83d\udcd6",
+      "6. Mobile Optimization \ud83d\udcf1",
+      "7. Accessibility Improvements \u267f",
+      "\ud83c\udfa8 Visual Enhancements"
+    ],
+    "purpose": "> **Date:** December 7, 2025"
+  },
+  "tailwind.config.cjs": {
+    "path": "tailwind.config.cjs",
+    "extension": ".cjs",
+    "size": 737,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "tsconfig.app.json": {
+    "path": "tsconfig.app.json",
+    "extension": ".json",
+    "size": 732,
+    "type": "json",
+    "status": "invalid"
+  },
+  "tsconfig.json": {
+    "path": "tsconfig.json",
+    "extension": ".json",
+    "size": 119,
+    "type": "json",
+    "purpose": "Configuration file",
+    "keys": [
+      "files",
+      "references"
+    ]
+  },
+  "tsconfig.node.json": {
+    "path": "tsconfig.node.json",
+    "extension": ".json",
+    "size": 653,
+    "type": "json",
+    "status": "invalid"
+  },
+  "UI_UX_AUDIT.md": {
+    "path": "UI_UX_AUDIT.md",
+    "extension": ".md",
+    "size": 13336,
+    "type": "markdown",
+    "lines": 433,
+    "title": "Shibuya Analytics UI/UX Audit & Rating",
+    "sections": [
+      "\ud83d\udcca Overall Rating: 7.8/10",
+      "Score Breakdown",
+      "\ud83c\udfa8 Visual Design (8.0/10)",
+      "\u2705 Strengths",
+      "\u26a0\ufe0f Areas for Improvement",
+      "\u26a1 Animation & Motion (8.5/10)",
+      "\u2705 Strengths",
+      "\u26a0\ufe0f Areas for Improvement",
+      "\ud83d\udd24 Typography (7.5/10)",
+      "\u2705 Strengths"
+    ],
+    "purpose": "> **Date:** Auto-generated"
+  },
+  "vercel.json": {
+    "path": "vercel.json",
+    "extension": ".json",
+    "size": 702,
+    "type": "json",
+    "purpose": "Configuration file",
+    "keys": [
+      "rewrites",
+      "headers"
+    ]
+  },
+  "vite.config.ts": {
+    "path": "vite.config.ts",
+    "extension": ".ts",
+    "size": 695,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  ".github\\agents\\Enter.agent.md": {
+    "path": ".github\\agents\\Enter.agent.md",
+    "extension": ".md",
+    "size": 9205,
+    "type": "markdown",
+    "lines": 51,
+    "title": "",
+    "sections": [],
+    "purpose": "description: 'This agent assists me, the founder of shibuya-analytics, in building the entire frontend for our platform, as well as integrating it with our backend API. It helps me by generating code "
+  },
+  ".vscode\\settings.json": {
+    "path": ".vscode\\settings.json",
+    "extension": ".json",
+    "size": 325,
+    "type": "json",
+    "purpose": "Configuration file",
+    "keys": [
+      "css.lint.unknownAtRules",
+      "scss.lint.unknownAtRules",
+      "less.lint.unknownAtRules",
+      "tailwindCSS.includeLanguages"
+    ]
+  },
+  "deploy\\deploy_shibuya.sh": {
+    "path": "deploy\\deploy_shibuya.sh",
+    "extension": ".sh",
+    "size": 17015,
+    "type": "shell",
+    "purpose": "Shell script"
+  },
+  "deploy\\deploy_to_vps.bat": {
+    "path": "deploy\\deploy_to_vps.bat",
+    "extension": ".bat",
+    "size": 3936,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "deploy\\README.md": {
+    "path": "deploy\\README.md",
+    "extension": ".md",
+    "size": 4561,
+    "type": "markdown",
+    "lines": 184,
+    "title": "Shibuya Analytics Deployment",
+    "sections": [
+      "What Gets Deployed",
+      "Prerequisites",
+      "VPS Requirements",
+      "DNS Configuration",
+      "Required API Keys (before deploying)",
+      "Deployment Steps",
+      "Option 1: Windows (Recommended)",
+      "Option 2: Manual",
+      "Post-Deployment",
+      "1. Configure Stripe Keys"
+    ],
+    "purpose": "This folder contains scripts to deploy Shibuya Analytics (frontend + backend) to a single VPS."
+  },
+  "docs\\ARCHITECTURE.md": {
+    "path": "docs\\ARCHITECTURE.md",
+    "extension": ".md",
+    "size": 6387,
+    "type": "markdown",
+    "lines": 107,
+    "title": "Shibuya Analytics Architecture",
+    "sections": [
+      "Personas & Journeys",
+      "Steve \u2013 One-Time \u201cEdge Autopsy\u201d Buyer",
+      "David \u2013 $250/mo Subscriber",
+      "Internal Team (You)",
+      "High-Level Systems",
+      "Frontend (shibuya_analytics)",
+      "Public Surfaces",
+      "Dashboard Modules (David)",
+      "Backend Enhancements (medallion_api)",
+      "Background Jobs"
+    ],
+    "purpose": "_Last updated: 2025-12-01_"
+  },
+  "docs\\QA_PLAN.md": {
+    "path": "docs\\QA_PLAN.md",
+    "extension": ".md",
+    "size": 1796,
+    "type": "markdown",
+    "lines": 32,
+    "title": "Shibuya Analytics QA Plan",
+    "sections": [
+      "Scope",
+      "Test Matrix (excerpt)",
+      "Automation Hooks",
+      "Edge Cases To Cover Later"
+    ],
+    "purpose": "- Marketing routes: `/`, `/pricing`, `/enterprise`, `/activate` plus Odoo deep links."
+  },
+  "logs\\api.log": {
+    "path": "logs\\api.log",
+    "extension": ".log",
+    "size": 180,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\og-image.svg": {
+    "path": "public\\og-image.svg",
+    "extension": ".svg",
+    "size": 2460,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\robots.txt": {
+    "path": "public\\robots.txt",
+    "extension": ".txt",
+    "size": 210,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\shibuya-icon.svg": {
+    "path": "public\\shibuya-icon.svg",
+    "extension": ".svg",
+    "size": 651,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\shibuya-logo.svg": {
+    "path": "public\\shibuya-logo.svg",
+    "extension": ".svg",
+    "size": 1508,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\sitemap.xml": {
+    "path": "public\\sitemap.xml",
+    "extension": ".xml",
+    "size": 1159,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "public\\vite.svg": {
+    "path": "public\\vite.svg",
+    "extension": ".svg",
+    "size": 1497,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\App.css": {
+    "path": "src\\App.css",
+    "extension": ".css",
+    "size": 12,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\App.tsx": {
+    "path": "src\\App.tsx",
+    "extension": ".tsx",
+    "size": 496,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\index.css": {
+    "path": "src\\index.css",
+    "extension": ".css",
+    "size": 143515,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\main.tsx": {
+    "path": "src\\main.tsx",
+    "extension": ".tsx",
+    "size": 322,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\app\\providers.tsx": {
+    "path": "src\\app\\providers.tsx",
+    "extension": ".tsx",
+    "size": 888,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\app\\routes.tsx": {
+    "path": "src\\app\\routes.tsx",
+    "extension": ".tsx",
+    "size": 2834,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\assets\\react.svg": {
+    "path": "src\\assets\\react.svg",
+    "extension": ".svg",
+    "size": 4126,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\components\\AuthGuard.tsx": {
+    "path": "src\\components\\AuthGuard.tsx",
+    "extension": ".tsx",
+    "size": 480,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ErrorBoundary.tsx": {
+    "path": "src\\components\\ErrorBoundary.tsx",
+    "extension": ".tsx",
+    "size": 2305,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\CustomCursor.tsx": {
+    "path": "src\\components\\landing\\CustomCursor.tsx",
+    "extension": ".tsx",
+    "size": 1980,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\DashboardPreview.tsx": {
+    "path": "src\\components\\landing\\DashboardPreview.tsx",
+    "extension": ".tsx",
+    "size": 13198,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\FAQ.tsx": {
+    "path": "src\\components\\landing\\FAQ.tsx",
+    "extension": ".tsx",
+    "size": 3644,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Footer.tsx": {
+    "path": "src\\components\\landing\\Footer.tsx",
+    "extension": ".tsx",
+    "size": 7469,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Hero.tsx": {
+    "path": "src\\components\\landing\\Hero.tsx",
+    "extension": ".tsx",
+    "size": 10224,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\HowItWorks.tsx": {
+    "path": "src\\components\\landing\\HowItWorks.tsx",
+    "extension": ".tsx",
+    "size": 4001,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Methodology.tsx": {
+    "path": "src\\components\\landing\\Methodology.tsx",
+    "extension": ".tsx",
+    "size": 8322,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Navbar.tsx": {
+    "path": "src\\components\\landing\\Navbar.tsx",
+    "extension": ".tsx",
+    "size": 3591,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Preloader.tsx": {
+    "path": "src\\components\\landing\\Preloader.tsx",
+    "extension": ".tsx",
+    "size": 2469,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Pricing.tsx": {
+    "path": "src\\components\\landing\\Pricing.tsx",
+    "extension": ".tsx",
+    "size": 9225,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\StatsGrid.tsx": {
+    "path": "src\\components\\landing\\StatsGrid.tsx",
+    "extension": ".tsx",
+    "size": 8585,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\Visuals.tsx": {
+    "path": "src\\components\\landing\\Visuals.tsx",
+    "extension": ".tsx",
+    "size": 4884,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\landing\\WaitlistPopup.tsx": {
+    "path": "src\\components\\landing\\WaitlistPopup.tsx",
+    "extension": ".tsx",
+    "size": 6340,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\AnimatedBeams.tsx": {
+    "path": "src\\components\\ui\\AnimatedBeams.tsx",
+    "extension": ".tsx",
+    "size": 3624,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\DashboardPreview.tsx": {
+    "path": "src\\components\\ui\\DashboardPreview.tsx",
+    "extension": ".tsx",
+    "size": 5632,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\Gamification.tsx": {
+    "path": "src\\components\\ui\\Gamification.tsx",
+    "extension": ".tsx",
+    "size": 5529,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\MetricCard.tsx": {
+    "path": "src\\components\\ui\\MetricCard.tsx",
+    "extension": ".tsx",
+    "size": 905,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\Section.tsx": {
+    "path": "src\\components\\ui\\Section.tsx",
+    "extension": ".tsx",
+    "size": 685,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\Skeleton.tsx": {
+    "path": "src\\components\\ui\\Skeleton.tsx",
+    "extension": ".tsx",
+    "size": 2492,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\TestimonialsSection.tsx": {
+    "path": "src\\components\\ui\\TestimonialsSection.tsx",
+    "extension": ".tsx",
+    "size": 4257,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\ThemeToggle.tsx": {
+    "path": "src\\components\\ui\\ThemeToggle.tsx",
+    "extension": ".tsx",
+    "size": 972,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\Tooltip.tsx": {
+    "path": "src\\components\\ui\\Tooltip.tsx",
+    "extension": ".tsx",
+    "size": 6139,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\components\\ui\\WelcomeModal.tsx": {
+    "path": "src\\components\\ui\\WelcomeModal.tsx",
+    "extension": ".tsx",
+    "size": 3790,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\context\\ThemeContext.tsx": {
+    "path": "src\\context\\ThemeContext.tsx",
+    "extension": ".tsx",
+    "size": 1184,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\features\\activation\\useActivation.ts": {
+    "path": "src\\features\\activation\\useActivation.ts",
+    "extension": ".ts",
+    "size": 309,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\hooks\\useIntersectionObserver.ts": {
+    "path": "src\\hooks\\useIntersectionObserver.ts",
+    "extension": ".ts",
+    "size": 1285,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\layouts\\DashboardLayout.tsx": {
+    "path": "src\\layouts\\DashboardLayout.tsx",
+    "extension": ".tsx",
+    "size": 3997,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\layouts\\PublicLayout.tsx": {
+    "path": "src\\layouts\\PublicLayout.tsx",
+    "extension": ".tsx",
+    "size": 379,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\layouts\\sections\\SiteFooter.tsx": {
+    "path": "src\\layouts\\sections\\SiteFooter.tsx",
+    "extension": ".tsx",
+    "size": 1643,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\layouts\\sections\\SiteNav.tsx": {
+    "path": "src\\layouts\\sections\\SiteNav.tsx",
+    "extension": ".tsx",
+    "size": 2595,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\lib\\api.ts": {
+    "path": "src\\lib\\api.ts",
+    "extension": ".ts",
+    "size": 22325,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\lib\\constants.ts": {
+    "path": "src\\lib\\constants.ts",
+    "extension": ".ts",
+    "size": 2840,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\lib\\types.ts": {
+    "path": "src\\lib\\types.ts",
+    "extension": ".ts",
+    "size": 3174,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\checkout\\CheckoutPage.tsx": {
+    "path": "src\\pages\\checkout\\CheckoutPage.tsx",
+    "extension": ".tsx",
+    "size": 19029,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\checkout\\CheckoutSuccessPage.tsx": {
+    "path": "src\\pages\\checkout\\CheckoutSuccessPage.tsx",
+    "extension": ".tsx",
+    "size": 5339,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\AlertsPage.tsx": {
+    "path": "src\\pages\\dashboard\\AlertsPage.tsx",
+    "extension": ".tsx",
+    "size": 4253,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\AppendTradesPage.tsx": {
+    "path": "src\\pages\\dashboard\\AppendTradesPage.tsx",
+    "extension": ".tsx",
+    "size": 9944,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\EdgePortfolioPage.tsx": {
+    "path": "src\\pages\\dashboard\\EdgePortfolioPage.tsx",
+    "extension": ".tsx",
+    "size": 13574,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\OverviewPage.tsx": {
+    "path": "src\\pages\\dashboard\\OverviewPage.tsx",
+    "extension": ".tsx",
+    "size": 19059,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\ShadowBoxingPage.tsx": {
+    "path": "src\\pages\\dashboard\\ShadowBoxingPage.tsx",
+    "extension": ".tsx",
+    "size": 9948,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\SlumpPrescriptionPage.tsx": {
+    "path": "src\\pages\\dashboard\\SlumpPrescriptionPage.tsx",
+    "extension": ".tsx",
+    "size": 9373,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\dashboard\\TradeHistoryPage.tsx": {
+    "path": "src\\pages\\dashboard\\TradeHistoryPage.tsx",
+    "extension": ".tsx",
+    "size": 16328,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\ActivationPage.tsx": {
+    "path": "src\\pages\\marketing\\ActivationPage.tsx",
+    "extension": ".tsx",
+    "size": 6347,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\CheckoutPage.tsx": {
+    "path": "src\\pages\\marketing\\CheckoutPage.tsx",
+    "extension": ".tsx",
+    "size": 12659,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\HomePage.tsx": {
+    "path": "src\\pages\\marketing\\HomePage.tsx",
+    "extension": ".tsx",
+    "size": 927,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\HomePage.tsx.backup": {
+    "path": "src\\pages\\marketing\\HomePage.tsx.backup",
+    "extension": ".backup",
+    "size": 44309,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\pages\\marketing\\homepage2.html": {
+    "path": "src\\pages\\marketing\\homepage2.html",
+    "extension": ".html",
+    "size": 48867,
+    "type": "other",
+    "purpose": "Other file"
+  },
+  "src\\pages\\marketing\\LoginPage.tsx": {
+    "path": "src\\pages\\marketing\\LoginPage.tsx",
+    "extension": ".tsx",
+    "size": 9737,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\NotFoundPage.tsx": {
+    "path": "src\\pages\\marketing\\NotFoundPage.tsx",
+    "extension": ".tsx",
+    "size": 507,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\PricingPage.tsx": {
+    "path": "src\\pages\\marketing\\PricingPage.tsx",
+    "extension": ".tsx",
+    "size": 20303,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\PrivacyPage.tsx": {
+    "path": "src\\pages\\marketing\\PrivacyPage.tsx",
+    "extension": ".tsx",
+    "size": 3334,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\SolutionsPage.tsx": {
+    "path": "src\\pages\\marketing\\SolutionsPage.tsx",
+    "extension": ".tsx",
+    "size": 9936,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  },
+  "src\\pages\\marketing\\TermsPage.tsx": {
+    "path": "src\\pages\\marketing\\TermsPage.tsx",
+    "extension": ".tsx",
+    "size": 3858,
+    "type": "typescript",
+    "purpose": "TypeScript file"
+  }
+}

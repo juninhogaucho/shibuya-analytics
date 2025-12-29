@@ -14,7 +14,7 @@ export default defineConfig({
     // Bind to all interfaces
     host: true,
     // Pin a single dev port to avoid conflicts/SSL reuse confusion
-    port: 3000,
+    port: 3002,
     // Do not auto-switch ports; fail fast so we know
     strictPort: true,
   },

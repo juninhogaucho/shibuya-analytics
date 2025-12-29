@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { WelcomeModal } from '../components/ui/WelcomeModal'
 
 const NAV_ITEMS = [
@@ -13,23 +13,20 @@ const NAV_ITEMS = [
 ]
 
 export function DashboardLayout() {
-  const [isDemoMode, setIsDemoMode] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  // Lazy initialization - check demo mode only once
+  const [isDemoMode] = useState(() => {
+    const key = localStorage.getItem('shibuya_api_key')
+    return key === 'shibuya_demo_mode'
+  })
   const navigate = useNavigate()
   const location = useLocation()
-  
-  // Check for demo mode on mount
-  useEffect(() => {
-    const key = localStorage.getItem('shibuya_api_key')
-    if (key === 'shibuya_demo_mode') {
-      setIsDemoMode(true)
-    }
-  }, [])
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location])
+  // Mobile menu state derived from location - resets on every navigation
+  const [mobileMenuOpenFor, setMobileMenuOpenFor] = useState<string | null>(null)
+  const isMobileMenuOpen = mobileMenuOpenFor === location.key
+  const setIsMobileMenuOpen = (open: boolean) => {
+    setMobileMenuOpenFor(open ? location.key : null)
+  }
 
   const handleSignOut = () => {
     localStorage.removeItem('shibuya_api_key')

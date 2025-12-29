@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, Mail, Clock, ArrowRight } from 'lucide-react';
@@ -13,16 +13,16 @@ interface OrderInfo {
 }
 
 const CheckoutSuccessPage: React.FC = () => {
-  const [order, setOrder] = useState<OrderInfo | null>(null);
-
-  useEffect(() => {
+  // Load and clear order from localStorage using lazy initialization
+  const [order] = useState<OrderInfo | null>(() => {
     const storedOrder = localStorage.getItem('shibuya_order');
     if (storedOrder) {
-      setOrder(JSON.parse(storedOrder));
       // Clear after reading
       localStorage.removeItem('shibuya_order');
+      return JSON.parse(storedOrder);
     }
-  }, []);
+    return null;
+  });
 
   return (
     <div className="min-h-screen relative font-sans bg-[#030304] selection:bg-indigo-500/30">

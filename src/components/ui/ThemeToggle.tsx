@@ -1,4 +1,4 @@
-import { useTheme } from '../../context/ThemeContext'
+import { useTheme } from '../../hooks/useTheme'
 import { motion } from 'motion/react'
 
 export function ThemeToggle() {
