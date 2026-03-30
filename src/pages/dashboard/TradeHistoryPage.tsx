@@ -1,32 +1,11 @@
 import { useEffect, useState } from 'react'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
+import { getTradeHistory } from '../../lib/api'
+import type { TradeHistoryResponse, TradeHistoryTrade } from '../../lib/types'
+import { isSampleMode } from '../../lib/runtime'
 
-// Types for trade data
-interface Trade {
-  id: string
-  timestamp: string
-  exit_time?: string
-  symbol: string
-  side: 'BUY' | 'SELL'
-  size: number
-  pnl: number
-  bds_at_time?: number
-}
-
-interface TradeHistoryData {
-  trades: Trade[]
-  total_count: number
-  summary: {
-    total_pnl: number
-    win_count: number
-    loss_count: number
-    best_trade: number
-    worst_trade: number
-  }
-}
-
-// Demo data - more trades to match overview metrics
-const DEMO_TRADES: Trade[] = [
+// Sample workspace data - sized to match the dashboard story without implying live persistence.
+const DEMO_TRADES: TradeHistoryTrade[] = [
   { id: 'T-1001', timestamp: '2025-12-02T14:32:00Z', exit_time: '2025-12-02T15:45:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 245.50, bds_at_time: 0.32 },
   { id: 'T-1002', timestamp: '2025-12-02T11:15:00Z', exit_time: '2025-12-02T11:58:00Z', symbol: 'GBP/JPY', side: 'SELL', size: 0.5, pnl: -127.30, bds_at_time: 0.58 },
   { id: 'T-1003', timestamp: '2025-12-01T09:45:00Z', exit_time: '2025-12-01T10:30:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 189.00, bds_at_time: 0.28 },
@@ -60,10 +39,6 @@ const DEMO_TRADES: Trade[] = [
   { id: 'T-1030', timestamp: '2025-11-18T10:45:00Z', exit_time: '2025-11-18T11:30:00Z', symbol: 'NAS100', side: 'BUY', size: 1.0, pnl: 345.00, bds_at_time: 0.30 },
 ]
 
-function isDemoMode(): boolean {
-  return localStorage.getItem('shibuya_api_key') === 'shibuya_demo_mode'
-}
-
 function getBdsIndicator(bds: number | undefined): { label: string; color: string } {
   if (bds === undefined) return { label: '-', color: 'var(--color-text-muted)' }
   if (bds < 0.35) return { label: 'Calm', color: 'var(--color-success)' }
@@ -84,9 +59,27 @@ function formatDate(iso: string): string {
 export function TradeHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<TradeHistoryData | null>(null)
+  const [data, setData] = useState<TradeHistoryResponse | null>(null)
   const [filter, setFilter] = useState<'all' | 'wins' | 'losses'>('all')
   const [symbolFilter, setSymbolFilter] = useState<string>('all')
+
+  const buildDemoPayload = (): TradeHistoryResponse => {
+    const trades = DEMO_TRADES
+    const wins = trades.filter(t => t.pnl > 0)
+    const losses = trades.filter(t => t.pnl < 0)
+
+    return {
+      trades,
+      total_count: trades.length,
+      summary: {
+        total_pnl: trades.reduce((sum, t) => sum + t.pnl, 0),
+        win_count: wins.length,
+        loss_count: losses.length,
+        best_trade: Math.max(...trades.map(t => t.pnl)),
+        worst_trade: Math.min(...trades.map(t => t.pnl)),
+      },
+    }
+  }
 
   useEffect(() => {
     async function fetchTrades() {
@@ -94,43 +87,15 @@ export function TradeHistoryPage() {
         setLoading(true)
         setError(null)
         
-        // Demo mode returns sample data
-        if (isDemoMode()) {
+        // Sample workspace returns controlled example data.
+        if (isSampleMode()) {
           await new Promise(resolve => setTimeout(resolve, 300))
-          const trades = DEMO_TRADES
-          const wins = trades.filter(t => t.pnl > 0)
-          const losses = trades.filter(t => t.pnl < 0)
-          
-          setData({
-            trades,
-            total_count: trades.length,
-            summary: {
-              total_pnl: trades.reduce((sum, t) => sum + t.pnl, 0),
-              win_count: wins.length,
-              loss_count: losses.length,
-              best_trade: Math.max(...trades.map(t => t.pnl)),
-              worst_trade: Math.min(...trades.map(t => t.pnl)),
-            }
-          })
+          setData(buildDemoPayload())
           return
         }
-        
-        // TODO: Implement real API call when backend endpoint is ready
-        // const response = await getTradeHistory()
-        // setData(response)
-        
-        // For now, show empty state for real users
-        setData({
-          trades: [],
-          total_count: 0,
-          summary: {
-            total_pnl: 0,
-            win_count: 0,
-            loss_count: 0,
-            best_trade: 0,
-            worst_trade: 0,
-          }
-        })
+
+        const response = await getTradeHistory()
+        setData(response)
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load trades')
@@ -179,8 +144,8 @@ export function TradeHistoryPage() {
         <div className="glass-panel empty-state" style={{ textAlign: 'center', padding: '3rem' }}>
           <h3>📭 No trades yet</h3>
           <p className="text-muted" style={{ marginBottom: '1.5rem' }}>
-            Your trading history will appear here once your report is generated.
-            Each trade includes behavioral analysis to help you spot patterns.
+            Your trading history will appear here once you upload or sync trades into your live workspace.
+            Each trade includes behavioral context to help you spot patterns.
           </p>
         </div>
       </div>

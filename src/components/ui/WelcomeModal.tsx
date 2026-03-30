@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { isSampleMode } from '../../lib/runtime'
 
 interface Step {
   title: string
@@ -38,10 +39,10 @@ export function WelcomeModal() {
   useEffect(() => {
     // Check if user has seen onboarding
     const hasSeen = localStorage.getItem(STORAGE_KEY)
-    const isDemoMode = localStorage.getItem('shibuya_api_key') === 'shibuya_demo_mode'
+    const sampleMode = isSampleMode()
     
-    // Show modal for demo mode or new users
-    if (!hasSeen || isDemoMode) {
+    // Show modal for sample workspace or new users
+    if (!hasSeen || sampleMode) {
       // Small delay to let the page render first
       const timer = setTimeout(() => setIsOpen(true), 500)
       return () => clearTimeout(timer)

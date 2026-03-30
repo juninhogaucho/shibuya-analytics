@@ -1,50 +1,46 @@
 import { type FormEvent, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { verifyActivation } from '../../lib/api'
+import { enterSampleMode } from '../../lib/runtime'
 
 export function ActivationPage() {
   const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [orderCode, setOrderCode] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setIsSubmitting(true)
-    
+    setError(null)
+    setStatusMessage(null)
+
     try {
-      // Try to send via API first
-      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/waitlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email,
-          source: 'activation_page',
-          timestamp: new Date().toISOString()
-        })
-      })
-      
-      if (!response.ok) {
-        throw new Error('API not available')
+      const response = await verifyActivation({ email, orderCode })
+
+      if (response.status === 'ready' && response.activationToken) {
+        setStatusMessage('Activation successful. Redirecting to your trader workspace.')
+        navigate('/dashboard', { replace: true })
+        return
       }
-    } catch {
-      // Fallback: Send mailto notification
-      const subject = encodeURIComponent('🚀 New Waitlist Signup')
-      const body = encodeURIComponent(
-        `NEW WAITLIST SIGNUP\n` +
-        `==================\n\n` +
-        `Email: ${email}\n` +
-        `Source: Activation Page\n` +
-        `Time: ${new Date().toISOString()}`
-      )
-      window.open(`mailto:support@shibuya-analytics.com?subject=${subject}&body=${body}`, '_blank')
+
+      if (response.status === 'pending') {
+        setStatusMessage('Your payment is still processing. Check your confirmation email and try again in a few minutes.')
+        return
+      }
+
+      setError(response.message || 'Activation failed. Please verify your order code and email.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Activation failed. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
-    
-    setSubmitted(true)
-    setIsSubmitting(false)
   }
 
-  const handleDemo = () => {
-    localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')
+  const handleSampleWorkspace = () => {
+    enterSampleMode()
     navigate('/dashboard', { replace: true })
   }
 
@@ -52,117 +48,119 @@ export function ActivationPage() {
     <section className="activation-terminal">
       <div className="terminal-background-grid"></div>
       <div className="terminal-container glass-panel">
-        {/* Terminal Header */}
         <div className="terminal-header">
           <div className="terminal-dots">
             <span className="dot dot-red"></span>
             <span className="dot dot-yellow"></span>
             <span className="dot dot-green"></span>
           </div>
-          <span className="terminal-title">shibuya_waitlist.sh - bash - 80x24</span>
+          <span className="terminal-title">shibuya_activate.sh - bash - 80x24</span>
         </div>
 
-        {/* Terminal Body */}
         <div className="terminal-body">
           <div className="terminal-line">
             <span className="terminal-prompt">root@shibuya:~$</span>
-            <span className="terminal-cmd">./check_status --dashboard</span>
-          </div>
-          
-          <div className="terminal-output">
-            <p className="text-yellow-400">⚠ Dashboard access: COMING SOON</p>
-            <p className="text-green-400">✓ Report service: OPERATIONAL</p>
-            <p>Shibuya Analytics v2.0 [Beta]</p>
-            <p className="terminal-muted">The full dashboard is being built. Join the waitlist to get early access.</p>
+            <span className="terminal-cmd">./activate_trader_workspace --live</span>
           </div>
 
-          {submitted ? (
+          <div className="terminal-output">
+            <p className="text-green-400">Live trader account activation: AVAILABLE</p>
+            <p className="text-green-400">Sample workspace: AVAILABLE</p>
+            <p>Shibuya Analytics trader runtime</p>
+            <p className="terminal-muted">
+              Use the email and order code from your confirmation email to unlock your live trader account.
+              If you are still evaluating the product, open the sample workspace instead.
+            </p>
+          </div>
+
+          {statusMessage && (
             <div className="terminal-success-block">
               <div className="terminal-status terminal-status-success">
-                <span className="status-icon">✓</span>
+                <span className="status-icon">OK</span>
                 <div>
-                  <p>REGISTRATION COMPLETE</p>
-                  <p className="terminal-muted">We'll email you when the dashboard launches.</p>
+                  <p>ACTIVATION STATUS</p>
+                  <p className="terminal-muted">{statusMessage}</p>
                 </div>
               </div>
-              
-              <div className="terminal-divider">
-                <span>MEANWHILE</span>
-              </div>
-              
-              <p className="terminal-hint" style={{ marginBottom: '1rem' }}>
-                Want to see what we're building? Explore the demo.
-              </p>
-              
-              <button onClick={handleDemo} className="terminal-btn terminal-btn-primary">
-                <span className="demo-icon">▶</span>
-                EXPLORE DEMO DASHBOARD
-              </button>
-              
-              <p className="terminal-hint" style={{ marginTop: '1rem' }}>
-                Or <Link to="/pricing" className="terminal-link">get a personalized report</Link> now.
-              </p>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="terminal-form">
-              <p className="terminal-instruction">
-                Drop your email below. No spam, just one email when we launch.
-              </p>
-              
-              <div className="terminal-field">
-                <label>
-                  <span className="field-label">EMAIL_ADDRESS</span>
-                  <div className="field-input-wrapper">
-                    <span className="field-prefix">→</span>
-                    <input 
-                      type="email" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      required 
-                      placeholder="trader@example.com"
-                    />
-                  </div>
-                </label>
-              </div>
-
-              <button className="terminal-btn terminal-btn-primary" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner"></span>
-                    PROCESSING...
-                  </>
-                ) : (
-                  '→ JOIN WAITLIST'
-                )}
-              </button>
-            </form>
           )}
 
-          {!submitted && (
-            <>
-              {/* Divider */}
-              <div className="terminal-divider">
-                <span>OR EXPLORE NOW</span>
+          {error && (
+            <div
+              className="terminal-status"
+              style={{ borderColor: 'rgba(239, 68, 68, 0.35)', background: 'rgba(239, 68, 68, 0.08)' }}
+            >
+              <span className="status-icon">ERR</span>
+              <div>
+                <p>ACTIVATION FAILED</p>
+                <p className="terminal-muted">{error}</p>
               </div>
-
-              {/* Demo Mode */}
-              <button onClick={handleDemo} className="terminal-btn terminal-btn-ghost">
-                <span className="demo-icon">▶</span>
-                RUN DEMO SIMULATION
-              </button>
-
-              <p className="terminal-hint">
-                See the dashboard in action with sample trader data.
-              </p>
-
-              {/* Get a report now */}
-              <div className="terminal-footer">
-                <p className="terminal-muted">
-                  Don't want to wait? <Link to="/pricing" className="terminal-link">Get a personalized report now →</Link>
-                </p>
-              </div>
-            </>
+            </div>
           )}
+
+          <form onSubmit={handleSubmit} className="terminal-form">
+            <p className="terminal-instruction">
+              Enter the exact email and order code tied to your purchase or partner activation.
+            </p>
+
+            <div className="terminal-field">
+              <label>
+                <span className="field-label">EMAIL_ADDRESS</span>
+                <div className="field-input-wrapper">
+                  <span className="field-prefix">-&gt;</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                    placeholder="trader@example.com"
+                  />
+                </div>
+              </label>
+            </div>
+
+            <div className="terminal-field">
+              <label>
+                <span className="field-label">ORDER_CODE</span>
+                <div className="field-input-wrapper">
+                  <span className="field-prefix">-&gt;</span>
+                  <input
+                    type="text"
+                    value={orderCode}
+                    onChange={(event) => setOrderCode(event.target.value)}
+                    required
+                    placeholder="ord_abc123..."
+                  />
+                </div>
+              </label>
+            </div>
+
+            <button className="terminal-btn terminal-btn-primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'ACTIVATING...' : 'ACTIVATE LIVE ACCOUNT'}
+            </button>
+          </form>
+
+          <div className="terminal-divider">
+            <span>OR EXPLORE FIRST</span>
+          </div>
+
+          <button onClick={handleSampleWorkspace} className="terminal-btn terminal-btn-ghost">
+            <span className="demo-icon">▶</span>
+            OPEN SAMPLE WORKSPACE
+          </button>
+
+          <p className="terminal-hint">
+            Sample workspace teaches the workflow. Live trader accounts persist uploads, history, alerts, and prescriptions.
+          </p>
+
+          <div className="terminal-footer">
+            <p className="terminal-muted">
+              Already activated? <Link to="/login" className="terminal-link">Sign in</Link>
+            </p>
+            <p className="terminal-muted">
+              Need access first? <Link to="/pricing" className="terminal-link">Choose a plan</Link>
+            </p>
+          </div>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import { InfoTooltip } from '../../components/ui/Tooltip'
 import { SkeletonCard, SkeletonMetricCard } from '../../components/ui/Skeleton'
 import { StreakCounter, ProgressRing } from '../../components/ui/Gamification'
 import { getDashboardOverview } from '../../lib/api'
+import { buildTradingMandate } from '../../lib/decisionSupport'
 import type { DashboardOverview, EdgeItem } from '../../lib/types'
 import { Link } from 'react-router-dom'
 
@@ -169,7 +170,10 @@ export function DashboardOverviewPage() {
       <div className="dashboard-stack">
         <div className="glass-panel">
           <h3>No data yet</h3>
-          <p>Upload your first CSV to see your Margin of Safety analysis.</p>
+          <p>Upload your first trading session to generate your overview, edge portfolio, and next actions.</p>
+          <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Upload trades
+          </Link>
         </div>
       </div>
     )
@@ -178,6 +182,12 @@ export function DashboardOverviewPage() {
   const winRate = data.total_trades && data.winning_trades 
     ? ((data.winning_trades / data.total_trades) * 100).toFixed(1) 
     : null
+  const tradingMandate = buildTradingMandate(data)
+  const mandateTone = tradingMandate.tone === 'protect'
+    ? { borderColor: 'rgba(244, 63, 94, 0.28)', background: 'rgba(244, 63, 94, 0.08)' }
+    : tradingMandate.tone === 'focus'
+    ? { borderColor: 'rgba(245, 158, 11, 0.28)', background: 'rgba(245, 158, 11, 0.08)' }
+    : { borderColor: 'rgba(16, 185, 129, 0.28)', background: 'rgba(16, 185, 129, 0.08)' }
 
   return (
     <div className="dashboard-stack">
@@ -244,6 +254,48 @@ export function DashboardOverviewPage() {
           </div>
         </div>
       </div>
+
+      <section className="glass-panel" style={{ ...mandateTone, marginBottom: '1.5rem' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.75rem' }}>NEXT SESSION MANDATE</p>
+            <h3 style={{ marginBottom: '0.5rem' }}>{tradingMandate.headline}</h3>
+            <p className="text-muted" style={{ maxWidth: '60rem' }}>{tradingMandate.summary}</p>
+          </div>
+          <Link to={tradingMandate.cta.to} className="btn btn-sm btn-primary" style={{ whiteSpace: 'nowrap' }}>
+            {tradingMandate.cta.label}
+          </Link>
+        </div>
+
+        <div className="grid-responsive three" style={{ marginTop: '1.25rem' }}>
+          <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Do now</h4>
+            <ul className="digest-preview">
+              {tradingMandate.doNow.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Stop now</h4>
+            <ul className="digest-preview">
+              {tradingMandate.stopNow.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Review next</h4>
+            <ul className="digest-preview">
+              {tradingMandate.reviewNext.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </section>
 
       {/* The Money Shot - Discipline Tax */}
       <section className="discipline-tax-section">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getShadowBoxing } from '../../lib/api'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import type { ShadowBoxingResponse } from '../../lib/types'
@@ -60,7 +61,10 @@ export function ShadowBoxingPage() {
       <div className="dashboard-stack">
         <div className="glass-panel">
           <h3>No simulation data yet</h3>
-          <p>Upload trades to see how you would perform against major prop firm challenges.</p>
+          <p>Upload trades to see how your real behavior maps onto funded-account rules before you spend money on a challenge.</p>
+          <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Upload trades
+          </Link>
         </div>
       </div>
     )

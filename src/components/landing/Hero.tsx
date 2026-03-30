@@ -67,21 +67,31 @@ const Hero: React.FC = () => {
 
             <div className="max-w-xl pl-1">
                <p className="text-lg text-neutral-300 font-sans leading-relaxed mb-4 max-w-xl">
-                 <span className="font-semibold text-white">Upload your CSV. Get a full diagnostic in 72 hours.</span> We calculate win rates by setup, risk efficiency, position sizing violations, overtrading patterns, and the exact euro cost of your behavioral mistakes.
+                 <span className="font-semibold text-white">Activate the workspace. Upload your history. See what is actually driving your results.</span> Shibuya turns your trade data into discipline tax, edge concentration, state-aware alerts, and the next corrective move.
                </p>
                <p className="text-base text-neutral-400 font-sans leading-relaxed mb-8 max-w-xl">
-                 Real quantitative metrics. Edge portfolio analysis. Discipline tax breakdowns. Pattern recognition at scale. Written by humans who've traded, not templated nonsense.
+                 Real quantitative metrics. Edge portfolio analysis. Discipline tax breakdowns. Pattern recognition tied to trader decisions, not templated nonsense.
                </p>
 
-               <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/pricing')}
-                  className="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-wider text-sm overflow-hidden"
-                >
-                   <span className="relative z-10 group-hover:text-white transition-colors duration-300">Get Your Report</span>
-                   <div className="absolute inset-0 bg-indigo-600 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
-                </motion.button>
+               <div className="flex flex-wrap gap-4">
+                 <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/pricing')}
+                    className="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-wider text-sm overflow-hidden"
+                  >
+                     <span className="relative z-10 group-hover:text-white transition-colors duration-300">Start Shibuya</span>
+                     <div className="absolute inset-0 bg-indigo-600 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
+                  </motion.button>
+                 <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/partners')}
+                    className="px-8 py-4 border border-white/20 text-white font-bold uppercase tracking-wider text-sm hover:border-white hover:bg-white hover:text-black transition-all duration-300"
+                  >
+                    For Platforms
+                  </motion.button>
+               </div>
             </div>
         </div>
 

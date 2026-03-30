@@ -1,51 +1,54 @@
-# Shibuya Analytics Frontend
+# Shibuya Analytics
 
-React 19 + Vite app that powers the trader-facing experience described in `docs/ARCHITECTURE.md`.
+`shibuya-analytics` is the trader-facing frontend for the Shibuya product line.
 
-The latest feature brief lives in `../medallion_api/docs/SHIBUYA_ANALYTICS_FEATURES.md`. Read it first—every component in this frontend maps to one of those promises.
+As of 2026-03-28, the truthful description is:
 
-## Key Concepts
+- the mission is trader performance improvement, not static report generation
+- the repo still contains meaningful dashboard and activation work, but it is not yet a finished trader operating system
+- the direct-trader product, connector strategy, and partner strategy now have canonical docs in `docs/`
+- broad production claims should not be made from this repo alone
 
-- **Public marketing shell** mirrors the Odoo landing page, clarifies Steve vs David offers, and links directly to Odoo checkout.
-- **Activation flow** lets customers who already paid in Odoo verify their order and receive baseline/dashboard instructions.
-- **David dashboard** implements the append trades workflow, overview metrics, and alert surfaces that connect to the Medallion engine APIs.
+## What This Repo Is For
 
-## Feature Modules
+- direct trader acquisition and activation
+- trader-facing performance dashboards and interventions
+- proving Shibuya value independently of PropOS
+- acting as the future embedded intelligence surface for partner-supported traders
 
-| Surface | What Steve sees (public/teaser) | What David unlocks (dashboard) |
-|---------|---------------------------------|---------------------------------|
-| Landing CTA | Shadow Boxing preview, cohort sanity check, Trade Paste Memory delta on limited data | Full narrative of prop-challenge readiness with multi-rulebook toggles |
-| Weekly Coaching | Email sign-up with sample Margin of Safety memo | Margin of Safety Coach widget + inbox history |
-| Analytics | Minimal stats after CSV paste | Edge Autopsy, Edge Portfolio, Slump Prescription, Capital-Ready Bundle, Loyalty Unlocks |
+## What This Repo Is Not
 
-Each module must degrade gracefully when APIs are unavailable and should clearly communicate when more data is required.
+- not proof that every connector exists
+- not proof that embedded partner flows are fully shipped
+- not a generic "AI trader report" microsite
+- not a substitute for the backend truth in `medallion`
 
-## Getting Started
+## Read These First
+
+- [docs/README.md](docs/README.md)
+- [docs/PRODUCT_THESIS.md](docs/PRODUCT_THESIS.md)
+- [docs/OFFER_AND_CONNECTOR_STRATEGY.md](docs/OFFER_AND_CONNECTOR_STRATEGY.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/TRADER_RUNTIME_CONTRACT.md](docs/TRADER_RUNTIME_CONTRACT.md)
+- [docs/LAUNCH_READINESS_CHECKLIST.md](docs/LAUNCH_READINESS_CHECKLIST.md)
+
+## Current Truth
+
+- CSV and manual ingestion are still important because they are the universal entry path.
+- Connector support should be built as a ladder, not as one custom endpoint per prop firm.
+- The product should help traders make better next-session decisions, not just inspect historical damage.
+- Shibuya should be sellable directly to traders and embeddable into partner environments.
+- The trader-facing runtime should be framed as `sample workspace` before real data and `live trader account` after activation, not as a vague demo product.
+
+## Local Commands
 
 ```bash
 npm install
-npm run dev
+npm run lint
+npm run test:run
+npm run build
 ```
 
-Environment variables:
+## Strategic Rule
 
-```
-VITE_API_BASE=https://api.medallion.studio
-```
-
-## Commands
-
-| Script | Purpose |
-|--------|---------|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Type-check + production build |
-| `npm run lint` | ESLint (config TBD) |
-
-## Architecture Notes
-
-- Routing defined in `src/app/routes.tsx`.
-- Layouts split between `PublicLayout` (marketing) and `DashboardLayout` (authenticated shell).
-- Shared constants + API helpers live under `src/lib`.
-- React Query handles async data; Zustand will be introduced for UI state when needed.
-
-See `docs/ARCHITECTURE.md` for personas, system context, and backend integration plan. QA scope lives in `docs/QA_PLAN.md`.
+If a feature does not improve trader decisions, partner distribution, or proof of behavioral value, it should not outrank launch-critical work.

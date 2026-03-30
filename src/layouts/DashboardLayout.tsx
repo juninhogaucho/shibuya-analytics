@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { WelcomeModal } from '../components/ui/WelcomeModal'
+import { clearShibuyaSession, isSampleMode } from '../lib/runtime'
 
 const NAV_ITEMS = [
   { label: '📊 Overview', to: '/dashboard' },
@@ -13,10 +14,9 @@ const NAV_ITEMS = [
 ]
 
 export function DashboardLayout() {
-  // Lazy initialization - check demo mode only once
-  const [isDemoMode] = useState(() => {
-    const key = localStorage.getItem('shibuya_api_key')
-    return key === 'shibuya_demo_mode'
+  // Lazy initialization - check sample workspace only once
+  const [isSampleWorkspace] = useState(() => {
+    return isSampleMode()
   })
   const navigate = useNavigate()
   const location = useLocation()
@@ -29,12 +29,12 @@ export function DashboardLayout() {
   }
 
   const handleSignOut = () => {
-    localStorage.removeItem('shibuya_api_key')
+    clearShibuyaSession()
     navigate('/')
   }
 
   const handleUpgrade = () => {
-    localStorage.removeItem('shibuya_api_key')
+    clearShibuyaSession()
     navigate('/pricing')
   }
 
@@ -64,10 +64,10 @@ export function DashboardLayout() {
           <span className="brand-badge">BETA</span>
         </div>
         
-        {/* Demo Mode Banner */}
-        {isDemoMode && (
+        {/* Sample workspace banner */}
+        {isSampleWorkspace && (
           <div className="demo-mode-banner">
-            <div className="demo-badge">▶ DEMO MODE</div>
+            <div className="demo-badge">▶ SAMPLE MODE</div>
             <p className="demo-hint">Viewing sample trader data</p>
           </div>
         )}
@@ -91,18 +91,18 @@ export function DashboardLayout() {
             className="btn btn-secondary btn-sm"
             onClick={handleSignOut}
           >
-            {isDemoMode ? 'Exit Demo' : 'Sign Out'}
+            {isSampleWorkspace ? 'Exit Sample' : 'Sign Out'}
           </button>
         </div>
       </aside>
       
       <section className="dashboard-content" id="main-content">
-        {isDemoMode && (
+        {isSampleWorkspace && (
           <div className="demo-top-banner" role="status">
             <div className="demo-top-banner__text">
               <span className="disclaimer-icon">🚧</span>
               <div>
-                <strong>Demo Data</strong>
+                <strong>Sample Data</strong>
                 <p>This is sample data so you can see the experience. Your real report will be built from your own trades.</p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export function DashboardLayout() {
             </button>
           </div>
         )}
-        <Outlet context={{ isDemoMode }} />
+        <Outlet context={{ isDemoMode: isSampleWorkspace }} />
       </section>
     </div>
   )

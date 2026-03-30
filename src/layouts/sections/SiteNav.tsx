@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ThemeToggle } from '../../components/ui/ThemeToggle'
+import { enterSampleMode } from '../../lib/runtime'
 
 export function SiteNav() {
   const location = useLocation()
@@ -29,9 +30,10 @@ export function SiteNav() {
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           <Link to="/solutions" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Solutions</Link>
+          <Link to="/partners" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Partners</Link>
           <a href="#pricing" onClick={handlePricingClick} className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Pricing</a>
-          <Link to="/dashboard" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors" onClick={() => localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')}>
-            Demo
+          <Link to="/dashboard" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors" onClick={enterSampleMode}>
+            Sample
           </Link>
           <Link to="/login" className="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">
             Login
@@ -39,9 +41,9 @@ export function SiteNav() {
         </nav>
         <div className="site-nav__cta flex items-center gap-4">
           <ThemeToggle />
-          <a href="#pricing" onClick={handlePricingClick} className="btn btn-primary bg-[var(--color-primary)] text-[var(--color-primary-foreground)] px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
-            Get Your Report
-          </a>
+          <Link to="/partners" className="btn btn-primary bg-[var(--color-primary)] text-[var(--color-primary-foreground)] px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+            For Platforms
+          </Link>
         </div>
       </div>
     </header>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getEdgePortfolio } from '../../lib/api'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import { InfoTooltip } from '../../components/ui/Tooltip'
@@ -115,7 +116,10 @@ export function EdgePortfolioPage() {
       <div className="dashboard-stack">
         <div className="glass-panel">
           <h3>No edges detected yet</h3>
-          <p>We need more trades to identify your trading patterns.</p>
+          <p>We need more trades to identify the setups you should press, refine, or stop trading.</p>
+          <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Upload trades
+          </Link>
         </div>
       </div>
     )

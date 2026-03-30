@@ -1,387 +1,224 @@
-import React, { useState } from 'react';
-import { Check, Star, Users, Gift, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Check } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { PRICING } from '../../lib/constants'
+import { enterSampleMode } from '../../lib/runtime'
 
-const MotionLink = motion.create(Link);
-
-// Dashboard Tier Card - Coming January 1st
-const DashboardTierCard: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [joined, setJoined] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleWaitlist = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    
-    setSubmitting(true);
-    try {
-      // Try API first
-      const response = await fetch(`${import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8001'}/v1/site/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          message: 'Dashboard Waitlist Signup',
-          source: 'dashboard_waitlist'
-        })
-      });
-      
-      if (!response.ok) throw new Error('API error');
-    } catch {
-      // Fallback: store locally
-      const existing = JSON.parse(localStorage.getItem('shibuya_waitlist') || '[]');
-      existing.push({ email, timestamp: new Date().toISOString() });
-      localStorage.setItem('shibuya_waitlist', JSON.stringify(existing));
-    }
-    
-    setJoined(true);
-    setSubmitting(false);
-  };
-
+function PlanCard({
+  name,
+  price,
+  description,
+  perks,
+  ctaLabel,
+  ctaHref,
+  featured = false,
+}: {
+  name: string
+  price: number
+  description: string
+  perks: string[]
+  ctaLabel: string
+  ctaHref: string
+  featured?: boolean
+}) {
   return (
-    <div className="relative p-8 md:p-10 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-[#0f0d08]/90 to-[#0A0A0B]/90 backdrop-blur-md shadow-2xl shadow-amber-900/10 overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-50"></div>
-      
-      {/* Coming Soon Badge */}
-      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold tracking-wider text-amber-300 uppercase flex items-center gap-1 z-20">
-        <Sparkles className="w-3 h-3" />
-        January 2026
-      </div>
-
-      <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
-        {/* Left: Info */}
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-2">The Dashboard</h3>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-4xl font-bold tracking-tight text-white font-mono">€250</span>
-            <span className="text-neutral-400 text-sm">/ month</span>
-          </div>
-          
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Real-time behavioral analytics. Upload your trades, get continuous insights. 
-            The algorithms that power our reports, now at your fingertips 24/7.
-          </p>
-
-          <div className="space-y-3">
-            {[
-              'Live BQL (Behavioral Quality) monitoring',
-              'Real-time Edge Portfolio tracking',
-              'Discipline Tax calculated automatically',
-              'Shadow Boxing: Prop firm simulations',
-              'Daily market prescriptions',
-              'Priority access to new features'
-            ].map(item => (
-              <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
-                <div className="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="w-2.5 h-2.5 text-amber-400" />
-                </div>
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Waitlist Form */}
-        <div className="bg-black/30 border border-white/5 rounded-2xl p-6">
-          {joined ? (
-            <div className="text-center py-8">
-              <div className="text-4xl mb-4">🎉</div>
-              <h4 className="text-white font-semibold mb-2">You're on the list!</h4>
-              <p className="text-neutral-400 text-sm">We'll email you when the dashboard launches on January 1st, 2026.</p>
-            </div>
-          ) : (
-            <>
-              <h4 className="text-white font-semibold mb-2">Join the Waitlist</h4>
-              <p className="text-neutral-400 text-sm mb-4">
-                Be first to access when we launch. Early waitlist members get <span className="text-amber-400">1 week free</span>.
-              </p>
-              
-              <form onSubmit={handleWaitlist} className="space-y-3">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-amber-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
-                />
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-semibold text-sm transition-all disabled:opacity-50"
-                >
-                  {submitting ? 'Joining...' : 'Join Waitlist →'}
-                </button>
-              </form>
-              
-              <p className="text-xs text-neutral-500 mt-3 text-center">
-                No payment required. We'll notify you at launch.
-              </p>
-            </>
+    <article
+      className={`rounded-3xl border p-8 md:p-10 backdrop-blur-md ${
+        featured
+          ? 'border-indigo-500/30 bg-[#0A0A0B]/90 shadow-2xl shadow-indigo-900/20'
+          : 'border-white/[0.06] bg-[#0A0A0B]/80'
+      }`}
+    >
+      <div className="mb-6">
+        <div className="flex items-center justify-between gap-4">
+          <h3 className="text-lg font-medium text-white">{name}</h3>
+          {featured && (
+            <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-300">
+              Popular
+            </span>
           )}
         </div>
+        <div className="mt-4 flex items-baseline gap-2">
+          <span className="font-mono text-5xl font-bold tracking-tight text-white">EUR {price}</span>
+          <span className="text-sm text-neutral-500">one-time</span>
+        </div>
+        <p className="mt-4 text-sm leading-relaxed text-neutral-400">{description}</p>
       </div>
-    </div>
-  );
-};
 
-const PricingPage: React.FC = () => {
+      <div className="mb-10 space-y-4">
+        {perks.map((perk) => (
+          <div key={perk} className="flex items-start gap-3 text-sm text-neutral-300">
+            <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-indigo-500/15">
+              <Check className="h-2.5 w-2.5 text-indigo-300" />
+            </div>
+            <span>{perk}</span>
+          </div>
+        ))}
+      </div>
+
+      <Link
+        to={ctaHref}
+        className={`block w-full rounded-xl py-4 text-center text-sm font-semibold transition-colors ${
+          featured
+            ? 'bg-indigo-600 text-white hover:bg-indigo-500'
+            : 'border border-white/10 text-white hover:border-transparent hover:bg-white hover:text-black'
+        }`}
+      >
+        {ctaLabel}
+      </Link>
+    </article>
+  )
+}
+
+export default function PricingPage() {
+  const navigate = useNavigate()
+
+  const handleSampleWorkspace = () => {
+    enterSampleMode()
+    navigate('/dashboard')
+  }
+
   return (
-    <section className="min-h-screen pt-32 pb-20 relative bg-[#020203] overflow-hidden">
-
-      {/* Background Texture - Metal */}
+    <section className="min-h-screen overflow-hidden bg-[#020203] pb-20 pt-32">
       <div className="absolute inset-0 z-0 pointer-events-none">
-          <img
-            src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2940&auto=format&fit=crop"
-            alt="Metallic Texture"
-            className="w-full h-full object-cover opacity-[0.07] mix-blend-color-dodge"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#020203] via-transparent to-[#020203]"></div>
+        <img
+          src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2940&auto=format&fit=crop"
+          alt="Metallic texture"
+          className="h-full w-full object-cover opacity-[0.07] mix-blend-color-dodge"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020203] via-transparent to-[#020203]"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-        >
-            <span className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-4 block">Select Your Audit</span>
-            <h1 className="text-4xl md:text-6xl font-display font-bold text-white uppercase tracking-tight mb-6">
-                Investment Plans
-            </h1>
-            <p className="text-neutral-400 font-serif italic text-xl max-w-2xl mx-auto">
-                "The cost of the report is likely less than the cost of your next revenge trade."
-            </p>
-        </motion.div>
-
-        {/* PRICING CARDS */}
-        <div className="grid md:grid-cols-2 gap-8 items-stretch mb-12 max-w-5xl mx-auto">
-
-          {/* Standard Plan */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ y: -10 }}
-            className="p-8 md:p-10 rounded-3xl border border-white/[0.06] bg-[#0A0A0B]/80 backdrop-blur-md flex flex-col transition-all duration-300 group hover:border-white/20"
-          >
-            <h3 className="text-lg font-medium mb-2 text-white group-hover:text-indigo-200 transition-colors">The Reality Check</h3>
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="text-5xl font-bold tracking-tight text-white font-mono">€99</span>
-              <span className="text-neutral-500 text-sm">/ report</span>
-            </div>
-
-            <div className="space-y-4 mb-10 flex-grow">
-              {[
-                'Discipline Tax Calculation',
-                'Setup Efficiency Analysis',
-                'Overtrading Heatmaps',
-                '72hr Delivery'
-              ].map(item => (
-                <div key={item} className="flex items-start gap-3 text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors">
-                  <Check className="w-4 h-4 text-neutral-600 mt-0.5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <MotionLink
-              to="/checkout/basic"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-4 rounded-xl border border-white/10 text-center text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-transparent transition-colors duration-300 block cursor-pointer"
-            >
-              Get Your Report
-            </MotionLink>
-          </motion.div>
-
-          {/* Premium Plan */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            whileHover={{ y: -10 }}
-            className="relative p-8 md:p-10 rounded-3xl border border-indigo-500/30 bg-[#0A0A0B]/90 backdrop-blur-md shadow-2xl shadow-indigo-900/20 flex flex-col group overflow-hidden transition-all duration-300"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-50"></div>
-
-            <div className="flex justify-between items-start mb-2 relative z-20">
-               <h3 className="text-lg font-medium text-white group-hover:text-indigo-300 transition-colors">The Deep Dive</h3>
-               <div className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold tracking-wider text-indigo-300 uppercase flex items-center gap-1">
-                 <Star className="w-3 h-3 fill-indigo-300" />
-                 Popular
-               </div>
-            </div>
-
-            <div className="flex items-baseline gap-1 mb-6 relative z-20">
-              <span className="text-5xl font-bold tracking-tight text-white font-mono group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-indigo-200 transition-all">€149</span>
-              <span className="text-neutral-500 text-sm">/ report</span>
-            </div>
-
-            <div className="space-y-4 mb-10 flex-grow relative z-20">
-              {[
-                'Everything in Reality Check',
-                '2x 30min Analyst Calls',
-                'Personalized Rulebook',
-                '30-Day Follow-up Analysis',
-                'Priority Processing'
-              ].map(item => (
-                <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
-                  <div className="w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/40">
-                    <Check className="w-2.5 h-2.5 text-white" />
-                  </div>
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <MotionLink
-              to="/checkout/premium"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative z-20 w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-center text-sm font-semibold text-white shadow-[0_0_20px_-5px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_-5px_rgba(79,70,229,0.5)] transition-all block cursor-pointer"
-            >
-              Start Deep Dive
-            </MotionLink>
-          </motion.div>
+      <div className="relative z-10 mx-auto max-w-6xl px-6">
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <span className="mb-4 block font-mono text-xs uppercase tracking-widest text-indigo-400">
+            Choose Your Starting Point
+          </span>
+          <h1 className="mb-6 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">
+            Shibuya Is Live In Two Truthful Ways
+          </h1>
+          <p className="font-serif text-xl italic text-neutral-400">
+            Start with a one-time diagnostic, or activate the trader workspace you already bought. Sample exploration is available now.
+          </p>
         </div>
 
-        {/* DASHBOARD TIER - COMING JANUARY 1ST */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="max-w-5xl mx-auto mb-24"
-        >
-          <DashboardTierCard />
-        </motion.div>
+        <div className="mx-auto mb-12 grid max-w-5xl gap-8 md:grid-cols-2">
+          <PlanCard
+            name={PRICING.basic.name}
+            price={PRICING.basic.price}
+            description={PRICING.basic.description}
+            perks={PRICING.basic.perks}
+            ctaLabel="Get Reality Check"
+            ctaHref="/checkout/basic"
+          />
+          <PlanCard
+            name={PRICING.premium.name}
+            price={PRICING.premium.price}
+            description={PRICING.premium.description}
+            perks={PRICING.premium.perks}
+            ctaLabel="Start Deep Dive"
+            ctaHref="/checkout/premium"
+            featured
+          />
+        </div>
 
-        {/* WHAT YOU GET - FIRST MONTH FREE */}
-        <motion.div
-           initial={{ opacity: 0, y: 40 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           className="border-t border-white/10 pt-20 mb-20"
-        >
-            <div className="text-center mb-12">
-               <h2 className="text-2xl font-display font-bold uppercase text-white mb-4">Your trust goes a long way. First month is free.</h2>
-               <p className="text-neutral-400 font-serif italic">Our dashboard will be released to the public on January 1st. Purchase a report before our launch, and your first month of membership is on us. The future of trading analytics. For free.</p>
-            </div>
-        </motion.div>
-        
-        {/* REFERRAL PROGRAM SECTION */}
-        <motion.div
-           initial={{ opacity: 0, y: 40 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           className="border-t border-white/10 pt-20 mb-20"
-        >
-            <div className="text-center mb-12">
-               <h2 className="text-2xl font-display font-bold uppercase text-white mb-4">Referral Rewards</h2>
-               <p className="text-neutral-400 font-serif italic">Trading is a solo game. But improvement doesn't have to be. Grow your edge together. Be rewarded for it.</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {/* 99 Tier */}
-                <div className="bg-[#080809] border border-white/5 p-8 rounded-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Users className="w-20 h-20 text-white" />
+        <section className="mx-auto mb-20 max-w-5xl rounded-3xl border border-amber-500/20 bg-gradient-to-br from-[#0f0d08]/90 to-[#0A0A0B]/90 p-8 shadow-2xl shadow-amber-900/10 backdrop-blur-md md:p-10">
+          <div className="grid gap-8 md:grid-cols-2 md:items-center">
+            <div>
+              <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                Trader Workspace
+              </span>
+              <h2 className="mt-4 text-2xl font-bold text-white">Sample now. Live after activation.</h2>
+              <p className="mt-4 text-sm leading-relaxed text-neutral-400">
+                The workspace is real today. You can explore the sample workspace immediately. Live trader accounts activate with a valid order code or partner-issued access.
+              </p>
+              <div className="mt-6 space-y-3">
+                {[
+                  'Sample workspace teaches the workflow without pretending to persist live data.',
+                  'Live trader accounts persist uploads, history, alerts, edge analysis, and prescriptions.',
+                  'Partner and prop-distributed access uses the same activation path as direct traders.',
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
+                    <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-amber-500/15">
+                      <Check className="h-2.5 w-2.5 text-amber-300" />
                     </div>
-                    <h3 className="text-indigo-400 font-mono text-xs uppercase tracking-widest mb-6 relative z-10">Reality Check (€99)</h3>
-                    <ul className="space-y-6 relative z-10">
-                        <li className="flex gap-4">
-                            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center shrink-0 border border-white/5 font-mono text-white text-sm">2</div>
-                            <div>
-                                <p className="text-white font-bold text-sm">Refer 2 Friends</p>
-                                <p className="text-neutral-400 text-sm leading-snug mt-1">We <span className="text-indigo-300">upgrade you to Deep Dive</span> automatically (save €50).</p>
-                            </div>
-                        </li>
-                         <li className="flex gap-4">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-900/30 flex items-center justify-center shrink-0 border border-emerald-500/20 font-mono text-emerald-300 text-sm">3</div>
-                            <div>
-                                <p className="text-white font-bold text-sm">Refer 3 Friends</p>
-                                <p className="text-neutral-400 text-sm leading-snug mt-1">Your entire purchase becomes <span className="text-emerald-400">100% FREE</span>.</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                {/* 149 Tier */}
-                <div className="bg-gradient-to-br from-[#0f0f12] to-[#080809] border border-indigo-500/20 p-8 rounded-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Gift className="w-20 h-20 text-indigo-400" />
-                    </div>
-                    <h3 className="text-indigo-400 font-mono text-xs uppercase tracking-widest mb-6 relative z-10">Deep Dive (€149)</h3>
-                    <ul className="space-y-6 relative z-10">
-                        <li className="flex gap-4">
-                            <div className="w-8 h-8 rounded-lg bg-indigo-900/30 flex items-center justify-center shrink-0 border border-indigo-500/20 font-mono text-indigo-300 text-sm">2</div>
-                            <div>
-                                <p className="text-white font-bold text-sm">Refer 2 Friends</p>
-                                <div className="text-neutral-400 text-sm leading-snug mt-1">
-                                    <p className="mb-1">You get <span className="text-white">2 Months for the price of 1</span> (buy now, get 2 months immediately).</p>
-                                    <p className="text-xs text-indigo-300">= 4 Reports + 4 Analyst Calls</p>
-                                </div>
-                            </div>
-                        </li>
-                         <li className="flex gap-4">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-900/30 flex items-center justify-center shrink-0 border border-emerald-500/20 font-mono text-emerald-300 text-sm">3</div>
-                            <div>
-                                <p className="text-white font-bold text-sm">Refer 3 Friends</p>
-                                <div className="text-neutral-400 text-sm leading-snug mt-1">
-                                    <p className="mb-1"><span className="text-emerald-400">Both months are completely free</span>.</p>
-                                    <p className="text-xs text-indigo-300">= 4 Reports + 4 Analyst Calls at no cost</p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </motion.div>
-
-        {/* HOW REFERRALS WORK */}
-        <motion.div
-           initial={{ opacity: 0, y: 40 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           className="border-t border-white/10 pt-20"
-        >
-            <div className="text-center mb-12">
-               <h2 className="text-2xl font-display font-bold uppercase text-white mb-4">How It Works</h2>
-            </div>
-
-            <div className="max-w-3xl mx-auto space-y-6">
-              <div className="bg-[#080809] border border-white/5 p-6 rounded-xl flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shrink-0 text-white font-bold text-sm">1</div>
-                <div>
-                  <p className="text-white font-semibold mb-1">You Complete Payment</p>
-                  <p className="text-neutral-400 text-sm">After we confirm your payment, you'll receive your referral code via email (before your report).</p>
-                </div>
-              </div>
-
-              <div className="bg-[#080809] border border-white/5 p-6 rounded-xl flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shrink-0 text-white font-bold text-sm">2</div>
-                <div>
-                  <p className="text-white font-semibold mb-1">Share Your Code</p>
-                  <p className="text-neutral-400 text-sm">Send your unique referral code to your trading friends. When they buy using your code, it counts toward your rewards.</p>
-                </div>
-              </div>
-
-              <div className="bg-[#080809] border border-white/5 p-6 rounded-xl flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shrink-0 text-white font-bold text-sm">3</div>
-                <div>
-                  <p className="text-white font-semibold mb-1">Unlock Rewards Automatically</p>
-                  <p className="text-neutral-400 text-sm">Hit 2 or 3 referrals? Your upgrade or free month is applied instantly. No forms. No waiting.</p>
-                </div>
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
-        </motion.div>
 
+            <div className="rounded-2xl border border-white/5 bg-black/30 p-6">
+              <p className="mb-3 text-sm font-semibold text-white">What you can do right now</p>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={handleSampleWorkspace}
+                  className="w-full rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black"
+                >
+                  Open Sample Workspace
+                </button>
+                <Link
+                  to="/activate"
+                  className="block w-full rounded-xl bg-amber-500 px-4 py-3 text-center text-sm font-semibold text-black transition-colors hover:bg-amber-400"
+                >
+                  Activate Live Trader Account
+                </Link>
+                <Link
+                  to="/login"
+                  className="block w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:border-white/20"
+                >
+                  Sign In
+                </Link>
+              </div>
+              <p className="mt-4 text-xs leading-relaxed text-neutral-500">
+                If you have already purchased access, use the activation route with your order code. If you are evaluating Shibuya, use the sample workspace first.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl border-t border-white/10 pt-16">
+          <div className="mb-10 text-center">
+            <h2 className="mb-4 text-2xl font-bold uppercase text-white">Truthful Buying Path</h2>
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-neutral-400">
+              The product should not force traders to guess what is live, what is sample, or what happens after payment.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-4">
+            {[
+              {
+                step: '1',
+                title: 'Explore',
+                body: 'Open the sample workspace and understand the product without fake persistence.',
+              },
+              {
+                step: '2',
+                title: 'Choose',
+                body: 'Buy a report or receive partner-issued access if your prop or broker supports Shibuya.',
+              },
+              {
+                step: '3',
+                title: 'Activate',
+                body: 'Use your email and order code to unlock the live trader account.',
+              },
+              {
+                step: '4',
+                title: 'Improve',
+                body: 'Upload trades, inspect the deltas, and act on the next session instead of reading static reports.',
+              },
+            ].map((item) => (
+              <article key={item.step} className="rounded-2xl border border-white/5 bg-[#080809] p-6">
+                <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-sm font-bold text-white">
+                  {item.step}
+                </div>
+                <h3 className="mb-2 text-white">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-neutral-400">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </section>
-  );
-};
-
-export default PricingPage;
+  )
+}

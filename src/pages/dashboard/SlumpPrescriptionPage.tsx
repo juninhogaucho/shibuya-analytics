@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getSlumpPrescription } from '../../lib/api'
+import { buildSlumpExecutionChecklist } from '../../lib/decisionSupport'
 import { SkeletonCard, Skeleton, SkeletonMetricCard } from '../../components/ui/Skeleton'
 import type { SlumpPrescription } from '../../lib/types'
 
@@ -90,11 +92,16 @@ export function SlumpPrescriptionPage() {
       <div className="dashboard-stack">
         <div className="glass-panel">
           <h3>No data yet</h3>
-          <p>Upload trades to get your personalized slump prescription.</p>
+          <p>Upload trades to generate the behavioral state and constraint suggestions that power slump remediation.</p>
+          <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Upload trades
+          </Link>
         </div>
       </div>
     )
   }
+
+  const executionChecklist = buildSlumpExecutionChecklist(data)
 
   return (
     <div className="dashboard-stack">
@@ -127,6 +134,26 @@ export function SlumpPrescriptionPage() {
             <h2>🛡️ Suggested Protocol</h2>
             <p className="prescription-message">{data.prescription.message}</p>
           </section>
+
+          {executionChecklist.length > 0 && (
+            <section className="glass-panel">
+              <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+                <div>
+                  <h3>Before the next order</h3>
+                  <p className="text-muted">This is the minimum standard for the next 72 hours. If you are not going to follow it, do not trade.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <Link to="/dashboard/upload" className="btn btn-sm btn-primary">Upload latest trades</Link>
+                  <Link to="/dashboard/alerts" className="btn btn-sm ghost">Review alerts</Link>
+                </div>
+              </div>
+              <ul className="guidelines-list" style={{ marginTop: '1rem' }}>
+                {executionChecklist.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* Metrics Grid */}
           <div className="grid-responsive four">

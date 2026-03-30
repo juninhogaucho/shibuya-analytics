@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login, verifyActivation } from '../../lib/api'
+import { enterSampleMode } from '../../lib/runtime'
 
 type LoginMode = 'login' | 'activate'
 
@@ -55,8 +56,8 @@ export function LoginPage() {
     }
   }
 
-  const handleDemoMode = () => {
-    localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')
+  const handleSampleWorkspace = () => {
+    enterSampleMode()
     navigate('/dashboard', { replace: true })
   }
 
@@ -204,13 +205,13 @@ export function LoginPage() {
             </div>
           </div>
 
-          {/* Demo Mode */}
+          {/* Sample workspace */}
           <button
             type="button"
-            onClick={handleDemoMode}
+            onClick={handleSampleWorkspace}
             className="w-full py-3 px-4 border border-[var(--color-border)] text-[var(--color-text)] font-medium rounded-lg hover:bg-[var(--color-bg)] transition-colors"
           >
-            🎮 Explore Demo Dashboard
+            🎮 Explore Sample Workspace
           </button>
 
           {/* Footer Links */}

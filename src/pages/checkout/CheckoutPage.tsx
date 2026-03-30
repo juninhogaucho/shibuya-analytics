@@ -1,220 +1,147 @@
-import React, { useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, User, MessageSquare, Upload, FileText, X, CreditCard, Gift, Check, AlertCircle } from 'lucide-react';
-import { STRIPE_PAYMENT_LINKS, API_BASE_URL } from '../../lib/constants';
-import Navbar from '../../components/landing/Navbar';
-import Footer from '../../components/landing/Footer';
+import React, { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { ArrowLeft, Mail, User, MessageSquare, CreditCard, Gift, Check, AlertCircle, Upload, ArrowRight } from 'lucide-react'
+import { API_BASE_URL } from '../../lib/constants'
+import { createCheckoutSession } from '../../lib/api'
+import Navbar from '../../components/landing/Navbar'
+import Footer from '../../components/landing/Footer'
 
-// Plan configuration - using Stripe Payment Links (no backend required)
 const PLANS = {
   basic: {
     name: 'The Reality Check',
     price: 99,
-    paymentLink: STRIPE_PAYMENT_LINKS.basic,
-    description: 'Complete trading analysis report',
+    planId: 'shibuya_single',
+    description: 'Baseline workspace activation with discipline tax, edge concentration, and trader-state feedback.',
   },
   premium: {
     name: 'The Deep Dive',
     price: 149,
-    paymentLink: STRIPE_PAYMENT_LINKS.premium,
-    description: 'Two reports + two 1:1  calls',
+    planId: 'shibuya_transform',
+    description: 'Deeper trader-performance entry point with stronger follow-through and higher-touch support.',
   },
-};
+} as const
 
 interface CheckoutForm {
-  name: string;
-  email: string;
-  discord: string;
-  referral: string;
+  name: string
+  email: string
+  discord: string
+  referral: string
 }
 
 interface PromoValidation {
-  valid: boolean;
-  code?: string;
-  code_type?: string;
-  dashboard_months_bonus: number;
-  message: string;
+  valid: boolean
+  code?: string
+  code_type?: string
+  dashboard_months_bonus: number
+  message: string
 }
 
 const CheckoutPage: React.FC = () => {
-  const { plan } = useParams<{ plan: string }>();
-  const [loading, setLoading] = useState(false);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { plan } = useParams<{ plan: string }>()
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<CheckoutForm>({
     name: '',
     email: '',
     discord: '',
     referral: '',
-  });
-  
-  // Promo code state
-  const [promoValidating, setPromoValidating] = useState(false);
-  const [promoResult, setPromoResult] = useState<PromoValidation | null>(null);
+  })
+  const [promoValidating, setPromoValidating] = useState(false)
+  const [promoResult, setPromoResult] = useState<PromoValidation | null>(null)
+  const currentPlan = PLANS[plan as keyof typeof PLANS] || PLANS.basic
 
-  const currentPlan = PLANS[plan as keyof typeof PLANS] || PLANS.basic;
-
-  // Validate promo code via API
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
-      setPromoResult(null);
-      return;
+      setPromoResult(null)
+      return
     }
-    
-    setPromoValidating(true);
+
+    setPromoValidating(true)
     try {
       const response = await fetch(`${API_BASE_URL}/v1/promo/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.trim() })
-      });
-      
+        body: JSON.stringify({ code: code.trim() }),
+      })
+
       if (response.ok) {
-        const result: PromoValidation = await response.json();
-        setPromoResult(result);
+        const result: PromoValidation = await response.json()
+        setPromoResult(result)
       } else {
-        setPromoResult({ valid: false, dashboard_months_bonus: 0, message: 'Could not validate code' });
+        setPromoResult({ valid: false, dashboard_months_bonus: 0, message: 'Could not validate code' })
       }
     } catch {
-      // API not available - accept code anyway for manual processing
-      setPromoResult({ 
-        valid: true, 
+      setPromoResult({
+        valid: true,
         code: code.trim(),
-        dashboard_months_bonus: 0, 
-        message: '✓ Code recorded (will be verified after purchase)' 
-      });
+        dashboard_months_bonus: 0,
+        message: 'Code recorded and will be verified after checkout',
+      })
+    } finally {
+      setPromoValidating(false)
     }
-    setPromoValidating(false);
-  };
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(prev => ({
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+      [name]: value,
+    }))
+  }
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
-        setCsvFile(file);
-      } else {
-        alert('Please upload a CSV file');
-      }
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setCsvFile(e.target.files[0]);
-    }
-  };
-
-  const removeFile = () => {
-    setCsvFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  // Send data via FormSubmit (free email service, no backend needed)
-  const sendDataToEmail = async (): Promise<boolean> => {
-    const formData = new FormData();
-    formData.append('name', form.name);
-    formData.append('email', form.email);
-    formData.append('discord', form.discord || 'Not provided');
-    formData.append('referral', form.referral || 'None');
-    formData.append('plan', currentPlan.name);
-    formData.append('price', `€${currentPlan.price}`);
-    formData.append('_subject', `New Order: ${currentPlan.name} - ${form.name}`);
-    
-    if (csvFile) {
-      formData.append('attachment', csvFile);
-    }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setLoading(true)
 
     try {
-      // FormSubmit.co - free email API (first time use will require email confirmation)
-      const response = await fetch('https://formsubmit.co/ajax/support@shibuya-analytics.com', {
-        method: 'POST',
-        body: formData,
-      });
-      return response.ok;
-    } catch (error) {
-      console.error('Email send error:', error);
-      return false;
-    }
-  };
+      const origin = window.location.origin
+      const successUrl = `${origin}/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`
+      const cancelUrl = `${origin}/checkout/${plan || 'basic'}`
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!csvFile) {
-      alert('Please upload your trade history CSV file');
-      return;
-    }
+      const session = await createCheckoutSession({
+        plan_id: currentPlan.planId,
+        email: form.email.trim(),
+        name: form.name.trim(),
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+      })
 
-    setLoading(true);
-
-    try {
-      // 1. Send order data + CSV to email
-      const emailSent = await sendDataToEmail();
-      if (!emailSent) {
-        console.warn('Email may not have been sent, but continuing to payment');
-      }
-
-      // 2. Store order info in localStorage for success page
       localStorage.setItem('shibuya_order', JSON.stringify({
         name: form.name,
         email: form.email,
+        discord: form.discord,
+        referral: form.referral,
         plan: currentPlan.name,
+        planId: currentPlan.planId,
+        orderId: session.order_id,
+        sessionId: session.session_id,
         timestamp: new Date().toISOString(),
-      }));
+      }))
 
-      // 3. Redirect to Stripe Payment Link with prefilled email
-      const paymentUrl = new URL(currentPlan.paymentLink);
-      paymentUrl.searchParams.set('prefilled_email', form.email);
-      window.location.href = paymentUrl.toString();
-
+      window.location.href = session.checkout_url
     } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Something went wrong. Please try again or contact support@shibuya-analytics.com');
+      console.error('Checkout error:', error)
+      alert('Checkout could not be started. Please try again or contact support@shibuya-analytics.com')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen relative font-sans bg-[#030304] selection:bg-indigo-500/30">
       <Navbar />
-      
+
       <div className="max-w-2xl mx-auto px-6 py-24 md:py-32">
-        {/* Header */}
         <div className="mb-8">
           <Link to="/pricing" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-6">
             <ArrowLeft className="w-4 h-4" />
             Back to Pricing
           </Link>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Complete Your Order</h1>
-          <p className="text-neutral-400">Upload your trades and we'll get to work on your analysis</p>
+          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Activate Your Live Trader Account</h1>
+          <p className="text-neutral-400">Checkout unlocks the live Shibuya workspace. Upload your history after activation.</p>
         </div>
 
-        {/* Selected Plan Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -226,13 +153,12 @@ const CheckoutPage: React.FC = () => {
               <p className="text-sm text-neutral-400">{currentPlan.description}</p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold text-white font-mono">€{currentPlan.price}</span>
+              <span className="text-3xl font-bold text-white font-mono">EUR {currentPlan.price}</span>
               <p className="text-xs text-neutral-500">one-time</p>
             </div>
           </div>
         </motion.div>
 
-        {/* Form */}
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,14 +166,12 @@ const CheckoutPage: React.FC = () => {
           onSubmit={handleSubmit}
           className="space-y-6"
         >
-          {/* Personal Info */}
           <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6 md:p-8">
             <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
               <User className="w-5 h-5 text-indigo-400" />
               Your Details
             </h3>
             <div className="space-y-5">
-              {/* Name */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-neutral-300">
                   Full Name <span className="text-red-400">*</span>
@@ -263,7 +187,6 @@ const CheckoutPage: React.FC = () => {
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
                   <Mail className="w-4 h-4" />
@@ -278,10 +201,9 @@ const CheckoutPage: React.FC = () => {
                   className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
                   placeholder="your@email.com"
                 />
-                <p className="text-xs text-neutral-500 mt-1">We'll send your report here</p>
+                <p className="text-xs text-neutral-500 mt-1">We will send your order code and activation instructions here.</p>
               </div>
 
-              {/* Discord (Optional) */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
                   <MessageSquare className="w-4 h-4" />
@@ -297,7 +219,6 @@ const CheckoutPage: React.FC = () => {
                 />
               </div>
 
-              {/* Promo/Referral Code (Optional) */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
                   <Gift className="w-4 h-4" />
@@ -321,11 +242,9 @@ const CheckoutPage: React.FC = () => {
                     {promoValidating ? '...' : 'Apply'}
                   </button>
                 </div>
-                
-                {/* Promo validation result */}
                 {promoResult && (
                   <div className={`mt-2 p-3 rounded-lg text-sm flex items-center gap-2 ${
-                    promoResult.valid 
+                    promoResult.valid
                       ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
                       : 'bg-red-500/10 border border-red-500/20 text-red-400'
                   }`}>
@@ -333,146 +252,81 @@ const CheckoutPage: React.FC = () => {
                     {promoResult.message}
                   </div>
                 )}
-                
-                {promoResult?.valid && promoResult.dashboard_months_bonus > 0 && (
-                  <div className="mt-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm">
-                    🎁 Bonus: You'll get <strong>{promoResult.dashboard_months_bonus + 1} months</strong> of dashboard access instead of 1!
-                  </div>
-                )}
               </div>
             </div>
           </div>
 
-          {/* CSV Upload */}
           <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6 md:p-8">
-            <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <Upload className="w-5 h-5 text-indigo-400" />
-              Upload Your Trade History
+              What you will do after activation
             </h3>
             <p className="text-sm text-neutral-400 mb-6">
-              Export your trades as CSV from your broker/platform. We accept exports from most major platforms.
+              You do not need to upload your CSV before checkout. The live workspace is where uploads, history, alerts, and prescriptions become part of your ongoing loop.
             </p>
-
-            <div
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-                dragActive
-                  ? 'border-indigo-500 bg-indigo-500/10'
-                  : csvFile
-                  ? 'border-green-500/50 bg-green-500/5'
-                  : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
-              }`}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-
-              {csvFile ? (
-                <div className="flex items-center justify-center gap-3">
-                  <FileText className="w-8 h-8 text-green-400" />
-                  <div className="text-left">
-                    <p className="text-white font-medium">{csvFile.name}</p>
-                    <p className="text-xs text-neutral-400">
-                      {(csvFile.size / 1024).toFixed(1)} KB
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile();
-                    }}
-                    className="ml-4 p-2 hover:bg-white/10 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4 text-neutral-400" />
-                  </button>
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                'Activate your live trader account with the order code.',
+                'Upload your broker or platform export inside the workspace.',
+                'Review your trade history, edge portfolio, and discipline tax.',
+                'Use alerts and next-session guidance to iterate forward.',
+              ].map((item) => (
+                <div key={item} className="rounded-xl border border-white/5 bg-black/20 p-4 text-sm text-neutral-300 leading-relaxed">
+                  {item}
                 </div>
-              ) : (
-                <>
-                  <Upload className="w-10 h-10 text-neutral-500 mx-auto mb-3" />
-                  <p className="text-neutral-300 mb-1">
-                    Drag & drop your CSV file here
-                  </p>
-                  <p className="text-sm text-neutral-500">
-                    or click to browse
-                  </p>
-                </>
-              )}
+              ))}
             </div>
-
-            {!csvFile && (
-              <p className="text-xs text-neutral-500 mt-3 text-center">
-                Need help exporting? Check our guides for MT4, MT5, TradingView, and more.
-              </p>
-            )}
           </div>
 
-          {/* What happens next */}
           <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6">
             <h4 className="font-medium text-white mb-4">What happens next?</h4>
             <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs text-indigo-400 font-bold">1</span>
+              {[
+                'Complete payment through the live Shibuya checkout flow.',
+                'Receive your order code by email and on the success screen.',
+                'Activate your live trader account.',
+                'Upload your trade history and start using the workspace immediately.',
+              ].map((item, index) => (
+                <div key={item} className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-indigo-400 font-bold">{index + 1}</span>
+                  </div>
+                  <p className="text-neutral-400">{item}</p>
                 </div>
-                <p className="text-neutral-400">Complete payment via Stripe (secure checkout)</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs text-indigo-400 font-bold">2</span>
-                </div>
-                <p className="text-neutral-400">We analyze your trades within 72 hours</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs text-indigo-400 font-bold">3</span>
-                </div>
-                <p className="text-neutral-400">Receive your detailed PDF report via email</p>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Submit Button */}
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            disabled={loading || !csvFile}
+            disabled={loading}
             type="submit"
             className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-700 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-3"
           >
             {loading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Processing...
+                Starting checkout...
               </>
             ) : (
               <>
                 <CreditCard className="w-5 h-5" />
-                Pay €{currentPlan.price} & Submit
+                Pay EUR {currentPlan.price} and Activate
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </motion.button>
 
           <p className="text-xs text-center text-neutral-500">
-            By proceeding, you agree to our{' '}
-            <Link to="/terms" className="text-indigo-400 hover:underline">Terms</Link>
-            {' '}and{' '}
-            <Link to="/privacy" className="text-indigo-400 hover:underline">Privacy Policy</Link>
+            By proceeding, you agree to our <Link to="/terms" className="text-indigo-400 hover:underline">Terms</Link> and <Link to="/privacy" className="text-indigo-400 hover:underline">Privacy Policy</Link>.
           </p>
         </motion.form>
       </div>
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default CheckoutPage;
+export default CheckoutPage

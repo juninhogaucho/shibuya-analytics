@@ -1,64 +1,50 @@
-# 📚 SHIBUYA ANALYTICS - Documentation
+# Shibuya Docs
 
-**Complete documentation for Shibuya Analytics frontend**
+Updated: 2026-03-28
 
-**Last Updated:** December 17, 2025
+This folder is the canonical documentation surface for `shibuya-analytics`.
 
----
+Older launch notes and one-off execution plans still exist under `docs/history/`, but they are not current product truth.
 
-## 🚀 QUICK START
+## Canonical Now
 
-### For Developers
+1. [PRODUCT_THESIS.md](PRODUCT_THESIS.md)
+2. [OFFER_AND_CONNECTOR_STRATEGY.md](OFFER_AND_CONNECTOR_STRATEGY.md)
+3. [TECH_PROVIDER_PARTNER_OFFER.md](TECH_PROVIDER_PARTNER_OFFER.md)
+4. [TECH_PROVIDER_OUTBOUND_PLAYBOOK.md](TECH_PROVIDER_OUTBOUND_PLAYBOOK.md)
+5. [ARCHITECTURE.md](ARCHITECTURE.md)
+6. [TRADER_RUNTIME_CONTRACT.md](TRADER_RUNTIME_CONTRACT.md)
+7. [LAUNCH_READINESS_CHECKLIST.md](LAUNCH_READINESS_CHECKLIST.md)
+8. [QA_PLAN.md](QA_PLAN.md)
+9. [FILE_DICTIONARY.md](FILE_DICTIONARY.md)
 
-1. **Read:** [`FILE_DICTIONARY.md`](FILE_DICTIONARY.md) - Every file documented (101 files)
-2. **Read:** [`ARCHITECTURE.md`](ARCHITECTURE.md) - System architecture
-3. **Read:** Backend docs in `medallion_api/docs/shibuya-analytics/`
+## What To Read First
 
-### For AI/LLM Consumption
+- `PRODUCT_THESIS.md`
+  What Shibuya actually is and what it must do for traders.
 
-**Best entry point:** [`FILE_DICTIONARY.md`](FILE_DICTIONARY.md) - Every file documented
+- `OFFER_AND_CONNECTOR_STRATEGY.md`
+  How Shibuya reaches traders directly and through partners.
 
----
+- `TECH_PROVIDER_PARTNER_OFFER.md`
+  The canonical B2B offer for infra providers, brokers, and platform operators.
 
-## 📁 DOCUMENTATION STRUCTURE
+- `TECH_PROVIDER_OUTBOUND_PLAYBOOK.md`
+  How to approach, qualify, and structure a partner conversation.
 
-```
-docs/
-├── README.md              # This file
-├── FILE_DICTIONARY.md     # Every file documented (101 files)
-├── ARCHITECTURE.md        # System architecture
-└── QA_PLAN.md            # Quality assurance plan
-```
+- `ARCHITECTURE.md`
+  How the product should be structured technically.
 
----
+- `TRADER_RUNTIME_CONTRACT.md`
+  What the trader product is allowed to do in sample state versus live account state.
 
-## 📖 KEY DOCUMENTS
+- `LAUNCH_READINESS_CHECKLIST.md`
+  The minimum proof and engineering gates required before public launch claims.
 
-- **[FILE_DICTIONARY.md](FILE_DICTIONARY.md)** - Every file documented
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture
-- **Backend docs:** See `medallion_api/docs/shibuya-analytics/MASTER_SHIBUYA_ANALYTICS.md`
+## Documentation Rules
 
----
-
-## 🔍 FINDING INFORMATION
-
-### By File
-
-**What does `src/App.tsx` do?** → [`FILE_DICTIONARY.md`](FILE_DICTIONARY.md) → Search for `src/App.tsx`
-
-**What files handle authentication?** → [`FILE_DICTIONARY.md`](FILE_DICTIONARY.md) → Search for "auth"
-
-**Any file:** [`FILE_DICTIONARY.md`](FILE_DICTIONARY.md) - Every file documented!
-
----
-
-## 🔄 REGENERATING FILE DICTIONARY
-
-```bash
-python ../medallion_api/scripts/generate_file_dictionary.py --repo-root .
-```
-
----
-
-**Everything is documented and organized! 🎉**
-
+1. If a document is not in `Canonical Now`, do not treat it as current product truth.
+2. If a claim is not backed by repo or runtime evidence, it is not canonical.
+3. Do not position Shibuya as a generic report business.
+4. Do not position one-off prop-firm endpoints as the primary scaling model.
+5. Every new doc should improve launch clarity, trader value clarity, or engineering execution.

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getDashboardAlerts } from '../../lib/api'
+import { getAlertAction } from '../../lib/decisionSupport'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import type { AlertItem } from '../../lib/types'
 
@@ -106,12 +108,23 @@ export function AlertsPage() {
       
       {alerts.length === 0 ? (
         <div className="glass-panel empty-state">
-          <p>No alerts yet. Upload trades to receive coaching insights.</p>
+          <p>No alerts yet. Upload trades so Shibuya can detect patterns, warnings, and coaching moments.</p>
+          <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Upload trades
+          </Link>
         </div>
       ) : (
-        <div className="grid-responsive two">
+        <>
+          <section className="glass-panel" style={{ marginBottom: '1.25rem' }}>
+            <h3 style={{ marginBottom: '0.5rem' }}>What to do with these alerts</h3>
+            <p className="text-muted">
+              Alerts are only useful if they change behavior. Clear the highest-severity item first, then move to the next one. Do not keep collecting warnings without changing the trading plan.
+            </p>
+          </section>
+
+          <div className="grid-responsive two">
           {alerts.map((alert) => (
-            <article 
+            <article
               key={alert.id} 
               className={`glass-panel ${getSeverityClass(alert.severity)} ${alert.acknowledged ? 'acknowledged' : ''}`}
             >
@@ -123,9 +136,18 @@ export function AlertsPage() {
                 <span className="text-muted">{formatTimestamp(alert.timestamp)}</span>
               </div>
               <p>{alert.body}</p>
+              <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <span className="text-muted" style={{ fontSize: '0.85rem' }}>
+                  {alert.acknowledged ? 'Already acknowledged' : 'Still requires action'}
+                </span>
+                <Link to={getAlertAction(alert).to} className="btn btn-sm btn-primary">
+                  {getAlertAction(alert).label}
+                </Link>
+              </div>
             </article>
           ))}
-        </div>
+          </div>
+        </>
       )}
     </section>
   )

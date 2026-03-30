@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { PRICING, PLAN_KEYS, STRIPE_PAYMENT_LINKS } from '../../lib/constants'
 import { Section } from '../../components/ui/Section'
+import { enterSampleMode } from '../../lib/runtime'
 
 export function CheckoutPage() {
   const { planId } = useParams<{ planId: string }>()
@@ -320,10 +321,10 @@ export function CheckoutPage() {
               <strong style={{ color: 'var(--color-text)' }}>Not sure?</strong>{' '}
               <Link 
                 to="/dashboard" 
-                onClick={() => localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode')} 
+                onClick={enterSampleMode} 
                 style={{ color: 'var(--color-primary)' }}
               >
-                Explore the demo
+                Explore the sample workspace
               </Link>{' '}
               first.
             </p>

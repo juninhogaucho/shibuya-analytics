@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { enterSampleMode } from '../../lib/runtime';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -38,18 +39,29 @@ const Navbar: React.FC = () => {
              <motion.button
                 onClick={() => {
                   navigate('/dashboard');
-                  localStorage.setItem('shibuya_api_key', 'shibuya_demo_mode');
+                  enterSampleMode();
                 }}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 className="relative group uppercase text-xs py-1"
              >
-                <span className={`transition-colors duration-300 ${location.pathname.startsWith('/dashboard') ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Demo</span>
+                <span className={`transition-colors duration-300 ${location.pathname.startsWith('/dashboard') ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Sample</span>
                 <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname.startsWith('/dashboard') ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
              </motion.button>
              
              {/* Login hidden until dashboard launch - January 2025 */}
+             
+             <motion.button
+                onClick={() => navigate('/partners')}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.75 }}
+                className="relative group uppercase text-xs py-1"
+             >
+                <span className={`transition-colors duration-300 ${location.pathname === '/partners' ? 'text-indigo-400' : 'text-white group-hover:text-indigo-300'}`}>Partners</span>
+                <span className={`absolute -bottom-0 left-0 h-[1px] bg-indigo-400 transition-all duration-300 ${location.pathname === '/partners' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+             </motion.button>
              
              <motion.button
                 onClick={() => navigate('/pricing')}
@@ -67,10 +79,10 @@ const Navbar: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "#ffffff", color: "#000000" }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/pricing')}
+          onClick={() => navigate('/partners')}
           className="text-xs font-bold uppercase tracking-wider px-6 py-2 border border-white/30 hover:border-white transition-all duration-300 bg-transparent"
         >
-          Get Report
+          For Platforms
         </motion.button>
       </div>
     </motion.nav>

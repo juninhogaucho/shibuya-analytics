@@ -30,8 +30,8 @@ const StatsGrid: React.FC = () => {
       icon: <Zap className="w-6 h-6 text-cyan-500" />,
       title: "Shibuya Score",
       value: "69%",
-      metric: "Confidence level",
-      desc: "Our most important proprietary metric. We break down your performance into several components : risk management, process adherence, pure alpha, behavioral features, and a lot more. Ever wondered how trustworthy your trading is ? The Shibuya Score quantifies your true trading skill."
+      metric: "Readiness indicator",
+      desc: "A composite read on how trustworthy your current process is, not a claim to know your destiny. It summarizes risk management, process adherence, edge concentration, and behavioral drift so the next action is obvious."
     },
   ];
 

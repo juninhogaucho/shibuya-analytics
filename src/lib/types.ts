@@ -16,6 +16,43 @@ export interface TradePastePreview {
   issues?: string[]
 }
 
+export interface TradePasteMemoryDelta {
+  metric: string
+  previous: string
+  current: string
+  delta: string
+  direction: 'up' | 'down'
+}
+
+export interface TradePasteMemoryResponse {
+  has_previous: boolean
+  deltas: TradePasteMemoryDelta[]
+  message: string
+}
+
+export interface TradeHistoryTrade {
+  id: string
+  timestamp: string
+  exit_time?: string
+  symbol: string
+  side: 'BUY' | 'SELL' | string
+  size: number
+  pnl: number
+  bds_at_time?: number
+}
+
+export interface TradeHistoryResponse {
+  trades: TradeHistoryTrade[]
+  total_count: number
+  summary: {
+    total_pnl: number
+    win_count: number
+    loss_count: number
+    best_trade: number
+    worst_trade: number
+  }
+}
+
 // Dashboard Types
 export interface DashboardOverview {
   bql_state: string

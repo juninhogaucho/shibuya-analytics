@@ -82,7 +82,7 @@ const Methodology: React.FC = () => {
           >
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-l from-indigo-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="absolute top-4 right-6 text-xs font-mono text-indigo-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
-                See Live Demo <ArrowRight className="w-3 h-3" />
+                See Sample Workspace <ArrowRight className="w-3 h-3" />
             </div>
 
             <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">

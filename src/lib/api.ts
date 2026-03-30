@@ -1,9 +1,12 @@
 import axios, { AxiosError } from 'axios'
 import { API_BASE_URL } from './constants'
+import { clearShibuyaSession, getStoredApiKey, isSampleMode, setLiveApiKey } from './runtime'
 import type { 
   ActivationPayload, 
   ActivationResponse, 
   TradePastePreview,
+  TradePasteMemoryResponse,
+  TradeHistoryResponse,
   DashboardOverview,
   AlertsResponse,
   EdgePortfolioResponse,
@@ -69,7 +72,7 @@ const http = axios.create({
 
 // Add auth token to requests
 http.interceptors.request.use((config) => {
-  const token = localStorage.getItem('shibuya_api_key')
+  const token = getStoredApiKey()
   if (token) {
     config.headers['X-API-Key'] = token
   }
@@ -84,7 +87,7 @@ http.interceptors.response.use(
     const requestId = (error.response?.headers?.['x-request-id'] as string) || undefined
     
     if (status === 401) {
-      localStorage.removeItem('shibuya_api_key')
+      clearShibuyaSession()
       window.location.href = '/activate'
     }
     
@@ -93,11 +96,6 @@ http.interceptors.response.use(
     throw new ApiError(message, status || 0, requestId)
   }
 )
-
-// Check if in demo mode
-function isDemoMode(): boolean {
-  return localStorage.getItem('shibuya_api_key') === 'shibuya_demo_mode'
-}
 
 // Retry logic for transient failures
 async function withRetry<T>(
@@ -128,7 +126,7 @@ async function withRetry<T>(
   throw lastError
 }
 
-// Demo Data - Realistic, detailed, showcasing the value proposition
+// Sample data used to teach the workflow before a trader has live account data.
 const DEMO_DATA = {
   overview: {
     // BQL = Behavioral Quality Level: 0 = robot, 1 = full tilt
@@ -471,7 +469,7 @@ export interface LoginResponse {
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
   if (data.success && data.api_key) {
-    localStorage.setItem('shibuya_api_key', data.api_key)
+    setLiveApiKey(data.api_key)
   }
   return data
 }
@@ -479,7 +477,7 @@ export async function login(payload: LoginRequest): Promise<LoginResponse> {
 export async function register(payload: LoginRequest & { name?: string }): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/register', payload)
   if (data.success && data.api_key) {
-    localStorage.setItem('shibuya_api_key', data.api_key)
+    setLiveApiKey(data.api_key)
   }
   return data
 }
@@ -488,7 +486,7 @@ export async function register(payload: LoginRequest & { name?: string }): Promi
 export async function verifyActivation(payload: ActivationPayload): Promise<ActivationResponse> {
   const { data } = await http.post<ActivationResponse>('/v1/trader/activations/verify', payload)
   if (data.activationToken) {
-    localStorage.setItem('shibuya_api_key', data.activationToken)
+    setLiveApiKey(data.activationToken)
   }
   return data
 }
@@ -502,9 +500,23 @@ export async function parseTradePaste(payload: { body: string }) {
   return data
 }
 
+export async function getTradePasteMemory(): Promise<TradePasteMemoryResponse> {
+  return withRetry(async () => {
+    const { data } = await http.get<TradePasteMemoryResponse>('/v1/dashboard/trade-paste-memory')
+    return data
+  })
+}
+
+export async function getTradeHistory(): Promise<TradeHistoryResponse> {
+  return withRetry(async () => {
+    const { data } = await http.get<TradeHistoryResponse>('/v1/dashboard/trade-history')
+    return data
+  })
+}
+
 // Dashboard endpoints
 export async function getDashboardOverview(): Promise<DashboardOverview> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 400)) // Simulate network
     return DEMO_DATA.overview
   }
@@ -515,7 +527,7 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
 }
 
 export async function getDashboardAlerts(): Promise<AlertsResponse> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 300))
     return DEMO_DATA.alerts
   }
@@ -526,7 +538,7 @@ export async function getDashboardAlerts(): Promise<AlertsResponse> {
 }
 
 export async function getEdgePortfolio(): Promise<EdgePortfolioResponse> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 350))
     return DEMO_DATA.edgePortfolio
   }
@@ -537,7 +549,7 @@ export async function getEdgePortfolio(): Promise<EdgePortfolioResponse> {
 }
 
 export async function getSlumpPrescription(): Promise<SlumpPrescription> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 250))
     return DEMO_DATA.slump
   }
@@ -548,7 +560,7 @@ export async function getSlumpPrescription(): Promise<SlumpPrescription> {
 }
 
 export async function getShadowBoxing(): Promise<ShadowBoxingResponse> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 400))
     return DEMO_DATA.shadowBoxing
   }
@@ -560,9 +572,9 @@ export async function getShadowBoxing(): Promise<ShadowBoxingResponse> {
 
 // Upload
 export async function uploadTradesCSV(file: File): Promise<{ status: string; trades_uploaded: number; report: Record<string, unknown> }> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    return { status: 'demo', trades_uploaded: 0, report: { message: 'Upload disabled in demo mode' } }
+    return { status: 'sample', trades_uploaded: 0, report: { message: 'Upload disabled in sample workspace' } }
   }
   const formData = new FormData()
   formData.append('file', file)
@@ -574,11 +586,11 @@ export async function uploadTradesCSV(file: File): Promise<{ status: string; tra
 
 // Submit parsed trades (from paste flow)
 export async function submitParsedTrades(payload: { trades: unknown[]; rawText: string }): Promise<{ status: string; trades_uploaded: number }> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 800))
     // Simulate counting trades from raw text
     const lineCount = payload.rawText.trim().split('\n').filter(l => l.trim()).length
-    return { status: 'demo', trades_uploaded: lineCount }
+    return { status: 'sample', trades_uploaded: lineCount }
   }
   const { data } = await http.post('/v1/dashboard/trades/submit', payload)
   return data
@@ -593,7 +605,7 @@ export interface ContactMessagePayload {
 }
 
 export async function submitContactMessage(payload: ContactMessagePayload): Promise<{ status: string }> {
-  if (isDemoMode()) {
+  if (isSampleMode()) {
     await new Promise(resolve => setTimeout(resolve, 400))
     return { status: 'queued' }
   }
@@ -603,7 +615,7 @@ export async function submitContactMessage(payload: ContactMessagePayload): Prom
 
 // Helper to check if authenticated
 export function isAuthenticated(): boolean {
-  return !!localStorage.getItem('shibuya_api_key')
+  return !!getStoredApiKey()
 }
 
 // Stripe Checkout
@@ -628,14 +640,14 @@ export async function createCheckoutSession(payload: CheckoutSessionRequest): Pr
 
 // Logout / Clear Session
 export function logout(): void {
-  localStorage.removeItem('shibuya_api_key')
+  clearShibuyaSession()
   // Clear any cached data
   window.location.href = '/activate'
 }
 
 // Clear all local data (for account deletion or hard reset)
 export function clearAllData(): void {
-  localStorage.removeItem('shibuya_api_key')
+  clearShibuyaSession()
   // Future: clear IndexedDB, cookies if used
   window.location.href = '/'
 }
