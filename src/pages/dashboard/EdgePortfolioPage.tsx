@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom'
 import { getEdgePortfolio } from '../../lib/api'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import { InfoTooltip } from '../../components/ui/Tooltip'
+import { Badge, EdgeBadge } from '../../components/ui/Badge'
+import { EngineTag } from '../../components/engine/EngineTag'
+import { ChartCard } from '../../components/charts/ChartCard'
+import { EdgeComparisonChart } from '../../components/charts/EdgeComparisonChart'
 import type { EdgePortfolioResponse, EdgeItem } from '../../lib/types'
 
 // Human-readable interpretations
@@ -128,11 +132,13 @@ export function EdgePortfolioPage() {
   return (
     <div className="dashboard-stack">
       <header className="section-header">
-        <p className="badge">Edge Portfolio</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="badge" style={{ marginBottom: 0 }}>Edge Portfolio</p>
+          <EngineTag engineId="afma" label="AFMA drift detection" />
+        </div>
         <h1>Which setups are actually making you money?</h1>
         <p className="text-muted">
-          We analyze your trades by setup type to show you what's working and what's not. 
-          Stop thinking "I'm a bad trader" and start thinking "I need to trade my PRIME setups more."
+          4 independent drift metrics per setup. PSI, Wasserstein, KS, and MMD — each with bootstrap confidence intervals. Not one stat deciding your fate — four running simultaneously.
         </p>
       </header>
 
@@ -182,9 +188,28 @@ export function EdgePortfolioPage() {
         )}
       </div>
 
+      {/* Edge comparison chart */}
+      {data.edges.length > 0 && (
+        <ChartCard
+          title="Edge P&L Comparison"
+          subtitle="Which setups are making vs. costing you money"
+          height={Math.max(140, data.edges.length * 36)}
+          headerRight={<EngineTag engineId="afma" />}
+        >
+          <EdgeComparisonChart
+            data={data.edges.map((e) => ({
+              name: e.name,
+              pnl: e.pnl ?? 0,
+              status: e.status as 'PRIME' | 'STABLE' | 'DECAYED',
+            }))}
+            height={Math.max(140, data.edges.length * 36)}
+          />
+        </ChartCard>
+      )}
+
       {/* Recommendation */}
       <section className="glass-panel recommendation-card">
-        <h3>💡 What You Should Do</h3>
+        <Badge variant="info" label="Recommendation" className="mb-2" />
         <p>{data.summary.recommendation}</p>
       </section>
 
@@ -208,11 +233,7 @@ export function EdgePortfolioPage() {
             >
               <div className="edge-header">
                 <h4>{edge.name}</h4>
-                <span className={`edge-status ${edge.status}`}>
-                  {edge.status === 'PRIME' ? '🚀 Keep Trading' : 
-                   edge.status === 'STABLE' ? '📊 Optimize' : 
-                   '⛔ Stop Trading'}
-                </span>
+                <EdgeBadge status={edge.status as 'PRIME' | 'STABLE' | 'DECAYED'} />
               </div>
               
               <div className="edge-metrics">
@@ -304,18 +325,18 @@ export function EdgePortfolioPage() {
 
       {/* Simple Guide */}
       <section className="glass-panel">
-        <h3>📚 What This Means For Your Trading</h3>
+        <h3>What This Means For Your Trading</h3>
         <div className="guide-grid">
           <div className="guide-item">
-            <h5>🚀 PRIME = Trade More</h5>
+            <div className="flex items-center gap-2 mb-2"><EdgeBadge status="PRIME" /> <span className="text-sm font-semibold">= Trade More</span></div>
             <p>These setups are making you money. Look for more opportunities like these. If you're only taking 2 of these per week, can you find 4?</p>
           </div>
           <div className="guide-item">
-            <h5>📊 STABLE = Improve or Skip</h5>
+            <div className="flex items-center gap-2 mb-2"><EdgeBadge status="STABLE" /> <span className="text-sm font-semibold">= Improve or Skip</span></div>
             <p>Breaking even isn't bad, but it's not great. Either refine your entries/exits or focus your energy on PRIME setups instead.</p>
           </div>
           <div className="guide-item">
-            <h5>⛔ DECAYED = Stop Immediately</h5>
+            <div className="flex items-center gap-2 mb-2"><EdgeBadge status="DECAYED" /> <span className="text-sm font-semibold">= Stop Immediately</span></div>
             <p>These setups are costing you real money. Remove them from your playbook. Don't hope they'll "come back" – they won't.</p>
           </div>
         </div>

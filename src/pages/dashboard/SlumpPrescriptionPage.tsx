@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import { getSlumpPrescription } from '../../lib/api'
 import { buildSlumpExecutionChecklist } from '../../lib/decisionSupport'
 import { SkeletonCard, Skeleton, SkeletonMetricCard } from '../../components/ui/Skeleton'
+import { Badge } from '../../components/ui/Badge'
+import { EngineTag } from '../../components/engine/EngineTag'
+import { ChartCard } from '../../components/charts/ChartCard'
+import { DrawdownCurve, generateDrawdownData } from '../../components/charts/DrawdownCurve'
+import { StateTimeline, generateStateSegments } from '../../components/charts/StateTimeline'
 import type { SlumpPrescription } from '../../lib/types'
 
 // Function to explain WHY each rule is recommended
@@ -106,22 +111,60 @@ export function SlumpPrescriptionPage() {
   return (
     <div className="dashboard-stack">
       <header className="section-header">
-        <p className="badge">Pattern Recognition</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="badge" style={{ marginBottom: 0 }}>Pattern Recognition</p>
+          <EngineTag engineId="bql" label="BQL state detection" />
+          <EngineTag engineId="snell" label="Snell optimal stopping" />
+        </div>
         <h1>Slump Remediation</h1>
         <p className="text-muted">
-          When your trading patterns match historical slump conditions, we suggest specific constraints to protect capital. 
-          These are guardrails derived from your own past behavior.
+          The intervention timing isn't guesswork — it's the Snell Envelope: the same backward induction that prices American options. We compute the mathematically optimal moment to pull you back.
         </p>
       </header>
 
+      {/* Drawdown + State Timeline visual */}
+      {data.is_slump && (
+        <div className="grid-responsive two" style={{ marginBottom: '1.5rem' }}>
+          <ChartCard
+            title="Drawdown Trajectory"
+            subtitle="Where you are in the drawdown right now"
+            height={160}
+            headerRight={<EngineTag engineId="cox" label="Cox Hazard" />}
+          >
+            <DrawdownCurve
+              data={generateDrawdownData(data.drawdown_pct || 6, 20)}
+              maxDrawdown={data.prescription?.position_cap_pct ? data.drawdown_pct : undefined}
+              height={160}
+            />
+          </ChartCard>
+
+          <ChartCard
+            title="Behavioral State — Recent Sessions"
+            subtitle="Not just this session — the pattern over time"
+            height={160}
+            headerRight={<EngineTag engineId="bql" />}
+          >
+            <div style={{ paddingTop: '1rem' }}>
+              <StateTimeline
+                segments={generateStateSegments(data.bql_state, 7)}
+                height={80}
+              />
+              <p className="text-xs text-neutral-500 mt-3" style={{ fontFamily: 'monospace' }}>
+                {data.days_in_slump || 0} days in current state · {data.consecutive_losses || 0} consecutive losses
+              </p>
+            </div>
+          </ChartCard>
+        </div>
+      )}
+
       {/* State Indicator */}
       <div className={`glass-panel state-indicator ${data.is_slump ? 'slump' : 'healthy'}`}>
-        <span className="state-icon">{data.is_slump ? '🚨' : '✅'}</span>
+        <Badge variant={data.is_slump ? 'danger' : 'success'} label={data.is_slump ? 'Slump Detected' : 'Healthy'} size="md" />
         <div className="state-content">
           <h3>{data.bql_state.replace('_', ' ')}</h3>
           <p>
-            {data.is_slump 
-              ? `Your metrics suggest a slump phase. ${data.consecutive_losses || 0} consecutive losses, ${data.drawdown_pct?.toFixed(1) || 0}% drawdown, ${data.days_in_slump || 0} days.` 
+            {data.is_slump
+              ? `Your metrics suggest a slump phase. ${data.consecutive_losses || 0} consecutive losses, ${data.drawdown_pct?.toFixed(1) || 0}% drawdown, ${data.days_in_slump || 0} days.`
               : 'You are trading within healthy parameters. Keep it up!'}
           </p>
         </div>
@@ -131,7 +174,10 @@ export function SlumpPrescriptionPage() {
         <>
           {/* Main Prescription Message */}
           <section className="glass-panel prescription-main">
-            <h2>🛡️ Suggested Protocol</h2>
+            <div className="flex items-center gap-2 mb-3">
+              <h2>Suggested Protocol</h2>
+              <EngineTag engineId="snell" label="Snell Envelope" />
+            </div>
             <p className="prescription-message">{data.prescription.message}</p>
           </section>
 
@@ -193,7 +239,11 @@ export function SlumpPrescriptionPage() {
           {/* Banned Assets */}
           {data.prescription.banned_assets.length > 0 && (
             <section className="glass-panel">
-              <h3>🚫 High-Risk Assets</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <h3>High-Risk Assets</h3>
+                <EngineTag engineId="cox" label="Cox Hazard survival" />
+                <Badge variant="danger" label={`${data.prescription.banned_assets.length} assets`} />
+              </div>
               <p className="text-muted">Historically, these assets have contributed most to your drawdowns during similar periods:</p>
               <div className="banned-list">
                 {data.prescription.banned_assets.map((asset) => (
@@ -206,7 +256,7 @@ export function SlumpPrescriptionPage() {
           {/* Recovery Criteria */}
           {data.prescription.recovery_criteria && (
             <section className="glass-panel recovery-criteria">
-              <h3>✅ Exit Slump When:</h3>
+              <h3>Exit Slump When:</h3>
               <ul className="recovery-list">
                 {data.prescription.recovery_criteria.map((criteria, idx) => (
                   <li key={idx}>{criteria}</li>
@@ -218,7 +268,7 @@ export function SlumpPrescriptionPage() {
           {/* Historical Context */}
           {data.prescription.historical_context && (
             <section className="glass-panel historical-context">
-              <h3>📊 Historical Context</h3>
+              <h3>Historical Context</h3>
               <p>{data.prescription.historical_context}</p>
             </section>
           )}

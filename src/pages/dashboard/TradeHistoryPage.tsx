@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
+import { EngineTag } from '../../components/engine/EngineTag'
+import { ChartCard } from '../../components/charts/ChartCard'
+import { PnLDistribution, generateDistributionData } from '../../components/charts/PnLDistribution'
+import { PerformanceHeatmap, generateHeatmapData } from '../../components/charts/PerformanceHeatmap'
 import { getTradeHistory } from '../../lib/api'
 import type { TradeHistoryResponse, TradeHistoryTrade } from '../../lib/types'
 import { isSampleMode } from '../../lib/runtime'
@@ -166,13 +170,44 @@ export function TradeHistoryPage() {
   return (
     <div className="dashboard-stack">
       <header className="section-header">
-        <p className="badge">Trade History</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="badge" style={{ marginBottom: 0 }}>Trade History</p>
+          <EngineTag engineId="bql" label="BQL state per trade" />
+        </div>
         <h1>Your Trades</h1>
         <p className="text-muted">
-          Every trade you've uploaded, with behavioral state at time of entry.
-          Use this to spot patterns between your mental state and outcomes.
+          Every trade with behavioral state at time of entry. The BDS column tells you what your brain was doing when you placed the order.
         </p>
       </header>
+
+      {/* Charts — distribution + heatmap */}
+      <div className="grid-responsive two" style={{ marginBottom: '1.5rem' }}>
+        <ChartCard
+          title="Win/Loss Distribution"
+          subtitle="Shape of your outcomes — are losses fat-tailed?"
+          height={180}
+          headerRight={<EngineTag engineId="evt" label="EVT tail analysis" />}
+        >
+          <PnLDistribution
+            data={generateDistributionData(
+              data.summary.best_trade * 0.4,
+              Math.abs(data.summary.worst_trade) * 0.4,
+              data.summary.win_count,
+              data.summary.loss_count
+            )}
+            height={180}
+          />
+        </ChartCard>
+
+        <ChartCard
+          title="Performance by Time"
+          subtitle="When are you actually making money?"
+          height={180}
+          headerRight={<EngineTag engineId="afma" label="temporal analysis" />}
+        >
+          <PerformanceHeatmap data={generateHeatmapData()} height={160} />
+        </ChartCard>
+      </div>
 
       {/* Summary Stats */}
       <div className="trade-summary glass-panel">

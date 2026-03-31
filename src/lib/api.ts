@@ -68,6 +68,9 @@ function getErrorMessage(error: AxiosError): string {
 const http = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000, // Increased timeout for file uploads
+  headers: {
+    'X-Brand': 'shibuya',
+  },
 })
 
 // Add auth token to requests

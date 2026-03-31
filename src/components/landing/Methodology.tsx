@@ -89,10 +89,11 @@ const Methodology: React.FC = () => {
                 <div>
                     <h3 className="text-2xl font-display font-bold uppercase mb-4 text-white group-hover:text-indigo-100 transition-colors">Different by Design</h3>
                     <p className="font-serif text-lg text-neutral-400 italic mb-6">"What makes this different from Edgewonk or TraderVue?"</p>
-                    <p className="text-neutral-300 leading-relaxed mb-6">
-                        Those tools track <span className="text-white font-semibold">what you do</span>. We tell you <span className="text-white font-semibold">what it costs you</span>.
-                        They show you charts and stats. We show you: "Your revenge trades cost you €847 last month."
-                        We quantify your emotions in euros, not just graphs.
+                    <p className="text-neutral-300 leading-relaxed mb-4">
+                        Edgewonk tracks what you do. TraderVue shows you charts. PropSentinel alerts you that you're revenge trading. <span className="text-white font-semibold">None of them tell you why, prove the causation, or prescribe the exact corrective action.</span>
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed mb-6 text-sm">
+                        We run Double Machine Learning to prove behavioral causation. Snell Envelope to compute the mathematically optimal moment to intervene. Cox Hazard survival analysis to predict your exact breach timeline. They alert you. We diagnose you.
                     </p>
                 </div>
                 <div className="h-full min-h-[200px] border border-white/10 rounded-xl bg-black/50 p-6 flex flex-col justify-center shadow-xl group-hover:border-indigo-500/30 transition-colors">

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getShadowBoxing } from '../../lib/api'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
+import { Badge } from '../../components/ui/Badge'
+import { EngineTag } from '../../components/engine/EngineTag'
 import type { ShadowBoxingResponse } from '../../lib/types'
 
 export function ShadowBoxingPage() {
@@ -75,18 +77,28 @@ export function ShadowBoxingPage() {
   return (
     <div className="dashboard-stack">
       <header className="section-header">
-        <p className="badge">Prop Firm Simulator</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="badge" style={{ marginBottom: 0 }}>Prop Firm Simulator</p>
+          <EngineTag engineId="cox" label="Cox Hazard survival" />
+          <EngineTag engineId="bql" label="Monte Carlo" />
+        </div>
         <h1>Shadow Boxing</h1>
         <p className="text-muted">
-          We run your actual trades through the exact rules of major prop firms.
-          Know if you're ready for capital before spending a dime on a challenge.
+          We run your actual trades through the exact rules of major prop firms. Cox proportional hazard survival analysis predicts your breach timeline. Monte Carlo stress-tests your pass probability across 10,000 scenarios.
         </p>
       </header>
 
       {/* Capital Ready Score */}
       {data.capital_ready_score !== undefined && data.capital_ready_breakdown && (
         <section className="glass-panel">
-          <h3>🎯 Capital Ready Score</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <h3>Capital Ready Score</h3>
+            <Badge
+              variant={data.capital_ready_score >= 70 ? 'success' : data.capital_ready_score >= 50 ? 'warning' : 'danger'}
+              label={`${data.capital_ready_score}/100`}
+              size="md"
+            />
+          </div>
           <div className="capital-ready-section">
             <div className="capital-score">
               <span className="capital-score-value">{data.capital_ready_score}</span>

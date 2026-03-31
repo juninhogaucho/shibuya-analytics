@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../../components/landing/Navbar';
 import Hero from '../../components/landing/Hero';
 import StatsGrid from '../../components/landing/StatsGrid';
+import { EngineShowcase } from '../../components/landing/EngineShowcase';
 import Methodology from '../../components/landing/Methodology';
 import HowItWorks from '../../components/landing/HowItWorks';
 import DashboardPreview from '../../components/landing/DashboardPreview';
@@ -16,6 +17,7 @@ const HomePage: React.FC = () => {
       <Navbar />
       <Hero />
       <StatsGrid />
+      <EngineShowcase />
       <Methodology />
       <HowItWorks />
       <DashboardPreview />

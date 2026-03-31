@@ -50,8 +50,8 @@ const HowItWorks: React.FC = () => {
            desc="Drag and drop your file. We parse execution times, prices, and volumes. No funds access required."
         />
         <Step
-           title="Get The Report"
-           desc="Receive a 10-page PDF deep dive into your metrics, psychology states, and more. Get actionable insights and a clear plan to save your capital."
+           title="Get Your Operating System"
+           desc="Your live trader workspace activates immediately. Discipline tax. Edge portfolio. Behavioral state. Next-session mandate. Not a PDF — a living system that updates every session."
         />
       </motion.div>
 

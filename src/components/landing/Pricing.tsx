@@ -24,6 +24,19 @@ const Pricing: React.FC = () => {
         </motion.h2>
 
         {/* Social Proof */}
+        {/* Competitive context */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-6"
+        >
+          <p className="text-sm text-neutral-500 font-mono">
+            Our competitors charge <span className="text-neutral-400 line-through">$50–150/month</span> for basic alerts.
+            <span className="text-white font-semibold"> Shibuya gives you full causal diagnosis. Once.</span>
+          </p>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
