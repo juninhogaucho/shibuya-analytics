@@ -7,24 +7,40 @@ const FAQ: React.FC = () => {
 
   const faqs = [
     {
+      q: 'What exactly do I get after I pay?',
+      a: 'You receive an order code, activate your live workspace, create your return password, upload your trade history, and get a decision-grade action board built around the leak, the stop, and the next-session mandate.',
+    },
+    {
+      q: 'Why use this instead of ChatGPT or a normal journal?',
+      a: 'Because generic AI gives you a conversation. Shibuya gives you a stored baseline, a repeatable standards layer, delivery-state tracking, comparison artifacts, and a next-session control loop built on your actual trading history.',
+    },
+    {
       q: "How do you calculate the 'discipline tax'?",
-      a: "We analyze patterns in your trading data that correlate with emotional decisions: trades taken within minutes of a loss, position sizes that spike after wins, and sessions where your behavior breaks from your own edge.",
+      a: 'We analyze patterns in your trading data that correlate with emotional decisions: trades taken after losses, size spikes, fatigue windows, and other execution breaks from your own edge. The point is to make the leak concrete, not philosophical.',
     },
     {
-      q: 'How quickly can I start using Shibuya?',
-      a: 'Immediately after payment settles. You receive an order code, activate your live trader account, then upload your trade history inside the workspace.',
+      q: 'Is this therapy or mindset coaching?',
+      a: 'No. The standard here is professional execution. Shibuya treats tilt, overtrading, and size indiscipline as performance failures that should be measured, named, and corrected, not romanticized.',
     },
     {
-      q: 'What if my trading is already profitable?',
-      a: 'Profitable traders still leave money on the table. Shibuya is for traders who want to keep more of their edge, cut avoidable losses, and make better decisions between good trades.',
+      q: 'Is this only for losing traders?',
+      a: 'No. The primary wedge is the trader who keeps leaking money for behavioral reasons, but profitable traders also use Shibuya to protect what actually pays them and stop self-sabotaging between good sessions.',
     },
     {
-      q: 'Is this for forex only?',
-      a: 'No. We support any market with timestamped trade data: crypto, futures, stocks, indices. If you can export a CSV, the workspace can work with it.',
+      q: 'Does this help with prop challenges and funded accounts?',
+      a: 'Yes. The same loop is useful for direct traders and for traders trying to stop breaching prop rules. The product is built to surface repeat-breach behavior, size drift, revenge loops, and the setups worth protecting.',
     },
     {
-      q: 'Do I need to upload data before I pay?',
-      a: 'No. Payment unlocks your live trader account. Upload and append your trade history inside the workspace once you are activated.',
+      q: 'Do I need a live broker connection before I start?',
+      a: 'No. If you can export timestamped history, you can start. The current product is built around upload-first activation so you can get value without waiting on deep integrations.',
+    },
+    {
+      q: 'Do you offer one-time and monthly options?',
+      a: 'Yes. You can buy a one-time reset window if you want a bounded intervention, or use the monthly live tiers if you want the workspace, uploads, and corrective loop to stay alive across sessions.',
+    },
+    {
+      q: 'Do I need an automatic broker connection before I can get value?',
+      a: 'No. The current India-first path is manual upload by design. If you can export timestamped trade history or contract notes, you can start now and get the same standards layer, reports, and next-session protocol without waiting on connectors.',
     },
   ]
 
@@ -33,7 +49,7 @@ const FAQ: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <h2 className="text-4xl font-display font-bold text-white uppercase mb-4">Common Questions</h2>
-          <p className="font-serif text-neutral-400 text-lg italic">Everything you need to know about activation, uploads, and the trader workspace.</p>
+          <p className="font-serif text-neutral-400 text-lg italic">Everything you need to know about activation, uploads, standards, and why this is not another trader toy.</p>
         </div>
 
         <div className="md:col-span-8 space-y-4">

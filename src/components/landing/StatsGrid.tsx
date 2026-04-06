@@ -1,199 +1,223 @@
-import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Flame, BarChart2, TrendingUp, Crosshair, Zap } from 'lucide-react';
-import { GridPattern } from './Visuals';
+import React, { useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { BarChart2, Crosshair, Flame, TrendingUp, Zap } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
+import { GridPattern } from './Visuals'
+import { resolveMarket } from '../../lib/market'
+
+const INDIA_STATS = [
+  {
+    icon: <Flame className="h-6 w-6 text-rose-500" />,
+    title: 'Revenge Trading',
+    value: '\u20b911,789',
+    metric: 'The "I will make it back"',
+    desc: 'One bad loss turns into eleven trades and a much worse day. Shibuya identifies when you force it, what it cost you, and when you should have stopped.',
+  },
+  {
+    icon: <BarChart2 className="h-6 w-6 text-amber-500" />,
+    title: 'Risk Skew',
+    value: '3.2x',
+    metric: 'The overconfidence asymmetry',
+    desc: 'You size up when emotional and size down when clear. We show the exact asymmetry so you stop leaking on execution, not just on strategy.',
+  },
+  {
+    icon: <Crosshair className="h-6 w-6 text-emerald-500" />,
+    title: 'Setup Decay',
+    value: '3 stale patterns',
+    metric: 'Edge decay factor',
+    desc: 'A favorite setup can keep firing long after its edge is gone. Shibuya surfaces which patterns still pay and which ones are quietly bleeding the account.',
+  },
+  {
+    icon: <Zap className="h-6 w-6 text-cyan-500" />,
+    title: 'Action Score',
+    value: '69%',
+    metric: 'Readiness indicator',
+    desc: 'A composite read on how trustworthy your current process is. Not destiny. A signal for whether to press, reduce risk, or stop.',
+  },
+]
+
+const GLOBAL_STATS = [
+  {
+    icon: <Flame className="h-6 w-6 text-rose-500" />,
+    title: 'Revenge Trading',
+    value: 'EUR 847',
+    metric: 'The "I will make it back"',
+    desc: 'Good traders still torch consistency by trying to reverse one bad sequence immediately. Shibuya makes that leak explicit and expensive.',
+  },
+  {
+    icon: <BarChart2 className="h-6 w-6 text-amber-500" />,
+    title: 'Risk Skew',
+    value: '3.2x',
+    metric: 'Execution asymmetry',
+    desc: 'You size up when emotional and size down when clear. The platform quantifies the skew so you can correct it instead of rationalizing it.',
+  },
+  {
+    icon: <Crosshair className="h-6 w-6 text-emerald-500" />,
+    title: 'Setup Decay',
+    value: '3 stale patterns',
+    metric: 'Edge decay factor',
+    desc: 'Some setups keep getting traded because they once paid well. Shibuya forces the distinction between current edge and nostalgia.',
+  },
+  {
+    icon: <Zap className="h-6 w-6 text-cyan-500" />,
+    title: 'Action Score',
+    value: '69%',
+    metric: 'Readiness indicator',
+    desc: 'A composite read on whether your current process deserves more risk, less risk, or a full stop.',
+  },
+]
 
 const StatsGrid: React.FC = () => {
-  const stats = [
-    { 
-      icon: <Flame className="w-6 h-6 text-rose-500" />,
-      title: "Revenge Trading",
-      value: "€847",
-      metric: "The \"I'll make it back\"",
-      desc: "Your strategy said 3 trades per day max. 11 trades and -847€ later, you realize why. We identify when you revenge trade, how much it costs you, what causes it, and the optimal break window for you. No need for FOMO. You won't miss out."
-    },
-    { 
-      icon: <BarChart2 className="w-6 h-6 text-amber-500" />,
-      title: "Risk Skew",
-      value: "3.2x",
-      metric: "The overconfidence",
-      desc: "You size up when you're losing to 'make it back'. You size down when winning to 'protect profits'. But you don't know the exact amount it costs you, therefore it doesn't hurt you enough. We make sure it does."
-    },
-    { 
-      icon: <Crosshair className="w-6 h-6 text-emerald-500" />,
-      title: "The Setup Trap",
-      value: "3 outdated strategies",
-      metric: "Edge Decay Factor",
-      desc: "Most traders have one 'favorite' setup that actually drains their account. We identify patterns and strategies that haven't been profitable for you anymore. Yes, we know that losing is part of trading. But losing your edge without you knowing, shouldn't be"
-    },
-    { 
-      icon: <Zap className="w-6 h-6 text-cyan-500" />,
-      title: "Shibuya Score",
-      value: "69%",
-      metric: "Readiness indicator",
-      desc: "A composite read on how trustworthy your current process is, not a claim to know your destiny. It summarizes risk management, process adherence, edge concentration, and behavioral drift so the next action is obvious."
-    },
-  ];
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+  const stats = market === 'india' ? INDIA_STATS : GLOBAL_STATS
+  const headlineFigure = market === 'india' ? '\u20b914,000+' : 'EUR 3,418'
+  const headlineLabel =
+    market === 'india'
+      ? 'Illustrative annual avoidable loss from behavioral leakage'
+      : 'Illustrative monthly avoidable loss from behavioral leakage'
 
   return (
-    <section className="relative bg-[#050505] border-t border-white/5 py-24 md:py-32 lg:py-40 overflow-hidden">
-      {/* Background Pattern */}
+    <section className="relative overflow-hidden border-t border-white/5 bg-[#050505] py-24 md:py-32 lg:py-40">
       <div className="absolute inset-0 opacity-5">
         <GridPattern />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-        
-        {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20 lg:mb-24">
-          <motion.span 
-            className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-6 block"
+      <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
+        <div className="mb-16 text-center md:mb-20 lg:mb-24">
+          <motion.span
+            className="mb-6 block font-mono text-xs uppercase tracking-widest text-indigo-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            The Hidden Cost
+            The Leak
           </motion.span>
-          
-          <motion.h2 
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 uppercase leading-[0.95]"
+
+          <motion.h2
+            className="mb-6 text-4xl font-display font-bold uppercase leading-[0.95] text-white md:text-6xl lg:text-7xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            The Price of <span className="text-neutral-600">Being Human</span>
+            {market === 'india' ? 'Why Good Market Reads Still' : 'Why Good Traders Still'}
+            <span className="text-neutral-600"> {market === 'india' ? 'Bleed The Account' : 'Blow Good Accounts'}</span>
           </motion.h2>
-          
-          <motion.p 
-            className="text-lg md:text-xl font-serif text-neutral-400 italic max-w-2xl mx-auto mb-12"
+
+          <motion.p
+            className="mx-auto mb-12 max-w-2xl font-serif text-lg italic text-neutral-400 md:text-xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Analysis of over 110,000 trades across all markets shows that humans are not as rational as they think. And too rational for their own good. Our analysis reveals the hidden taxes you pay to your own psychology.
+            {market === 'india'
+              ? 'SEBI already proved the loss problem. Shibuya focuses on the behavioral leak that keeps repeating after the indicator, the finfluencer, and the new setup.'
+              : 'Most traders do not need another indicator. They need to know which repeat mistake is still taxing the account before it becomes a breach.'}
           </motion.p>
 
-          {/* Hero Stat */}
-          <motion.div 
+          <motion.div
             className="inline-block"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <div className="text-6xl md:text-8xl lg:text-9xl font-display font-bold text-white leading-none">
-              €3,418
+            <div className="text-6xl font-display font-bold leading-none text-white md:text-8xl lg:text-9xl">
+              {headlineFigure}
             </div>
-            <div className="flex items-center justify-center gap-3 text-red-400 mt-4">
-              <TrendingUp className="w-5 h-5" />
-              <span className="font-mono text-sm uppercase tracking-wider">Average Monthly Avoidable Loss</span>
+            <div className="mt-4 flex items-center justify-center gap-3 text-red-400">
+              <TrendingUp className="h-5 w-5" />
+              <span className="font-mono text-sm uppercase tracking-wider">{headlineLabel}</span>
             </div>
-            <p className="text-sm font-sans text-neutral-500 mt-4 max-w-md mx-auto">
-              The amount a profitable trader gives back purely due to behavioral errors and subsequent suboptimal execution/risk management. This loss is entirely avoidable, independent of strategy performance.
+            <p className="mx-auto mt-4 max-w-md text-sm font-sans text-neutral-500">
+              {market === 'india'
+                ? 'Not market loss. Process loss. The kind that keeps getting normalized while the trader says the next big day or next finfluencer setup will fix everything.'
+                : 'Not market loss. Process loss. The kind that keeps appearing in breached accounts and almost-there traders.'}
             </p>
           </motion.div>
         </div>
 
-        {/* Stats Cards Grid - 2x2 on desktop, stacked on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:gap-10">
           {stats.map((stat, index) => (
-            <StatCard 
-              key={index} 
-              index={index} 
-              icon={stat.icon} 
-              title={stat.title} 
-              value={stat.value} 
-              metric={stat.metric} 
-              desc={stat.desc} 
-            />
+            <StatCard key={stat.title} index={index} icon={stat.icon} title={stat.title} value={stat.value} metric={stat.metric} desc={stat.desc} />
           ))}
         </div>
-
       </div>
     </section>
-  );
-};
+  )
+}
 
 interface StatCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-  metric: string;
-  desc: string;
-  index: number;
+  icon: React.ReactNode
+  title: string
+  value: string
+  metric: string
+  desc: string
+  index: number
 }
 
 const StatCard: React.FC<StatCardProps> = ({ icon, title, value, metric, desc, index }) => {
   return (
     <SpotlightCard index={index}>
-      <div className="p-8 md:p-10 flex flex-col h-full">
-        {/* Icon + Title */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors">
+      <div className="flex h-full flex-col p-8 md:p-10">
+        <div className="mb-6 flex items-center gap-4">
+          <div className="rounded-lg border border-white/10 bg-white/5 p-3 transition-colors group-hover:bg-white/10">
             {icon}
           </div>
-          <h3 className="text-lg md:text-xl font-display font-bold text-white uppercase tracking-wide group-hover:text-indigo-200 transition-colors">
+          <h3 className="font-display text-lg font-bold uppercase tracking-wide text-white transition-colors group-hover:text-indigo-200 md:text-xl">
             {title}
           </h3>
         </div>
 
-        {/* Big Value */}
         <div className="mb-2">
-          <span className="text-5xl md:text-6xl font-mono font-medium text-white tracking-tight">
-            {value}
-          </span>
+          <span className="font-mono text-5xl font-medium tracking-tight text-white md:text-6xl">{value}</span>
         </div>
-        <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-6">
-          {metric}
-        </span>
+        <span className="mb-6 font-mono text-xs uppercase tracking-widest text-neutral-500">{metric}</span>
 
-        {/* Description */}
-        <p className="font-serif text-base md:text-lg text-neutral-400 italic leading-relaxed mt-auto">
+        <p className="mt-auto font-serif text-base italic leading-relaxed text-neutral-400 transition-colors group-hover:text-neutral-300 md:text-lg">
           {desc}
         </p>
       </div>
     </SpotlightCard>
-  );
-};
-
-// --- Spotlight Component with hover effect ---
-interface SpotlightCardProps {
-  children: React.ReactNode;
-  className?: string;
-  index?: number;
+  )
 }
 
-const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = "", index = 0 }) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
+interface SpotlightCardProps {
+  children: React.ReactNode
+  className?: string
+  index?: number
+}
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current) return;
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
+const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = '', index = 0 }) => {
+  const divRef = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [opacity, setOpacity] = useState(0)
 
-  const handleMouseEnter = () => setOpacity(1);
-  const handleMouseLeave = () => setOpacity(0);
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) {
+      return
+    }
+
+    const rect = divRef.current.getBoundingClientRect()
+    setPosition({ x: event.clientX - rect.left, y: event.clientY - rect.top })
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ margin: "-10%", once: true }}
+      viewport={{ margin: '-10%', once: true }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ y: -5, scale: 1.02 }}
       ref={divRef}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={`relative rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#0A0A0B] overflow-hidden group transition-all duration-300 ${className}`}
+      onMouseEnter={() => setOpacity(1)}
+      onMouseLeave={() => setOpacity(0)}
+      className={`group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0A0A0B] transition-all duration-300 md:rounded-3xl ${className}`}
     >
-      {/* Spotlight gradient effect */}
       <div
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
         style={{
@@ -203,7 +227,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = "",
       />
       {children}
     </motion.div>
-  );
-};
+  )
+}
 
-export default StatsGrid;
+export default StatsGrid

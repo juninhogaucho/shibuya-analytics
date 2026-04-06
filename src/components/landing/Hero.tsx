@@ -1,253 +1,258 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Activity, AlertCircle, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Activity, ArrowRight } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
+import { enterSampleMode } from '../../lib/runtime'
 
-const RevealText = ({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) => {
-  const words = text.split(" ");
+const RevealText = ({
+  text,
+  className = '',
+  delay = 0,
+}: {
+  text: string
+  className?: string
+  delay?: number
+}) => {
+  const words = text.split(' ')
 
-  const wordPositions = words.reduce<number[]>((acc, _, i) => {
-    const prevPosition = i === 0 ? 0 : acc[i - 1] + words[i - 1].length;
-    acc.push(prevPosition);
-    return acc;
-  }, []);
+  const wordPositions = words.reduce<number[]>((acc, _, index) => {
+    const previousPosition = index === 0 ? 0 : acc[index - 1] + words[index - 1].length
+    acc.push(previousPosition)
+    return acc
+  }, [])
 
   return (
     <span className={`inline-flex flex-wrap gap-x-[0.25em] gap-y-0 ${className}`}>
-      {words.map((word, i) => {
-        const currentWordStartIndex = wordPositions[i];
+      {words.map((word, wordIndex) => {
+        const currentWordStart = wordPositions[wordIndex]
         return (
-          <span key={i} className="inline-flex overflow-hidden">
-            {word.split("").map((char, j) => (
-              <span key={j} className="inline-block overflow-hidden align-bottom">
+          <span key={`${word}-${wordIndex}`} className="inline-flex overflow-hidden">
+            {word.split('').map((character, characterIndex) => (
+              <span key={`${character}-${characterIndex}`} className="inline-block overflow-hidden align-bottom">
                 <motion.span
-                  initial={{ y: "100%" }}
+                  initial={{ y: '100%' }}
                   animate={{ y: 0 }}
                   transition={{
                     duration: 0.8,
                     ease: [0.16, 1, 0.3, 1],
-                    delay: delay + (currentWordStartIndex + j) * 0.03,
+                    delay: delay + (currentWordStart + characterIndex) * 0.03,
                   }}
                   className="inline-block"
                 >
-                  {char}
+                  {character}
                 </motion.span>
               </span>
             ))}
           </span>
-        );
+        )
       })}
     </span>
-  );
-};
+  )
+}
+
+const INDIA_METRICS = [
+  { label: 'REVENGE TRADING', value: '64% | \u20b911,789' },
+  { label: 'SIZE VIOLATION', value: '28% | \u20b95,153' },
+  { label: 'HESITATION', value: '8% | \u20b91,478' },
+]
+
+const GLOBAL_METRICS = [
+  { label: 'REVENGE TRADING', value: '64% | EUR 795' },
+  { label: 'SIZE VIOLATION', value: '28% | EUR 347' },
+  { label: 'HESITATION', value: '8% | EUR 98' },
+]
 
 const Hero: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+  const metrics = market === 'india' ? INDIA_METRICS : GLOBAL_METRICS
+  const auditPlan = getPlanForMarket(market, 'audit_once')
+  const resetPlan = getPlanForMarket(market, 'reset_once')
+
+  const openSampleWorkspace = () => {
+    enterSampleMode()
+    navigate('/dashboard')
+  }
 
   return (
-    <section className="relative min-h-screen flex flex-col pt-32 pb-12 px-6 md:px-12 bg-[#050505] text-[#e5e5e5] overflow-hidden border-b border-white/5">
-      {/* Background Ambience */}
-      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-white/[0.03] blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[30vw] h-[30vw] bg-indigo-900/10 blur-[120px] rounded-full pointer-events-none" />
+    <section className="relative min-h-screen overflow-hidden border-b border-white/5 bg-[#050505] px-6 pb-12 pt-32 text-[#e5e5e5] md:px-12">
+      <div className="pointer-events-none absolute right-0 top-0 h-[50vw] w-[50vw] rounded-full bg-white/[0.03] blur-[150px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-[30vw] w-[30vw] rounded-full bg-indigo-900/10 blur-[120px]" />
 
-      {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 w-full max-w-[1920px] mx-auto flex-1 mt-0 md:mt-12">
-
-        {/* LEFT COL */}
-        <div className="lg:col-span-7 flex flex-col justify-center">
+      <div className="mx-auto mt-0 grid max-w-[1920px] grid-cols-1 gap-12 md:mt-12 lg:grid-cols-12">
+        <div className="flex flex-col justify-center lg:col-span-7">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-6"
+            className="mb-6 font-mono text-xs uppercase tracking-widest text-indigo-400"
           >
-            Behavioral Trade Intelligence
+            {market === 'india' ? 'India Trader Performance OS' : 'Trader Performance OS'}
           </motion.p>
 
-          <h1 className="font-display font-bold text-[clamp(2.5rem,8vw,8rem)] leading-[0.88] tracking-tighter uppercase text-left mb-8 flex flex-col">
+          <h1 className="mb-8 flex flex-col text-left font-display text-[clamp(2.5rem,8vw,8rem)] font-bold leading-[0.88] tracking-tighter uppercase">
             <div className="w-full">
-              <RevealText text="The Money" delay={0.2} />
+              <RevealText text={market === 'india' ? 'See What Is' : 'Know If It Is'} delay={0.2} />
             </div>
             <div className="w-full">
-              <RevealText text="You Lose" delay={0.5} />
+              <RevealText text={market === 'india' ? 'Bleeding The' : 'Edge Or'} delay={0.5} />
             </div>
             <div className="w-full text-neutral-600">
-              <RevealText text="Between Good" delay={0.8} className="text-neutral-600" />
-            </div>
-            <div className="w-full text-neutral-600">
-              <RevealText text="Trades" delay={1.0} className="text-neutral-600" />
+              <RevealText text={market === 'india' ? 'Account' : 'Behavior'} delay={0.8} className="text-neutral-600" />
             </div>
           </h1>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.6 }}
+            transition={{ delay: 1.25, duration: 0.6 }}
             className="max-w-xl pl-1"
           >
-            <p className="text-base text-neutral-300 font-sans leading-relaxed mb-3 max-w-lg">
-              Your discipline tax. Your edge decay. Your behavioral state. Three numbers most traders never see — and the three numbers that explain everything.
+            <p className="mb-3 max-w-lg font-sans text-base leading-relaxed text-neutral-300">
+              {market === 'india'
+                ? 'Shibuya shows where you sabotage yourself between good trades, how much avoidable loss your process is leaking in rupees, and what to stop before the next session or the next prop breach.'
+                : 'Shibuya shows where you sabotage yourself between good trades, how much avoidable loss your process is leaking, and what to stop before the next session or the next prop breach.'}
             </p>
-            <p className="text-sm text-neutral-500 font-sans leading-relaxed mb-8 max-w-lg">
-              68 mathematical engines. Bayesian state detection. Institutional-grade risk models. All applied to the one variable the big desks ignore: you.
+            <p className="mb-4 max-w-lg font-sans text-sm leading-relaxed text-neutral-400">
+              Not a journal. Not ChatGPT. A system that remembers every session, enforces your rules, and proves you are improving.
+            </p>
+            <p className="mb-8 max-w-lg font-sans text-sm leading-relaxed text-neutral-500">
+              {market === 'india'
+                ? 'SEBI already proved the structural problem. Shibuya exposes the execution one: whether the real issue is edge decay, self-sabotage, or the state you keep entering before you torch the account.'
+                : 'Upload your history. See discipline tax, edge concentration, trader state, and a next-session mandate. Use the sample workspace to evaluate. Use the live workspace to fix the loop for real.'}
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => navigate('/pricing')}
-                className="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-wider text-sm overflow-hidden flex items-center gap-2"
+                onClick={() => navigate(addMarketToPath(`/checkout/${auditPlan.checkoutSlug}`, market))}
+                className="group relative flex items-center gap-2 overflow-hidden bg-white px-6 py-4 text-sm font-bold uppercase tracking-wider text-black"
               >
-                <span className="relative z-10 group-hover:text-white transition-colors duration-300">Start Shibuya</span>
-                <ArrowRight className="relative z-10 w-4 h-4 group-hover:text-white transition-colors duration-300" />
-                <div className="absolute inset-0 bg-indigo-600 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+                  {market === 'india' ? 'Get My Psych Audit' : auditPlan.ctaLabel}
+                </span>
+                <ArrowRight className="relative z-10 h-4 w-4 transition-colors duration-300 group-hover:text-white" />
+                <div className="absolute inset-0 origin-left scale-x-0 bg-indigo-600 transition-transform duration-300 ease-out group-hover:scale-x-100" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => navigate('/partners')}
-                className="px-8 py-4 border border-white/20 text-white font-bold uppercase tracking-wider text-sm hover:border-white hover:bg-white hover:text-black transition-all duration-300"
+                onClick={() => navigate(addMarketToPath(`/checkout/${resetPlan.checkoutSlug}`, market))}
+                className="border border-white/20 px-6 py-4 text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 hover:border-white hover:bg-white hover:text-black"
               >
-                For Platforms
+                {market === 'india' ? 'Start Reset Intensive' : resetPlan.ctaLabel}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={openSampleWorkspace}
+                className="border border-white/10 bg-white/[0.03] px-6 py-4 text-sm font-bold uppercase tracking-wider text-neutral-200 transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                Open Sample Workspace
               </motion.button>
             </div>
 
-            {/* Social proof line */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2, duration: 0.6 }}
-              className="flex items-center gap-4 mt-8 pt-6 border-t border-white/5"
+              transition={{ delay: 1.9, duration: 0.6 }}
+              className="mt-8 flex flex-col gap-4 border-t border-white/5 pt-6 md:flex-row md:items-center"
             >
-              <div className="flex items-center gap-2 text-xs text-neutral-600 font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                €3,418 avg monthly avoidable loss identified
+              <div className="flex items-center gap-2 font-mono text-xs text-neutral-500">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                {market === 'india'
+                  ? '\u20b914,000 average annual friction cost from overtrading'
+                  : 'EUR 3,418 average monthly avoidable loss identified'}
               </div>
-              <div className="w-px h-4 bg-white/10" />
-              <span className="text-xs text-neutral-600 font-mono">All markets. All account types.</span>
+              <div className="hidden h-4 w-px bg-white/10 md:block" />
+              <span className="font-mono text-xs text-neutral-500">
+                {market === 'india'
+                  ? '91% of Indian retail F&O traders lose. The point is to make the leak concrete before it becomes normal.'
+                  : 'Most prop breaches start as repeated process errors, not one bad chart read.'}
+              </span>
             </motion.div>
           </motion.div>
         </div>
 
-        {/* RIGHT COL: PSYCH AUDIT VISUAL */}
-        <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative">
+        <div className="relative flex items-center justify-center lg:col-span-5 lg:justify-end">
           <motion.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4, duration: 1 }}
-            className="relative w-full max-w-md aspect-[4/5] md:aspect-square"
+            className="relative aspect-[4/5] w-full max-w-md md:aspect-square"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 p-1">
-              <div className="h-full w-full bg-[#080808] relative overflow-hidden flex flex-col">
-                {/* Header */}
-                <div className="h-10 border-b border-white/10 flex items-center justify-between px-4 bg-[#0A0A0B]">
+            <div className="absolute inset-0 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-1">
+              <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#080808]">
+                <div className="flex h-10 items-center justify-between border-b border-white/10 bg-[#0A0A0B] px-4">
                   <div className="flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-500/50" />
-                    <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-                    <div className="w-2 h-2 rounded-full bg-green-500/50" />
+                    <div className="h-2 w-2 rounded-full bg-red-500/50" />
+                    <div className="h-2 w-2 rounded-full bg-yellow-500/50" />
+                    <div className="h-2 w-2 rounded-full bg-green-500/50" />
                   </div>
-                  <div className="font-mono text-[10px] text-neutral-600 uppercase">Analysis_V2.exe</div>
+                  <div className="font-mono text-[10px] uppercase text-neutral-600">action_board.exe</div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col relative">
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
+                <div className="relative flex flex-1 flex-col p-6">
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
 
-                  <div className="flex justify-between items-start mb-8 relative z-10">
+                  <div className="relative z-10 mb-8 flex items-start justify-between">
                     <div>
-                      <div className="text-neutral-500 text-xs font-mono mb-1 uppercase tracking-wider">Discipline Leak</div>
-                      <div className="text-3xl font-display font-bold text-white">-€1,240.50</div>
-                      <div className="text-[10px] font-mono text-neutral-600 mt-1">DEAN attribution · 30-day window</div>
+                      <div className="mb-1 font-mono text-xs uppercase tracking-wider text-neutral-500">Discipline Leak</div>
+                      <div className="font-display text-3xl font-bold text-white">
+                        {market === 'india' ? '-\u20b918,420' : '-EUR 1,240'}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] text-neutral-600">DEAN attribution | 30-day window</div>
                     </div>
-                    <div className="p-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded">
-                      <Activity className="w-4 h-4" />
+                    <div className="rounded border border-red-500/20 bg-red-500/10 p-2 text-red-400">
+                      <Activity className="h-4 w-4" />
                     </div>
                   </div>
 
-                  {/* Bars */}
-                  <div className="space-y-4 relative z-10">
-                    <div>
-                      <div className="flex justify-between text-[10px] font-mono text-neutral-400 mb-1">
-                        <span>REVENGE_TRADING</span>
-                        <span className="text-rose-400">64% · €795</span>
+                  <div className="relative z-10 space-y-4">
+                    {metrics.map((row, index) => (
+                      <div key={row.label}>
+                        <div className="mb-1 flex justify-between font-mono text-[10px] text-neutral-400">
+                          <span>{row.label}</span>
+                          <span className={index === 0 ? 'text-rose-400' : index === 1 ? 'text-amber-400' : 'text-neutral-400'}>
+                            {row.value}
+                          </span>
+                        </div>
+                        <div className="h-1 w-full overflow-hidden rounded-full bg-neutral-800">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: index === 0 ? '64%' : index === 1 ? '28%' : '8%' }}
+                            transition={{ delay: 1 + index * 0.2, duration: 1.5 }}
+                            className={`h-full ${index === 0 ? 'bg-rose-500/70' : index === 1 ? 'bg-amber-500/70' : 'bg-neutral-600'}`}
+                          />
+                        </div>
                       </div>
-                      <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: "64%" }}
-                          transition={{ delay: 1, duration: 1.5 }}
-                          className="h-full bg-rose-500/70"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-[10px] font-mono text-neutral-400 mb-1">
-                        <span>SIZE_VIOLATION</span>
-                        <span className="text-amber-400">28% · €347</span>
-                      </div>
-                      <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: "28%" }}
-                          transition={{ delay: 1.2, duration: 1.5 }}
-                          className="h-full bg-amber-500/70"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-[10px] font-mono text-neutral-400 mb-1">
-                        <span>HESITATION</span>
-                        <span className="text-neutral-400">8% · €98</span>
-                      </div>
-                      <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: "8%" }}
-                          transition={{ delay: 1.4, duration: 1.5 }}
-                          className="h-full bg-neutral-600"
-                        />
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
-                  {/* BQL State */}
-                  <div className="mt-6 relative z-10">
-                    <div className="flex items-center justify-between text-[10px] font-mono mb-2">
-                      <span className="text-neutral-500 uppercase tracking-wider">BQL State</span>
-                      <span className="text-amber-400 uppercase">HESITANT · 71%</span>
+                  <div className="relative z-10 mt-6">
+                    <div className="mb-2 flex items-center justify-between font-mono text-[10px]">
+                      <span className="uppercase tracking-wider text-neutral-500">Next session mandate</span>
+                      <span className="uppercase text-emerald-400">
+                        {market === 'india' ? 'Do less | protect capital' : 'Protect capital first'}
+                      </span>
                     </div>
-                    <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "71%" }}
-                        transition={{ delay: 1.6, duration: 1 }}
-                        className="h-full bg-amber-500/60"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 border-t border-white/5 relative z-10">
-                    <div className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded">
-                      <AlertCircle className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
-                      <p className="text-[10px] font-mono text-neutral-300 leading-relaxed">
-                        3 sessions account for 80% of drawdown. Snell envelope: optimal stop at session boundary.
-                      </p>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm leading-relaxed text-neutral-300">
+                      {market === 'india'
+                        ? 'No expiry-day punts, no size increase after a loss, and no new setup until your baseline is reviewed against the sessions that actually pay you.'
+                        : 'Cut the decayed setup, reduce size for the next two sessions, and only trade the edge that still pays you.'}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Decorative */}
-            <div className="absolute -bottom-6 -left-6 font-mono text-xs text-neutral-600">
-              FIG. 1.0 — PSYCH AUDIT
             </div>
           </motion.div>
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero

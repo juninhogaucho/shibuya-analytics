@@ -5,80 +5,73 @@ export function TermsPage() {
     <Section
       eyebrow="Legal"
       title="Terms & Conditions"
-      description="Last updated: December 2025"
+      description="Last updated: April 2026"
     >
       <div className="legal-content glass-panel">
         <h3>1. Service Description</h3>
         <p>
-          Shibuya Analytics provides trading performance analysis reports and dashboard subscriptions 
-          based on trade data you provide. We analyze your trading history to identify behavioral patterns, 
-          calculate discipline-related costs, and provide actionable recommendations.
+          Shibuya Analytics is a direct-trader performance operating system. After purchase and activation,
+          you receive access to a live workspace where you can upload trade history, review behavioral and
+          edge-related outputs, and carry a corrective process forward session by session.
         </p>
 
         <h3>2. Payment Terms</h3>
         <p>
-          <strong>One-time Reports:</strong> All report purchases are one-time payments processed securely through Stripe. 
-          Prices are displayed in Euros (EUR). Payment is required before report delivery.
+          Public Shibuya offers may be one-time reset packages or recurring live-workspace subscriptions,
+          processed securely through Stripe. Prices are displayed in the currency shown on the relevant market
+          route, including INR on India-facing offers and EUR on global offers.
         </p>
         <p>
-          <strong>Dashboard Subscription:</strong> The Dashboard is billed monthly at €250/month. 
-          You may cancel at any time; access continues until the end of your billing period.
+          Access begins only after successful payment and activation. One-time reset packages unlock a bounded
+          live workspace window and may later move to read-only status. Subscription access continues until the
+          end of the already-paid billing period unless a different rule is required by law.
         </p>
 
         <h3>3. Refund Policy</h3>
         <p>
-          <strong>Reports:</strong> All sales are final. Due to the nature of our service (personalized 
-          analysis and reports), we do not offer refunds once work has begun on your report. 
-          Please ensure you understand what you're purchasing before completing payment.
-        </p>
-        <p>
-          <strong>Dashboard:</strong> No refunds for partial months. Cancel anytime; you retain access until billing period ends.
+          Because Shibuya grants immediate digital access to a live analytical workspace, refunds are generally
+          not provided once access has been activated, except where mandatory consumer law requires otherwise.
         </p>
 
-        <h3>4. Delivery</h3>
+        <h3>4. Delivery And Access</h3>
         <p>
-          Reports are delivered within 72 hours of receiving your complete trade data. 
-          For The Deep Dive package, video calls are scheduled at mutually convenient times 
-          within 14 days of purchase. Dashboard access is activated immediately upon payment confirmation.
+          Successful checkout leads to an order confirmation, activation flow, and claim-account step for durable
+          login access. Where a paid offer explicitly includes a guided review call, that review is scheduled
+          separately and scoped to the offer description shown at purchase.
         </p>
 
-        <h3>5. Referral Program</h3>
+        <h3>5. Referral And Affiliate Tracking</h3>
         <p>
-          Referral codes are provided after purchase. When friends purchase using your code:
-        </p>
-        <ul>
-          <li>2 referrals: Upgrade to Deep Dive (Reality Check buyers) or 2-for-1 months (Deep Dive buyers)</li>
-          <li>3 referrals: Full refund or free months applied</li>
-        </ul>
-        <p>
-          Referral rewards are applied automatically and cannot be combined with other promotions.
+          Shibuya may use referral codes, affiliate links, and campaign parameters to attribute traffic,
+          purchases, renewals, and partner performance. Referral or affiliate incentives are governed by the
+          applicable promotion or partnership terms and may be changed prospectively.
         </p>
 
         <h3>6. Promo Codes</h3>
         <p>
-          Promo codes may provide extended dashboard access or other benefits. 
-          Codes cannot be combined. One code per purchase. 
-          We reserve the right to void codes obtained through fraud or abuse.
+          Promo codes may provide discounts or other access benefits. Codes cannot be combined unless we
+          explicitly say otherwise. We may void codes obtained through fraud, abuse, or unauthorized distribution.
         </p>
 
         <h3>7. Data Usage</h3>
         <p>
-          Your trade data is used solely for generating your personalized report or powering your Dashboard. 
-          We do not share, sell, or use your data for any other purpose. 
-          See our Privacy Policy for details.
+          Your trade data is used to power your workspace, generate analytical outputs, and improve the accuracy
+          of the product you purchased. We do not sell your personal trade data. See the Privacy Policy for
+          fuller detail.
         </p>
 
         <h3>8. Disclaimer</h3>
         <p>
-          Shibuya Analytics provides educational analysis only. We are not financial advisors. 
-          Our reports and recommendations do not constitute investment advice. 
-          Trading involves significant risk of loss. Past performance does not guarantee future results.
+          Shibuya Analytics provides educational and analytical tooling only. We do not provide financial advice,
+          investment recommendations, or guarantees of profitability. Trading and investing carry significant risk
+          of loss.
         </p>
 
         <h3>9. Intellectual Property</h3>
         <p>
-          Reports generated for you are for your personal use only. 
-          You may not redistribute, resell, or publish our reports without written permission.
+          The product, interfaces, models, outputs, and related materials remain our intellectual property except
+          for the personal data and trade history you submit. You may not redistribute, resell, or publish paid
+          Shibuya materials as a product or service without written permission.
         </p>
 
         <h3>10. Contact</h3>

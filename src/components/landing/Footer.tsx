@@ -64,7 +64,7 @@ const Footer: React.FC = () => {
               <span className="text-sm font-bold text-white tracking-wide">shibuya</span>
             </div>
             <p className="text-neutral-500 text-sm mb-8 max-w-sm leading-relaxed">
-              Institutional-grade mathematics, for everyone. Make trading great again.
+              A trader performance operating system built to show whether the leak is edge, behavior, or the state you keep entering before the next breach.
             </p>
             <div className="flex items-center gap-2 text-sm text-neutral-500">
               <Mail className="w-4 h-4" />
@@ -117,7 +117,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-20 pt-8 border-t border-white/[0.05]">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-xs text-neutral-600 gap-4">
-                <p>&copy; 2025 Shibuya Analytics. All rights reserved.</p>
+                <p>&copy; 2026 Shibuya Analytics. All rights reserved.</p>
                 <div className="flex gap-8">
                     <Link to="/privacy" className="hover:text-neutral-400 transition-colors">Privacy Policy</Link>
                     <Link to="/terms" className="hover:text-neutral-400 transition-colors">Terms of Service</Link>
@@ -127,10 +127,9 @@ const Footer: React.FC = () => {
             {/* LEGAL DISCLAIMER - MANDATORY FOR TRADING APPS */}
             <div className="mt-8 text-[10px] leading-relaxed text-neutral-700 max-w-4xl">
                 <p>
-                    RISK DISCLOSURE: Trading foreign exchange on margin carries a high level of risk, and may not be suitable for all investors.
-                    The high degree of leverage can work against you as well as for you. Before deciding to trade foreign exchange you should carefully
-                    consider your investment objectives, level of experience, and risk appetite. The possibility exists that you could sustain a loss of
-                    some or all of your initial investment and therefore you should not invest money that you cannot afford to lose.
+                    RISK DISCLOSURE: Trading and investing involve significant risk of loss and may not be suitable for every person.
+                    Leverage, derivatives, and short-term speculation can amplify both gains and losses. Before trading, consider your
+                    investment objectives, experience level, and risk tolerance carefully. You should never risk capital you cannot afford to lose.
                 </p>
                 <p className="mt-2">
                     Shibuya Analytics is an educational analysis tool and does not provide financial advice. Past performance is not indicative of future results.

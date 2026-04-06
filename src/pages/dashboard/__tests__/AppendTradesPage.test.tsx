@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { AppendTradesPage } from '../AppendTradesPage'
 
@@ -7,28 +8,48 @@ const parseTradePasteMock = vi.fn()
 const submitParsedTradesMock = vi.fn()
 const uploadTradesCSVMock = vi.fn()
 const getTradePasteMemoryMock = vi.fn()
+const logTraderLifecycleEventMock = vi.fn()
 const isSampleModeMock = vi.fn()
+const getStoredSessionMetaMock = vi.fn()
+const isReadOnlySessionMock = vi.fn()
+const updateSessionMetaMock = vi.fn()
 
 vi.mock('../../../lib/api', () => ({
   parseTradePaste: (...args: unknown[]) => parseTradePasteMock(...args),
   submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
   uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
   getTradePasteMemory: (...args: unknown[]) => getTradePasteMemoryMock(...args),
+  logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
 }))
 
 vi.mock('../../../lib/runtime', () => ({
   isSampleMode: () => isSampleModeMock(),
+  getStoredSessionMeta: () => getStoredSessionMetaMock(),
+  isReadOnlySession: (...args: unknown[]) => isReadOnlySessionMock(...args),
+  updateSessionMeta: (...args: unknown[]) => updateSessionMetaMock(...args),
 }))
 
 describe('AppendTradesPage', () => {
+  function renderPage() {
+    return render(
+      <MemoryRouter>
+        <AppendTradesPage />
+      </MemoryRouter>,
+    )
+  }
+
   beforeEach(() => {
     parseTradePasteMock.mockResolvedValue({
       rowsParsed: 2,
-      symbols: ['EURUSD', 'GBPUSD'],
-      trades: [{ symbol: 'EURUSD' }, { symbol: 'GBPUSD' }],
+      symbols: ['NIFTY24JAN22500CE', 'BANKNIFTY24JAN48200PE'],
+      trades: [{ symbol: 'NIFTY24JAN22500CE' }, { symbol: 'BANKNIFTY24JAN48200PE' }],
     })
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
+    logTraderLifecycleEventMock.mockResolvedValue(undefined)
+    getStoredSessionMetaMock.mockReturnValue(null)
+    isReadOnlySessionMock.mockReturnValue(false)
+    updateSessionMetaMock.mockReset()
     getTradePasteMemoryMock.mockResolvedValue({
       has_previous: true,
       message: 'Comparing upload #3 to #2',
@@ -48,10 +69,10 @@ describe('AppendTradesPage', () => {
     isSampleModeMock.mockReturnValue(true)
     const user = userEvent.setup()
 
-    render(<AppendTradesPage />)
+    renderPage()
 
     fireEvent.change(screen.getByLabelText('Trades'), {
-      target: { value: '2024-01-15 09:32 EURUSD BUY 1.0 1.0875 1.0892' },
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
     })
     await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
 
@@ -66,13 +87,18 @@ describe('AppendTradesPage', () => {
 
   test('shows real trade-paste-memory deltas in live mode', async () => {
     isSampleModeMock.mockReturnValue(false)
+    getStoredSessionMetaMock.mockReturnValue({
+      caseStatus: 'awaiting_upload',
+      market: 'india',
+      offerKind: 'psych_audit',
+    })
     submitParsedTradesMock.mockResolvedValue({ status: 'ok', trades_uploaded: 2 })
     const user = userEvent.setup()
 
-    render(<AppendTradesPage />)
+    renderPage()
 
     fireEvent.change(screen.getByLabelText('Trades'), {
-      target: { value: '2024-01-15 09:32 EURUSD BUY 1.0 1.0875 1.0892' },
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
     })
     await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
     await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
@@ -84,5 +110,6 @@ describe('AppendTradesPage', () => {
     await waitFor(() => {
       expect(getTradePasteMemoryMock).toHaveBeenCalledTimes(1)
     })
+    expect(updateSessionMetaMock).toHaveBeenCalledWith({ caseStatus: 'baseline_ready' })
   }, 15000)
 })

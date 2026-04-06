@@ -1,46 +1,39 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
+import { Badge } from '../../components/ui/Badge'
 import { EngineTag } from '../../components/engine/EngineTag'
 import { ChartCard } from '../../components/charts/ChartCard'
 import { PnLDistribution, generateDistributionData } from '../../components/charts/PnLDistribution'
 import { PerformanceHeatmap, generateHeatmapData } from '../../components/charts/PerformanceHeatmap'
-import { getTradeHistory } from '../../lib/api'
-import type { TradeHistoryResponse, TradeHistoryTrade } from '../../lib/types'
-import { isSampleMode } from '../../lib/runtime'
+import { getDashboardOverview, getTradeHistory, getTraderProfileContext } from '../../lib/api'
+import { formatSignedMoney } from '../../lib/display'
+import { buildExecutionProtocol } from '../../lib/executionProtocol'
+import { buildTradeHistoryInsights } from '../../lib/tradeHistoryInsights'
+import { humanizeTraderMode } from '../../lib/traderMode'
+import type { DashboardOverview, TradeHistoryResponse, TradeHistoryTrade, TraderProfileContext } from '../../lib/types'
+import { getStoredSessionMeta, isSampleMode } from '../../lib/runtime'
 
 // Sample workspace data - sized to match the dashboard story without implying live persistence.
 const DEMO_TRADES: TradeHistoryTrade[] = [
-  { id: 'T-1001', timestamp: '2025-12-02T14:32:00Z', exit_time: '2025-12-02T15:45:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 245.50, bds_at_time: 0.32 },
-  { id: 'T-1002', timestamp: '2025-12-02T11:15:00Z', exit_time: '2025-12-02T11:58:00Z', symbol: 'GBP/JPY', side: 'SELL', size: 0.5, pnl: -127.30, bds_at_time: 0.58 },
-  { id: 'T-1003', timestamp: '2025-12-01T09:45:00Z', exit_time: '2025-12-01T10:30:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 189.00, bds_at_time: 0.28 },
-  { id: 'T-1004', timestamp: '2025-12-01T08:22:00Z', exit_time: '2025-12-01T08:55:00Z', symbol: 'NAS100', side: 'BUY', size: 2.0, pnl: -340.00, bds_at_time: 0.45 },
-  { id: 'T-1005', timestamp: '2025-11-30T15:10:00Z', exit_time: '2025-11-30T16:02:00Z', symbol: 'EUR/USD', side: 'SELL', size: 1.5, pnl: 312.75, bds_at_time: 0.22 },
-  { id: 'T-1006', timestamp: '2025-11-30T14:23:00Z', exit_time: '2025-11-30T14:58:00Z', symbol: 'GBP/USD', side: 'BUY', size: 1.0, pnl: -185.40, bds_at_time: 0.61 },
-  { id: 'T-1007', timestamp: '2025-11-29T10:05:00Z', exit_time: '2025-11-29T11:20:00Z', symbol: 'XAU/USD', side: 'BUY', size: 0.3, pnl: 425.00, bds_at_time: 0.35 },
-  { id: 'T-1008', timestamp: '2025-11-29T08:45:00Z', exit_time: '2025-11-29T09:15:00Z', symbol: 'EUR/USD', side: 'SELL', size: 1.0, pnl: 156.20, bds_at_time: 0.29 },
-  { id: 'T-1009', timestamp: '2025-11-28T16:30:00Z', exit_time: '2025-11-28T17:45:00Z', symbol: 'GBP/JPY', side: 'BUY', size: 0.5, pnl: -520.00, bds_at_time: 0.78 },
-  { id: 'T-1010', timestamp: '2025-11-28T14:15:00Z', exit_time: '2025-11-28T15:02:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 198.30, bds_at_time: 0.31 },
-  { id: 'T-1011', timestamp: '2025-11-27T11:20:00Z', exit_time: '2025-11-27T12:45:00Z', symbol: 'NAS100', side: 'SELL', size: 1.0, pnl: -275.50, bds_at_time: 0.52 },
-  { id: 'T-1012', timestamp: '2025-11-27T09:00:00Z', exit_time: '2025-11-27T09:45:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 167.80, bds_at_time: 0.25 },
-  // Additional trades to match overview metrics
-  { id: 'T-1013', timestamp: '2025-11-26T15:30:00Z', exit_time: '2025-11-26T16:15:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.2, pnl: 234.50, bds_at_time: 0.28 },
-  { id: 'T-1014', timestamp: '2025-11-26T10:45:00Z', exit_time: '2025-11-26T11:30:00Z', symbol: 'GBP/USD', side: 'SELL', size: 0.8, pnl: 178.20, bds_at_time: 0.32 },
-  { id: 'T-1015', timestamp: '2025-11-25T14:20:00Z', exit_time: '2025-11-25T15:05:00Z', symbol: 'XAU/USD', side: 'BUY', size: 0.5, pnl: -290.00, bds_at_time: 0.55 },
-  { id: 'T-1016', timestamp: '2025-11-25T09:15:00Z', exit_time: '2025-11-25T10:00:00Z', symbol: 'EUR/USD', side: 'SELL', size: 1.0, pnl: 145.60, bds_at_time: 0.24 },
-  { id: 'T-1017', timestamp: '2025-11-24T16:00:00Z', exit_time: '2025-11-24T16:45:00Z', symbol: 'NAS100', side: 'BUY', size: 1.5, pnl: 520.00, bds_at_time: 0.30 },
-  { id: 'T-1018', timestamp: '2025-11-24T11:30:00Z', exit_time: '2025-11-24T12:15:00Z', symbol: 'GBP/JPY', side: 'SELL', size: 0.6, pnl: -165.80, bds_at_time: 0.48 },
-  { id: 'T-1019', timestamp: '2025-11-23T14:45:00Z', exit_time: '2025-11-23T15:30:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 212.40, bds_at_time: 0.26 },
-  { id: 'T-1020', timestamp: '2025-11-23T09:30:00Z', exit_time: '2025-11-23T10:15:00Z', symbol: 'XAU/USD', side: 'SELL', size: 0.4, pnl: 356.00, bds_at_time: 0.33 },
-  { id: 'T-1021', timestamp: '2025-11-22T15:15:00Z', exit_time: '2025-11-22T16:00:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 189.30, bds_at_time: 0.29 },
-  { id: 'T-1022', timestamp: '2025-11-22T10:00:00Z', exit_time: '2025-11-22T10:45:00Z', symbol: 'GBP/USD', side: 'BUY', size: 0.8, pnl: -145.20, bds_at_time: 0.42 },
-  { id: 'T-1023', timestamp: '2025-11-21T14:30:00Z', exit_time: '2025-11-21T15:15:00Z', symbol: 'NAS100', side: 'SELL', size: 1.0, pnl: 278.50, bds_at_time: 0.31 },
-  { id: 'T-1024', timestamp: '2025-11-21T09:45:00Z', exit_time: '2025-11-21T10:30:00Z', symbol: 'EUR/USD', side: 'SELL', size: 1.0, pnl: 134.80, bds_at_time: 0.27 },
-  { id: 'T-1025', timestamp: '2025-11-20T15:00:00Z', exit_time: '2025-11-20T15:45:00Z', symbol: 'GBP/JPY', side: 'BUY', size: 0.5, pnl: -380.00, bds_at_time: 0.65 },
-  { id: 'T-1026', timestamp: '2025-11-20T10:30:00Z', exit_time: '2025-11-20T11:15:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.2, pnl: 267.40, bds_at_time: 0.28 },
-  { id: 'T-1027', timestamp: '2025-11-19T14:15:00Z', exit_time: '2025-11-19T15:00:00Z', symbol: 'XAU/USD', side: 'SELL', size: 0.3, pnl: 198.00, bds_at_time: 0.34 },
-  { id: 'T-1028', timestamp: '2025-11-19T09:00:00Z', exit_time: '2025-11-19T09:45:00Z', symbol: 'EUR/USD', side: 'BUY', size: 1.0, pnl: 156.20, bds_at_time: 0.25 },
-  { id: 'T-1029', timestamp: '2025-11-18T15:30:00Z', exit_time: '2025-11-18T16:15:00Z', symbol: 'GBP/USD', side: 'SELL', size: 0.8, pnl: -210.40, bds_at_time: 0.58 },
-  { id: 'T-1030', timestamp: '2025-11-18T10:45:00Z', exit_time: '2025-11-18T11:30:00Z', symbol: 'NAS100', side: 'BUY', size: 1.0, pnl: 345.00, bds_at_time: 0.30 },
+  { id: 'T-1001', timestamp: '2025-12-02T04:12:00Z', exit_time: '2025-12-02T04:35:00Z', symbol: 'NIFTY24DEC22500CE', side: 'BUY', size: 2, pnl: 4520, bds_at_time: 0.32 },
+  { id: 'T-1002', timestamp: '2025-12-02T05:05:00Z', exit_time: '2025-12-02T05:22:00Z', symbol: 'BANKNIFTY24DEC48000PE', side: 'SELL', size: 1, pnl: -2180, bds_at_time: 0.64 },
+  { id: 'T-1003', timestamp: '2025-12-01T04:18:00Z', exit_time: '2025-12-01T04:44:00Z', symbol: 'NIFTY24DEC22400PE', side: 'BUY', size: 2, pnl: 3810, bds_at_time: 0.29 },
+  { id: 'T-1004', timestamp: '2025-12-01T06:10:00Z', exit_time: '2025-12-01T06:28:00Z', symbol: 'BANKNIFTY24DEC48100CE', side: 'BUY', size: 1, pnl: -3560, bds_at_time: 0.71 },
+  { id: 'T-1005', timestamp: '2025-11-30T04:02:00Z', exit_time: '2025-11-30T04:40:00Z', symbol: 'RELIANCE', side: 'SELL', size: 15, pnl: 2980, bds_at_time: 0.24 },
+  { id: 'T-1006', timestamp: '2025-11-30T05:20:00Z', exit_time: '2025-11-30T05:42:00Z', symbol: 'NIFTY24DEC22350CE', side: 'BUY', size: 3, pnl: -1840, bds_at_time: 0.59 },
+  { id: 'T-1007', timestamp: '2025-11-29T04:25:00Z', exit_time: '2025-11-29T05:10:00Z', symbol: 'BANKNIFTY24DEC47900PE', side: 'SELL', size: 1, pnl: 5120, bds_at_time: 0.33 },
+  { id: 'T-1008', timestamp: '2025-11-29T05:40:00Z', exit_time: '2025-11-29T06:01:00Z', symbol: 'MIDCPNIFTY', side: 'BUY', size: 2, pnl: 1460, bds_at_time: 0.28 },
+  { id: 'T-1009', timestamp: '2025-11-28T04:30:00Z', exit_time: '2025-11-28T04:43:00Z', symbol: 'BANKNIFTY24DEC48200CE', side: 'BUY', size: 2, pnl: -4210, bds_at_time: 0.82 },
+  { id: 'T-1010', timestamp: '2025-11-28T04:55:00Z', exit_time: '2025-11-28T05:09:00Z', symbol: 'BANKNIFTY24DEC48200CE', side: 'BUY', size: 2, pnl: -2890, bds_at_time: 0.84 },
+  { id: 'T-1011', timestamp: '2025-11-27T04:08:00Z', exit_time: '2025-11-27T04:29:00Z', symbol: 'NIFTY24DEC22600PE', side: 'SELL', size: 2, pnl: 2670, bds_at_time: 0.26 },
+  { id: 'T-1012', timestamp: '2025-11-27T06:00:00Z', exit_time: '2025-11-27T06:18:00Z', symbol: 'FINNIFTY', side: 'BUY', size: 1, pnl: -1320, bds_at_time: 0.47 },
+  { id: 'T-1013', timestamp: '2025-11-26T04:10:00Z', exit_time: '2025-11-26T04:37:00Z', symbol: 'RELIANCE', side: 'BUY', size: 20, pnl: 3240, bds_at_time: 0.27 },
+  { id: 'T-1014', timestamp: '2025-11-26T05:35:00Z', exit_time: '2025-11-26T05:54:00Z', symbol: 'NIFTY24DEC22450CE', side: 'SELL', size: 1, pnl: 1180, bds_at_time: 0.31 },
+  { id: 'T-1015', timestamp: '2025-11-25T04:22:00Z', exit_time: '2025-11-25T04:47:00Z', symbol: 'BANKNIFTY24DEC47800PE', side: 'SELL', size: 1, pnl: -2480, bds_at_time: 0.57 },
+  { id: 'T-1016', timestamp: '2025-11-25T05:12:00Z', exit_time: '2025-11-25T05:35:00Z', symbol: 'NIFTY24DEC22300PE', side: 'BUY', size: 2, pnl: 2140, bds_at_time: 0.25 },
+  { id: 'T-1017', timestamp: '2025-11-24T04:45:00Z', exit_time: '2025-11-24T05:20:00Z', symbol: 'TCS', side: 'BUY', size: 10, pnl: 1680, bds_at_time: 0.29 },
+  { id: 'T-1018', timestamp: '2025-11-24T05:50:00Z', exit_time: '2025-11-24T06:06:00Z', symbol: 'BANKNIFTY24DEC47900CE', side: 'BUY', size: 1, pnl: -1760, bds_at_time: 0.63 },
 ]
 
 function getBdsIndicator(bds: number | undefined): { label: string; color: string } {
@@ -52,7 +45,7 @@ function getBdsIndicator(bds: number | undefined): { label: string; color: strin
 
 function formatDate(iso: string): string {
   const date = new Date(iso)
-  return date.toLocaleDateString('en-US', { 
+  return date.toLocaleDateString('en-IN', {
     month: 'short', 
     day: 'numeric',
     hour: '2-digit',
@@ -64,8 +57,11 @@ export function TradeHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<TradeHistoryResponse | null>(null)
+  const [overview, setOverview] = useState<DashboardOverview | null>(null)
+  const [profile, setProfile] = useState<TraderProfileContext | null>(null)
   const [filter, setFilter] = useState<'all' | 'wins' | 'losses'>('all')
   const [symbolFilter, setSymbolFilter] = useState<string>('all')
+  const market = getStoredSessionMeta()?.market ?? 'india'
 
   const buildDemoPayload = (): TradeHistoryResponse => {
     const trades = DEMO_TRADES
@@ -93,13 +89,25 @@ export function TradeHistoryPage() {
         
         // Sample workspace returns controlled example data.
         if (isSampleMode()) {
-          await new Promise(resolve => setTimeout(resolve, 300))
+          const [overviewResponse, profileResponse] = await Promise.all([
+            getDashboardOverview().catch(() => null),
+            getTraderProfileContext().catch(() => null),
+            new Promise(resolve => setTimeout(resolve, 300)),
+          ])
           setData(buildDemoPayload())
+          setOverview(overviewResponse)
+          setProfile(profileResponse)
           return
         }
 
-        const response = await getTradeHistory()
+        const [response, overviewResponse, profileResponse] = await Promise.all([
+          getTradeHistory(),
+          getDashboardOverview().catch(() => null),
+          getTraderProfileContext().catch(() => null),
+        ])
         setData(response)
+        setOverview(overviewResponse)
+        setProfile(profileResponse)
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load trades')
@@ -109,6 +117,12 @@ export function TradeHistoryPage() {
     }
     fetchTrades()
   }, [])
+
+  const insights = useMemo(() => buildTradeHistoryInsights(data?.trades ?? []), [data?.trades])
+  const protocol = useMemo(
+    () => (overview ? buildExecutionProtocol({ overview, profile, insights }) : null),
+    [overview, profile, insights],
+  )
 
   if (loading) {
     return (
@@ -181,6 +195,42 @@ export function TradeHistoryPage() {
       </header>
 
       {/* Charts — distribution + heatmap */}
+      <div className="grid-responsive three" style={{ marginBottom: '1.5rem' }}>
+        <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <h3 style={{ marginBottom: '0.5rem' }}>Most expensive symbol</h3>
+          <p style={{ marginBottom: '0.35rem', fontSize: '1.4rem', fontWeight: 700 }}>
+            {insights.worstSymbol?.symbol ?? 'No signal yet'}
+          </p>
+          <p className="text-muted" style={{ marginBottom: 0 }}>
+            {insights.worstSymbol
+              ? `${formatSignedMoney(insights.worstSymbol.pnl, market)} across ${insights.worstSymbol.trades} trades.`
+              : 'Upload more history to see which instrument is taxing the process most.'}
+          </p>
+        </article>
+        <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <h3 style={{ marginBottom: '0.5rem' }}>Worst session cluster</h3>
+          <p style={{ marginBottom: '0.35rem', fontSize: '1.4rem', fontWeight: 700 }}>
+            {insights.revengeCluster ? `${insights.revengeCluster.tradeCount} fast losses` : 'No revenge cluster yet'}
+          </p>
+          <p className="text-muted" style={{ marginBottom: 0 }}>
+            {insights.revengeCluster
+              ? `${formatSignedMoney(insights.revengeCluster.totalPnl, market)} inside one compressed sequence. This is the kind of damage the reset loop is supposed to stop.`
+              : 'We have not detected a multi-trade revenge window in the current history.'}
+          </p>
+        </article>
+        <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <h3 style={{ marginBottom: '0.5rem' }}>Stress-state cost</h3>
+          <p style={{ marginBottom: '0.35rem', fontSize: '1.4rem', fontWeight: 700 }}>
+            {insights.stressedTradeCount} stressed trades
+          </p>
+          <p className="text-muted" style={{ marginBottom: 0 }}>
+            {insights.stressedAveragePnl != null
+              ? `Average outcome: ${formatSignedMoney(insights.stressedAveragePnl, market)} while BDS was elevated.`
+              : 'No high-stress trades detected yet.'}
+          </p>
+        </article>
+      </div>
+
       <div className="grid-responsive two" style={{ marginBottom: '1.5rem' }}>
         <ChartCard
           title="Win/Loss Distribution"
@@ -193,7 +243,8 @@ export function TradeHistoryPage() {
               data.summary.best_trade * 0.4,
               Math.abs(data.summary.worst_trade) * 0.4,
               data.summary.win_count,
-              data.summary.loss_count
+              data.summary.loss_count,
+              market,
             )}
             height={180}
           />
@@ -218,7 +269,7 @@ export function TradeHistoryPage() {
           </div>
           <div className="summary-stat">
             <span className={`stat-value ${data.summary.total_pnl >= 0 ? 'positive' : 'negative'}`}>
-              {data.summary.total_pnl >= 0 ? '+' : ''}${data.summary.total_pnl.toFixed(2)}
+              {formatSignedMoney(data.summary.total_pnl, market)}
             </span>
             <span className="stat-label">Total PnL</span>
           </div>
@@ -227,15 +278,58 @@ export function TradeHistoryPage() {
             <span className="stat-label">Win Rate</span>
           </div>
           <div className="summary-stat">
-            <span className="stat-value positive">+${data.summary.best_trade.toFixed(2)}</span>
+            <span className="stat-value positive">{formatSignedMoney(Math.abs(data.summary.best_trade), market)}</span>
             <span className="stat-label">Best Trade</span>
           </div>
           <div className="summary-stat">
-            <span className="stat-value negative">${data.summary.worst_trade.toFixed(2)}</span>
+            <span className="stat-value negative">{formatSignedMoney(data.summary.worst_trade, market)}</span>
             <span className="stat-label">Worst Trade</span>
           </div>
         </div>
       </div>
+
+      {protocol && (
+        <section className="glass-panel" style={{ marginBottom: '1.5rem' }}>
+          <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <p className="badge" style={{ marginBottom: 0 }}>Execution ledger</p>
+                <Badge
+                  variant={
+                    protocol.standardLevel === 'loss_of_command'
+                      ? 'danger'
+                      : protocol.standardLevel === 'under_pressure'
+                        ? 'warning'
+                        : 'success'
+                  }
+                  label={humanizeTraderMode(overview?.trader_mode ?? profile?.trader_mode ?? 'retail_fn0_struggler')}
+                />
+              </div>
+              <h3 style={{ marginBottom: '0.5rem' }}>{protocol.headline}</h3>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {protocol.ledger[0]?.detail ?? protocol.summary}
+              </p>
+            </div>
+            <Link to="/dashboard/protocol" className="btn btn-sm btn-secondary">
+              Open protocol
+            </Link>
+          </div>
+
+          <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
+            {protocol.ledger.slice(0, 3).map((entry) => (
+              <article key={entry.title} className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge
+                    variant={entry.severity === 'danger' ? 'danger' : entry.severity === 'warning' ? 'warning' : 'success'}
+                    label={entry.title}
+                  />
+                </div>
+                <p className="text-muted" style={{ marginBottom: 0 }}>{entry.detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Filters */}
       <div className="trade-filters glass-panel">
@@ -299,7 +393,7 @@ export function TradeHistoryPage() {
                   <td className={`trade-side ${trade.side.toLowerCase()}`}>{trade.side}</td>
                   <td className="trade-size">{trade.size.toFixed(2)}</td>
                   <td className={`trade-pnl ${trade.pnl >= 0 ? 'positive' : 'negative'}`}>
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
+                    {formatSignedMoney(trade.pnl, market)}
                   </td>
                   <td className="trade-bds">
                     <span className="bds-badge" style={{ color: bdsInfo.color }}>
@@ -322,12 +416,12 @@ export function TradeHistoryPage() {
       {/* Insight Box */}
       <div className="glass-panel insight-box">
         <h3>💡 Quick Insight</h3>
-        {data.trades.filter(t => t.bds_at_time && t.bds_at_time > 0.6).length > 0 ? (
+        {insights.stressedTradeCount > 0 ? (
           <p>
-            You have <strong>{data.trades.filter(t => t.bds_at_time && t.bds_at_time > 0.6).length}</strong> trades 
+            You have <strong>{insights.stressedTradeCount}</strong> trades 
             taken while in a "Stressed" mental state. These trades have an average PnL of 
-            <strong className={data.trades.filter(t => t.bds_at_time && t.bds_at_time > 0.6).reduce((sum, t) => sum + t.pnl, 0) >= 0 ? ' positive' : ' negative'}>
-              {' '}${(data.trades.filter(t => t.bds_at_time && t.bds_at_time > 0.6).reduce((sum, t) => sum + t.pnl, 0) / data.trades.filter(t => t.bds_at_time && t.bds_at_time > 0.6).length).toFixed(2)}
+            <strong className={(insights.stressedAveragePnl ?? 0) >= 0 ? ' positive' : ' negative'}>
+              {' '}{formatSignedMoney(insights.stressedAveragePnl ?? 0, market, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
             </strong>
             . Consider reducing trading when your BDS is elevated.
           </p>

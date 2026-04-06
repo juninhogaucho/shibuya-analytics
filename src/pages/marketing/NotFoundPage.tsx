@@ -6,7 +6,7 @@ export function NotFoundPage() {
       <div className="glass-panel">
         <p className="badge">404</p>
         <h2>We could not find that flow.</h2>
-        <p className="text-muted">Maybe you tried to access a prop-firm page from the analytics app. Head back to safety.</p>
+        <p className="text-muted">That route does not exist on the direct-trader surface. Head back to the live or sample workspace entry points.</p>
         <Link className="btn btn-secondary" to="/">
           Take me home
         </Link>

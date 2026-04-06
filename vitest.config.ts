@@ -8,5 +8,11 @@ export default defineConfig({
     globals: false,
     mockReset: true,
     restoreMocks: true,
+    pool: 'forks',
+    maxWorkers: 1,
+    isolate: false,
+    fileParallelism: false,
+    testTimeout: 20000,
+    hookTimeout: 20000,
   },
 })

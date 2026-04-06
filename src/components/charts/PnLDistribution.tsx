@@ -1,4 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
+import type { Market } from '../../lib/market'
+import { formatSignedCompactMoney } from '../../lib/display'
 
 interface DistributionBucket {
   range: string
@@ -9,9 +11,20 @@ interface DistributionBucket {
 interface PnLDistributionProps {
   data: DistributionBucket[]
   height?: number
+  market?: Market
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipItem {
+  value: number
+}
+
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: ChartTooltipItem[]
+  label?: string
+}
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[#0E0E12] border border-white/10 rounded-lg p-3 text-xs shadow-xl">
@@ -25,7 +38,8 @@ export function generateDistributionData(
   avgWin: number,
   avgLoss: number,
   winCount: number,
-  lossCount: number
+  lossCount: number,
+  market: Market = 'india',
 ): DistributionBucket[] {
   const buckets: DistributionBucket[] = []
 
@@ -39,7 +53,7 @@ export function generateDistributionData(
     const dist = Math.exp(-0.5 * Math.pow((center + avgLoss) / (avgLoss * 0.6), 2))
     const count = Math.round(dist * lossCount * 0.5 * (1 + (Math.random() - 0.5) * 0.4))
     buckets.push({
-      range: `$${Math.round(lo)}`,
+      range: formatSignedCompactMoney(Math.round(lo), market),
       count: Math.max(1, count),
       isLoss: true,
     })
@@ -55,7 +69,7 @@ export function generateDistributionData(
     const dist = Math.exp(-0.5 * Math.pow((center - avgWin) / (avgWin * 0.6), 2))
     const count = Math.round(dist * winCount * 0.5 * (1 + (Math.random() - 0.5) * 0.4))
     buckets.push({
-      range: `+$${Math.round(hi)}`,
+      range: formatSignedCompactMoney(Math.round(hi), market),
       count: Math.max(1, count),
       isLoss: false,
     })

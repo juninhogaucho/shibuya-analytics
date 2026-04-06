@@ -8,7 +8,7 @@ export const DashboardPreview = ({ variant = 'discipline-tax' }: DashboardPrevie
   const previews = {
     'discipline-tax': {
       title: 'Discipline Tax',
-      value: '€2,847',
+      value: '₹28,470',
       delta: '-23% vs last month',
       tone: 'success' as const,
       description: 'Money lost to emotional decisions',
@@ -85,12 +85,12 @@ export const DashboardPreview = ({ variant = 'discipline-tax' }: DashboardPrevie
       description: 'Trading strategy performance',
       chart: (
         <div className="space-y-2 py-2">
-          {['London FVG', 'Asian Breakout', 'NY Session'].map((edge, i) => (
+          {['Nifty opening drive', 'VWAP scalp', 'Expiry-day chase'].map((edge, i) => (
             <div key={edge} className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-green-500' : i === 1 ? 'bg-blue-500' : 'bg-red-500'}`} />
               <span className="text-xs text-gray-400">{edge}</span>
               <span className="ml-auto text-xs font-mono text-gray-300">
-                {i === 0 ? '+€847' : i === 1 ? '+€234' : '-€127'}
+                {i === 0 ? '+₹8,470' : i === 1 ? '+₹2,340' : '-₹1,270'}
               </span>
             </div>
           ))}

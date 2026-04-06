@@ -101,14 +101,14 @@ export function AlertsPage() {
       <p className="badge">
         Alerts {unreadCount > 0 && <span className="unread-badge">{unreadCount} new</span>}
       </p>
-      <h1>Non real-time alerts and prescriptions</h1>
+      <h1>Operational warnings</h1>
       <p className="text-muted">
-        Alerts trigger after each batch upload or during the Sunday coach window so you act before tilt compounds.
+        These warnings exist to interrupt bad decisions before they harden into another expensive session. Treat them like a control system, not content.
       </p>
       
       {alerts.length === 0 ? (
         <div className="glass-panel empty-state">
-          <p>No alerts yet. Upload trades so Shibuya can detect patterns, warnings, and coaching moments.</p>
+          <p>No warnings yet. Upload trades so Shibuya can detect where command is slipping, where risk is compounding, and what needs to stop next.</p>
           <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
             Upload trades
           </Link>
@@ -116,9 +116,9 @@ export function AlertsPage() {
       ) : (
         <>
           <section className="glass-panel" style={{ marginBottom: '1.25rem' }}>
-            <h3 style={{ marginBottom: '0.5rem' }}>What to do with these alerts</h3>
+            <h3 style={{ marginBottom: '0.5rem' }}>How to use these warnings</h3>
             <p className="text-muted">
-              Alerts are only useful if they change behavior. Clear the highest-severity item first, then move to the next one. Do not keep collecting warnings without changing the trading plan.
+              Clear the highest-severity item first. If you keep collecting warnings without changing the plan, the product is not the problem.
             </p>
           </section>
 

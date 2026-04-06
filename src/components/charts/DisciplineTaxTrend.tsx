@@ -1,6 +1,8 @@
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts'
+import type { Market } from '../../lib/market'
+import { formatCompactMoney } from '../../lib/display'
 
 interface TaxPoint {
   date: string
@@ -10,15 +12,27 @@ interface TaxPoint {
 interface DisciplineTaxTrendProps {
   data: TaxPoint[]
   height?: number
+  market?: Market
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipItem {
+  value: number
+}
+
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: ChartTooltipItem[]
+  label?: string
+  market?: Market
+}
+
+const CustomTooltip = ({ active, payload, label, market = 'india' }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[#0E0E12] border border-white/10 rounded-lg p-3 text-xs shadow-xl">
       <p className="text-neutral-400 font-mono mb-1">{label}</p>
       <p className="text-rose-400">
-        Behavioral cost: <span className="text-white font-semibold">${payload[0].value.toLocaleString()}</span>
+        Behavioral cost: <span className="text-white font-semibold">{formatCompactMoney(payload[0].value, market)}</span>
       </p>
     </div>
   )
@@ -38,7 +52,7 @@ export function generateTaxTrendData(totalTax: number, days = 30): TaxPoint[] {
   return points
 }
 
-export function DisciplineTaxTrend({ data, height = 120 }: DisciplineTaxTrendProps) {
+export function DisciplineTaxTrend({ data, height = 120, market = 'india' }: DisciplineTaxTrendProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
@@ -56,7 +70,7 @@ export function DisciplineTaxTrend({ data, height = 120 }: DisciplineTaxTrendPro
           interval={4}
         />
         <YAxis hide />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip market={market} />} />
         <Area
           type="monotone"
           dataKey="cost"

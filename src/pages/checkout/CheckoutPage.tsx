@@ -1,26 +1,18 @@
-import React, { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, User, MessageSquare, CreditCard, Gift, Check, AlertCircle, Upload, ArrowRight } from 'lucide-react'
 import { API_BASE_URL } from '../../lib/constants'
-import { createCheckoutSession } from '../../lib/api'
-import Navbar from '../../components/landing/Navbar'
-import Footer from '../../components/landing/Footer'
-
-const PLANS = {
-  basic: {
-    name: 'The Reality Check',
-    price: 99,
-    planId: 'shibuya_single',
-    description: 'Baseline workspace activation with discipline tax, edge concentration, and trader-state feedback.',
-  },
-  premium: {
-    name: 'The Deep Dive',
-    price: 149,
-    planId: 'shibuya_transform',
-    description: 'Deeper trader-performance entry point with stronger follow-through and higher-touch support.',
-  },
-} as const
+import { createCheckoutSession, trackAffiliateClick } from '../../lib/api'
+import {
+  captureAffiliateAttributionFromLocation,
+  getPreferredAffiliateCode,
+  markAffiliateClickTracked,
+  readAffiliateAttribution,
+  wasAffiliateClickTracked,
+} from '../../lib/affiliateAttribution'
+import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
+import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
 interface CheckoutForm {
   name: string
@@ -39,7 +31,15 @@ interface PromoValidation {
 
 const CheckoutPage: React.FC = () => {
   const { plan } = useParams<{ plan: string }>()
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+  const planKey = getPlanKey(plan)
+  const currentPlan = getMarketPricing(market)[planKey]
+  const isSubscription = currentPlan.type === 'subscription'
+  const isGuided = currentPlan.supportTier === 'guided'
+
   const [loading, setLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [form, setForm] = useState<CheckoutForm>({
     name: '',
     email: '',
@@ -48,7 +48,30 @@ const CheckoutPage: React.FC = () => {
   })
   const [promoValidating, setPromoValidating] = useState(false)
   const [promoResult, setPromoResult] = useState<PromoValidation | null>(null)
-  const currentPlan = PLANS[plan as keyof typeof PLANS] || PLANS.basic
+
+  useEffect(() => {
+    persistMarket(market)
+    const captured = captureAffiliateAttributionFromLocation(location.pathname, location.search)
+    const attribution = captured ?? readAffiliateAttribution()
+    const affiliateCode = getPreferredAffiliateCode(attribution)
+
+    if (attribution?.ref_code && !form.referral) {
+      setForm((current) => ({
+        ...current,
+        referral: current.referral || attribution.ref_code || '',
+      }))
+    }
+
+    if (!affiliateCode || wasAffiliateClickTracked(affiliateCode)) {
+      return
+    }
+
+    void trackAffiliateClick(affiliateCode)
+      .then(() => {
+        markAffiliateClickTracked(affiliateCode)
+      })
+      .catch(() => undefined)
+  }, [form.referral, location.pathname, location.search, market])
 
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
@@ -95,9 +118,10 @@ const CheckoutPage: React.FC = () => {
     setLoading(true)
 
     try {
+      persistMarket(market)
       const origin = window.location.origin
-      const successUrl = `${origin}/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`
-      const cancelUrl = `${origin}/checkout/${plan || 'basic'}`
+      const successUrl = `${origin}${addMarketToPath(`/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`, market)}`
+      const cancelUrl = `${origin}${addMarketToPath(`/checkout/${currentPlan.checkoutSlug}`, market)}`
 
       const session = await createCheckoutSession({
         plan_id: currentPlan.planId,
@@ -105,6 +129,7 @@ const CheckoutPage: React.FC = () => {
         name: form.name.trim(),
         success_url: successUrl,
         cancel_url: cancelUrl,
+        referral_code: form.referral.trim() || undefined,
       })
 
       localStorage.setItem('shibuya_order', JSON.stringify({
@@ -114,47 +139,61 @@ const CheckoutPage: React.FC = () => {
         referral: form.referral,
         plan: currentPlan.name,
         planId: currentPlan.planId,
+        market,
+        tier: currentPlan.id === 'reset_monthly' || currentPlan.id === 'reset_once' ? 'reset_pro' : 'psych_audit',
+        currency: currentPlan.currency,
         orderId: session.order_id,
         sessionId: session.session_id,
         timestamp: new Date().toISOString(),
       }))
 
+      rememberRecentOrderAccess({
+        email: form.email.trim(),
+        orderCode: session.order_id,
+        market,
+        planId: currentPlan.planId,
+        planName: currentPlan.name,
+      })
+
       window.location.href = session.checkout_url
     } catch (error) {
       console.error('Checkout error:', error)
-      alert('Checkout could not be started. Please try again or contact support@shibuya-analytics.com')
+      setCheckoutError('Payment system unavailable. Please try again or contact support@shibuya-analytics.com')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen relative font-sans bg-[#030304] selection:bg-indigo-500/30">
-      <Navbar />
-
-      <div className="max-w-2xl mx-auto px-6 py-24 md:py-32">
+    <div className="relative min-h-screen font-sans selection:bg-indigo-500/30">
+      <div className="mx-auto max-w-2xl px-6 py-24 md:py-32">
         <div className="mb-8">
-          <Link to="/pricing" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-6">
-            <ArrowLeft className="w-4 h-4" />
+          <Link
+            to={addMarketToPath('/pricing', market)}
+            className="mb-6 inline-flex items-center gap-2 text-neutral-400 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
             Back to Pricing
           </Link>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Activate Your Live Trader Account</h1>
-          <p className="text-neutral-400">Checkout unlocks the live Shibuya workspace. Upload your history after activation.</p>
+          <h1 className="mb-2 text-3xl font-bold text-white md:text-4xl">Start The Live Shibuya Loop</h1>
+          <p className="text-neutral-400">
+            Checkout unlocks the live workspace where you upload history, separate edge from sabotage, and get a next-session mandate.
+          </p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-6 mb-8"
+          className="mb-8 rounded-2xl border border-indigo-500/20 bg-indigo-500/10 p-6"
         >
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-white text-lg">{currentPlan.name}</h3>
+              <h3 className="text-lg font-semibold text-white">{currentPlan.name}</h3>
               <p className="text-sm text-neutral-400">{currentPlan.description}</p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold text-white font-mono">EUR {currentPlan.price}</span>
-              <p className="text-xs text-neutral-500">one-time</p>
+              <span className="font-mono text-3xl font-bold text-white">{formatPrice(currentPlan)}</span>
+              <p className="text-xs text-neutral-500">{currentPlan.billingLabel}</p>
             </div>
           </div>
         </motion.div>
@@ -166,14 +205,14 @@ const CheckoutPage: React.FC = () => {
           onSubmit={handleSubmit}
           className="space-y-6"
         >
-          <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6 md:p-8">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <User className="w-5 h-5 text-indigo-400" />
+          <div className="rounded-2xl border border-white/5 bg-[#0A0A0B] p-6 md:p-8">
+            <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
+              <User className="h-5 w-5 text-indigo-400" />
               Your Details
             </h3>
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-2 text-neutral-300">
+                <label className="mb-2 block text-sm font-medium text-neutral-300">
                   Full Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -182,14 +221,14 @@ const CheckoutPage: React.FC = () => {
                   required
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
+                  className="w-full rounded-lg border border-white/10 bg-[#050505] px-4 py-3 text-white placeholder-neutral-500 transition-colors focus:border-indigo-500 focus:outline-none"
                   placeholder="Enter your full name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                  <Mail className="h-4 w-4" />
                   Email Address <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -198,15 +237,15 @@ const CheckoutPage: React.FC = () => {
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
+                  className="w-full rounded-lg border border-white/10 bg-[#050505] px-4 py-3 text-white placeholder-neutral-500 transition-colors focus:border-indigo-500 focus:outline-none"
                   placeholder="your@email.com"
                 />
-                <p className="text-xs text-neutral-500 mt-1">We will send your order code and activation instructions here.</p>
+                <p className="mt-1 text-xs text-neutral-500">We will send your order code and activation instructions here.</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                  <MessageSquare className="h-4 w-4" />
                   Discord Username <span className="text-neutral-500">(Optional)</span>
                 </label>
                 <input
@@ -214,15 +253,15 @@ const CheckoutPage: React.FC = () => {
                   name="discord"
                   value={form.discord}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500"
+                  className="w-full rounded-lg border border-white/10 bg-[#050505] px-4 py-3 text-white placeholder-neutral-500 transition-colors focus:border-indigo-500 focus:outline-none"
                   placeholder="username"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-neutral-300 flex items-center gap-2">
-                  <Gift className="w-4 h-4" />
-                  Promo or Referral Code <span className="text-neutral-500">(Optional)</span>
+                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                  <Gift className="h-4 w-4" />
+                  Referral / Affiliate Code <span className="text-neutral-500">(Optional)</span>
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -230,25 +269,27 @@ const CheckoutPage: React.FC = () => {
                     name="referral"
                     value={form.referral}
                     onChange={handleChange}
-                    className="flex-1 px-4 py-3 bg-[#050505] border border-white/10 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors text-white placeholder-neutral-500 uppercase"
+                    className="flex-1 rounded-lg border border-white/10 bg-[#050505] px-4 py-3 uppercase text-white placeholder-neutral-500 transition-colors focus:border-indigo-500 focus:outline-none"
                     placeholder="ENTER CODE"
                   />
                   <button
                     type="button"
                     onClick={() => validatePromoCode(form.referral)}
                     disabled={promoValidating || !form.referral.trim()}
-                    className="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500"
                   >
                     {promoValidating ? '...' : 'Apply'}
                   </button>
                 </div>
                 {promoResult && (
-                  <div className={`mt-2 p-3 rounded-lg text-sm flex items-center gap-2 ${
-                    promoResult.valid
-                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                      : 'bg-red-500/10 border border-red-500/20 text-red-400'
-                  }`}>
-                    {promoResult.valid ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                  <div
+                    className={`mt-2 flex items-center gap-2 rounded-lg p-3 text-sm ${
+                      promoResult.valid
+                        ? 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-400'
+                        : 'border border-red-500/20 bg-red-500/10 text-red-400'
+                    }`}
+                  >
+                    {promoResult.valid ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                     {promoResult.message}
                   </div>
                 )}
@@ -256,40 +297,55 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6 md:p-8">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-              <Upload className="w-5 h-5 text-indigo-400" />
-              What you will do after activation
+          <div className="rounded-2xl border border-white/5 bg-[#0A0A0B] p-6 md:p-8">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
+              <Upload className="h-5 w-5 text-indigo-400" />
+              {isSubscription ? 'What changes after monthly access starts' : 'What changes after payment clears'}
             </h3>
-            <p className="text-sm text-neutral-400 mb-6">
-              You do not need to upload your CSV before checkout. The live workspace is where uploads, history, alerts, and prescriptions become part of your ongoing loop.
+            <p className="mb-6 text-sm text-neutral-400">
+              {isSubscription
+                ? 'This does not buy a PDF. It starts a live trader workspace that stays active while continuity is healthy.'
+                : 'This does not buy a PDF. It opens a 30-day live reset window where you activate, upload, and work the loop for real.'}
             </p>
             <div className="grid gap-3 md:grid-cols-2">
               {[
-                'Activate your live trader account with the order code.',
+                'Activate the live workspace with your order code.',
                 'Upload your broker or platform export inside the workspace.',
-                'Review your trade history, edge portfolio, and discipline tax.',
-                'Use alerts and next-session guidance to iterate forward.',
+                market === 'india'
+                  ? 'See discipline tax, edge concentration, and behavior leaks in rupees.'
+                  : 'See discipline tax, edge concentration, and current trader state.',
+                'Carry a next-session mandate forward and update it after each session.',
+                isGuided
+                  ? isSubscription
+                    ? 'Your first billing cycle includes one guided review call so the reset does not stay theoretical.'
+                    : 'This package includes one guided kickoff review so the reset does not stay theoretical.'
+                  : isSubscription
+                    ? 'This tier is built to stay lightweight enough to keep live at volume.'
+                    : 'This package is built to give you a bounded reset window without forcing a recurring commitment first.',
               ].map((item) => (
-                <div key={item} className="rounded-xl border border-white/5 bg-black/20 p-4 text-sm text-neutral-300 leading-relaxed">
+                <div key={item} className="rounded-xl border border-white/5 bg-black/20 p-4 text-sm leading-relaxed text-neutral-300">
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-[#0A0A0B] border border-white/5 rounded-2xl p-6">
-            <h4 className="font-medium text-white mb-4">What happens next?</h4>
+          <div className="rounded-2xl border border-white/5 bg-[#0A0A0B] p-6">
+            <h4 className="mb-4 font-medium text-white">What happens next?</h4>
             <div className="space-y-3 text-sm">
               {[
-                'Complete payment through the live Shibuya checkout flow.',
+                isSubscription
+                  ? 'Complete the recurring checkout through the live Shibuya payment flow.'
+                  : 'Complete the one-time checkout and secure the reset window.',
                 'Receive your order code by email and on the success screen.',
                 'Activate your live trader account.',
-                'Upload your trade history and start using the workspace immediately.',
+                isSubscription
+                  ? 'Upload history and keep the live loop running session by session.'
+                  : 'Upload history and use the 30-day reset window before the account becomes read-only.',
               ].map((item, index) => (
                 <div key={item} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-indigo-400 font-bold">{index + 1}</span>
+                  <div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20">
+                    <span className="text-xs font-bold text-indigo-400">{index + 1}</span>
                   </div>
                   <p className="text-neutral-400">{item}</p>
                 </div>
@@ -297,34 +353,48 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
 
+          {checkoutError && (
+            <div className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+              <div>
+                <p className="text-sm font-medium text-red-200">{checkoutError}</p>
+                <button
+                  type="button"
+                  onClick={() => setCheckoutError(null)}
+                  className="mt-1 text-xs text-red-400 underline hover:text-red-300"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             disabled={loading}
             type="submit"
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-700 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-3"
+            className="flex w-full items-center justify-center gap-3 rounded-xl bg-indigo-600 py-4 font-semibold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-neutral-700"
           >
             {loading ? (
               <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                 Starting checkout...
               </>
             ) : (
               <>
-                <CreditCard className="w-5 h-5" />
-                Pay EUR {currentPlan.price} and Activate
-                <ArrowRight className="w-4 h-4" />
+                <CreditCard className="h-5 w-5" />
+                Continue to Secure Checkout
+                <ArrowRight className="h-4 w-4" />
               </>
             )}
           </motion.button>
 
-          <p className="text-xs text-center text-neutral-500">
+          <p className="text-center text-xs text-neutral-500">
             By proceeding, you agree to our <Link to="/terms" className="text-indigo-400 hover:underline">Terms</Link> and <Link to="/privacy" className="text-indigo-400 hover:underline">Privacy Policy</Link>.
           </p>
         </motion.form>
       </div>
-
-      <Footer />
     </div>
   )
 }

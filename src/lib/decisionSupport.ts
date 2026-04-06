@@ -30,6 +30,8 @@ function listEdges(names: string[]): string {
 }
 
 export function buildTradingMandate(overview: DashboardOverview): TradingMandate {
+  const backendCommand = overview.analysis_summary?.next_session_command
+  const protectList = overview.analysis_summary?.what_to_protect ?? []
   const primeEdges = overview.edge_portfolio.filter((edge) => edge.status === 'PRIME')
   const decayedEdges = overview.edge_portfolio.filter((edge) => edge.status === 'DECAYED').map((edge) => edge.name)
   const topPrime = primeEdges[0]
@@ -43,14 +45,14 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
   if (elevatedState) {
     return {
       tone: 'protect',
-      headline: 'Protect capital before the next order',
-      summary: `${humanizeState(overview.bql_state)} is in control right now. With ${(overview.bql_score * 100).toFixed(0)}% emotional influence, this session is about damage control, not heroics.`,
+      headline: 'Restore command before the next order',
+      summary: `${humanizeState(overview.bql_state)} is driving decision quality down. With ${(overview.bql_score * 100).toFixed(0)}% behavioral influence, this session is about preserving command, not making the day back.`,
       doNow: [
         topPrime
           ? `If you trade at all, trade only ${topPrime.name}.`
           : 'If you trade at all, take only your cleanest repeatable setup.',
         'Cut size until your state normalizes and upload the next batch before increasing risk.',
-        'Open the slump protocol before the next session.',
+        backendCommand ?? protectList[0] ?? 'Open the control protocol before the next session.',
       ],
       stopNow: [
         decayedEdges.length > 0
@@ -60,8 +62,8 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
       ],
       reviewNext: commonReview,
       cta: {
-        label: 'Open slump remediation',
-        to: '/dashboard/slump',
+        label: 'Open control protocol',
+        to: '/dashboard/protocol',
       },
     }
   }
@@ -76,7 +78,7 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
           ? `Build the next session around ${topPrime.name}.`
           : 'Build the next session around your clearest repeatable setup.',
         'Use the edge portfolio to decide what deserves more size and what deserves less.',
-        'Upload the next batch quickly so the next recommendation reflects current behavior.',
+        backendCommand ?? protectList[0] ?? 'Upload the next batch quickly so the next recommendation reflects current behavior.',
       ],
       stopNow: [
         decayedEdges.length > 0
@@ -86,8 +88,8 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
       ],
       reviewNext: commonReview,
       cta: {
-        label: 'Review edge portfolio',
-        to: '/dashboard/edges',
+        label: 'Open control protocol',
+        to: '/dashboard/protocol',
       },
     }
   }
@@ -101,7 +103,7 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
         ? `Lean into ${topPrime.name}; that is where your cleanest money is coming from.`
         : 'Lean into your most repeatable setup and keep the process boring.',
       'Keep uploads current so the account stays honest about what is improving.',
-      'Use the weekly digest to decide what to refine, not to invent a new identity.',
+      backendCommand ?? 'Use the weekly digest to decide what to refine, not to invent a new identity.',
     ],
     stopNow: [
       'Do not widen your playbook just because things feel good.',
@@ -118,13 +120,13 @@ export function buildTradingMandate(overview: DashboardOverview): TradingMandate
 export function getAlertAction(alert: AlertItem): { label: string; to: string } {
   switch (alert.type) {
     case 'slump_warning':
-      return { label: 'Open slump protocol', to: '/dashboard/slump' }
+      return { label: 'Open control protocol', to: '/dashboard/protocol' }
     case 'margin_of_safety':
       return { label: 'Review trade history', to: '/dashboard/history' }
     case 'crucial_moment':
-      return { label: 'Inspect edge portfolio', to: '/dashboard/edges' }
+      return { label: 'Open control protocol', to: '/dashboard/protocol' }
     default:
-      return { label: 'Open overview', to: '/dashboard' }
+      return { label: 'Open control protocol', to: '/dashboard/protocol' }
   }
 }
 

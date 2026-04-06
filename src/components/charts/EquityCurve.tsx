@@ -1,6 +1,8 @@
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts'
+import type { Market } from '../../lib/market'
+import { formatCompactMoney, formatSignedCompactMoney } from '../../lib/display'
 
 interface EquityCurvePoint {
   date: string
@@ -11,12 +13,25 @@ interface EquityCurvePoint {
 interface EquityCurveProps {
   data: EquityCurvePoint[]
   height?: number
+  market?: Market
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipItem {
+  value: number
+  dataKey?: string
+}
+
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: ChartTooltipItem[]
+  label?: string
+  market?: Market
+}
+
+const CustomTooltip = ({ active, payload, label, market = 'india' }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
-  const actual = payload.find((p: any) => p.dataKey === 'actual')
-  const potential = payload.find((p: any) => p.dataKey === 'potential')
+  const actual = payload.find((item) => item.dataKey === 'actual')
+  const potential = payload.find((item) => item.dataKey === 'potential')
   const gap = potential && actual ? potential.value - actual.value : 0
 
   return (
@@ -24,17 +39,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <p className="text-neutral-400 font-mono mb-2">{label}</p>
       {potential && (
         <p className="text-indigo-400 mb-1">
-          Potential: <span className="text-white font-semibold">${potential.value.toLocaleString()}</span>
+          Potential: <span className="text-white font-semibold">{formatCompactMoney(potential.value, market)}</span>
         </p>
       )}
       {actual && (
         <p className="text-emerald-400 mb-1">
-          Actual: <span className="text-white font-semibold">${actual.value.toLocaleString()}</span>
+          Actual: <span className="text-white font-semibold">{formatCompactMoney(actual.value, market)}</span>
         </p>
       )}
       {gap > 0 && (
         <p className="text-rose-400 border-t border-white/5 pt-1 mt-1">
-          Gap: <span className="text-white font-semibold">-${gap.toLocaleString()}</span>
+          Gap: <span className="text-white font-semibold">{formatSignedCompactMoney(-gap, market)}</span>
         </p>
       )}
     </div>
@@ -65,7 +80,7 @@ export function generateEquityData(pnlGross: number, disciplineTax: number, trad
   return points
 }
 
-export function EquityCurve({ data, height = 180 }: EquityCurveProps) {
+export function EquityCurve({ data, height = 180, market = 'india' }: EquityCurveProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
@@ -90,10 +105,10 @@ export function EquityCurve({ data, height = 180 }: EquityCurveProps) {
           tick={{ fontSize: 9, fill: '#525252', fontFamily: 'monospace' }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v}`}
+          tickFormatter={(v) => formatCompactMoney(v, market)}
           width={40}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip market={market} />} />
         <ReferenceLine y={0} stroke="rgba(255,255,255,0.08)" />
         <Area
           type="monotone"

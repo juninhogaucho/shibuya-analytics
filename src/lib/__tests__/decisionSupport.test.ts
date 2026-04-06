@@ -28,7 +28,7 @@ describe('decision support', () => {
     })
 
     expect(mandate.tone).toBe('protect')
-    expect(mandate.cta.to).toBe('/dashboard/slump')
+    expect(mandate.cta.to).toBe('/dashboard/protocol')
     expect(mandate.doNow[0]).toContain('London FVG')
     expect(mandate.stopNow[0]).toContain('Friday PM Scalps')
   })
@@ -41,7 +41,7 @@ describe('decision support', () => {
     })
 
     expect(mandate.tone).toBe('focus')
-    expect(mandate.cta.to).toBe('/dashboard/edges')
+    expect(mandate.cta.to).toBe('/dashboard/protocol')
   })
 
   test('builds a press mandate when state is stable', () => {
@@ -64,7 +64,7 @@ describe('decision support', () => {
       severity: 'high',
       timestamp: '2026-03-28T00:00:00.000Z',
       acknowledged: false,
-    })).toEqual({ label: 'Open slump protocol', to: '/dashboard/slump' })
+    })).toEqual({ label: 'Open control protocol', to: '/dashboard/protocol' })
 
     expect(getAlertAction({
       id: '2',

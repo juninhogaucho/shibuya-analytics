@@ -1,261 +1,143 @@
 import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { addMarketToPath, resolveMarket } from '../../lib/market'
 
-const solutions = [
+const productSurfaces = [
   {
-    title: 'Reality Check',
-    price: 'EUR 99 - 149',
-    description: 'One-time baseline for traders who need brutal clarity on edge concentration, discipline leaks, and the next corrective move.',
-    features: [
-      'Discipline Tax and avoidable-loss breakdown',
-      'Edge Portfolio with press / cut / stop guidance',
-      'Behavioral state and slump-risk diagnosis',
-      'Delivered in 72 hours with concrete next actions',
-      'No subscription required',
+    title: 'Psych Audit',
+    summary: 'The baseline that tells you whether the real problem is edge, behavior, or the state you keep entering before you self-sabotage.',
+    bullets: [
+      'Discipline tax in real money',
+      'Behavioral leak diagnosis',
+      'Edge concentration and weak-zone mapping',
+      'First next-session mandate',
     ],
-    cta: 'Open Pricing',
-    link: '/pricing',
-    badge: 'Direct Trader',
   },
   {
-    title: 'Trader Workspace',
-    price: 'Sample now / live after activation',
-    description: 'The performance operating system: upload, diagnose, prescribe, append, and improve session by session.',
-    features: [
-      'Sample workspace for truthful exploration before purchase',
-      'Live trader account after direct or partner activation',
-      'Trade append, history, alerts, and slump remediation',
-      'Session mandate and weekly coach digest',
-      'Same runtime whether access came from you or a partner firm',
+    title: 'Reset Layer',
+    summary: 'The premium reset track for traders who already know they are stuck in a loop and need either a harder one-time intervention or a deeper live monthly tier.',
+    bullets: [
+      'Everything in Psych Audit',
+      'Reset Intensive for a guided one-time reset window',
+      'Reset Pro Live for deeper monthly continuity',
+      'Built for repeat breach and relapse recovery',
     ],
-    cta: 'Start With Truthful Access',
-    link: '/pricing',
-    badge: 'Core Product',
   },
   {
-    title: 'Embedded Shibuya',
-    price: 'Partner pricing',
-    description: 'For props, brokers, and tech providers that want trader-facing Shibuya and operator intelligence without forcing a full stack switch on day one.',
-    features: [
-      'Connector ladder: CSV -> platform -> partner endpoint',
-      'Trader acquisition and retention signal',
-      'Embedded analytics without replatforming first',
-      'Operator-side risk and behavior intelligence',
-      'Upgrade path into PropOS when replacement becomes rational',
+    title: 'Live Workspace',
+    summary: 'The system you use after activation: upload, inspect the leak, carry the mandate forward, and see whether the fix actually held.',
+    bullets: [
+      'Upload and append trade history',
+      'History, alerts, and slump diagnosis',
+      'Persistent trader runtime after activation',
+      'Sample mode for evaluation before purchase',
     ],
-    cta: 'Review Partner Path',
-    link: '/partners',
-    badge: 'Partner',
   },
 ]
 
-const connectorSteps = [
+const differentiation = [
   {
-    title: 'Universal ingestion',
-    body: 'CSV, statements, and paste parsing give any serious trader or firm a zero-friction way to start.',
+    title: 'Not just risk alerts',
+    body: 'Risk tools can tell you that you are near a limit. Shibuya is built to show why you keep getting there in the first place.',
   },
   {
-    title: 'Platform connectors',
-    body: 'MT5, cTrader, Match-Trader, and similar integrations unlock many firms at once instead of one endpoint at a time.',
+    title: 'Not just a journal',
+    body: 'A trade journal tells you what happened. Shibuya turns the pattern into a concrete mandate for the next session.',
   },
   {
-    title: 'Partner endpoints',
-    body: 'When a prop or broker wants deeper data flow, we add richer account, event, and intervention hooks.',
-  },
-  {
-    title: 'Embedded Shibuya',
-    body: 'The intelligence layer lives inside the partner surface, and full PropOS becomes an upgrade path instead of a hard first sell.',
+    title: 'Not just prettier analytics',
+    body: 'The point is not more charts. The point is to know what to stop, what to press, and whether your leak is behavioral or structural.',
   },
 ]
-
-const partnerReasons = [
-  'Shibuya-supported firms become more attractive to traders who already use the product.',
-  'Better feedback loops can increase trader retention and lifetime value.',
-  'The same data that helps the trader can later power operator-side risk and behavior intelligence.',
-  'Partners can buy embedded value first, then decide later whether full PropOS replacement is worth it.',
-]
-
-function badgeClasses(badge: string): string {
-  if (badge === 'Direct Trader') {
-    return 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-  }
-  if (badge === 'Core Product') {
-    return 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-  }
-  return 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-}
 
 export function SolutionsPage() {
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+
   return (
-    <div className="landing min-h-screen bg-[#020204] text-white selection:bg-blue-500/30">
-      <section className="landing-section relative overflow-hidden bg-grid-pattern py-24">
+    <div className="min-h-screen bg-[#020204] text-white selection:bg-blue-500/30">
+      <section className="relative overflow-hidden bg-grid-pattern py-24">
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#020204]/50 to-[#020204]" />
-        <div className="landing-container relative z-10 max-w-5xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+        <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-blue-400">
-              Solutions
+              Direct Trader Product
             </p>
             <h1 className="mb-6 text-5xl font-bold tracking-tight text-white md:text-6xl">
-              The Shibuya Product Ladder
+              The Shibuya Trader Loop
             </h1>
-            <p className="mx-auto max-w-2xl text-xl leading-relaxed text-gray-400">
-              One mission, three ways in. Start with trader value, then expand into partner distribution and embedded intelligence only when the proof justifies it.
+            <p className="mx-auto max-w-3xl text-xl leading-relaxed text-gray-400">
+              Shibuya exists to answer three questions brutally fast: is this an edge problem or a behavior problem, how much is the leak costing, and what changes next session.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <section className="landing-section pb-24">
-        <div className="landing-container mx-auto max-w-7xl px-6">
-          <div className="grid gap-8 md:grid-cols-3">
-            {solutions.map((solution, index) => (
-              <motion.article
-                key={solution.title}
-                className="glass-panel relative rounded-2xl border border-white/10 bg-[#0A0A0F] p-8 transition-all hover:border-blue-500/30"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08 }}
-                whileHover={{ y: -8, boxShadow: '0 20px 60px rgba(59, 130, 246, 0.12)' }}
-              >
-                <div className="mb-8 mt-2 text-center">
-                  <div className="mb-5">
-                    <span className={`rounded-full border px-4 py-1 text-[10px] font-bold uppercase tracking-wider ${badgeClasses(solution.badge)}`}>
-                      {solution.badge}
-                    </span>
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid gap-8 md:grid-cols-3">
+          {productSurfaces.map((surface, index) => (
+            <motion.article
+              key={surface.title}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08 }}
+              className="rounded-3xl border border-white/5 bg-[#0A0A0B] p-8"
+            >
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Surface 0{index + 1}</p>
+              <h2 className="text-2xl font-semibold text-white">{surface.title}</h2>
+              <p className="mt-4 text-sm leading-relaxed text-neutral-400">{surface.summary}</p>
+              <div className="mt-6 space-y-3">
+                {surface.bullets.map((bullet) => (
+                  <div key={bullet} className="rounded-2xl border border-white/5 bg-black/20 px-4 py-3 text-sm text-neutral-300">
+                    {bullet}
                   </div>
-                  <h3 className="mb-3 text-xl font-bold text-white">{solution.title}</h3>
-                  <div className="mb-4 text-3xl font-bold text-white">{solution.price}</div>
-                  <p className="text-sm leading-relaxed text-gray-400">{solution.description}</p>
-                </div>
+                ))}
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </section>
 
-                <ul className="mb-8 space-y-4 border-t border-white/5 pt-8">
-                  {solution.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm text-gray-300">
-                      <span className="mt-0.5 text-blue-400">✓</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  to={solution.link}
-                  className="block w-full rounded-full border border-white/10 bg-white/5 py-3 text-center text-sm font-medium text-white transition-all hover:bg-white hover:text-black"
-                >
-                  {solution.cta}
-                </Link>
-              </motion.article>
+      <section className="border-y border-white/5 bg-[#060607] py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-10 max-w-3xl">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-neutral-500">Why it matters</p>
+            <h2 className="text-4xl font-bold uppercase tracking-tight text-white">
+              The product is not the dashboard. The product is the next decision.
+            </h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {differentiation.map((item) => (
+              <article key={item.title} className="rounded-3xl border border-white/5 bg-[#0A0A0B] p-6">
+                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-400">{item.body}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="landing-section bg-[#050508] py-24" id="partner-model">
-        <div className="landing-container mx-auto max-w-6xl px-6">
-          <h2 className="mb-6 text-center text-3xl font-bold tracking-tight text-white">How Shibuya Reaches Traders</h2>
-          <p className="mx-auto mb-16 max-w-3xl text-center text-gray-400">
-            Shibuya should not depend on one custom endpoint per firm as the default scaling model. The correct path is a connector ladder that starts universal and gets deeper only where the data or economics justify it.
-          </p>
-
-          <div className="grid gap-6 md:grid-cols-4">
-            {connectorSteps.map((step, index) => (
-              <motion.article
-                key={step.title}
-                className="glass-panel rounded-2xl border border-white/10 bg-[#0A0A0F] p-6"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-              >
-                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">
-                  {index + 1}
-                </div>
-                <h3 className="mb-3 text-lg font-bold text-white">{step.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-400">{step.body}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section bg-[#020204] py-24">
-        <div className="landing-container mx-auto max-w-6xl px-6">
-          <h2 className="mb-16 text-center text-3xl font-bold tracking-tight text-white">Who This Is For</h2>
-
-          <div className="grid gap-12 md:grid-cols-2">
-            <motion.div
-              className="rounded-2xl border border-green-500/10 bg-green-500/5 p-8"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="rounded-[2rem] border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-10">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-indigo-300">Get started</p>
+          <h2 className="max-w-3xl text-4xl font-bold uppercase tracking-tight text-white">
+            Start in the sample workspace if you want to inspect the loop first. Start with pricing if you are ready to fix it for real.
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              to={addMarketToPath('/pricing', market)}
+              className="rounded-xl bg-white px-6 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-indigo-200"
             >
-              <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-green-400">
-                <span className="h-2 w-2 rounded-full bg-green-400"></span>
-                Right fit
-              </h3>
-              <ul className="space-y-4 text-gray-300">
-                <li className="flex items-start gap-3"><span className="mt-1 text-green-500">✓</span><span>You want to know where your real edge lives.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-green-500">✓</span><span>You keep repeating mistakes between good trades and want that loop broken.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-green-500">✓</span><span>You want a performance operating system, not another journal with prettier charts.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-green-500">✓</span><span>You are serious enough to upload data and act on what the system tells you.</span></li>
-              </ul>
-            </motion.div>
-
-            <motion.div
-              className="rounded-2xl border border-red-500/10 bg-red-500/5 p-8"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              Open Pricing
+            </Link>
+            <Link
+              to={addMarketToPath('/login', market)}
+              className="rounded-xl border border-white/10 px-6 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white hover:text-black"
             >
-              <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-red-400">
-                <span className="h-2 w-2 rounded-full bg-red-400"></span>
-                Wrong fit
-              </h3>
-              <ul className="space-y-4 text-gray-300">
-                <li className="flex items-start gap-3"><span className="mt-1 text-red-500">✕</span><span>You want trade signals or a bot to replace judgment.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-red-500">✕</span><span>You want partner-grade intelligence without sharing usable data.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-red-500">✕</span><span>You are looking for a generic AI summary that could be replaced by a chat box.</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 text-red-500">✕</span><span>You want instant absolution without changing process.</span></li>
-              </ul>
-            </motion.div>
+              Sign In Or Activate
+            </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="landing-section bg-[#050508] py-24">
-        <div className="landing-container mx-auto max-w-5xl px-6">
-          <div className="glass-panel rounded-3xl border border-white/10 bg-[#0A0A0F] p-10">
-            <h2 className="mb-6 text-center text-3xl font-bold text-white">Why firms integrate before they switch stacks</h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {partnerReasons.map((reason, index) => (
-                <motion.article
-                  key={reason}
-                  className="rounded-2xl border border-white/5 bg-white/[0.02] p-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.08 }}
-                >
-                  <div className="mb-3 text-xs uppercase tracking-[0.18em] text-blue-400">Partner value {index + 1}</div>
-                  <p className="text-sm leading-relaxed text-gray-300">{reason}</p>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section py-24 text-center">
-        <div className="landing-container mx-auto max-w-3xl px-6">
-          <h2 className="mb-6 text-3xl font-bold text-white">Start with the truthful entry point</h2>
-          <p className="mb-8 text-gray-400">
-            Direct traders should start with pricing and activation. Technology providers, props, and brokers should start with the partner path, prove the connector, then expand into embedded Shibuya or PropOS only when the economics are real.
-          </p>
-          <Link to="/partners" className="landing-btn landing-btn--primary px-8 py-3">
-            Open Partner Path
-          </Link>
         </div>
       </section>
     </div>

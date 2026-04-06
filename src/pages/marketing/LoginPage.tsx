@@ -1,17 +1,25 @@
 import { type FormEvent, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { login, verifyActivation } from '../../lib/api'
+import { addMarketToPath, getMarketHomePath, persistMarket, resolveMarket } from '../../lib/market'
 import { enterSampleMode } from '../../lib/runtime'
+import { readRecentOrderAccess } from '../../lib/recentAccess'
 
 type LoginMode = 'login' | 'activate'
 
 export function LoginPage() {
+  const recentAccess = readRecentOrderAccess()
   const [mode, setMode] = useState<LoginMode>('login')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(recentAccess?.email ?? '')
   const [password, setPassword] = useState('')
-  const [orderCode, setOrderCode] = useState('')
+  const [orderCode, setOrderCode] = useState(recentAccess?.orderCode ?? '')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+  const searchParams = new URLSearchParams(location.search)
+  const sessionExpired = searchParams.get('session') === 'expired'
+  const resetSuccess = searchParams.get('reset') === 'success'
   const navigate = useNavigate()
 
   const handleLogin = async (event: FormEvent) => {
@@ -23,7 +31,7 @@ export function LoginPage() {
       const response = await login({ email, password })
       
       if (response.success && response.api_key) {
-        navigate('/dashboard', { replace: true })
+        navigate(addMarketToPath('/dashboard', market), { replace: true })
       } else {
         setError(response.error || 'Invalid email or password')
       }
@@ -43,7 +51,7 @@ export function LoginPage() {
       const response = await verifyActivation({ email, orderCode })
       
       if (response.status === 'ready' && response.activationToken) {
-        navigate('/dashboard', { replace: true })
+        navigate(addMarketToPath(response.passwordRequired ? '/claim-account' : '/dashboard', response.market ?? market), { replace: true })
       } else if (response.status === 'pending') {
         setError('Your payment is still processing. Please check your email for confirmation.')
       } else {
@@ -57,6 +65,7 @@ export function LoginPage() {
   }
 
   const handleSampleWorkspace = () => {
+    persistMarket(market)
     enterSampleMode()
     navigate('/dashboard', { replace: true })
   }
@@ -66,12 +75,12 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2">
+          <Link to={getMarketHomePath(market)} className="inline-flex items-center gap-2">
             <img src="/shibuya-logo.svg" alt="Shibuya" className="h-10 w-auto" />
             <span className="text-2xl font-bold text-[var(--color-text)]">SHIBUYA</span>
           </Link>
           <p className="mt-2 text-[var(--color-text-muted)]">
-            Access your trading analytics dashboard
+            Access your live workspace, or finish first-time setup after payment
           </p>
         </div>
 
@@ -103,6 +112,18 @@ export function LoginPage() {
 
         {/* Form Card */}
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 shadow-lg">
+          {sessionExpired && !error && (
+            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-300 text-sm">
+              Your session expired. Sign in again to continue the live workspace.
+            </div>
+          )}
+
+          {resetSuccess && !error && (
+            <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-300 text-sm">
+              Password updated. Sign in with the new password.
+            </div>
+          )}
+
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
               {error}
@@ -139,6 +160,11 @@ export function LoginPage() {
                   placeholder="••••••••"
                   className="w-full px-4 py-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                 />
+                <div className="mt-2 text-right">
+                  <Link to={addMarketToPath('/forgot-password', market)} className="text-xs text-[var(--color-primary)] hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
 
               <button
@@ -152,7 +178,10 @@ export function LoginPage() {
           ) : (
             <form onSubmit={handleActivation} className="space-y-4">
               <div className="text-sm text-[var(--color-text-muted)] mb-4">
-                <p>Just purchased? Enter your email and order code from your confirmation email.</p>
+                <p>Just purchased? Enter your email and order code from your confirmation email. If this is your first live access, you will create your return password next.</p>
+                {recentAccess?.email && recentAccess?.orderCode ? (
+                  <p className="mt-2">We already filled the last purchase we saw on this browser so you can keep moving.</p>
+                ) : null}
               </div>
 
               <div>
@@ -211,15 +240,21 @@ export function LoginPage() {
             onClick={handleSampleWorkspace}
             className="w-full py-3 px-4 border border-[var(--color-border)] text-[var(--color-text)] font-medium rounded-lg hover:bg-[var(--color-bg)] transition-colors"
           >
-            🎮 Explore Sample Workspace
+            Explore Sample Workspace
           </button>
 
           {/* Footer Links */}
           <div className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
             <p>
               Don't have an account?{' '}
-              <Link to="/pricing" className="text-[var(--color-primary)] hover:underline">
+              <Link to={addMarketToPath('/pricing', market)} className="text-[var(--color-primary)] hover:underline">
                 Get started
+              </Link>
+            </p>
+            <p className="mt-2">
+              First live unlock still missing?{' '}
+              <Link to={addMarketToPath('/activate', market)} className="text-[var(--color-primary)] hover:underline">
+                Activate with your order code
               </Link>
             </p>
           </div>

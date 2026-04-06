@@ -1,4 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts'
+import type { Market } from '../../lib/market'
+import { formatSignedCompactMoney, formatCompactMoney } from '../../lib/display'
 
 interface EdgeDataPoint {
   name: string
@@ -9,6 +11,7 @@ interface EdgeDataPoint {
 interface EdgeComparisonChartProps {
   data: EdgeDataPoint[]
   height?: number
+  market?: Market
 }
 
 const STATUS_COLORS = {
@@ -17,20 +20,31 @@ const STATUS_COLORS = {
   DECAYED: 'rgba(244,63,94,0.7)',
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipItem {
+  value: number
+}
+
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: ChartTooltipItem[]
+  label?: string
+  market?: Market
+}
+
+const CustomTooltip = ({ active, payload, label, market = 'india' }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   const val = payload[0].value
   return (
     <div className="bg-[#0E0E12] border border-white/10 rounded-lg p-3 text-xs shadow-xl">
       <p className="text-neutral-400 font-mono mb-1">{label}</p>
       <p className={val >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
-        {val >= 0 ? '+' : ''}${val.toLocaleString()}
+        {formatSignedCompactMoney(val, market)}
       </p>
     </div>
   )
 }
 
-export function EdgeComparisonChart({ data, height = 160 }: EdgeComparisonChartProps) {
+export function EdgeComparisonChart({ data, height = 160, market = 'india' }: EdgeComparisonChartProps) {
   const sorted = [...data].sort((a, b) => b.pnl - a.pnl)
 
   return (
@@ -45,7 +59,7 @@ export function EdgeComparisonChart({ data, height = 160 }: EdgeComparisonChartP
           tick={{ fontSize: 9, fill: '#404040', fontFamily: 'monospace' }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v}`}
+          tickFormatter={(v) => formatCompactMoney(v, market)}
         />
         <YAxis
           type="category"
@@ -55,7 +69,7 @@ export function EdgeComparisonChart({ data, height = 160 }: EdgeComparisonChartP
           tickLine={false}
           width={80}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip market={market} />} />
         <ReferenceLine x={0} stroke="rgba(255,255,255,0.1)" />
         <Bar dataKey="pnl" radius={[0, 4, 4, 0]}>
           {sorted.map((entry, index) => (

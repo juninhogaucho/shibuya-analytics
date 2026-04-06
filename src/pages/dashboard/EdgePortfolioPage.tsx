@@ -7,6 +7,8 @@ import { Badge, EdgeBadge } from '../../components/ui/Badge'
 import { EngineTag } from '../../components/engine/EngineTag'
 import { ChartCard } from '../../components/charts/ChartCard'
 import { EdgeComparisonChart } from '../../components/charts/EdgeComparisonChart'
+import { formatSignedCompactMoney } from '../../lib/display'
+import { getStoredSessionMeta } from '../../lib/runtime'
 import type { EdgePortfolioResponse, EdgeItem } from '../../lib/types'
 
 // Human-readable interpretations
@@ -28,30 +30,30 @@ const interpretMaxDD = (dd: number): string => {
 // Explain what each edge name means for a newbie trader
 const getEdgeExplanation = (edgeName: string): { what: string; when: string; why: string } => {
   const explanations: Record<string, { what: string; when: string; why: string }> = {
-    'London Session FVG': {
-      what: 'Trading Fair Value Gaps (price imbalances) during the London market session',
-      when: 'During London open (3:00-5:00 AM EST) when European banks start trading',
-      why: 'London session has high volume. Banks create FVGs when they need to move large orders quickly. Price often returns to fill these gaps.',
+    'Nifty opening drive': {
+      what: 'Trading the first clean directional drive after the Nifty cash open',
+      when: 'During the first part of the NSE session, once the opening range resolves',
+      why: 'The open concentrates liquidity and emotion. A clean opening drive often gives your best directional read of the day.',
     },
-    'NY AM Reversal': {
-      what: 'Looking for price reversals in the first 2 hours after New York opens',
-      when: '9:30-11:30 AM EST during US market opening',
-      why: 'NY open often sees an initial push in one direction, then reverses as institutions finish their opening orders.',
+    'BankNifty reversal fade': {
+      what: 'Fading the first overextended move in BankNifty after the early impulse',
+      when: 'After the first expansion leg, when volatility starts to overshoot',
+      why: 'BankNifty moves fast enough to punish late entries. Reversal fades work when the first move exhausts impatient size.',
     },
-    'Asian Range Break': {
-      what: 'Trading the breakout of the price range established during Asian session',
-      when: 'As London opens and breaks the Asian range (usually 3:00-4:00 AM EST)',
-      why: 'Asian session often sets up a "coiling" range that breaks when London liquidity enters.',
+    'Expiry-day breakout chase': {
+      what: 'Chasing breakouts during high-volatility weekly expiry conditions',
+      when: 'Mainly on Nifty or BankNifty expiry sessions',
+      why: 'These moves feel irresistible, but they often force emotional size and bad late entries if the process is weak.',
     },
-    'News Fade (NFP/CPI)': {
-      what: 'Trading against the initial move after major economic releases',
-      when: 'During NFP (first Friday monthly), CPI releases, and FOMC decisions',
-      why: 'Initial news spikes are often overreactions. Smart money fades these moves after retail panic.',
+    'Options scalp around VWAP': {
+      what: 'Short-horizon scalps when price reclaims or rejects VWAP cleanly',
+      when: 'Usually mid-session after the open noise settles',
+      why: 'VWAP gives structure. If your execution is disciplined, these trades can be repeatable without forcing hero size.',
     },
-    'Friday PM Scalps': {
-      what: 'Quick trades in the last hours of the trading week',
-      when: 'Friday afternoon (1:00-4:00 PM EST)',
-      why: 'Trying to catch last-minute moves before weekend. Often low quality due to reduced liquidity.',
+    'Friday overtrade spiral': {
+      what: 'A repeated Friday pattern where you keep taking lower-quality trades after the best move is gone',
+      when: 'Late Friday or after a strong week when discipline drops',
+      why: 'Fatigue, greed, and “one more trade” syndrome combine into the worst version of your process.',
     },
   }
   
@@ -67,6 +69,7 @@ export function EdgePortfolioPage() {
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<EdgePortfolioResponse | null>(null)
   const [expandedEdge, setExpandedEdge] = useState<string | null>(null)
+  const market = getStoredSessionMeta()?.market ?? 'india'
 
   useEffect(() => {
     async function fetchData() {
@@ -181,7 +184,7 @@ export function EdgePortfolioPage() {
         {data.summary.total_pnl !== undefined && (
           <div className={`edge-stat ${data.summary.total_pnl >= 0 ? 'prime' : 'decayed'}`}>
             <span className="stat-value">
-              {data.summary.total_pnl >= 0 ? '+' : ''}€{Math.abs(data.summary.total_pnl).toLocaleString()}
+              {formatSignedCompactMoney(data.summary.total_pnl, market)}
             </span>
             <span className="stat-label">Total P&L</span>
           </div>
@@ -203,6 +206,7 @@ export function EdgePortfolioPage() {
               status: e.status as 'PRIME' | 'STABLE' | 'DECAYED',
             }))}
             height={Math.max(140, data.edges.length * 36)}
+            market={market}
           />
         </ChartCard>
       )}
@@ -244,7 +248,7 @@ export function EdgePortfolioPage() {
                 {edge.pnl !== undefined && (
                   <div className="edge-metric">
                     <span className={`metric-value ${edge.pnl >= 0 ? 'positive' : 'negative'}`}>
-                      {edge.pnl >= 0 ? '+' : '-'}€{Math.abs(edge.pnl).toLocaleString()}
+                      {formatSignedCompactMoney(edge.pnl, market)}
                     </span>
                     <span className="metric-label">P&L</span>
                   </div>

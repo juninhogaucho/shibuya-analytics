@@ -1,19 +1,31 @@
 import { Suspense, lazy } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { DashboardLayout } from '../layouts/DashboardLayout'
 import { AuthGuard } from '../components/AuthGuard'
+import { getStoredSessionMeta, hasPremiumAccess } from '../lib/runtime'
 
 const HomePage = lazy(() => import('../pages/marketing/HomePage'))
 const SolutionsPage = lazy(() => import('../pages/marketing/SolutionsPage').then((module) => ({ default: module.SolutionsPage })))
 const PartnersPage = lazy(() => import('../pages/marketing/PartnersPage').then((module) => ({ default: module.PartnersPage })))
 const ActivationPage = lazy(() => import('../pages/marketing/ActivationPage').then((module) => ({ default: module.ActivationPage })))
+const ClaimAccountPage = lazy(() => import('../pages/marketing/ClaimAccountPage'))
 const LoginPage = lazy(() => import('../pages/marketing/LoginPage').then((module) => ({ default: module.LoginPage })))
+const ForgotPasswordPage = lazy(() => import('../pages/marketing/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('../pages/marketing/ResetPasswordPage'))
 const CheckoutPage = lazy(() => import('../pages/checkout/CheckoutPage'))
 const CheckoutSuccessPage = lazy(() => import('../pages/checkout/CheckoutSuccessPage'))
 const TermsPage = lazy(() => import('../pages/marketing/TermsPage').then((module) => ({ default: module.TermsPage })))
 const PrivacyPage = lazy(() => import('../pages/marketing/PrivacyPage').then((module) => ({ default: module.PrivacyPage })))
 const DashboardOverviewPage = lazy(() => import('../pages/dashboard/OverviewPage').then((module) => ({ default: module.DashboardOverviewPage })))
+const CampaignReviewPage = lazy(() => import('../pages/dashboard/CampaignReviewPage'))
+const SessionGatePage = lazy(() => import('../pages/dashboard/SessionGatePage'))
+const ProtocolPage = lazy(() => import('../pages/dashboard/ProtocolPage'))
+const OpsPage = lazy(() => import('../pages/dashboard/OpsPage'))
+const WorkspacePage = lazy(() => import('../pages/dashboard/WorkspacePage').then((module) => ({ default: module.WorkspacePage })))
+const ReportsPage = lazy(() => import('../pages/dashboard/ReportsPage').then((module) => ({ default: module.ReportsPage })))
+const AccessPage = lazy(() => import('../pages/dashboard/AccessPage'))
+const OnboardingPage = lazy(() => import('../pages/dashboard/OnboardingPage').then((module) => ({ default: module.OnboardingPage })))
 const TradeHistoryPage = lazy(() => import('../pages/dashboard/TradeHistoryPage').then((module) => ({ default: module.TradeHistoryPage })))
 const AlertsPage = lazy(() => import('../pages/dashboard/AlertsPage').then((module) => ({ default: module.AlertsPage })))
 const SlumpPrescriptionPage = lazy(() => import('../pages/dashboard/SlumpPrescriptionPage').then((module) => ({ default: module.SlumpPrescriptionPage })))
@@ -33,18 +45,32 @@ function RouteFallback() {
   )
 }
 
+function PremiumRoute({ children }: { children: React.ReactNode }) {
+  if (!hasPremiumAccess()) {
+    const market = getStoredSessionMeta()?.market ?? 'india'
+    return <Navigate to={`/pricing?market=${market}&upgrade=reset-pro`} replace />
+  }
+
+  return <>{children}</>
+}
+
 export function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/global" element={<HomePage />} />
 
         <Route element={<PublicLayout />}>
+          <Route path="/india" element={<Navigate to="/" replace />} />
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/partners" element={<PartnersPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/claim-account" element={<ClaimAccountPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/checkout/:plan" element={<CheckoutPage />} />
           <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           <Route path="/terms" element={<TermsPage />} />
@@ -59,11 +85,19 @@ export function AppRoutes() {
           )}
         >
           <Route path="/dashboard" element={<DashboardOverviewPage />} />
+          <Route path="/dashboard/campaign-review" element={<CampaignReviewPage />} />
+          <Route path="/dashboard/gate" element={<SessionGatePage />} />
+          <Route path="/dashboard/protocol" element={<ProtocolPage />} />
+          <Route path="/dashboard/ops" element={<OpsPage />} />
+          <Route path="/dashboard/workspace" element={<WorkspacePage />} />
+          <Route path="/dashboard/access" element={<AccessPage />} />
+          <Route path="/dashboard/reports" element={<ReportsPage />} />
+          <Route path="/dashboard/onboarding" element={<OnboardingPage />} />
           <Route path="/dashboard/history" element={<TradeHistoryPage />} />
-          <Route path="/dashboard/alerts" element={<AlertsPage />} />
-          <Route path="/dashboard/slump" element={<SlumpPrescriptionPage />} />
-          <Route path="/dashboard/edges" element={<EdgePortfolioPage />} />
-          <Route path="/dashboard/shadow-boxing" element={<ShadowBoxingPage />} />
+          <Route path="/dashboard/alerts" element={<PremiumRoute><AlertsPage /></PremiumRoute>} />
+          <Route path="/dashboard/slump" element={<PremiumRoute><SlumpPrescriptionPage /></PremiumRoute>} />
+          <Route path="/dashboard/edges" element={<PremiumRoute><EdgePortfolioPage /></PremiumRoute>} />
+          <Route path="/dashboard/shadow-boxing" element={<PremiumRoute><ShadowBoxingPage /></PremiumRoute>} />
           <Route path="/dashboard/upload" element={<AppendTradesPage />} />
         </Route>
 

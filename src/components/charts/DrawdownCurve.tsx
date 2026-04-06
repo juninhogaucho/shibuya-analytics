@@ -11,7 +11,17 @@ interface DrawdownCurveProps {
   height?: number
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipItem {
+  value: number
+}
+
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: ChartTooltipItem[]
+  label?: string
+}
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[#0E0E12] border border-white/10 rounded-lg p-3 text-xs shadow-xl">

@@ -84,7 +84,7 @@ export function ShadowBoxingPage() {
         </div>
         <h1>Shadow Boxing</h1>
         <p className="text-muted">
-          We run your actual trades through the exact rules of major prop firms. Cox proportional hazard survival analysis predicts your breach timeline. Monte Carlo stress-tests your pass probability across 10,000 scenarios.
+          We run your actual trades through funded-account evaluation rulebooks. Cox proportional hazard survival analysis predicts your breach timeline, and Monte Carlo stress-tests your pass probability across 10,000 scenarios.
         </p>
       </header>
 
@@ -170,7 +170,7 @@ export function ShadowBoxingPage() {
               
               <div className="sim-account">
                 <span className="account-size">${sim.account_size.toLocaleString()}</span>
-                <span className="text-muted">Challenge</span>
+                <span className="text-muted">Evaluation size</span>
               </div>
 
               <div className="sim-metrics">

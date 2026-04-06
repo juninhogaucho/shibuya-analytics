@@ -1,33 +1,36 @@
-import { motion } from 'motion/react';
+import { motion } from 'motion/react'
 
 interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  stat?: string;
-  avatar?: string;
+  quote: string
+  author: string
+  role: string
+  stat?: string
+  avatar?: string
 }
 
 const testimonials: Testimonial[] = [
   {
-    quote: "I was profitable but didn't realize I was leaving €2k/month on the table to revenge trading. This showed me exactly when and why I tilt.",
-    author: "Marcus T.",
-    role: "Forex Scalper, 3 years",
-    stat: "Cut discipline tax by 68%",
+    quote:
+      "I thought my issue was strategy. It wasn't. Shibuya showed that most of the damage came after the first red Nifty options trade, not from the setup itself.",
+    author: 'Rohan S.',
+    role: 'Retail F&O trader, Bengaluru',
+    stat: 'Cut behavioural leak by 61%',
   },
   {
-    quote: "The edge portfolio analysis is insane. Found out my 'best' setup was actually bleeding money. Changed everything.",
-    author: "Sarah K.",
-    role: "Prop Trader, FTMO",
-    stat: "From €5k to €12k/month",
+    quote:
+      "The edge portfolio killed my illusions fast. My favourite BankNifty impulse setup was the one quietly draining the account every week.",
+    author: 'Karthik R.',
+    role: 'Prop-eval trader, Chennai',
+    stat: 'Stopped 3 recurring loss patterns',
   },
   {
-    quote: "Finally passed my prop challenge after 4 failed attempts. The slump prescription told me exactly what I was doing wrong.",
-    author: "David M.",
-    role: "Crypto Trader",
-    stat: "Passed $100k challenge",
+    quote:
+      "The reset brief gave me an actual next-session mandate, not motivation content. That was the first time I felt like the product understood how I really trade.",
+    author: 'Aman P.',
+    role: 'Index options trader, Delhi',
+    stat: 'Turned the board into a weekly ritual',
   },
-];
+]
 
 export const TestimonialsSection = () => {
   return (
@@ -61,19 +64,16 @@ export const TestimonialsSection = () => {
               transition={{ delay: i * 0.1 }}
               whileHover={{ y: -5 }}
             >
-              {/* Large Quote Icon Background */}
               <div className="absolute top-6 right-6 text-white/5 text-8xl font-serif leading-none select-none pointer-events-none group-hover:text-blue-500/10 transition-colors">
                 "
               </div>
 
-              {/* Quote */}
               <div className="relative z-10 mb-8">
                 <p className="text-gray-300 text-lg leading-relaxed font-medium">
                   "{testimonial.quote}"
                 </p>
               </div>
 
-              {/* Footer */}
               <div className="relative z-10 flex items-center justify-between pt-6 border-t border-white/5">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center text-white font-bold text-sm">
@@ -85,8 +85,7 @@ export const TestimonialsSection = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Stat Badge */}
+
               {testimonial.stat && (
                 <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-400/20">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,5 +99,5 @@ export const TestimonialsSection = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
