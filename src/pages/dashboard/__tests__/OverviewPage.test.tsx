@@ -99,6 +99,11 @@ describe('DashboardOverviewPage', () => {
     )
 
     expect(await screen.findByText('PRIVATE RESET PRO DEMO')).toBeInTheDocument()
+    expect(screen.getByText('3-MINUTE PATH')).toBeInTheDocument()
+    expect(screen.getByText('DEMO DATA ONLY')).toBeInTheDocument()
+    expect(screen.getByText('Founder thesis')).toBeInTheDocument()
+    expect(screen.getByText('FOUNDER SHOW SEQUENCE')).toBeInTheDocument()
+    expect(screen.getByText('DEMO READINESS CHECKLIST')).toBeInTheDocument()
     expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
     expect(screen.getByText('Origin report: sample-behavioral-leak-report')).toBeInTheDocument()
     expect(screen.getByText('Public archetype: Priya: Prop evaluation survivor')).toBeInTheDocument()
@@ -112,6 +117,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
     expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
+    expect(screen.getByRole('link', { name: /Append Proof/i })).toHaveAttribute('href', '/dashboard/upload')
+    expect(screen.getByText(/Live Reset Pro requires payment, activation, first meaningful upload/i)).toBeInTheDocument()
   })
 
   test('renders live activation origin separately from sample demo metadata', async () => {

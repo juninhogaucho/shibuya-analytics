@@ -258,6 +258,7 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/dashboard')
+    expect(screen.getByText('Reset Pro dashboard route')).toBeInTheDocument()
     expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
       demoSource: 'locked_insight',
       demoReportId: 'sample-behavioral-leak-report',
