@@ -36,6 +36,13 @@ describe('PrivateDemoPage', () => {
 
     expect(screen.getByText(/Private demo access is intentionally disabled/i)).toBeInTheDocument()
     expect(screen.getByText(/3-minute path through Mission HQ/i)).toBeInTheDocument()
+    expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
+    expect(screen.getByText('Four beats. Do not browse the workspace randomly.')).toBeInTheDocument()
+    expect(screen.getByText('1. Open Mission HQ')).toBeInTheDocument()
+    expect(screen.getByText('2. Show the private question')).toBeInTheDocument()
+    expect(screen.getByText('3. Inspect intervention surfaces')).toBeInTheDocument()
+    expect(screen.getByText('4. Close on append proof')).toBeInTheDocument()
+    expect(screen.getByText(/presentation discipline/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -62,6 +69,7 @@ describe('PrivateDemoPage', () => {
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
 
     expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
+    expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()

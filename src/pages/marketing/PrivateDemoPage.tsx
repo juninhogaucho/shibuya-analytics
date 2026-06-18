@@ -20,6 +20,25 @@ import {
   toReportSectionSlug,
 } from '../../lib/storyExperience'
 
+const PRIVATE_DEMO_OPERATOR_RUNBOOK = [
+  {
+    label: '1. Open Mission HQ',
+    body: 'Start from the carried public pain, current enemy, and next-session mandate.',
+  },
+  {
+    label: '2. Show the private question',
+    body: 'Use the Reset Pro bridge only as the question live data must prove, not as the answer.',
+  },
+  {
+    label: '3. Inspect intervention surfaces',
+    body: 'Show slump protocol, alerts, edge portfolio, and propOS angle as decision support.',
+  },
+  {
+    label: '4. Close on append proof',
+    body: 'End at upload/append so the viewer sees that progress requires new evidence.',
+  },
+] as const
+
 export default function PrivateDemoPage() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -103,13 +122,13 @@ export default function PrivateDemoPage() {
   }
 
   return (
-    <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
-      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-        <div className="lg:sticky lg:top-28">
+    <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
+      <div className="mx-0 grid w-full max-w-[22.25rem] min-w-0 gap-8 sm:mx-auto sm:max-w-6xl lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+        <div className="min-w-0 lg:sticky lg:top-28">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-indigo-300">
             Private Reset Pro Demo
           </p>
-          <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
+          <h1 className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
             Open the Reset Pro workspace for a controlled demo.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
@@ -135,12 +154,33 @@ export default function PrivateDemoPage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
+        <div className="min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
           <div className="mb-6">
             <PublicJourneySpine
               activeStage="demo"
               detail="This is the controlled sample workspace handoff. It demonstrates structure only; live proof still requires activation, upload, backend artifacts, and append history."
             />
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">
+              Operator runbook after unlock
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              Four beats. Do not browse the workspace randomly.
+            </h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {PRIVATE_DEMO_OPERATOR_RUNBOOK.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm font-semibold text-white">{item.label}</p>
+                  <p className="mt-2 text-xs leading-5 text-emerald-50/70">{item.body}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-emerald-50/60">
+              This runbook is presentation discipline. The sample workspace can teach structure; only live activation,
+              normalized upload, generated artifacts, and append history can prove trader-specific outcomes.
+            </p>
           </div>
 
           <div className="mb-6 flex items-start justify-between gap-4">
