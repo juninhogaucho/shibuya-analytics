@@ -63,6 +63,53 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </div>
 
+      {script.bridgeCard ? (
+        <article
+          className="glass-panel"
+          style={{ marginTop: '1rem', background: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.24)' }}
+        >
+          <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+            <div>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO BRIDGE RECEIVED</p>
+              <h4 style={{ marginBottom: '0.35rem' }}>{script.bridgeCard.headline}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{script.bridgeCard.whyNow}</p>
+            </div>
+          </div>
+
+          <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>QUESTION TO PROVE</p>
+              <h4 style={{ marginBottom: 0 }}>{script.bridgeCard.decisionQuestion}</h4>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>DEMO BOUNDARY</p>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                This card is carried routing context. It does not become account-specific evidence until live activation, upload, and backend artifacts exist.
+              </p>
+            </article>
+          </div>
+
+          <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(16,185,129,0.18)' }}>
+              <h4 style={{ marginBottom: '0.75rem' }}>Live Reset Pro must prove</h4>
+              <ul className="digest-preview" style={{ marginBottom: 0 }}>
+                {script.bridgeCard.liveProof.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(129,140,248,0.18)' }}>
+              <h4 style={{ marginBottom: '0.75rem' }}>Private demo may show</h4>
+              <ul className="digest-preview" style={{ marginBottom: 0 }}>
+                {script.bridgeCard.previewShows.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </article>
+      ) : null}
+
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>

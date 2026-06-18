@@ -197,6 +197,11 @@ export function DashboardOverviewPage() {
         visitedSceneCount: sessionMeta.demoVisitedSceneCount,
         lockedSectionId: sessionMeta.demoLockedSectionId,
         lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
+        bridgeHeadline: sessionMeta.demoBridgeHeadline,
+        bridgeDecisionQuestion: sessionMeta.demoBridgeDecisionQuestion,
+        bridgeWhyNow: sessionMeta.demoBridgeWhyNow,
+        bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
+        bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
       }
     : undefined
   const liveActivationOrigin = !sampleActive && sessionMeta?.activationSource

@@ -35,6 +35,11 @@ export interface ResetProDemoOrigin {
   visitedSceneCount?: number
   lockedSectionId?: string
   lockedSectionTitle?: string
+  bridgeHeadline?: string
+  bridgeDecisionQuestion?: string
+  bridgeWhyNow?: string
+  bridgeLiveProof?: string[]
+  bridgePreviewShows?: string[]
 }
 
 export interface ResetProDemoOriginCard {
@@ -49,6 +54,14 @@ export interface ResetProDemoChecklistItem {
   detail: string
 }
 
+export interface ResetProDemoBridgeCard {
+  headline: string
+  decisionQuestion: string
+  whyNow: string
+  liveProof: string[]
+  previewShows: string[]
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
@@ -60,6 +73,7 @@ export interface ResetProDemoScript {
   steps: ResetProDemoStep[]
   proofArtifacts: string[]
   originCard?: ResetProDemoOriginCard
+  bridgeCard?: ResetProDemoBridgeCard
   truthBoundary: string
 }
 
@@ -73,6 +87,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const firstArtifact = overview.artifact_descriptors?.find((artifact) => artifact.available)
   const resetPacket = overview.artifact_descriptors?.find((artifact) => artifact.kind === 'reset_pro_review_packet')
   const originCard = buildOriginCard(origin)
+  const bridgeCard = buildBridgeCard(origin)
 
   return {
     headline: 'Private Reset Pro command center',
@@ -88,10 +103,14 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
       {
         timebox: '0:00-0:30',
         title: origin?.lockedSectionTitle ? 'Connect the public pain to the private module' : 'Start from the public recognition moment',
-        say: origin?.lockedSectionTitle
+        say: origin?.bridgeDecisionQuestion
+          ? `The report handed us one question: ${origin.bridgeDecisionQuestion}`
+          : origin?.lockedSectionTitle
           ? `The trader tried to unlock ${origin.lockedSectionTitle}. Reset Pro turns that curiosity into an operating brief.`
           : 'The public story gets the trader to recognize the leak. Reset Pro is where the leak becomes an operating record.',
-        show: originCard
+        show: bridgeCard
+          ? 'Reset Pro bridge card, then origin card, then the private command center.'
+          : originCard
           ? `${originCard.title}: report, archetype, axis, evidence label, and requested private insight.`
           : 'Origin card, or direct private demo entry when no public handoff exists.',
         boundary: 'This is context for the walkthrough, not proof that the sample account belongs to the visitor.',
@@ -209,7 +228,34 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
       'Guided review checkpoint',
     ],
     originCard,
+    bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildBridgeCard(origin?: ResetProDemoOrigin): ResetProDemoBridgeCard | undefined {
+  if (!origin?.bridgeHeadline && !origin?.bridgeDecisionQuestion) {
+    return undefined
+  }
+
+  return {
+    headline: origin.bridgeHeadline ?? 'Reset Pro bridge received from the public report.',
+    decisionQuestion: origin.bridgeDecisionQuestion ?? 'Which behavior deserves the first private constraint?',
+    whyNow: origin.bridgeWhyNow ?? 'The private workspace must prove the public question with live activation, upload, and append history.',
+    liveProof: origin.bridgeLiveProof?.length
+      ? origin.bridgeLiveProof
+      : [
+          'Live activation and first meaningful upload.',
+          'A next-session mandate tied to behavior rather than market direction.',
+          'Append-proof after the next session.',
+        ],
+    previewShows: origin.bridgePreviewShows?.length
+      ? origin.bridgePreviewShows
+      : [
+          'Sample mandate and pressure map.',
+          'Founder talk track for the private workspace.',
+          'The boundary between demo structure and live account evidence.',
+        ],
   }
 }
 
@@ -231,6 +277,7 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
       ? `Public pain axes: ${origin.selectedPainAxisLabels.join(', ')}`
       : 'Public pain axes: not available',
     origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
+    origin.bridgeDecisionQuestion ? `Bridge question: ${origin.bridgeDecisionQuestion}` : 'Bridge question: not provided',
   ]
 
   return {

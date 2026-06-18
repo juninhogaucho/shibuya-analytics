@@ -87,6 +87,17 @@ describe('DashboardOverviewPage', () => {
         demoVisitedSceneCount: 4,
         demoLockedSectionId: 'highest-cost-state',
         demoLockedSectionTitle: 'Highest-cost state',
+        demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+        demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+        demoBridgeWhyNow: 'Watchlist means the next product step should test pressure behavior, not add another generic chart.',
+        demoBridgeLiveProof: [
+          'First meaningful upload normalized by the live backend.',
+          'Whether size, exit timing, or re-entry changes when rulebook pressure rises.',
+        ],
+        demoBridgePreviewShows: [
+          'Sample mandate and pressure map.',
+          'How a prop-style drawdown warning becomes a pre-session operating constraint.',
+        ],
       }),
     )
   })
@@ -115,6 +126,11 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
     expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO BRIDGE RECEIVED')).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro should decide whether pressure changes the account before the breach.')).toBeInTheDocument()
+    expect(screen.getAllByText('Does the trader become a different operator near the drawdown line?').length).toBeGreaterThan(0)
+    expect(screen.getByText('Live Reset Pro must prove')).toBeInTheDocument()
+    expect(screen.getByText('Whether size, exit timing, or re-entry changes when rulebook pressure rises.')).toBeInTheDocument()
     expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
     expect(screen.getByText('MARKET: INDIA')).toBeInTheDocument()

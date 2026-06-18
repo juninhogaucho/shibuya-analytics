@@ -83,6 +83,8 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Story handoff')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 4')).toBeInTheDocument()
     expect(screen.getByText('Evidence packet')).toBeInTheDocument()
+    expect(screen.getByText('Bridge question')).toBeInTheDocument()
+    expect(screen.getByText(/Does the trader become a different operator near the drawdown line/i)).toBeInTheDocument()
     expect(screen.getAllByText(/demo routing context/i).length).toBeGreaterThan(0)
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -103,6 +105,8 @@ describe('PrivateDemoPage', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 4,
+      demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+      demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })
   })
 
@@ -138,6 +142,8 @@ describe('PrivateDemoPage', () => {
       demoSelectedPainAxisIds: ['edge_decay'],
       demoVisitedSceneCount: 6,
       demoLockedSectionId: 'edge-decay-map',
+      demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
+      demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
   })
 
@@ -166,6 +172,8 @@ describe('PrivateDemoPage', () => {
       demoReportSource: 'direct_link',
       demoLockedSectionId: 'edge-decay-map',
       demoLockedSectionTitle: 'Edge decay map',
+      demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
+      demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
   })
 

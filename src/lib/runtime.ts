@@ -46,6 +46,11 @@ export interface ShibuyaSessionMeta {
   demoVisitedSceneCount?: number
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
+  demoBridgeHeadline?: string
+  demoBridgeDecisionQuestion?: string
+  demoBridgeWhyNow?: string
+  demoBridgeLiveProof?: string[]
+  demoBridgePreviewShows?: string[]
   activationSource?: string
   activationReportId?: string
   activationArchetypeId?: string
@@ -72,6 +77,11 @@ export interface EnterSampleModeOptions {
   demoVisitedSceneCount?: number
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
+  demoBridgeHeadline?: string
+  demoBridgeDecisionQuestion?: string
+  demoBridgeWhyNow?: string
+  demoBridgeLiveProof?: string[]
+  demoBridgePreviewShows?: string[]
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -227,6 +237,11 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoVisitedSceneCount: options.demoVisitedSceneCount,
       demoLockedSectionId: options.demoLockedSectionId,
       demoLockedSectionTitle: options.demoLockedSectionTitle,
+      demoBridgeHeadline: options.demoBridgeHeadline,
+      demoBridgeDecisionQuestion: options.demoBridgeDecisionQuestion,
+      demoBridgeWhyNow: options.demoBridgeWhyNow,
+      demoBridgeLiveProof: options.demoBridgeLiveProof,
+      demoBridgePreviewShows: options.demoBridgePreviewShows,
     }),
   )
 }
@@ -262,6 +277,11 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoVisitedSceneCount
   delete nextMeta.demoLockedSectionId
   delete nextMeta.demoLockedSectionTitle
+  delete nextMeta.demoBridgeHeadline
+  delete nextMeta.demoBridgeDecisionQuestion
+  delete nextMeta.demoBridgeWhyNow
+  delete nextMeta.demoBridgeLiveProof
+  delete nextMeta.demoBridgePreviewShows
 
   if (Object.keys(nextMeta).length > 0) {
     localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))

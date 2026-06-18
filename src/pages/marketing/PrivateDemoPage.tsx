@@ -46,6 +46,7 @@ export default function PrivateDemoPage() {
   })
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
+  const resetProBridge = handoffReport.resetProBridge
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
@@ -58,6 +59,7 @@ export default function PrivateDemoPage() {
     ['Story handoff', effectiveStorySource ? `${effectiveStorySource}; scenes ${effectiveVisitedSceneCount ?? 0}` : 'not attached'],
     ['Evidence packet', reportSession?.evidenceLabel ?? (hasReportHandoff ? 'direct-link fallback only' : 'demo entry only')],
     ['Locked module', lockedSection?.title ?? handoffSectionId ?? 'not attached'],
+    ['Bridge question', hasReportHandoff ? resetProBridge.decisionQuestion : 'not attached'],
   ]
 
   const handleSubmit = (event: FormEvent) => {
@@ -86,6 +88,11 @@ export default function PrivateDemoPage() {
       visitedSceneCount: effectiveVisitedSceneCount,
       lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
       lockedSectionTitle: lockedSection?.title,
+      bridgeHeadline: hasReportHandoff ? resetProBridge.headline : undefined,
+      bridgeDecisionQuestion: hasReportHandoff ? resetProBridge.decisionQuestion : undefined,
+      bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
+      bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
+      bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
     })
     navigate(addMarketToPath('/dashboard', market), { replace: true })
   }

@@ -34,6 +34,11 @@ export interface PrivateResetProDemoHandoff {
   visitedSceneCount?: number
   lockedSectionId?: string
   lockedSectionTitle?: string
+  bridgeHeadline?: string
+  bridgeDecisionQuestion?: string
+  bridgeWhyNow?: string
+  bridgeLiveProof?: string[]
+  bridgePreviewShows?: string[]
 }
 
 export function getConfiguredPrivateDemoCode(): string {
@@ -80,5 +85,10 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoVisitedSceneCount: handoff.visitedSceneCount,
     demoLockedSectionId: handoff.lockedSectionId,
     demoLockedSectionTitle: handoff.lockedSectionTitle,
+    demoBridgeHeadline: handoff.bridgeHeadline,
+    demoBridgeDecisionQuestion: handoff.bridgeDecisionQuestion,
+    demoBridgeWhyNow: handoff.bridgeWhyNow,
+    demoBridgeLiveProof: handoff.bridgeLiveProof,
+    demoBridgePreviewShows: handoff.bridgePreviewShows,
   })
 }

@@ -54,6 +54,17 @@ describe('ResetProDemoCommandCenter', () => {
             visitedSceneCount: 4,
             lockedSectionId: 'highest-cost-state',
             lockedSectionTitle: 'Highest-cost state',
+            bridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+            bridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+            bridgeWhyNow: 'Watchlist means the next product step should test pressure behavior, not add another generic chart.',
+            bridgeLiveProof: [
+              'First meaningful upload normalized by the live backend.',
+              'Whether size, exit timing, or re-entry changes when rulebook pressure rises.',
+            ],
+            bridgePreviewShows: [
+              'Sample mandate and pressure map.',
+              'How a prop-style drawdown warning becomes a pre-session operating constraint.',
+            ],
           }}
         />
       </MemoryRouter>,
@@ -61,7 +72,7 @@ describe('ResetProDemoCommandCenter', () => {
 
     expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
     expect(screen.getByText('Connect the public pain to the private module')).toBeInTheDocument()
-    expect(screen.getByText(/The trader tried to unlock Highest-cost state/i)).toBeInTheDocument()
+    expect(screen.getByText(/The report handed us one question/i)).toBeInTheDocument()
     expect(screen.getByText('Origin report: free-report-123')).toBeInTheDocument()
     expect(screen.getByText('Public archetype: Priya: Prop evaluation survivor')).toBeInTheDocument()
     expect(screen.getByText('Predicted axis: Drawdown Pressure')).toBeInTheDocument()
@@ -72,6 +83,15 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
     expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO BRIDGE RECEIVED')).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro should decide whether pressure changes the account before the breach.')).toBeInTheDocument()
+    expect(screen.getAllByText('Does the trader become a different operator near the drawdown line?').length).toBeGreaterThan(0)
+    expect(screen.getByText('QUESTION TO PROVE')).toBeInTheDocument()
+    expect(screen.getByText('Live Reset Pro must prove')).toBeInTheDocument()
+    expect(screen.getByText('Private demo may show')).toBeInTheDocument()
+    expect(screen.getByText('Whether size, exit timing, or re-entry changes when rulebook pressure rises.')).toBeInTheDocument()
+    expect(screen.getByText('How a prop-style drawdown warning becomes a pre-session operating constraint.')).toBeInTheDocument()
+    expect(screen.getByText('Bridge question: Does the trader become a different operator near the drawdown line?')).toBeInTheDocument()
     expect(screen.getAllByText(/Report, archetype, axis, evidence label/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
   })

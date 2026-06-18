@@ -112,6 +112,8 @@ describe('public Shibuya journey pages', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 1,
+      demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+      demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })
   })
 
@@ -347,6 +349,8 @@ describe('public Shibuya journey pages', () => {
       demoReportSource: 'sample',
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+      demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })
   })
 })
