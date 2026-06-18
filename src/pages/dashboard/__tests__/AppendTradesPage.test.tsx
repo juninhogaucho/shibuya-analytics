@@ -59,6 +59,8 @@ describe('AppendTradesPage', () => {
       offerKind: 'sample',
       caseStatus: 'sample_preview',
       samplePreview: 'reset_pro',
+      demoLockedSectionTitle: 'Edge decay map',
+      demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
     isReadOnlySessionMock.mockReturnValue(false)
     updateSessionMetaMock.mockReset()
@@ -108,6 +110,15 @@ describe('AppendTradesPage', () => {
 
     expect(await screen.findByText('Sample workspace processed 2 trades.')).toBeInTheDocument()
     expect(screen.getByText('Sample mode shows parsing and workflow only. It does not persist uploads or update your account history.')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO APPEND PROOF RECEIPT')).toBeInTheDocument()
+    expect(screen.getByText('The demo closed correctly: workflow shown, live proof still locked.')).toBeInTheDocument()
+    expect(screen.getByText('Sample parse demonstrated')).toBeInTheDocument()
+    expect(screen.getByText('Private question preserved')).toBeInTheDocument()
+    expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
+    expect(screen.getByText('Live proof still required')).toBeInTheDocument()
+    expect(screen.getByText(/does not prove trader-specific improvement/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Return To Mission HQ/i })).toHaveAttribute('href', '/dashboard?market=india')
+    expect(screen.getByRole('link', { name: /Activate Live Reset Pro/i })).toHaveAttribute('href', '/pricing?upgrade=reset-pro&market=india')
     expect(getTradePasteMemoryMock).not.toHaveBeenCalled()
   }, 15000)
 

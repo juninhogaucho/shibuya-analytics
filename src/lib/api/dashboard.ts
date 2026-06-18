@@ -33,7 +33,29 @@ export function assertDashboardBackendReady(featureName: string): void {
   }
 }
 
+function buildSampleTradePastePreview(body: string): TradePastePreview {
+  const lines = body.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
+  const symbols = Array.from(new Set(lines.map((line) => {
+    const parts = line.split(/[\s,;|]+/).filter(Boolean)
+    const symbol = parts.find((part) => /[A-Z]{2,}[A-Z0-9._-]*/.test(part) && !/^(BUY|SELL|LONG|SHORT)$/i.test(part))
+    return symbol?.toUpperCase() ?? 'UNKNOWN'
+  })))
+
+  return {
+    rowsParsed: lines.length,
+    symbols,
+    issues: [
+      'Sample parser preview only. No backend normalization, persistence, or account-specific analytics were produced.',
+    ],
+  }
+}
+
 export async function parseTradePaste(payload: { body: string }) {
+  if (isSampleMode()) {
+    await wait(200)
+    return buildSampleTradePastePreview(payload.body)
+  }
+
   assertDashboardBackendReady('Trade paste preview')
   const { data } = await http.post<TradePastePreview>('/v1/trader/trades/preview', payload)
   return data

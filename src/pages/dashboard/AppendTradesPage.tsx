@@ -14,6 +14,7 @@ import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressC
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
+import { addMarketToPath } from '../../lib/market'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
@@ -96,14 +97,28 @@ export function AppendTradesPage() {
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
   const resetProPreview = sampleMode && sessionMeta?.samplePreview === 'reset_pro'
+  const market = sessionMeta?.market ?? 'india'
   const readOnlyAccess = isReadOnlySession(sessionMeta)
   const premiumAccess = sessionMeta?.tier === 'reset_pro'
-  const journeyState = useMemo(
-    () => buildJourneyState({ overview: null, profile: null, sessionMeta, market: sessionMeta?.market ?? 'india' }),
-    [sessionMeta],
-  )
+  const journeyState = buildJourneyState({ overview: null, profile: null, sessionMeta, market })
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
   const traderMode = profileContext?.trader_mode ?? sessionMeta?.traderMode
+  const resetProProofReceiptRows = [
+    {
+      label: 'Sample parse demonstrated',
+      body: 'The operator showed how a session enters the proof loop without claiming the sample account changed.',
+    },
+    {
+      label: 'Private question preserved',
+      body: sessionMeta?.demoBridgeDecisionQuestion
+        ?? sessionMeta?.demoLockedSectionTitle
+        ?? 'No locked private question was attached to this sample run.',
+    },
+    {
+      label: 'Live proof still required',
+      body: 'Activation, first meaningful upload, generated artifacts, and append history are still required before any account-specific Reset Pro conclusion.',
+    },
+  ]
 
   useEffect(() => {
     if (sampleMode) {
@@ -436,6 +451,39 @@ export function AppendTradesPage() {
       {success && (
         <div className="success-panel glass-panel">
           <p>{success}</p>
+          {resetProPreview ? (
+            <div
+              className="glass-panel"
+              style={{
+                marginTop: '1rem',
+                borderColor: 'rgba(16,185,129,0.24)',
+                background: 'rgba(16,185,129,0.07)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO APPEND PROOF RECEIPT</p>
+              <h3 style={{ marginBottom: '0.5rem' }}>The demo closed correctly: workflow shown, live proof still locked.</h3>
+              <p className="text-muted" style={{ marginBottom: '1rem' }}>
+                This receipt is the final presenter boundary after the private workspace demo. It proves the append path is understandable;
+                it does not prove trader-specific improvement, persistence, or generated backend analytics.
+              </p>
+              <div className="grid-responsive three">
+                {resetProProofReceiptRows.map((row) => (
+                  <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                    <h4 style={{ marginBottom: '0.5rem' }}>{row.label}</h4>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+                  </article>
+                ))}
+              </div>
+              <div className="flex items-center gap-3" style={{ marginTop: '1rem', flexWrap: 'wrap' }}>
+                <Link to={addMarketToPath('/dashboard', market)} className="btn btn-sm btn-primary">
+                  Return To Mission HQ
+                </Link>
+                <Link to={addMarketToPath('/pricing?upgrade=reset-pro', market)} className="btn btn-sm btn-secondary">
+                  Activate Live Reset Pro
+                </Link>
+              </div>
+            </div>
+          ) : null}
           {!sampleMode && (
             <div className="flex items-center gap-3" style={{ marginTop: '0.75rem', flexWrap: 'wrap' }}>
               <Link to="/dashboard" className="btn btn-sm btn-primary" style={{ display: 'inline-flex' }}>

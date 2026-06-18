@@ -9,7 +9,7 @@ afterEach(() => {
 describe('dashboard API boundary', () => {
   test('serves sample workspace data only in sample mode', async () => {
     const { enterSampleMode } = await import('../../runtime')
-    const { getDashboardOverview, getTradeHistory } = await import('../dashboard')
+    const { getDashboardOverview, getTradeHistory, parseTradePaste } = await import('../dashboard')
 
     enterSampleMode({ preview: 'reset_pro' })
 
@@ -20,6 +20,11 @@ describe('dashboard API boundary', () => {
     })
     await expect(getTradeHistory()).resolves.toMatchObject({
       total_count: 18,
+    })
+    await expect(parseTradePaste({ body: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' })).resolves.toMatchObject({
+      rowsParsed: 1,
+      symbols: ['NIFTY24JAN22500CE'],
+      issues: [expect.stringContaining('Sample parser preview only')],
     })
   })
 
