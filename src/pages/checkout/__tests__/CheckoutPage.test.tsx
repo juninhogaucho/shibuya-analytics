@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
+import { buildDemoLauncherSampleReportSession, buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import CheckoutPage from '../CheckoutPage'
 
 const checkoutMocks = vi.hoisted(() => ({
@@ -164,5 +164,47 @@ describe('CheckoutPage', () => {
           }),
         )
       }))
+  })
+
+  test('preserves explicit demo launcher sample flag in checkout return URLs', async () => {
+    const user = userEvent.setup()
+    persistPublicReportSession(buildDemoLauncherSampleReportSession({
+      reportId: 'sample-behavioral-leak-report',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 6,
+    }))
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?demo_packet=launcher_sample&source=locked_insight&section=edge-decay-map&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    await waitFor(() => {
+      expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
+    })
+
+    expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success_url:
+          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+        cancel_url:
+          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+      }),
+    )
   })
 })

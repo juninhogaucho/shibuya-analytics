@@ -314,6 +314,14 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.').length).toBeGreaterThan(0)
     expect(screen.getByText('Demo launcher initialized this sample packet from an explicit shared-link flag.')).toBeInTheDocument()
     expect(screen.getByText('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
+      'href',
+      '/insight/highest-cost-state?source=locked_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
+    )
 
     await waitFor(() => {
       expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
@@ -410,7 +418,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/sample demo artifact/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
     )
 
     await waitFor(() => {

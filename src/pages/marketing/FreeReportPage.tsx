@@ -6,9 +6,11 @@ import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
+  appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
   getPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
+  isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import {
@@ -43,6 +45,8 @@ export default function FreeReportPage() {
         signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
       })
   const reportSession = storedReportSession ?? demoLauncherSession
+  const shouldCarryDemoLauncherPacket =
+    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
 
   useEffect(() => {
     if (demoLauncherSession) {
@@ -82,8 +86,9 @@ export default function FreeReportPage() {
       axis: report.dominantAxis.id,
     }),
     publicStoryHandoffForLinks,
-  ).toString()
-  const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightQuery}`, market)
+  )
+  const guidedInsightSearch = appendDemoLauncherSamplePacketParam(guidedInsightQuery, shouldCarryDemoLauncherPacket).toString()
+  const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
       <div className="mx-0 w-full max-w-[22.25rem] min-w-0 sm:mx-auto sm:max-w-7xl">
@@ -328,14 +333,17 @@ export default function FreeReportPage() {
                   <Link
                     key={item.title}
                     to={addMarketToPath(
-                      `/insight/${toReportSectionSlug(item.title)}?${appendPublicStoryHandoffParams(
-                        new URLSearchParams({
-                          source: 'locked_report',
-                          report: report.reportId,
-                          archetype: report.archetype.id,
-                          axis: report.dominantAxis.id,
-                        }),
-                        publicStoryHandoffForLinks,
+                      `/insight/${toReportSectionSlug(item.title)}?${appendDemoLauncherSamplePacketParam(
+                        appendPublicStoryHandoffParams(
+                          new URLSearchParams({
+                            source: 'locked_report',
+                            report: report.reportId,
+                            archetype: report.archetype.id,
+                            axis: report.dominantAxis.id,
+                          }),
+                          publicStoryHandoffForLinks,
+                        ),
+                        shouldCarryDemoLauncherPacket,
                       ).toString()}`,
                       market,
                     )}

@@ -14,7 +14,12 @@ import {
 import { redirectBrowser } from '../../lib/browserNavigation'
 import { appendCheckoutIntentToPath, describeCheckoutIntent, enrichCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
-import { getPublicReportSession } from '../../lib/publicReportSession'
+import {
+  appendDemoLauncherSamplePacketToPath,
+  getPublicReportSession,
+  hasDemoLauncherSamplePacketRequest,
+  isDemoLauncherSampleReportSession,
+} from '../../lib/publicReportSession'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
 interface CheckoutForm {
@@ -32,6 +37,8 @@ const CheckoutPage: React.FC = () => {
   const currentPlan = getMarketPricing(market)[planKey]
   const checkoutIntent = readCheckoutIntent(location.search)
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const shouldCarryDemoLauncherPacket =
+    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
   const enrichedCheckoutIntent = enrichCheckoutIntent(checkoutIntent, {
     storySource: reportSession?.storySource,
     visitedSceneCount: reportSession?.visitedSceneCount,
@@ -114,8 +121,8 @@ const CheckoutPage: React.FC = () => {
         enrichedCheckoutIntent,
       )
       const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, enrichedCheckoutIntent)
-      const successUrl = `${origin}${addMarketToPath(successPath, market)}`
-      const cancelUrl = `${origin}${addMarketToPath(cancelPath, market)}`
+      const successUrl = `${origin}${addMarketToPath(appendDemoLauncherSamplePacketToPath(successPath, shouldCarryDemoLauncherPacket), market)}`
+      const cancelUrl = `${origin}${addMarketToPath(appendDemoLauncherSamplePacketToPath(cancelPath, shouldCarryDemoLauncherPacket), market)}`
       const publicContextPayload = enrichedCheckoutIntent
         ? {
             public_context_source: enrichedCheckoutIntent.source,

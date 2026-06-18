@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, test } from 'vitest'
 import {
   PUBLIC_REPORT_SESSION_STORAGE_KEY,
+  appendDemoLauncherSamplePacketParam,
+  appendDemoLauncherSamplePacketToPath,
   buildDemoLauncherSampleReportSession,
   buildPublicReportSession,
   getPublicReportSession,
@@ -99,5 +101,21 @@ describe('public report sessions', () => {
     expect(session.validationFacts).toContain('Demo launcher initialized this sample packet from an explicit shared-link flag.')
     expect(session.validationFacts).toContain('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')
     expect(session.boundary).toContain('sample demo artifact')
+
+    expect(appendDemoLauncherSamplePacketParam(new URLSearchParams('source=guided_report'), true).toString()).toBe(
+      'source=guided_report&demo_packet=launcher_sample',
+    )
+    expect(appendDemoLauncherSamplePacketParam(new URLSearchParams('source=guided_report'), false).toString()).toBe(
+      'source=guided_report',
+    )
+    expect(appendDemoLauncherSamplePacketToPath('/activate?source=locked_insight', true)).toBe(
+      '/activate?source=locked_insight&demo_packet=launcher_sample',
+    )
+    expect(appendDemoLauncherSamplePacketToPath('/activate?demo_packet=launcher_sample', true)).toBe(
+      '/activate?demo_packet=launcher_sample',
+    )
+    expect(appendDemoLauncherSamplePacketToPath('/activate?source=locked_insight', false)).toBe(
+      '/activate?source=locked_insight',
+    )
   })
 })

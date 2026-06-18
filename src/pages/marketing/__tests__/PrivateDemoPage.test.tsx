@@ -175,6 +175,10 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/sample demo artifact/i)).toBeInTheDocument()
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Activate Paid Account/i })).toHaveAttribute(
+      'href',
+      '/activate?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+    )
 
     await waitFor(() => {
       expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')

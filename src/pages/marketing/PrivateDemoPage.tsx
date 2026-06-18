@@ -12,9 +12,11 @@ import {
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
 import {
+  appendDemoLauncherSamplePacketToPath,
   buildDemoLauncherSampleReportSession,
   getPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
+  isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import {
@@ -74,6 +76,8 @@ export default function PrivateDemoPage() {
         signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
       })
   const reportSession = storedReportSession ?? demoLauncherSession
+  const shouldCarryDemoLauncherPacket =
+    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
 
   useEffect(() => {
     if (demoLauncherSession) {
@@ -384,7 +388,13 @@ export default function PrivateDemoPage() {
 
           <div className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
             <Link
-              to={addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)}
+              to={addMarketToPath(
+                appendDemoLauncherSamplePacketToPath(
+                  appendCheckoutIntentToPath('/activate', checkoutIntent),
+                  shouldCarryDemoLauncherPacket,
+                ),
+                market,
+              )}
               className="rounded-xl border border-white/10 px-4 py-3 text-center font-semibold text-white transition hover:bg-white hover:text-black"
             >
               Activate Paid Account

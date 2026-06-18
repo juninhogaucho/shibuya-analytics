@@ -5,9 +5,11 @@ import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
+  appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
   getPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
+  isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import {
@@ -57,6 +59,8 @@ export default function LockedInsightPage() {
         signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
       })
   const reportSession = storedReportSession ?? demoLauncherSession
+  const shouldCarryDemoLauncherPacket =
+    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
 
   useEffect(() => {
     if (demoLauncherSession) {
@@ -99,35 +103,42 @@ export default function LockedInsightPage() {
       axis: report.dominantAxis.id,
     }),
     publicStoryHandoffForLinks,
-  ).toString()
+  )
+  const lockedCheckoutSearch = appendDemoLauncherSamplePacketParam(lockedCheckoutQuery, shouldCarryDemoLauncherPacket).toString()
   const checkoutPath = addMarketToPath(
-    `/checkout/${resetPlan.checkoutSlug}?${lockedCheckoutQuery}`,
+    `/checkout/${resetPlan.checkoutSlug}?${lockedCheckoutSearch}`,
     market,
   )
   const auditCheckoutPath = addMarketToPath(
-    `/checkout/${auditPlan.checkoutSlug}?${lockedCheckoutQuery}`,
+    `/checkout/${auditPlan.checkoutSlug}?${lockedCheckoutSearch}`,
     market,
   )
   const privateDemoPath = addMarketToPath(
-    `/private-demo?${appendPublicStoryHandoffParams(
-      new URLSearchParams({
-        source: 'locked_insight',
-        report: report.reportId,
-        archetype: report.archetype.id,
-        axis: report.dominantAxis.id,
-        section: sectionSlug,
-      }),
-      publicStoryHandoffForLinks,
+    `/private-demo?${appendDemoLauncherSamplePacketParam(
+      appendPublicStoryHandoffParams(
+        new URLSearchParams({
+          source: 'locked_insight',
+          report: report.reportId,
+          archetype: report.archetype.id,
+          axis: report.dominantAxis.id,
+          section: sectionSlug,
+        }),
+        publicStoryHandoffForLinks,
+      ),
+      shouldCarryDemoLauncherPacket,
     ).toString()}`,
     market,
   )
   const reportPath = addMarketToPath(
-    `/report/${encodeURIComponent(report.reportId)}?${appendPublicStoryHandoffParams(
-      new URLSearchParams({
-        archetype: report.archetype.id,
-        axis: report.dominantAxis.id,
-      }),
-      publicStoryHandoffForLinks,
+    `/report/${encodeURIComponent(report.reportId)}?${appendDemoLauncherSamplePacketParam(
+      appendPublicStoryHandoffParams(
+        new URLSearchParams({
+          archetype: report.archetype.id,
+          axis: report.dominantAxis.id,
+        }),
+        publicStoryHandoffForLinks,
+      ),
+      shouldCarryDemoLauncherPacket,
     ).toString()}`,
     market,
   )

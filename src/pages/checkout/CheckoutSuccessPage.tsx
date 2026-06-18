@@ -6,7 +6,12 @@ import { getCheckoutSession } from '../../lib/api/checkout'
 import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import type { CheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getMarketHomePath, getPlanByPlanId, inferMarketFromPlanId, persistMarket, resolveMarket } from '../../lib/market'
-import { getPublicReportSession } from '../../lib/publicReportSession'
+import {
+  appendDemoLauncherSamplePacketToPath,
+  getPublicReportSession,
+  hasDemoLauncherSamplePacketRequest,
+  isDemoLauncherSampleReportSession,
+} from '../../lib/publicReportSession'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 import { getFingerprintAxis } from '../../lib/storyExperience'
 
@@ -104,12 +109,20 @@ const CheckoutSuccessPage: React.FC = () => {
   const plan = getPlanByPlanId(order?.planId)
   const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const shouldCarryDemoLauncherPacket =
+    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
   const selectedPainAxisIds = reportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
   const selectedPainAxisLabels = selectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
     .filter((axis, index, axes) => selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
     .map((axis) => axis.label)
-  const activationPath = addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)
+  const activationPath = addMarketToPath(
+    appendDemoLauncherSamplePacketToPath(
+      appendCheckoutIntentToPath('/activate', checkoutIntent),
+      shouldCarryDemoLauncherPacket,
+    ),
+    market,
+  )
 
   if (loading) {
     return (

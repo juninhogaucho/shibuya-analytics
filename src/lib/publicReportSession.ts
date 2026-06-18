@@ -263,6 +263,32 @@ export function hasDemoLauncherSamplePacketRequest(search: string): boolean {
   return new URLSearchParams(search).get(DEMO_LAUNCHER_SAMPLE_PACKET_PARAM) === DEMO_LAUNCHER_SAMPLE_PACKET_VALUE
 }
 
+export function isDemoLauncherSampleReportSession(session?: PublicReportSession | null): boolean {
+  return session?.evidenceLabel === 'Demo launcher sample packet'
+}
+
+export function appendDemoLauncherSamplePacketParam(
+  params: URLSearchParams,
+  shouldAppend: boolean,
+): URLSearchParams {
+  if (shouldAppend) {
+    params.set(DEMO_LAUNCHER_SAMPLE_PACKET_PARAM, DEMO_LAUNCHER_SAMPLE_PACKET_VALUE)
+  }
+
+  return params
+}
+
+export function appendDemoLauncherSamplePacketToPath(path: string, shouldAppend: boolean): string {
+  if (!shouldAppend) {
+    return path
+  }
+
+  const [pathname, search = ''] = path.split('?')
+  const params = appendDemoLauncherSamplePacketParam(new URLSearchParams(search), true)
+
+  return `${pathname}?${params.toString()}`
+}
+
 export function buildDemoLauncherSampleReportSession(
   params: Omit<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'>,
 ): PublicReportSession {
