@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, Lock, UploadCloud } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
@@ -57,11 +58,57 @@ const ENGINE_PIPELINE_STAGES = [
   },
 ] as const
 
+const GUIDED_CONDUCTOR_STEPS: Array<{
+  beat: string
+  timebox: string
+  title: string
+  body: string
+  sceneIndex: number
+  archetypeId?: StoryArchetypeId
+  painAxisId?: FingerprintAxisId
+}> = [
+  {
+    beat: '01',
+    timebox: '0:00-0:35',
+    title: 'Name the real problem',
+    body: 'Open with state, not signals. The visitor should understand that Shibuya studies the decision condition before the outcome.',
+    sceneIndex: 0,
+  },
+  {
+    beat: '02',
+    timebox: '0:35-1:20',
+    title: 'Pick the uncomfortable mirror',
+    body: 'Select Marco and edge decay for the expo path: a serious trader whose issue is not beginner education, but protecting a decaying edge.',
+    sceneIndex: 3,
+    archetypeId: 'marco',
+    painAxisId: 'edge_decay',
+  },
+  {
+    beat: '03',
+    timebox: '1:20-2:05',
+    title: 'Reveal the provisional fingerprint',
+    body: 'Show the pressure index and dominant axis while keeping the boundary visible: public recognition is routing context, not account evidence.',
+    sceneIndex: 9,
+    archetypeId: 'marco',
+    painAxisId: 'edge_decay',
+  },
+  {
+    beat: '04',
+    timebox: '2:05-3:00',
+    title: 'Turn recognition into evidence',
+    body: 'Move to upload/sample history so the free report and locked insight can carry the question into the Reset Pro workspace.',
+    sceneIndex: 10,
+    archetypeId: 'marco',
+    painAxisId: 'edge_decay',
+  },
+] as const
+
 export default function StoryExperience() {
   const navigate = useNavigate()
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const [activeSceneIndex, setActiveSceneIndex] = useState(0)
+  const [activeConductorIndex, setActiveConductorIndex] = useState(0)
   const [signal, setSignal] = useState(() => recordSceneView(createInitialStorySignal(), STORY_SCENES[0].id))
   const scores = useMemo(() => buildPredictedFingerprint(signal), [signal])
   const dominantAxis = getDominantFingerprintAxis(scores)
@@ -71,6 +118,7 @@ export default function StoryExperience() {
   const progress = Math.round(((activeSceneIndex + 1) / STORY_SCENES.length) * 100)
   const selectedArchetype = TRADER_ARCHETYPES.find((archetype) => archetype.id === signal.archetypeId)
   const publicDemoScript = useMemo(() => buildPublicStoryDemoScript(signal), [signal])
+  const activeConductorStep = GUIDED_CONDUCTOR_STEPS[activeConductorIndex]
   const selectedPainAxisLabels = signal.selectedPainAxes
     .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
     .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
@@ -137,6 +185,34 @@ export default function StoryExperience() {
 
   const goNextScene = () => {
     inspectScene(Math.min(activeSceneIndex + 1, STORY_SCENES.length - 1))
+  }
+
+  const applyConductorStep = (index: number) => {
+    const step = GUIDED_CONDUCTOR_STEPS[index]
+    const scene = STORY_SCENES[step.sceneIndex]
+    setActiveConductorIndex(index)
+    setActiveSceneIndex(step.sceneIndex)
+    setSignal((current) => {
+      let next = recordSceneView(current, scene.id)
+
+      if (step.archetypeId) {
+        next = selectArchetype(next, step.archetypeId)
+      }
+
+      if (step.painAxisId && !next.selectedPainAxes.includes(step.painAxisId)) {
+        next = {
+          ...next,
+          selectedPainAxes: [...next.selectedPainAxes, step.painAxisId],
+        }
+      }
+
+      return next
+    })
+  }
+
+  const goNextConductorStep = () => {
+    const nextIndex = Math.min(activeConductorIndex + 1, GUIDED_CONDUCTOR_STEPS.length - 1)
+    applyConductorStep(nextIndex)
   }
 
   const goPricing = () => {
@@ -268,6 +344,113 @@ export default function StoryExperience() {
             detail="The first public job is recognition. The page can route a hypothesis forward, but upload/report/private claims stay behind evidence."
           />
         </div>
+
+        <section className="mb-8 overflow-hidden rounded-[2rem] border border-indigo-300/20 bg-[radial-gradient(circle_at_top_left,rgba(129,140,248,0.18),rgba(9,9,11,0.98)_42%)] p-4 shadow-2xl shadow-indigo-950/30 md:p-6">
+          <div className="grid gap-5 lg:grid-cols-[0.84fr_1.16fr] lg:items-stretch">
+            <div className="min-w-0 rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Guided demo conductor</p>
+              <h3 className="mt-3 text-2xl font-semibold text-white">Run this as a 3-minute story, not a scrolling website.</h3>
+              <p className="mt-4 text-sm leading-7 text-neutral-300">
+                This mobile-first conductor keeps the public demo tight: recognition, mirror, reveal, evidence. It updates
+                the live fingerprint as the operator moves through each beat.
+              </p>
+              <div className="mt-5 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4 lg:grid-cols-2">
+                {[
+                  ['Time', '3:00 max'],
+                  ['Path', 'Marco / Edge Decay'],
+                  ['Claim', 'Website-level only'],
+                  ['Exit', 'Upload proof'],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-2xl border border-white/8 bg-white/[0.04] p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">{label}</span>
+                    <span className="mt-1 block font-semibold text-white">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col">
+                <button
+                  type="button"
+                  onClick={goNextConductorStep}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                >
+                  Next Demo Beat
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={openGuidedDemoPath}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
+                >
+                  Finish To Sample Upload
+                  <UploadCloud className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="min-w-0 rounded-3xl border border-white/10 bg-[#09090B]/85 p-4 md:p-5">
+              <div className="mb-4 grid gap-2 sm:grid-cols-4">
+                {GUIDED_CONDUCTOR_STEPS.map((step, index) => {
+                  const selected = index === activeConductorIndex
+
+                  return (
+                    <button
+                      key={step.beat}
+                      type="button"
+                      onClick={() => applyConductorStep(index)}
+                      className={`rounded-2xl border p-3 text-left transition ${
+                        selected
+                          ? 'border-indigo-300/50 bg-indigo-300/[0.12]'
+                          : 'border-white/8 bg-black/20 hover:border-white/20 hover:bg-white/[0.04]'
+                      }`}
+                      aria-pressed={selected}
+                    >
+                      <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
+                        Beat {step.beat}
+                      </span>
+                      <span className="mt-1 block text-xs font-semibold text-white">{step.timebox}</span>
+                      <span className="mt-2 block text-xs leading-5 text-neutral-400">{step.title}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <motion.article
+                key={activeConductorStep.beat}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18 }}
+                className="rounded-3xl border border-white/8 bg-black/25 p-5"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
+                      Beat {activeConductorStep.beat} / {activeConductorStep.timebox}
+                    </p>
+                    <h4 className="mt-2 text-xl font-semibold text-white">{activeConductorStep.title}</h4>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-300">
+                    Scene {activeConductorStep.sceneIndex + 1}
+                  </span>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-neutral-300">{activeConductorStep.body}</p>
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                  <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-3">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-200">Say</p>
+                    <p className="mt-2 text-xs leading-5 text-emerald-50/75">State is the product wedge. The trader needs proof of how they operate under pressure.</p>
+                  </div>
+                  <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.06] p-3">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-200">Show</p>
+                    <p className="mt-2 text-xs leading-5 text-cyan-50/75">Mirror, fingerprint, pressure index, and the journey spine into evidence.</p>
+                  </div>
+                  <div className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-3">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-amber-200">Boundary</p>
+                    <p className="mt-2 text-xs leading-5 text-amber-50/75">No account claim until upload, activation, and generated artifacts prove it.</p>
+                  </div>
+                </div>
+              </motion.article>
+            </div>
+          </div>
+        </section>
 
         <div className="mb-6 grid gap-3 md:grid-cols-4">
           {presenterSteps.map((step) => (

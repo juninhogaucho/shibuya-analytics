@@ -38,6 +38,12 @@ describe('StoryExperience', () => {
     expect(screen.getByText('IFX presenter brief')).toBeInTheDocument()
     expect(screen.getByText(/Do not pitch signals\. Pitch state, proof, and the next-session operating loop/i)).toBeInTheDocument()
     expect(screen.getByText('Public StoryExperience demo script')).toBeInTheDocument()
+    expect(screen.getByText('Guided demo conductor')).toBeInTheDocument()
+    expect(screen.getByText('Run this as a 3-minute story, not a scrolling website.')).toBeInTheDocument()
+    expect(screen.getByText('Path')).toBeInTheDocument()
+    expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Next Demo Beat/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Finish To Sample Upload/i })).toBeInTheDocument()
     expect(screen.getByText('Run the public story as a proof handoff, not a feature tour.')).toBeInTheDocument()
     expect(screen.getByText('Allowed public claims')).toBeInTheDocument()
     expect(screen.getByText('Forbidden public claims')).toBeInTheDocument()
@@ -87,6 +93,39 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
+  })
+
+  test('conductor beats update the public story fingerprint before upload', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/story']}>
+        <StoryExperience />
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Beat 02/i }))
+
+    expect(screen.getAllByText('Pick the uncomfortable mirror').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Select Marco and edge decay for the expo path/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Marco/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Edge Decay/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/Pain selected:/i).parentElement).toHaveTextContent('Edge Decay')
+
+    await user.click(screen.getByRole('button', { name: /Beat 03/i }))
+
+    expect(screen.getAllByText('Reveal the provisional fingerprint').length).toBeGreaterThan(0)
+    expect(screen.getByText(/public recognition is routing context/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Scene 10').length).toBeGreaterThan(0)
+
+    await user.click(screen.getByRole('button', { name: /Finish To Sample Upload/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
+    expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
   })
 
   test('exposes the deterministic guided demo path in the hero', async () => {
