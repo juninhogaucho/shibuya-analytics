@@ -88,6 +88,11 @@ const REQUIRED_SURFACES = [
     markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:'],
   },
   {
+    label: 'Reset Pro operator strip',
+    file: 'src/components/dashboard/ResetProDemoCommandCenter.tsx',
+    markers: ['RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof'],
+  },
+  {
     label: 'append-proof exit',
     file: 'src/pages/dashboard/AppendTradesPage.tsx',
     markers: ['RESET PRO PROOF EXIT', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads'],

@@ -11,6 +11,8 @@ interface ResetProDemoCommandCenterProps {
   origin?: ResetProDemoOrigin
 }
 
+const OPERATOR_STRIP_CLOSE_MARKER = 'Close On Append Proof'
+
 function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['pressureMetrics'][number], market: Market) {
   if (metric.kind === 'money' && typeof metric.value === 'number') {
     return formatMoney(metric.value, market)
@@ -26,6 +28,9 @@ function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['p
 export function ResetProDemoCommandCenter({ market, overview, origin }: ResetProDemoCommandCenterProps) {
   const script = buildResetProDemoScript(overview, origin)
   const uploadPath = addMarketToPath('/dashboard/upload', market)
+  const primaryRoute = script.presenterRoute[0]
+  const closeRoute = script.presenterRoute[script.presenterRoute.length - 1]
+  const nextShowRoute = script.presenterRoute.find((step) => step.phase === 'show') ?? closeRoute
 
   return (
     <section
@@ -62,6 +67,78 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
           </div>
         </div>
       </div>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
+          background: 'rgba(0,0,0,0.2)',
+          borderColor: 'rgba(129,140,248,0.24)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at top right, rgba(129,140,248,0.18), transparent 42%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{ position: 'relative' }}>
+          <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+            <div>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO OPERATOR STRIP</p>
+              <h4 style={{ marginBottom: '0.35rem' }}>One guided path after unlock. No dashboard wandering.</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                Start at Mission HQ, show one intervention surface, then close on append proof. The deeper cards below are supporting evidence, not the demo script.
+              </p>
+            </div>
+            <div className="flex items-center gap-2" style={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+              <Link to={addMarketToPath(primaryRoute.route, market)} className="btn btn-sm btn-primary">
+                {primaryRoute.routeLabel}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link to={addMarketToPath(nextShowRoute.route, market)} className="btn btn-sm btn-secondary">
+                {nextShowRoute.routeLabel}
+              </Link>
+              <Link to={addMarketToPath(closeRoute.route, market)} className="btn btn-sm btn-secondary">
+                {closeRoute.routeLabel || OPERATOR_STRIP_CLOSE_MARKER}
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+            {script.showSequence.map((moment, index) => (
+              <div
+                key={`${moment.timebox}-${moment.title}-operator-strip`}
+                className="glass-panel"
+                style={{
+                  background: index === 0
+                    ? 'rgba(16,185,129,0.07)'
+                    : index === script.showSequence.length - 1
+                      ? 'rgba(245,158,11,0.07)'
+                      : 'rgba(99,102,241,0.06)',
+                  borderColor: index === 0
+                    ? 'rgba(16,185,129,0.22)'
+                    : index === script.showSequence.length - 1
+                      ? 'rgba(245,158,11,0.22)'
+                      : 'rgba(99,102,241,0.2)',
+                }}
+              >
+                <p className="badge" style={{ marginBottom: '0.5rem' }}>{moment.timebox}</p>
+                <h4 style={{ marginBottom: '0.45rem' }}>{index + 1}. {moment.title}</h4>
+                <p className="text-muted" style={{ marginBottom: '0.65rem' }}>{moment.say}</p>
+                <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.8rem' }}>
+                  <strong className="text-amber-100">Boundary:</strong> {moment.boundary}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
 
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
