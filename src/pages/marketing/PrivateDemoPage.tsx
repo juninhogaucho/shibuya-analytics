@@ -145,6 +145,25 @@ export default function PrivateDemoPage() {
     ['Locked module', lockedSection?.title ?? handoffSectionId ?? 'not attached'],
     ['Bridge question', hasReportHandoff ? resetProBridge.decisionQuestion : 'not attached'],
   ]
+  const unlockManifestRows = [
+    {
+      label: 'Stored after unlock',
+      value: hasReportHandoff
+        ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers'
+        : 'sample mode, market, and direct demo boundary only',
+      body: 'These values seed the Reset Pro preview so the command center can open with the right context.',
+    },
+    {
+      label: 'Not stored or proven',
+      value: 'raw visitor trades, payment proof, live backend artifacts, account-specific conclusions',
+      body: 'The private demo stays a controlled sample workspace even when the URL carries report context.',
+    },
+    {
+      label: 'First screen after unlock',
+      value: 'Mission HQ with the Reset Pro operator strip',
+      body: 'Start there, show one intervention surface, then close on append proof.',
+    },
+  ]
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -359,6 +378,27 @@ export default function PrivateDemoPage() {
               </div>
             </div>
           ) : null}
+
+          <div className="mb-6 rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">
+              Private demo unlock manifest
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              What changes when the founder code succeeds.
+            </h2>
+            <div className="mt-4 grid gap-3">
+              {unlockManifestRows.map((row) => (
+                <div key={row.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-100">{row.label}</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{row.value}</p>
+                  <p className="mt-2 text-xs leading-5 text-cyan-50/65">{row.body}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-cyan-50/60">
+              Unlock manifest rule: a successful code changes access state only. It does not convert demo context into live proof.
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <label className="flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-50/85">

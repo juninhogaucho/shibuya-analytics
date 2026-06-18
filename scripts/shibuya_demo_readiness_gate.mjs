@@ -55,7 +55,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
+    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
   },
   {
     label: 'checkout evidence boundary',
