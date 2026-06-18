@@ -57,6 +57,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Creates a local report handoff with source, market, archetype/i)).toBeInTheDocument()
     expect(screen.getByText(/Stores no raw trade rows in this public preview surface/i)).toBeInTheDocument()
     expect(screen.getByText(/Requires live backend normalization before any account-specific private claim/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Generate Guided Sample Report/i })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
@@ -79,6 +80,12 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Live workspace must prove')).toBeInTheDocument()
     expect(screen.getByText('Private demo may show')).toBeInTheDocument()
     expect(screen.getByText(/This bridge is a product handoff, not a live diagnosis/i)).toBeInTheDocument()
+    expect(screen.getByText('IFX guided continuation')).toBeInTheDocument()
+    expect(screen.getByText('The next click should answer one private question.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=1&pain_axes=drawdown_pressure&market=india',
+    )
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
 
@@ -143,6 +150,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Direct report route. No guided StoryExperience packet was attached/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
     expect(screen.getByText(/What the private workspace must decide next/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
+    )
   })
 
   test('global upload route keeps story and pricing navigation in the global market', () => {
@@ -217,6 +228,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
       '/private-demo?source=free_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
       'href',

@@ -5,7 +5,7 @@ import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
+import { buildFreeReportPreview, getGuidedLockedSectionForAxis, toReportSectionSlug } from '../../lib/storyExperience'
 
 export default function FreeReportPage() {
   const { id } = useParams()
@@ -27,6 +27,8 @@ export default function FreeReportPage() {
     visitedSceneCount: effectiveVisitedSceneCount,
   })
   const selectedPainAxes = report.storyHandoff.selectedPainAxes
+  const guidedLockedSection = getGuidedLockedSectionForAxis(report)
+  const guidedLockedSectionSlug = toReportSectionSlug(guidedLockedSection.title)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
   const publicStoryHandoffForLinks = reportSession || urlStoryHandoff
@@ -54,6 +56,16 @@ export default function FreeReportPage() {
     }),
     publicStoryHandoffForLinks,
   ).toString()
+  const guidedInsightQuery = appendPublicStoryHandoffParams(
+    new URLSearchParams({
+      source: 'guided_report',
+      report: report.reportId,
+      archetype: report.archetype.id,
+      axis: report.dominantAxis.id,
+    }),
+    publicStoryHandoffForLinks,
+  ).toString()
+  const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightQuery}`, market)
   const privateDemoPath = addMarketToPath(
     `/private-demo?${appendPublicStoryHandoffParams(
       new URLSearchParams({
@@ -131,6 +143,40 @@ export default function FreeReportPage() {
             detail="The report gives a useful baseline and names the private question. It still does not cross into account-specific truth without live evidence."
           />
         </div>
+
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
+          <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">IFX guided continuation</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">The next click should answer one private question.</h2>
+              <p className="mt-4 text-sm leading-7 text-neutral-300">
+                For a live walkthrough, do not browse every locked module. Carry this report into the module that best matches the dominant axis:
+                <span className="font-semibold text-white"> {guidedLockedSection.title}</span>.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Presenter path</p>
+              <div className="mt-4 grid gap-3 text-sm leading-6 text-neutral-300">
+                {[
+                  `Story predicted ${report.archetype.name} / ${report.dominantAxis.label}.`,
+                  reportSession ? `${reportSession.evidenceLabel}: ${reportSession.validationSummary}` : 'Direct report route: URL context only.',
+                  `Locked question: ${guidedLockedSection.title}.`,
+                ].map((item) => (
+                  <div key={item} className="rounded-2xl border border-white/8 bg-black/25 p-3">
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <Link
+                to={guidedInsightPath}
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+              >
+                Continue Guided Storyline
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
 
         <section className="mb-8 min-w-0 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">
           <div className="mb-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">

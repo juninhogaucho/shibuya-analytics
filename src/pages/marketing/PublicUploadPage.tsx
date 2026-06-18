@@ -168,6 +168,17 @@ export default function PublicUploadPage() {
                     <span className="mt-1 block text-white">{archetype.name} / {axis.label}</span>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => generateReport('sample')}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                >
+                  Generate Guided Sample Report
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <p className="mt-3 text-xs leading-5 text-indigo-50/60">
+                  Use this for a fast expo handoff. It creates a local sample packet and carries the exact story context into the free report.
+                </p>
               </div>
             ) : null}
 

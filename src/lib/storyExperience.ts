@@ -127,6 +127,20 @@ export function findLockedReportSectionBySlug(report: FreeReportPreview, section
   return report.locked.find((section) => toReportSectionSlug(section.title) === sectionSlug) ?? null
 }
 
+export function getGuidedLockedSectionForAxis(report: FreeReportPreview): FreeReportPreview['locked'][number] {
+  const preferredSlugByAxis: Partial<Record<FingerprintAxisId, string>> = {
+    drawdown_pressure: 'breach-sequence',
+    edge_decay: 'edge-decay-map',
+    revenge_reentry: 'next-session-state-warning',
+    size_escalation: 'next-session-state-warning',
+    tilt_susceptibility: 'next-session-state-warning',
+    session_fatigue: 'historical-fingerprint-trace',
+  }
+  const preferredSlug = preferredSlugByAxis[report.dominantAxis.id] ?? 'highest-cost-state'
+
+  return findLockedReportSectionBySlug(report, preferredSlug) ?? report.locked[0]
+}
+
 export function buildLockedInsightPreview(report: FreeReportPreview, sectionSlug?: string | null): LockedInsightPreview {
   const section = findLockedReportSectionBySlug(report, sectionSlug) ?? report.locked[0]
   const slug = toReportSectionSlug(section.title)
