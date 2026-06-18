@@ -65,28 +65,28 @@ export function PublicJourneySpine({
   return (
     <aside
       aria-label="Shibuya public to private journey"
-      className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 md:p-5"
+      className="min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 md:p-5"
     >
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
+      <div className="mb-4 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="break-words font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200 sm:tracking-[0.22em]">
             Public-to-private journey
           </p>
-          <h2 className="mt-1 text-lg font-semibold text-white">Story first. Evidence decides what unlocks.</h2>
+          <h2 className="mt-1 break-words text-lg font-semibold text-white">Story first. Evidence decides what unlocks.</h2>
         </div>
         {detail ? (
-          <p className="max-w-xl text-xs leading-5 text-neutral-400">{detail}</p>
+          <p className="max-w-xl break-words text-xs leading-5 text-neutral-400">{detail}</p>
         ) : null}
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-5">
+      <div className="grid min-w-0 gap-3 lg:grid-cols-5">
         {PUBLIC_JOURNEY_STAGES.map((stage) => {
           const state = getStageState(stage.id, activeStage)
 
           return (
             <div
               key={stage.id}
-              className={`rounded-2xl border p-3 ${
+              className={`min-w-0 rounded-2xl border p-3 ${
                 state === 'active'
                   ? 'border-indigo-300/50 bg-indigo-300/[0.1]'
                   : state === 'complete'
@@ -104,8 +104,8 @@ export function PublicJourneySpine({
                   <span className="h-2 w-2 rounded-full bg-indigo-200" />
                 )}
               </div>
-              <h3 className="text-sm font-semibold text-white">{stage.title}</h3>
-              <p className="mt-2 text-xs leading-5 text-neutral-400">{stage.boundary}</p>
+              <h3 className="break-words text-sm font-semibold text-white">{stage.title}</h3>
+              <p className="mt-2 break-words text-xs leading-5 text-neutral-400">{stage.boundary}</p>
             </div>
           )
         })}

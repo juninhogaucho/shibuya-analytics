@@ -155,22 +155,29 @@ export default function StoryExperience() {
   }
 
   return (
-    <section id="story-experience" className="overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 md:px-12">
-        <div className="mb-10 grid min-w-0 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+    <section id="story-experience" className="shibuya-story-experience overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
+      <div className="mx-auto w-full max-w-full px-5 sm:px-6 md:px-12 lg:max-w-7xl">
+        <div className="mb-10 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
           <div className="min-w-0">
             <h2 className="break-words font-display text-[2rem] font-bold uppercase leading-tight text-white sm:text-3xl md:text-5xl">
               You do not have a strategy problem. You have a state problem.
             </h2>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-neutral-300 md:text-lg">
+            <p className="mt-6 max-w-full break-words text-base leading-relaxed text-neutral-300 md:text-lg lg:max-w-2xl">
               Shibuya is the trader operating mirror: a public story that earns the upload, a report that names the leak,
               and a private workspace that turns the next session into a controlled experiment.
             </p>
+            <div className="mt-6 min-w-0 overflow-hidden rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.07] p-4">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100 sm:tracking-[0.24em]">IFX presenter brief</p>
+              <p className="mt-3 break-words text-sm leading-relaxed text-neutral-200">
+                In three minutes: show the trader mirror, reveal the provisional fingerprint, then make upload the
+                evidence step. Do not pitch signals. Pitch state, proof, and the next-session operating loop.
+              </p>
+            </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
                 onClick={openGuidedDemoPath}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm"
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
               >
                 Start Guided Demo Path
                 <ArrowRight className="h-4 w-4" />
@@ -178,7 +185,7 @@ export default function StoryExperience() {
               <button
                 type="button"
                 onClick={inspectUploadFlow}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm"
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
               >
                 <UploadCloud className="h-4 w-4" />
                 Upload Trade History
@@ -186,13 +193,13 @@ export default function StoryExperience() {
               <button
                 type="button"
                 onClick={() => inspectScene(1)}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm"
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
               >
                 See How It Works
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-3 max-w-xl text-xs leading-5 text-neutral-500">
+            <p className="mt-3 max-w-full break-words text-xs leading-5 text-neutral-500 lg:max-w-xl">
               For a fast handoff, the guided path uses Marco / Edge Decay and carries that public context into upload,
               free report, locked insight, and the private demo gate.
             </p>
@@ -202,7 +209,7 @@ export default function StoryExperience() {
               P&L tells you what happened. Shibuya shows the repeatable behavioral state that appeared before it happened.
               This page builds a provisional fingerprint from the way you move through the story, then asks your trade history to confirm or reject it.
             </p>
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-white/8 bg-white/[0.03] p-4">
               <div className="mb-3 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
                 <span>3-minute guided story</span>
                 <span>Scene {activeSceneIndex + 1}/{STORY_SCENES.length}</span>
@@ -211,7 +218,7 @@ export default function StoryExperience() {
                 <div className="h-full rounded-full bg-indigo-300 transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
             </div>
-            <p className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-amber-100/90">
+            <p className="break-words rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-amber-100/90">
               This is not your report. It is a website-level prediction based on interaction. Upload history or activate a live account before treating anything as account-specific analysis.
             </p>
           </div>

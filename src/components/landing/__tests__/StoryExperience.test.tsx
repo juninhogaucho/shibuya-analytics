@@ -27,6 +27,8 @@ describe('StoryExperience', () => {
     expect(screen.getByText('Public signal only')).toBeInTheDocument()
     expect(screen.getByText('Upload must prove it')).toBeInTheDocument()
     expect(screen.getByText('Private demo boundary')).toBeInTheDocument()
+    expect(screen.getByText('IFX presenter brief')).toBeInTheDocument()
+    expect(screen.getByText(/Do not pitch signals\. Pitch state, proof, and the next-session operating loop/i)).toBeInTheDocument()
     expect(screen.getByText('3-minute demo path')).toBeInTheDocument()
     expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
     expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
