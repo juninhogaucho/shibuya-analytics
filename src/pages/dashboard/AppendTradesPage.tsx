@@ -633,14 +633,14 @@ export function AppendTradesPage() {
                 <p className="badge" style={{ marginBottom: '0.5rem' }}>FOUNDER-GATED APPEND SHORTCUT</p>
                 <h4 style={{ marginBottom: '0.5rem' }}>This close was opened directly after the private gate.</h4>
                 <p className="text-muted" style={{ marginBottom: '1rem' }}>
-                  The founder code created Reset Pro sample context, then routed here to close the demo quickly.
+                  The presenter code created Reset Pro sample context, then routed here to close the demo quickly.
                   This bypasses Mission HQ intentionally for recovery speed; it does not prove live persistence or account analytics.
                 </p>
                 <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
                   {[
                     {
                       label: 'Gate proof',
-                      body: 'Founder code accepted; sample context attached.',
+                      body: 'Presenter code accepted; sample context attached.',
                     },
                     {
                       label: 'Route skipped',

@@ -24,7 +24,7 @@ const ecosystemLanes = [
 const launchPhases = [
   'Open the public story and let the trader recognize the leak before any product pitch.',
   'Generate the sample report path so the locked private question is visible.',
-  'Use the founder gate only for the Reset Pro sample workspace; do not claim live account proof.',
+  'Use the presenter gate only for the Reset Pro sample workspace; do not claim live account proof.',
 ]
 
 export default function LaunchSignalPage() {
@@ -104,7 +104,7 @@ export default function LaunchSignalPage() {
               </div>
               <div className="flex items-start gap-3">
                 <LockKeyhole className="mt-0.5 h-5 w-5 text-orange-300" aria-hidden="true" />
-                <span>Private workspace stays behind the founder code and remains sample data only.</span>
+                <span>Private workspace stays behind the presenter code and remains sample data only.</span>
               </div>
               <div className="flex items-start gap-3">
                 <Eye className="mt-0.5 h-5 w-5 text-emerald-300" aria-hidden="true" />
@@ -125,7 +125,7 @@ export default function LaunchSignalPage() {
                     Public story / sample report / locked question / founder demo gate.
                   </h2>
                   <p className="mt-3 text-sm leading-6 text-neutral-300">
-                    Use the story link for everyone. Use the founder gate only when you explicitly want to show
+                    Use the story link for everyone. Use the presenter gate only when you explicitly want to show
                     the controlled Reset Pro sample workspace.
                   </p>
                 </div>

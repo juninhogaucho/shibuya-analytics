@@ -79,7 +79,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Receipt id')).toBeInTheDocument()
     expect(screen.getByText('reset-pro-demo:global:direct:no-report:no-archetype:no-axis:no-locked-module')).toBeInTheDocument()
     expect(screen.getByText('Receipt boundary')).toBeInTheDocument()
-    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
+    expect(screen.getByText(/Presenter code opened sample Reset Pro access only/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -89,7 +89,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
   })
 
-  test('blocks cold private-demo unlock even when a founder code is configured', async () => {
+  test('blocks cold private-demo unlock even when a presenter code is configured', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
@@ -201,7 +201,7 @@ describe('PrivateDemoPage', () => {
       demoEngagementCurrentSectionClickCount: 1,
       demoEngagementPrivateDemoIntentCount: 1,
       demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:free-report-123:priya:drawdown-pressure:highest-cost-state',
-      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+      demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
       demoEntryMode: 'mission_hq',
     })
   })
@@ -238,7 +238,7 @@ describe('PrivateDemoPage', () => {
 
     expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
     expect(screen.getAllByText('Append proof close after unlock').length).toBeGreaterThan(0)
-    expect(screen.getByText(/public shortcut still requires the founder gate/i)).toBeInTheDocument()
+    expect(screen.getByText(/public shortcut still requires the presenter gate/i)).toBeInTheDocument()
     expect(screen.getByText('Append proof close with Reset Pro sample context')).toBeInTheDocument()
     expect(screen.getByText(/Use this only as the public recovery shortcut for closing the demo/i)).toBeInTheDocument()
 

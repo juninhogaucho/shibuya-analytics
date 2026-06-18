@@ -207,7 +207,7 @@ export default function LockedInsightPage() {
     {
       label: 'Claim boundary',
       value: 'sample route, not live answer',
-      body: 'Founder-gated Reset Pro can carry this context into sample workflow only; live activation and upload proof must still answer the question.',
+      body: 'Presenter-gated Reset Pro can carry this context into sample workflow only; live activation and upload proof must still answer the question.',
     },
   ] as const
 
@@ -236,7 +236,7 @@ export default function LockedInsightPage() {
         <div className="min-w-0 space-y-6">
           <PublicJourneySpine
             activeStage="insight"
-            detail="The private insight page explains the locked module and proof contract before checkout or founder-gated demo access."
+            detail="The private insight page explains the locked module and proof contract before checkout or presenter-gated demo access."
           />
 
           <article className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
@@ -270,7 +270,7 @@ export default function LockedInsightPage() {
                   Keep the story sharp without pretending the answer is live.
                 </h2>
                 <p className="mt-4 text-sm leading-7 text-cyan-50/75">
-                  This is the last public surface before checkout or the founder-gated sample workspace. The operator
+                  This is the last public surface before checkout or the presenter-gated sample workspace. The operator
                   should name the carried question, show the missing proof, then continue to Reset Pro.
                 </p>
               </div>
@@ -419,7 +419,7 @@ export default function LockedInsightPage() {
                   Verify the route before opening Reset Pro.
                 </h2>
                 <p className="mt-4 text-sm leading-7 text-fuchsia-50/75">
-                  This checksum is the last public proof that the same locked question is about to enter the founder gate.
+                  This checksum is the last public proof that the same locked question is about to enter the presenter gate.
                   It lists context only; it does not upgrade the sample route into live proof.
                 </p>
               </div>
@@ -434,7 +434,7 @@ export default function LockedInsightPage() {
               </div>
             </div>
             <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-fuchsia-50/60">
-              Checksum rule: the founder gate may preserve route identity, story context, evidence status, and the private question; it may not preserve a private conclusion.
+              Checksum rule: the presenter gate may preserve route identity, story context, evidence status, and the private question; it may not preserve a private conclusion.
             </p>
           </article>
 

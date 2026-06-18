@@ -544,7 +544,7 @@ function buildUnlockReceipt(
     facts,
     nextAction: 'Run Mission HQ first, inspect one intervention surface, then close on append proof.',
     boundary: origin?.unlockBoundary
-      ?? 'This receipt proves the founder gate carried context into the sample workspace. It does not prove live activation, live upload, generated artifacts, or account-specific conclusions.',
+      ?? 'This receipt proves the presenter gate carried context into the sample workspace. It does not prove live activation, live upload, generated artifacts, or account-specific conclusions.',
   }
 }
 

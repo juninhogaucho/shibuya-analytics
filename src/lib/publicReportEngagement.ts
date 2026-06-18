@@ -163,7 +163,7 @@ export function buildPublicReportEngagementRows(
     {
       label: 'Private demo intent',
       value: engagement?.privateDemoIntentCount ? `${engagement.privateDemoIntentCount} gate attempt${engagement.privateDemoIntentCount === 1 ? '' : 's'}` : 'No private gate intent yet',
-      body: 'Private demo intent can route the founder-gated sample workspace. It cannot prove payment, upload, generated artifacts, or account improvement. No raw trade rows are stored by this ledger.',
+      body: 'Private demo intent can route the presenter-gated sample workspace. It cannot prove payment, upload, generated artifacts, or account improvement. No raw trade rows are stored by this ledger.',
     },
   ]
 }

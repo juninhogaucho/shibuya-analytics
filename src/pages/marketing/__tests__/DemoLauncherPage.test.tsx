@@ -36,7 +36,7 @@ describe('DemoLauncherPage', () => {
     expect(screen.getByText(/public recognition earns upload/i)).toBeInTheDocument()
     expect(screen.getByText(/append proof closes the demo/i)).toBeInTheDocument()
     expect(screen.getByText(/Fallback rule: direct report, direct insight, and activation links are recovery routes/i)).toBeInTheDocument()
-    expect(screen.getByText(/Append close is founder-gated even when opened from this launcher/i)).toBeInTheDocument()
+    expect(screen.getByText(/Append close is presenter-gated even when opened from this launcher/i)).toBeInTheDocument()
     expect(screen.getByText('Configured for this build')).toBeInTheDocument()
     expect(screen.getByText(/Secret values are never printed/i)).toBeInTheDocument()
     expect(screen.queryByText('founder-only-2026')).not.toBeInTheDocument()

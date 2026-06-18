@@ -159,7 +159,7 @@ export default function PrivateDemoPage() {
           ? 'Blocked: open locked insight first'
           : 'Blocked: start from story/report',
       body: routeIntegrityReady
-        ? 'The founder gate can open because this browser has a locked-section intent receipt or a controlled launcher packet.'
+        ? 'The presenter gate can open because this browser has a locked-section intent receipt or a controlled launcher packet.'
         : hasReportHandoff
           ? 'Private demo unlocks require a local locked-section intent receipt or an explicit controlled launcher packet. A URL alone is not enough.'
           : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
@@ -191,7 +191,7 @@ export default function PrivateDemoPage() {
       label: 'Post-unlock destination',
       value: postUnlockDestination === 'append_proof' ? 'Append proof close after unlock' : 'Mission HQ first',
       body: postUnlockDestination === 'append_proof'
-        ? 'This public shortcut still requires the founder gate, then opens the append-proof endpoint with Reset Pro sample context attached.'
+        ? 'This public shortcut still requires the presenter gate, then opens the append-proof endpoint with Reset Pro sample context attached.'
         : 'The normal demo opens Mission HQ first, then the operator closes on append proof.',
     },
   ]
@@ -238,7 +238,7 @@ export default function PrivateDemoPage() {
         ? 'Append proof close with Reset Pro sample context'
         : 'Mission HQ with the Reset Pro operator strip',
       body: postUnlockDestination === 'append_proof'
-        ? 'Use this only as the public recovery shortcut for closing the demo; the sample context is still founder-gated.'
+        ? 'Use this only as the public recovery shortcut for closing the demo; the sample context is still presenter-gated.'
         : 'Start there, show one intervention surface, then close on append proof.',
     },
   ]
@@ -396,7 +396,7 @@ export default function PrivateDemoPage() {
               </h2>
               <p className="mt-3 text-sm leading-6 text-rose-50/75">
                 Direct cold unlock is intentionally disabled. The correct product order is public StoryExperience,
-                upload/report, locked private insight, then founder-gated Reset Pro sample workspace.
+                upload/report, locked private insight, then presenter-gated Reset Pro sample workspace.
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <Link
@@ -423,7 +423,7 @@ export default function PrivateDemoPage() {
               What to say before the code goes in.
             </h2>
             <p className="mt-3 text-sm leading-6 text-violet-50/70">
-              The founder gate is where the pitch can accidentally overclaim. Use this script to keep the demo focused on
+              The presenter gate is where the pitch can accidentally overclaim. Use this script to keep the demo focused on
               structure, not unfinished live proof.
             </p>
             <div className="mt-4 grid gap-3">
@@ -531,7 +531,7 @@ export default function PrivateDemoPage() {
                   Private gate engagement receipt
                 </p>
                 <h3 className="mt-2 text-base font-semibold text-white">
-                  Intent survived into the founder gate. It still is not evidence.
+                  Intent survived into the presenter gate. It still is not evidence.
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-cyan-50/75">
                   The gate can read local report engagement so the operator knows why this private demo was opened.

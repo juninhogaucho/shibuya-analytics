@@ -434,7 +434,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
             <p className="badge" style={{ marginBottom: '0.5rem' }}>PRESENTER ROUTE</p>
             <h4 style={{ marginBottom: '0.35rem' }}>Run the private demo from this rail first.</h4>
             <p className="text-muted" style={{ marginBottom: 0 }}>
-              The longer command center stays below for detail. This rail is the actual first-screen path after the founder gate.
+              The longer command center stays below for detail. This rail is the actual first-screen path after the presenter gate.
             </p>
           </div>
         </div>
@@ -477,7 +477,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
             <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO PROOF LADDER</p>
             <h4 style={{ marginBottom: '0.35rem' }}>What is context, what is demo, and what still needs live proof.</h4>
             <p className="text-muted" style={{ marginBottom: 0 }}>
-              This keeps the private workspace honest after the founder code unlocks the sample account.
+              This keeps the private workspace honest after the presenter code unlocks the sample account.
             </p>
           </div>
         </div>

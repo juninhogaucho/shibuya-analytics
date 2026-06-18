@@ -29,7 +29,7 @@ describe('live proof readiness', () => {
       },
     ])
     expect(contract.rows[0].detail).toContain('VITE_API_BASE is missing')
-    expect(contract.boundary).toContain('Sample routes, URL context, and founder codes')
+    expect(contract.boundary).toContain('Sample routes, URL context, and presenter codes')
   })
 
   test('still requires evidence when a backend target is configured', () => {

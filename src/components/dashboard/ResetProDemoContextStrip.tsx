@@ -66,7 +66,7 @@ export function ResetProDemoContextStrip({ sessionMeta }: ResetProDemoContextStr
           <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO DEMO CONTEXT STRIP</p>
           <h3 style={{ marginBottom: '0.5rem' }}>Keep the public-to-private handoff visible across every workspace surface.</h3>
           <p className="text-muted" style={{ marginBottom: 0, maxWidth: '62rem' }}>
-            This strip follows the founder-gated Reset Pro sample session after unlock. It preserves route continuity
+            This strip follows the presenter-gated Reset Pro sample session after unlock. It preserves route continuity
             without converting demo data into live proof.
           </p>
         </div>

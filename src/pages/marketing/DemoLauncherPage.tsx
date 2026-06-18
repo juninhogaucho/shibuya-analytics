@@ -43,14 +43,14 @@ export function DemoLauncherPage() {
     {
       label: 'Demo',
       title: 'Unlock Reset Pro',
-      body: 'Use the founder gate to show the sample operating loop, then close on append proof.',
+      body: 'Use the presenter gate to show the sample operating loop, then close on append proof.',
       href: privateDemoPath,
       cta: 'Open Gate',
     },
     {
       label: 'Close',
       title: 'Append proof close',
-      body: 'Route through the founder gate, then end at the parser and append receipt so the viewer sees where live evidence has to begin.',
+      body: 'Route through the presenter gate, then end at the parser and append receipt so the viewer sees where live evidence has to begin.',
       href: appendProofPath,
       cta: 'Close Demo',
     },
@@ -87,14 +87,14 @@ export function DemoLauncherPage() {
     {
       label: '05',
       title: 'Private Reset Pro Gate',
-      body: 'Founder-controlled sample workspace. The code opens demo structure only, not live analytics.',
+      body: 'Presenter-controlled sample workspace. The code opens demo structure only, not live analytics.',
       href: privateDemoPath,
       cta: 'Open Gate',
     },
     {
       label: '06',
       title: 'Append Proof Close',
-      body: 'Founder-gated final sample-demo endpoint. The shortcut unlocks sample context first, then opens parse, confirm, and the live-proof boundary receipt.',
+      body: 'Presenter-gated final sample-demo endpoint. The shortcut unlocks sample context first, then opens parse, confirm, and the live-proof boundary receipt.',
       href: appendProofPath,
       cta: 'Open Append',
     },
@@ -249,7 +249,7 @@ export function DemoLauncherPage() {
           <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-indigo-50/60">
             Fallback rule: direct report, direct insight, and activation links are recovery routes. They are useful for speed,
             but they are weaker proof than the story-to-upload packet path and must be described that way.
-            Append close is founder-gated even when opened from this launcher.
+            Append close is presenter-gated even when opened from this launcher.
           </p>
         </section>
 

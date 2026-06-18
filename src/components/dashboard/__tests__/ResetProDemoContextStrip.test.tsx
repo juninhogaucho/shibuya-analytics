@@ -24,7 +24,7 @@ describe('ResetProDemoContextStrip', () => {
             demoEngagementLockedSectionClickCount: 1,
             demoEngagementPrivateDemoIntentCount: 1,
             demoEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
-            demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+            demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
           }}
         />
       </MemoryRouter>,
@@ -45,7 +45,7 @@ describe('ResetProDemoContextStrip', () => {
     expect(screen.getByText(/local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('Claim boundary')).toBeInTheDocument()
     expect(screen.getByText('sample route, not live answer')).toBeInTheDocument()
-    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
+    expect(screen.getByText(/Presenter code opened sample Reset Pro access only/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Mission HQ' })).toHaveAttribute('href', '/dashboard?market=global')
     expect(screen.getByRole('link', { name: 'Append Proof' })).toHaveAttribute('href', '/dashboard/upload?market=global')
   })

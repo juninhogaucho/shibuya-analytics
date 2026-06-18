@@ -13,6 +13,6 @@ describe('LiveProofReadinessCard', () => {
     expect(screen.getByText('First meaningful upload')).toBeInTheDocument()
     expect(screen.getByText('Append history')).toBeInTheDocument()
     expect(screen.getByText(/This contract separates the sample demo from the live evidence path/i)).toBeInTheDocument()
-    expect(screen.getByText(/Sample routes, URL context, and founder codes/i)).toBeInTheDocument()
+    expect(screen.getByText(/Sample routes, URL context, and presenter codes/i)).toBeInTheDocument()
   })
 })

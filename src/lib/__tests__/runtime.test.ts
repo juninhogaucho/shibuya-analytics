@@ -224,7 +224,7 @@ describe('shibuya runtime', () => {
       demoReportId: 'sample-behavioral-leak-report',
       demoPrivateGateChecksum: 'source=locked_insight; report=sample-behavioral-leak-report; sample route, not live answer',
       demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:sample-behavioral-leak-report:marco:edge-decay:edge-decay-map',
-      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only.',
+      demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only.',
     })
 
     expect(hasPrivateResetProDemoReceipt()).toBe(true)

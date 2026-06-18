@@ -63,6 +63,6 @@ export function buildLiveProofReadinessContract(options: LiveProofReadinessOptio
         detail: 'A later upload must confirm, reject, or update the carried private question before improvement is claimed.',
       },
     ],
-    boundary: 'Sample routes, URL context, and founder codes can prove workflow continuity only. They cannot prove payment, live upload, generated backend artifacts, or trader-specific conclusions.',
+    boundary: 'Sample routes, URL context, and presenter codes can prove workflow continuity only. They cannot prove payment, live upload, generated backend artifacts, or trader-specific conclusions.',
   }
 }

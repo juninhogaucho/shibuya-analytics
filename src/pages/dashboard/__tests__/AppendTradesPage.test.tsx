@@ -62,7 +62,7 @@ describe('AppendTradesPage', () => {
       demoLockedSectionTitle: 'Edge decay map',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
       demoUnlockReceiptId: 'reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
-      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+      demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
       demoEngagementReportViewCount: 2,
       demoEngagementLockedSectionClickCount: 1,
       demoEngagementPrivateDemoIntentCount: 1,
@@ -151,7 +151,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('The demo closed correctly: workflow shown, live proof still locked.')).toBeInTheDocument()
     expect(screen.getByText('Unlock receipt carried')).toBeInTheDocument()
     expect(screen.getByText(/reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map/i)).toBeInTheDocument()
-    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
+    expect(screen.getByText(/Presenter code opened sample Reset Pro access only/i)).toBeInTheDocument()
     expect(screen.getByText('Engagement receipt carried')).toBeInTheDocument()
     expect(screen.getByText(/2 report view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/i)).toBeInTheDocument()
     expect(screen.getByText(/Report engagement is local route continuity only/i)).toBeInTheDocument()

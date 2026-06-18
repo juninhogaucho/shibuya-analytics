@@ -125,7 +125,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Report carried: sample-behavioral-leak-report')).toBeInTheDocument()
     expect(screen.getByText('Locked question: Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText('Evidence packet: Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/This receipt proves the founder gate carried context into the sample workspace/i)).toBeInTheDocument()
+    expect(screen.getByText(/This receipt proves the presenter gate carried context into the sample workspace/i)).toBeInTheDocument()
     expect(screen.getByText('RESET PRO OPERATOR STRIP')).toBeInTheDocument()
     expect(screen.getByText('One guided path after unlock. No dashboard wandering.')).toBeInTheDocument()
     expect(screen.getByText(/The deeper cards below are supporting evidence/i)).toBeInTheDocument()
