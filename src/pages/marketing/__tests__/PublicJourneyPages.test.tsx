@@ -95,11 +95,21 @@ describe('public Shibuya journey pages', () => {
       '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=1&pain_axes=drawdown_pressure&signals=mirror_selected%2Cpain_axis_selected%2Cupload_intent&market=india',
     )
 
-    await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
+    await user.click(screen.getByRole('link', { name: /Continue Guided Storyline/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/insight/breach-sequence')
+    expect(screen.getByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
+    expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
+    expect(screen.getByText('Requested locked module')).toBeInTheDocument()
+    expect(screen.getAllByText('Breach sequence').length).toBeGreaterThan(0)
+
+    await user.click(screen.getByRole('link', { name: /Continue To Private Demo Gate/i }))
 
     expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
+    expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
+    expect(screen.getAllByText('Breach sequence').length).toBeGreaterThan(0)
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
@@ -119,7 +129,7 @@ describe('public Shibuya journey pages', () => {
       market: 'india',
       samplePreview: 'reset_pro',
       caseStatus: 'sample_preview',
-      demoSource: 'free_report',
+      demoSource: 'locked_insight',
       demoReportId: 'sample-behavioral-leak-report',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
@@ -130,6 +140,8 @@ describe('public Shibuya journey pages', () => {
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 1,
       demoSignalMarkerIds: ['mirror_selected', 'pain_axis_selected', 'upload_intent'],
+      demoLockedSectionId: 'breach-sequence',
+      demoLockedSectionTitle: 'Breach sequence',
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })
@@ -231,9 +243,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Private insight contract')).toBeInTheDocument()
     expect(screen.getByText(/The private layer separates real edge decay from ordinary variance/i)).toBeInTheDocument()
     expect(screen.getByText(/No guaranteed profit uplift/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+    expect(screen.queryByRole('link', { name: /Open Private Demo Gate/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Via Locked Insight/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /^Unlock Free Report First$/i })).toHaveAttribute(
       'href',
@@ -248,9 +261,9 @@ describe('public Shibuya journey pages', () => {
       '/checkout/psych-audit-live?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.queryByRole('button', { name: /Preview Reset Pro/i })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Private Demo Access/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Private Insight Gate/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
       'href',
@@ -270,9 +283,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('No local upload packet found')).toBeInTheDocument()
     expect(screen.getByText(/Guided StoryExperience signal: 6 scenes viewed; public pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/URL story context only/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+    expect(screen.queryByRole('link', { name: /Open Private Demo Gate/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Via Locked Insight/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=free_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
       'href',

@@ -69,19 +69,6 @@ export default function FreeReportPage() {
     publicStoryHandoffForLinks,
   ).toString()
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightQuery}`, market)
-  const privateDemoPath = addMarketToPath(
-    `/private-demo?${appendPublicStoryHandoffParams(
-      new URLSearchParams({
-        source: 'free_report',
-        report: report.reportId,
-        archetype: report.archetype.id,
-        axis: report.dominantAxis.id,
-      }),
-      publicStoryHandoffForLinks,
-    ).toString()}`,
-    market,
-  )
-
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
       <div className="mx-0 w-full max-w-[22.25rem] min-w-0 sm:mx-auto sm:max-w-7xl">
@@ -403,10 +390,10 @@ export default function FreeReportPage() {
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
-                    to={privateDemoPath}
+                    to={guidedInsightPath}
                     className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.08]"
                   >
-                    Open Private Demo Gate
+                    Continue Via Locked Insight
                   </Link>
                 </div>
               </div>
@@ -426,10 +413,10 @@ export default function FreeReportPage() {
                 {auditPlan.ctaLabel}
               </Link>
               <Link
-                to={privateDemoPath}
+                to={guidedInsightPath}
                 className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50"
               >
-                Private Demo Access
+                Private Insight Gate
               </Link>
             </section>
           </div>
