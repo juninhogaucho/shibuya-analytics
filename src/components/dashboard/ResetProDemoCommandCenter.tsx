@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
 import { formatMoney } from '../../lib/display'
 import { buildResetProDemoScript, type ResetProDemoOrigin } from '../../lib/resetProDemo'
-import type { Market } from '../../lib/market'
+import { addMarketToPath, type Market } from '../../lib/market'
 import type { DashboardOverview } from '../../lib/types'
 
 interface ResetProDemoCommandCenterProps {
@@ -25,6 +25,7 @@ function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['p
 
 export function ResetProDemoCommandCenter({ market, overview, origin }: ResetProDemoCommandCenterProps) {
   const script = buildResetProDemoScript(overview, origin)
+  const uploadPath = addMarketToPath('/dashboard/upload', market)
 
   return (
     <section
@@ -40,12 +41,13 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
           <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', flexWrap: 'wrap' }}>
             <p className="badge" style={{ marginBottom: 0 }}>PRIVATE RESET PRO DEMO</p>
             <span className="badge">3-MINUTE PATH</span>
+            <span className="badge">{market === 'global' ? 'MARKET: GLOBAL' : 'MARKET: INDIA'}</span>
             <span className="badge">DEMO DATA ONLY</span>
           </div>
           <h3 style={{ marginBottom: '0.5rem' }}>{script.headline}</h3>
           <p className="text-muted" style={{ maxWidth: '62rem', marginBottom: 0 }}>{script.subline}</p>
         </div>
-        <Link to="/dashboard/upload" className="btn btn-sm btn-primary" style={{ whiteSpace: 'nowrap' }}>
+        <Link to={uploadPath} className="btn btn-sm btn-primary" style={{ whiteSpace: 'nowrap' }}>
           Append Proof
           <ArrowRight className="w-4 h-4" />
         </Link>
@@ -179,7 +181,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
           >
             <h4 style={{ marginBottom: '0.5rem' }}>{step.label}</h4>
             <p className="text-muted" style={{ minHeight: '4.5rem' }}>{step.proof}</p>
-            <Link to={step.route} className="btn btn-sm btn-secondary">
+            <Link to={addMarketToPath(step.route, market)} className="btn btn-sm btn-secondary">
               {step.routeLabel}
               <ArrowRight className="w-4 h-4" />
             </Link>

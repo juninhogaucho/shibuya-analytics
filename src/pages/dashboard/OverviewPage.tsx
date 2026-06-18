@@ -27,6 +27,7 @@ import { buildPerformanceStory } from '../../lib/performanceStory'
 import { getStoredSessionMeta, hasPremiumAccess, isResetProSamplePreview, isSampleMode } from '../../lib/runtime'
 import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
+import { addMarketToPath } from '../../lib/market'
 import type { DashboardOverview, EdgeItem, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
 import { Link } from 'react-router-dom'
 import { BarChart2, TrendingDown, Calendar, CheckCircle2, Copy, Download, Printer } from 'lucide-react'
@@ -417,7 +418,7 @@ export function DashboardOverviewPage() {
               : 'You are viewing demo data. Activate a live account before uploading real trades or treating the board as account-specific analysis.'}
           </p>
           <Link
-            to="/dashboard/upload"
+            to={addMarketToPath('/dashboard/upload', market)}
             className="shrink-0 rounded bg-amber-500/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-amber-100 transition-colors hover:bg-amber-500/30"
           >
             Inspect Upload Flow

@@ -14,6 +14,7 @@ describe('ResetProDemoCommandCenter', () => {
 
     expect(screen.getByText('PRIVATE RESET PRO DEMO')).toBeInTheDocument()
     expect(screen.getByText('3-MINUTE PATH')).toBeInTheDocument()
+    expect(screen.getByText('MARKET: INDIA')).toBeInTheDocument()
     expect(screen.getAllByText('DEMO DATA ONLY')[0]).toBeInTheDocument()
     expect(screen.getByText(/Shibuya does not tell the trader what to buy or sell/i)).toBeInTheDocument()
     expect(screen.getByText('FOUNDER SHOW SEQUENCE')).toBeInTheDocument()
@@ -29,7 +30,8 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Name the current enemy')).toBeInTheDocument()
     expect(screen.getByText('Show intervention surfaces')).toBeInTheDocument()
     expect(screen.getByText('Close with the proof loop')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Show propOS angle/i })).toHaveAttribute('href', '/dashboard/shadow-boxing')
+    expect(screen.getByRole('link', { name: /Append Proof/i })).toHaveAttribute('href', '/dashboard/upload?market=india')
+    expect(screen.getByRole('link', { name: /Show propOS angle/i })).toHaveAttribute('href', '/dashboard/shadow-boxing?market=india')
     expect(screen.getByText(/Live Reset Pro requires payment, activation, first meaningful upload/i)).toBeInTheDocument()
   })
 
