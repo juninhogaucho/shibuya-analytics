@@ -45,19 +45,19 @@ describe('StoryExperience', () => {
     expect(screen.getByText(/URL-only fallback context unless the upload page generates the local sample packet/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open Upload/i })).toHaveAttribute(
       'href',
-      '/upload?archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+      '/upload?archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
     expect(screen.getByRole('link', { name: /Open Report/i })).toHaveAttribute(
       'href',
-      '/report/sample-behavioral-leak-report?archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+      '/report/sample-behavioral-leak-report?demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
     expect(screen.getByRole('link', { name: /Open Insight/i })).toHaveAttribute(
       'href',
-      '/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+      '/insight/edge-decay-map?demo_packet=launcher_sample&source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
     expect(screen.getByRole('link', { name: /Open Gate/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+      '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
     expect(screen.getByText('Path')).toBeInTheDocument()
     expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
@@ -109,7 +109,7 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
     expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
-    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=6')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
   })
@@ -163,7 +163,7 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
     expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
-    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=6')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
   })

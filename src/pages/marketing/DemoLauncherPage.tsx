@@ -2,65 +2,21 @@ import { ArrowRight, LockKeyhole, Route, ShieldCheck } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { hasPrivateDemoGateConfigured } from '../../lib/privateDemoAccess'
-import { addMarketToPath, resolveMarket } from '../../lib/market'
-import {
-  DEMO_LAUNCHER_SAMPLE_PACKET_PARAM,
-  DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-} from '../../lib/publicReportSession'
-
-const GUIDED_DEMO_PARAMS = new URLSearchParams({
-  archetype: 'marco',
-  axis: 'edge_decay',
-  story: 'guided',
-  scene_count: '6',
-  pain_axes: 'edge_decay',
-  signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
-})
-
-const LOCKED_INSIGHT_PARAMS = new URLSearchParams({
-  [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-  source: 'guided_report',
-  report: 'sample-behavioral-leak-report',
-  archetype: 'marco',
-  axis: 'edge_decay',
-  story: 'guided',
-  scene_count: '6',
-  pain_axes: 'edge_decay',
-  signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
-})
-
-const PRIVATE_DEMO_PARAMS = new URLSearchParams({
-  [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-  source: 'locked_insight',
-  report: 'sample-behavioral-leak-report',
-  archetype: 'marco',
-  axis: 'edge_decay',
-  section: 'edge-decay-map',
-  story: 'guided',
-  scene_count: '6',
-  pain_axes: 'edge_decay',
-  signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
-})
+import { resolveMarket } from '../../lib/market'
+import { buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
 
 export function DemoLauncherPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const privateGateReady = hasPrivateDemoGateConfigured()
-  const guidedQuery = GUIDED_DEMO_PARAMS.toString()
-  const lockedInsightQuery = LOCKED_INSIGHT_PARAMS.toString()
-  const privateDemoQuery = PRIVATE_DEMO_PARAMS.toString()
-  const storyPath = addMarketToPath('/story', market)
-  const uploadPath = addMarketToPath(`/upload?${guidedQuery}`, market)
-  const reportPath = addMarketToPath(
-    `/report/sample-behavioral-leak-report?${new URLSearchParams({
-      [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-      ...Object.fromEntries(GUIDED_DEMO_PARAMS),
-    }).toString()}`,
-    market,
-  )
-  const lockedInsightPath = addMarketToPath(`/insight/edge-decay-map?${lockedInsightQuery}`, market)
-  const privateDemoPath = addMarketToPath(`/private-demo?${privateDemoQuery}`, market)
-  const activationPath = addMarketToPath(`/activate?${privateDemoQuery}`, market)
+  const {
+    storyPath,
+    uploadPath,
+    reportPath,
+    lockedInsightPath,
+    privateDemoPath,
+    activationPath,
+  } = buildIfxDemoJourneyPaths(market)
   const demoStops = [
     {
       label: '01',

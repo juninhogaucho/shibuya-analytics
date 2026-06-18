@@ -2,6 +2,13 @@ import { useMemo, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, Lock, UploadCloud } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  IFX_DEMO_ARCHETYPE_ID,
+  IFX_DEMO_AXIS_ID,
+  IFX_DEMO_STORY_SCENE_IDS,
+  buildIfxDemoJourneyPaths,
+  buildIfxGuidedDemoParams,
+} from '../../lib/ifxDemoJourney'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
   FINGERPRINT_AXES,
@@ -164,42 +171,19 @@ export default function StoryExperience() {
       onSelect: () => inspectUploadFlow(),
     },
   ]
-  const guidedDemoParams = new URLSearchParams({
-    archetype: 'marco',
-    axis: 'edge_decay',
-    story: 'guided',
-    scene_count: '4',
-    pain_axes: 'edge_decay',
-    signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
-  })
-  const guidedDemoQuery = guidedDemoParams.toString()
-  const guidedUploadPath = addMarketToPath(`/upload?${guidedDemoQuery}`, market)
-  const guidedReportPath = addMarketToPath(`/report/sample-behavioral-leak-report?${guidedDemoQuery}`, market)
-  const guidedInsightPath = addMarketToPath(
-    `/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&${guidedDemoQuery}`,
-    market,
-  )
-  const guidedPrivateDemoParams = new URLSearchParams({
-    source: 'locked_insight',
-    report: 'sample-behavioral-leak-report',
-    archetype: 'marco',
-    axis: 'edge_decay',
-    section: 'edge-decay-map',
-    story: 'guided',
-    scene_count: '4',
-    pain_axes: 'edge_decay',
-    signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
-  })
-  const guidedPrivateDemoPath = addMarketToPath(
-    `/private-demo?${guidedPrivateDemoParams.toString()}`,
-    market,
-  )
+  const {
+    storyPath,
+    uploadPath: guidedUploadPath,
+    reportPath: guidedReportPath,
+    lockedInsightPath: guidedInsightPath,
+    privateDemoPath: guidedPrivateDemoPath,
+  } = buildIfxDemoJourneyPaths(market)
   const emergencyDemoStops = [
     {
       label: '01',
       title: 'Public story',
       body: 'Start here when there is time. Run the mirror, pressure index, and boundary out loud.',
-      href: addMarketToPath('/story', market),
+      href: storyPath,
       cta: 'Show Story',
     },
     {
@@ -212,14 +196,14 @@ export default function StoryExperience() {
     {
       label: '03',
       title: 'Sample report',
-      body: 'Direct report fallback for fast demos. It is weaker than clicking sample generation from upload.',
+      body: 'Direct report fallback for fast demos. It carries the explicit launcher sample flag and states the proof boundary.',
       href: guidedReportPath,
       cta: 'Open Report',
     },
     {
       label: '04',
       title: 'Locked insight',
-      body: 'Opens the edge-decay private question without claiming a local upload packet exists.',
+      body: 'Opens the edge-decay private question with the same launcher sample packet and no account-specific claim.',
       href: guidedInsightPath,
       cta: 'Open Insight',
     },
@@ -307,27 +291,19 @@ export default function StoryExperience() {
   }
 
   const openGuidedDemoPath = () => {
-    const demoSceneIds = ['cold-open', 'archetypes', 'predicted-reveal', 'upload-moment']
     const demoSignal = recordUploadIntent(
       togglePainAxis(
         selectArchetype(
-          demoSceneIds.reduce(
+          IFX_DEMO_STORY_SCENE_IDS.reduce(
             (current, sceneId) => recordSceneView(current, sceneId),
             createInitialStorySignal(),
           ),
-          'marco',
+          IFX_DEMO_ARCHETYPE_ID,
         ),
-        'edge_decay',
+        IFX_DEMO_AXIS_ID,
       ),
     )
-    const demoParams = new URLSearchParams({
-      archetype: 'marco',
-      axis: 'edge_decay',
-      story: 'guided',
-      scene_count: String(demoSignal.visitedSceneIds.length),
-      pain_axes: 'edge_decay',
-      signals: buildPublicStorySignalMarkerIds(demoSignal).join(','),
-    })
+    const demoParams = buildIfxGuidedDemoParams()
     const uploadMomentIndex = STORY_SCENES.findIndex((scene) => scene.id === 'upload-moment')
 
     setActiveSceneIndex(uploadMomentIndex >= 0 ? uploadMomentIndex : activeSceneIndex)
