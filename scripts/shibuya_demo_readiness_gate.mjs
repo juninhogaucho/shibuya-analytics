@@ -33,6 +33,11 @@ const REQUIRED_SURFACES = [
     markers: ['Private insight contract', 'Locked until live workspace'],
   },
   {
+    label: 'locked private insight',
+    file: 'src/pages/marketing/LockedInsightPage.tsx',
+    markers: ['Locked Private Insight', 'This is where recognition becomes evidence.', 'Claims this page refuses'],
+  },
+  {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
     markers: ['Report handoff packet', 'Handoff evidence boundary', 'Unlock Reset Pro Preview'],

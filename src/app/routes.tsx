@@ -11,6 +11,7 @@ const SolutionsPage = lazy(() => import('../pages/marketing/SolutionsPage').then
 const PartnersPage = lazy(() => import('../pages/marketing/PartnersPage').then((module) => ({ default: module.PartnersPage })))
 const PublicUploadPage = lazy(() => import('../pages/marketing/PublicUploadPage'))
 const FreeReportPage = lazy(() => import('../pages/marketing/FreeReportPage'))
+const LockedInsightPage = lazy(() => import('../pages/marketing/LockedInsightPage'))
 const PrivateDemoPage = lazy(() => import('../pages/marketing/PrivateDemoPage'))
 const ActivationPage = lazy(() => import('../pages/marketing/ActivationPage').then((module) => ({ default: module.ActivationPage })))
 const ClaimAccountPage = lazy(() => import('../pages/marketing/ClaimAccountPage'))
@@ -78,6 +79,7 @@ export function AppRoutes() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/upload" element={<PublicUploadPage />} />
           <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
           <Route path="/private-demo" element={<PrivateDemoPage />} />
           <Route path="/checkout" element={<Navigate to="/pricing" replace />} />
           <Route path="/activate" element={<ActivationPage />} />

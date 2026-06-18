@@ -27,6 +27,10 @@ vi.mock('../../pages/marketing/FreeReportPage', () => ({
   default: () => <div>Free report route</div>,
 }))
 
+vi.mock('../../pages/marketing/LockedInsightPage', () => ({
+  default: () => <div>Locked insight route</div>,
+}))
+
 vi.mock('../../pages/marketing/PrivateDemoPage', () => ({
   default: () => <div>Private demo route</div>,
 }))
@@ -94,6 +98,16 @@ describe('public route contract', () => {
     )
 
     expect(await screen.findByText('Free report route')).toBeInTheDocument()
+  })
+
+  test('/insight/:section serves the locked private insight interstitial', async () => {
+    render(
+      <MemoryRouter initialEntries={['/insight/highest-cost-state?market=india&report=sample-free-report']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Locked insight route')).toBeInTheDocument()
   })
 
   test('/private-demo serves the gated Reset Pro demo entry', async () => {

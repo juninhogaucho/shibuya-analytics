@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import FreeReportPage from '../FreeReportPage'
+import LockedInsightPage from '../LockedInsightPage'
 import PrivateDemoPage from '../PrivateDemoPage'
 import PublicUploadPage from '../PublicUploadPage'
 
@@ -28,6 +29,7 @@ describe('public Shibuya journey pages', () => {
           <Route path="/" element={<StoryExperience />} />
           <Route path="/upload" element={<PublicUploadPage />} />
           <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
           <Route path="/private-demo" element={<PrivateDemoPage />} />
           <Route path="/dashboard" element={<div>Reset Pro dashboard route</div>} />
         </Routes>
@@ -127,7 +129,66 @@ describe('public Shibuya journey pages', () => {
     )
     expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
       'href',
-      '/checkout/reset-pro-live?source=locked_report&section=highest-cost-state&market=global',
+      '/insight/highest-cost-state?source=locked_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+    )
+  })
+
+  test('locked report section opens the private insight interstitial before checkout', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/report/sample-free-report?market=global&archetype=marco&axis=edge_decay']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
+    expect(screen.getByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
+    expect(screen.getByText('Requested locked module')).toBeInTheDocument()
+    expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
+    expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
+    expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=sample-free-report&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+    )
+  })
+
+  test('locked insight page preserves upload-step evidence when report session exists', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=india&archetype=priya&axis=drawdown_pressure']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
+    await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
+    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getByText('Origin report')).toBeInTheDocument()
+    expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Back to Free Report/i })).toHaveAttribute(
+      'href',
+      '/report/sample-behavioral-leak-report?archetype=priya&axis=drawdown_pressure&market=india',
     )
   })
 })

@@ -91,6 +91,10 @@ export interface FreeReportPreview {
   conversionLine: string
 }
 
+export function toReportSectionSlug(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 export const FINGERPRINT_AXES: FingerprintAxis[] = [
   {
     id: 'discipline_tax',

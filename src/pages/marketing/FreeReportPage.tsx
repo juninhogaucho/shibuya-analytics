@@ -3,11 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { buildFreeReportPreview } from '../../lib/storyExperience'
-
-function toIntentSlug(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
+import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
 export default function FreeReportPage() {
   const { id } = useParams()
@@ -116,7 +112,7 @@ export default function FreeReportPage() {
                   <Link
                     key={item.title}
                     to={addMarketToPath(
-                      `/checkout/${resetPlan.checkoutSlug}?source=locked_report&section=${toIntentSlug(item.title)}`,
+                      `/insight/${toReportSectionSlug(item.title)}?source=locked_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
                       market,
                     )}
                     className="group flex gap-4 rounded-3xl border border-white/8 bg-black/25 p-5 transition hover:border-indigo-300/40 hover:bg-indigo-300/[0.06]"
