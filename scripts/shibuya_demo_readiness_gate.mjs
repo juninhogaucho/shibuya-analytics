@@ -23,6 +23,11 @@ const REQUIRED_SURFACES = [
     markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Finish To Sample Upload', 'IFX emergency demo lane', 'One narrative, five stops, no live-proof overclaim.', 'URL-only fallback context'],
   },
   {
+    label: 'IFX demo launcher',
+    file: 'src/pages/marketing/DemoLauncherPage.tsx',
+    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'One controlled path from story to private workspace.', 'The launcher is not live proof.', 'Secret values are never printed'],
+  },
+  {
     label: 'public upload',
     file: 'src/pages/marketing/PublicUploadPage.tsx',
     markers: ['Use Sample History', 'Generate Free Report'],

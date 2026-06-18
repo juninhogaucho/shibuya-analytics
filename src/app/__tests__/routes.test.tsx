@@ -35,6 +35,10 @@ vi.mock('../../pages/marketing/PrivateDemoPage', () => ({
   default: () => <div>Private demo route</div>,
 }))
 
+vi.mock('../../pages/marketing/DemoLauncherPage', () => ({
+  DemoLauncherPage: () => <div>Demo launcher route</div>,
+}))
+
 vi.mock('../../pages/marketing/PartnersPage', () => ({
   PartnersPage: () => <div>Partners route</div>,
 }))
@@ -118,6 +122,26 @@ describe('public route contract', () => {
     )
 
     expect(await screen.findByText('Private demo route')).toBeInTheDocument()
+  })
+
+  test('/demo serves the controlled IFX demo launcher', async () => {
+    render(
+      <MemoryRouter initialEntries={['/demo?market=global']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Demo launcher route')).toBeInTheDocument()
+  })
+
+  test('/ifx-demo serves the controlled IFX demo launcher alias', async () => {
+    render(
+      <MemoryRouter initialEntries={['/ifx-demo?market=india']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Demo launcher route')).toBeInTheDocument()
   })
 
   test('/enterprise hands B2B traffic to the partner route', async () => {
