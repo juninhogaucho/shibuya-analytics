@@ -45,4 +45,24 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('scene_count=1')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
   })
+
+  test('offers a deterministic guided demo path for expo handoffs', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/story']}>
+        <StoryExperience />
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Use Guided Demo Path/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
+    expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
+  })
 })

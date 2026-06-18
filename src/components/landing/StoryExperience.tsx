@@ -126,6 +126,34 @@ export default function StoryExperience() {
     navigate(addMarketToPath(`/upload?${uploadParams.toString()}`, market))
   }
 
+  const openGuidedDemoPath = () => {
+    const demoSceneIds = ['cold-open', 'archetypes', 'predicted-reveal', 'upload-moment']
+    const demoSignal = recordUploadIntent(
+      togglePainAxis(
+        selectArchetype(
+          demoSceneIds.reduce(
+            (current, sceneId) => recordSceneView(current, sceneId),
+            createInitialStorySignal(),
+          ),
+          'marco',
+        ),
+        'edge_decay',
+      ),
+    )
+    const demoParams = new URLSearchParams({
+      archetype: 'marco',
+      axis: 'edge_decay',
+      story: 'guided',
+      scene_count: String(demoSignal.visitedSceneIds.length),
+      pain_axes: 'edge_decay',
+    })
+    const uploadMomentIndex = STORY_SCENES.findIndex((scene) => scene.id === 'upload-moment')
+
+    setActiveSceneIndex(uploadMomentIndex >= 0 ? uploadMomentIndex : activeSceneIndex)
+    setSignal(demoSignal)
+    navigate(addMarketToPath(`/upload?${demoParams.toString()}`, market))
+  }
+
   return (
     <section id="story-experience" className="overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 md:px-12">
@@ -393,6 +421,14 @@ export default function StoryExperience() {
                 <p className="mt-4 text-xs leading-relaxed text-indigo-50/65">
                   The public page earns the upload. The private demo shows structure with sample data only.
                 </p>
+                <button
+                  type="button"
+                  onClick={openGuidedDemoPath}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-sm font-bold uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
+                >
+                  Use Guided Demo Path
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
               <div className="space-y-3 rounded-3xl border border-white/10 bg-[#09090B] p-5">
                 <button
