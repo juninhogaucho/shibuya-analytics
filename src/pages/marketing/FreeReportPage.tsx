@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
+import { buildFreeReportPreview, getFingerprintAxis, toReportSectionSlug } from '../../lib/storyExperience'
 
 export default function FreeReportPage() {
   const { id } = useParams()
@@ -16,6 +16,9 @@ export default function FreeReportPage() {
     axisId: params.get('axis'),
   })
   const reportSession = getPublicReportSession(report.reportId)
+  const selectedPainAxes = (reportSession?.selectedPainAxisIds ?? [])
+    .map((axisId) => getFingerprintAxis(axisId))
+    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
   const reportCheckoutQuery = new URLSearchParams({
@@ -88,6 +91,49 @@ export default function FreeReportPage() {
             <p className="mt-3 text-sm leading-7 text-neutral-400">{report.dominantAxis.description}</p>
           </div>
         </div>
+
+        <section className="mb-8 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Prediction survival check</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">What survived from the public story?</h2>
+            </div>
+            <p className="text-sm leading-7 text-indigo-50/75">
+              The free report should not pretend the website prediction became truth. It should show the handoff:
+              public recognition, local upload/sample validation, then the private proof still required.
+            </p>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-3">
+            <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Public prediction</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">{report.archetype.name} / {report.dominantAxis.label}</h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-300">
+                {reportSession?.storySource === 'guided'
+                  ? `Guided story route with ${reportSession.visitedSceneCount} scene${reportSession.visitedSceneCount === 1 ? '' : 's'} viewed before upload.`
+                  : 'Direct report route. No guided StoryExperience packet was attached in this browser.'}
+              </p>
+              <p className="mt-3 text-xs leading-5 text-indigo-50/60">
+                Public pain axes: {selectedPainAxes.length ? selectedPainAxes.map((axis) => axis.label).join(', ') : 'none captured'}.
+              </p>
+            </article>
+
+            <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Local packet</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">{reportSession?.evidenceLabel ?? 'URL context only'}</h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-300">
+                {reportSession?.validationSummary ?? 'No local upload/sample validation packet was found. This page can explain the preview, but cannot prove the upload handoff.'}
+              </p>
+            </article>
+
+            <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-200">Still locked</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">Private proof loop</h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-300">
+                Live workspace evidence must still prove the pattern from normalized history, activation state, and repeated append packets before Shibuya makes account-specific private claims.
+              </p>
+            </article>
+          </div>
+        </section>
 
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="space-y-5">

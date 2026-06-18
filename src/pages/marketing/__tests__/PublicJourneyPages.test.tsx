@@ -56,9 +56,13 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
     expect(screen.getByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
-    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
     expect(screen.getByText('Selected public pain axes: Drawdown Pressure.')).toBeInTheDocument()
+    expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
+    expect(screen.getByText('What survived from the public story?')).toBeInTheDocument()
+    expect(screen.getByText(/Guided story route with 1 scene viewed before upload/i)).toBeInTheDocument()
+    expect(screen.getByText(/Live workspace evidence must still prove the pattern/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
 
@@ -112,9 +116,11 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report?market=india&archetype=priya&axis=drawdown_pressure')
     expect(screen.getByText('Public report packet')).toBeInTheDocument()
-    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText('Public story handoff: direct upload route.')).toBeInTheDocument()
     expect(screen.getByText(/No production upload or account-specific analysis is claimed/i)).toBeInTheDocument()
+    expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
+    expect(screen.getByText(/Direct report route. No guided StoryExperience packet was attached/i)).toBeInTheDocument()
   })
 
   test('free report keeps private demo access behind activation instead of public sample mode', () => {
