@@ -61,6 +61,9 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['drawdown_pressure'],
+      demoVisitedSceneCount: 4,
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -78,6 +81,9 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['drawdown_pressure'],
+      demoVisitedSceneCount: 4,
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -121,6 +127,9 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['drawdown_pressure'],
+      demoVisitedSceneCount: 4,
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -140,6 +149,9 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoReportSource).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEvidenceLabel).toBeUndefined()
     expect(getStoredSessionMeta()?.demoValidationSummary).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoStorySource).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoSelectedPainAxisIds).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoVisitedSceneCount).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
   })

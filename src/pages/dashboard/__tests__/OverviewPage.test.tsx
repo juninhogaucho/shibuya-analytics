@@ -82,6 +82,9 @@ describe('DashboardOverviewPage', () => {
         demoReportSource: 'sample',
         demoEvidenceLabel: 'Sample history packet',
         demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+        demoStorySource: 'guided',
+        demoSelectedPainAxisIds: ['drawdown_pressure'],
+        demoVisitedSceneCount: 4,
         demoLockedSectionId: 'highest-cost-state',
         demoLockedSectionTitle: 'Highest-cost state',
       }),
@@ -103,6 +106,9 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Public packet source: sample')).toBeInTheDocument()
     expect(screen.getByText('Handoff evidence: Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Validation note: Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getByText('Story handoff: guided')).toBeInTheDocument()
+    expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
+    expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)

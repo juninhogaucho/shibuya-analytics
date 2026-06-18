@@ -191,6 +191,9 @@ export function DashboardOverviewPage() {
         reportSource: sessionMeta.demoReportSource,
         evidenceLabel: sessionMeta.demoEvidenceLabel,
         validationSummary: sessionMeta.demoValidationSummary,
+        storySource: sessionMeta.demoStorySource,
+        selectedPainAxisLabels: sessionMeta.demoSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
+        visitedSceneCount: sessionMeta.demoVisitedSceneCount,
         lockedSectionId: sessionMeta.demoLockedSectionId,
         lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
       }

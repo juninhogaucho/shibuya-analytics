@@ -62,6 +62,9 @@ export default function PrivateDemoPage() {
       reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
       evidenceLabel: reportSession?.evidenceLabel,
       validationSummary: reportSession?.validationSummary,
+      storySource: reportSession?.storySource,
+      selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+      visitedSceneCount: reportSession?.visitedSceneCount,
       lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
       lockedSectionTitle: lockedSection?.title,
     })
@@ -153,6 +156,11 @@ export default function PrivateDemoPage() {
                 <p className="mt-3 text-xs leading-5 text-indigo-50/55">
                   {reportSession?.boundary ?? 'Use the public upload page to create a stronger local evidence packet before demoing the report-to-workspace transition.'}
                 </p>
+                {reportSession?.storySource ? (
+                  <p className="mt-3 text-xs leading-5 text-indigo-50/55">
+                    Story handoff: {reportSession.storySource}. Scenes before upload: {reportSession.visitedSceneCount}.
+                  </p>
+                ) : null}
               </div>
             </div>
           ) : null}

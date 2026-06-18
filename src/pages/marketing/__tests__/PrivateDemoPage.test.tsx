@@ -54,6 +54,9 @@ describe('PrivateDemoPage', () => {
       archetypeId: 'priya',
       axisId: 'drawdown_pressure',
       source: 'sample',
+      storySource: 'guided',
+      selectedPainAxisIds: ['drawdown_pressure'],
+      visitedSceneCount: 4,
     }))
 
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
@@ -64,6 +67,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided/i)).toBeInTheDocument()
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -80,6 +84,9 @@ describe('PrivateDemoPage', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['drawdown_pressure'],
+      demoVisitedSceneCount: 4,
     })
   })
 

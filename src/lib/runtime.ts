@@ -41,6 +41,9 @@ export interface ShibuyaSessionMeta {
   demoReportSource?: string
   demoEvidenceLabel?: string
   demoValidationSummary?: string
+  demoStorySource?: string
+  demoSelectedPainAxisIds?: string[]
+  demoVisitedSceneCount?: number
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
   activationSource?: string
@@ -61,6 +64,9 @@ export interface EnterSampleModeOptions {
   demoReportSource?: string
   demoEvidenceLabel?: string
   demoValidationSummary?: string
+  demoStorySource?: string
+  demoSelectedPainAxisIds?: string[]
+  demoVisitedSceneCount?: number
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
 }
@@ -213,6 +219,9 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoReportSource: options.demoReportSource,
       demoEvidenceLabel: options.demoEvidenceLabel,
       demoValidationSummary: options.demoValidationSummary,
+      demoStorySource: options.demoStorySource,
+      demoSelectedPainAxisIds: options.demoSelectedPainAxisIds,
+      demoVisitedSceneCount: options.demoVisitedSceneCount,
       demoLockedSectionId: options.demoLockedSectionId,
       demoLockedSectionTitle: options.demoLockedSectionTitle,
     }),
@@ -245,6 +254,9 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoReportSource
   delete nextMeta.demoEvidenceLabel
   delete nextMeta.demoValidationSummary
+  delete nextMeta.demoStorySource
+  delete nextMeta.demoSelectedPainAxisIds
+  delete nextMeta.demoVisitedSceneCount
   delete nextMeta.demoLockedSectionId
   delete nextMeta.demoLockedSectionTitle
 

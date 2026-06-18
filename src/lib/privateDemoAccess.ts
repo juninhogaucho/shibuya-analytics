@@ -29,6 +29,9 @@ export interface PrivateResetProDemoHandoff {
   reportSource?: string
   evidenceLabel?: string
   validationSummary?: string
+  storySource?: string
+  selectedPainAxisIds?: string[]
+  visitedSceneCount?: number
   lockedSectionId?: string
   lockedSectionTitle?: string
 }
@@ -72,6 +75,9 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoReportSource: handoff.reportSource,
     demoEvidenceLabel: handoff.evidenceLabel,
     demoValidationSummary: handoff.validationSummary,
+    demoStorySource: handoff.storySource,
+    demoSelectedPainAxisIds: handoff.selectedPainAxisIds,
+    demoVisitedSceneCount: handoff.visitedSceneCount,
     demoLockedSectionId: handoff.lockedSectionId,
     demoLockedSectionTitle: handoff.lockedSectionTitle,
   })

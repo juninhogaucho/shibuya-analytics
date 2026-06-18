@@ -80,6 +80,9 @@ describe('public Shibuya journey pages', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['drawdown_pressure'],
+      demoVisitedSceneCount: 1,
     })
   })
 

@@ -22,6 +22,9 @@ export interface ResetProDemoOrigin {
   reportSource?: string
   evidenceLabel?: string
   validationSummary?: string
+  storySource?: string
+  selectedPainAxisLabels?: string[]
+  visitedSceneCount?: number
   lockedSectionId?: string
   lockedSectionTitle?: string
 }
@@ -146,6 +149,11 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.reportSource ? `Public packet source: ${origin.reportSource}` : 'Public packet source: not available',
     origin.evidenceLabel ? `Handoff evidence: ${origin.evidenceLabel}` : 'Handoff evidence: URL context only',
     origin.validationSummary ? `Validation note: ${origin.validationSummary}` : 'Validation note: no local upload validation packet found',
+    origin.storySource ? `Story handoff: ${origin.storySource}` : 'Story handoff: not available',
+    typeof origin.visitedSceneCount === 'number' ? `Story scenes before upload: ${origin.visitedSceneCount}` : 'Story scenes before upload: not available',
+    origin.selectedPainAxisLabels?.length
+      ? `Public pain axes: ${origin.selectedPainAxisLabels.join(', ')}`
+      : 'Public pain axes: not available',
     origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
   ]
 
