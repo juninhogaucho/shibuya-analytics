@@ -115,7 +115,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'ACTIVATION ENGAGEMENT RECEIPT', 'activationEngagementSummary', 'activationEngagementReportViewCount', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
+    markers: ['CONTEXT DETECTED', 'ACTIVATION CONTEXT NOT CARRIED', 'URL-only activation context is visible on this link', 'will not be written into the live workspace', 'carriedActivationIntent', 'activationContextReady', 'hasActivationLockedSectionIntentProof', 'ACTIVATION ENGAGEMENT RECEIPT', 'activationEngagementSummary', 'activationEngagementReportViewCount', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',

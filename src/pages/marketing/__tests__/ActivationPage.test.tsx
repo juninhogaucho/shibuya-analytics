@@ -153,7 +153,7 @@ describe('ActivationPage', () => {
     )
   })
 
-  test('uses URL-carried story context when no local report packet exists', async () => {
+  test('does not carry URL-only story context into live activation metadata', async () => {
     const user = userEvent.setup()
     apiMocks.verifyActivation.mockResolvedValue({
       status: 'ready',
@@ -181,12 +181,12 @@ describe('ActivationPage', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByText(/Public packet: URL context only \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
-    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
-    expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
-    expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
-    expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
-    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
+    expect(screen.getByText('ACTIVATION CONTEXT NOT CARRIED')).toBeInTheDocument()
+    expect(screen.getByText(/URL-only activation context is visible on this link/i)).toBeInTheDocument()
+    expect(screen.getByText(/will not be written into the live workspace/i)).toBeInTheDocument()
+    expect(screen.getByText(/Activation can still verify the email and order code/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Public packet: URL context only/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Reset Pro bridge:/i)).not.toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -196,20 +196,21 @@ describe('ActivationPage', () => {
       expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
     })
 
-    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
-      activationSource: 'locked_insight',
-      activationReportId: 'missing-report',
-      activationArchetypeId: 'marco',
-      activationAxisId: 'edge_decay',
-      activationStorySource: 'guided',
-      activationSelectedPainAxisIds: ['edge_decay'],
-      activationVisitedSceneCount: 6,
-      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-      activationLockedSectionId: 'highest-cost-state',
-      activationLockedSectionTitle: 'Highest-cost state',
-      activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
-      activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).toMatchObject({
+      customerId: 'customer-123',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      orderId: 'order_123',
     })
+    expect(storedSessionMeta).not.toHaveProperty('activationSource')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
+    expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
+    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
+    expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
   })
 
   test('uses explicit demo launcher sample packet on direct activation links', async () => {

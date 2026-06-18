@@ -52,31 +52,41 @@ export function ActivationPage() {
     getPublicReportEngagement(checkoutIntent?.reportId),
     checkoutIntent?.lockedSectionId,
   )
+  const hasActivationLockedInsightIntent =
+    checkoutIntent?.source === 'locked_insight' &&
+    Boolean(checkoutIntent.reportId && checkoutIntent.lockedSectionId)
+  const hasActivationLockedSectionIntentProof = activationEngagementSummary.currentSectionClickCount > 0
+  const shouldCarryDemoLauncherActivationPacket = hasDemoLauncherSamplePacketRequest(location.search)
+  const activationContextReady =
+    hasActivationLockedInsightIntent &&
+    (hasActivationLockedSectionIntentProof || shouldCarryDemoLauncherActivationPacket)
+  const carriedActivationIntent = activationContextReady ? checkoutIntent : null
+  const carriedActivationReportSession = carriedActivationIntent ? activationReportSession : null
 
   useEffect(() => {
     if (demoLauncherActivationSession) {
       persistPublicReportSession(demoLauncherActivationSession)
     }
   }, [demoLauncherActivationSession])
-  const activationReport = checkoutIntent
+  const activationReport = carriedActivationIntent
     ? buildFreeReportPreview({
-        reportId: checkoutIntent.reportId ?? 'activation-origin',
-        archetypeId: checkoutIntent.archetypeId,
-        axisId: checkoutIntent.axisId,
-        storySource: activationReportSession?.storySource ?? checkoutIntent.storySource,
-        selectedPainAxisIds: activationReportSession?.selectedPainAxisIds ?? checkoutIntent.selectedPainAxisIds,
-        visitedSceneCount: activationReportSession?.visitedSceneCount ?? checkoutIntent.visitedSceneCount,
-        signalMarkerIds: activationReportSession?.signalMarkerIds ?? checkoutIntent.signalMarkerIds,
+        reportId: carriedActivationIntent.reportId ?? 'activation-origin',
+        archetypeId: carriedActivationIntent.archetypeId,
+        axisId: carriedActivationIntent.axisId,
+        storySource: carriedActivationReportSession?.storySource ?? carriedActivationIntent.storySource,
+        selectedPainAxisIds: carriedActivationReportSession?.selectedPainAxisIds ?? carriedActivationIntent.selectedPainAxisIds,
+        visitedSceneCount: carriedActivationReportSession?.visitedSceneCount ?? carriedActivationIntent.visitedSceneCount,
+        signalMarkerIds: carriedActivationReportSession?.signalMarkerIds ?? carriedActivationIntent.signalMarkerIds,
       })
     : null
   const activationLockedSection = activationReport
-    ? findLockedReportSectionBySlug(activationReport, checkoutIntent?.lockedSectionId)
+    ? findLockedReportSectionBySlug(activationReport, carriedActivationIntent?.lockedSectionId)
     : null
-  const activationSelectedPainAxisIds = activationReportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
+  const activationSelectedPainAxisIds = carriedActivationReportSession?.selectedPainAxisIds ?? carriedActivationIntent?.selectedPainAxisIds ?? []
   const activationSelectedPainAxisIdsForStorage = activationSelectedPainAxisIds.length ? activationSelectedPainAxisIds : undefined
-  const activationStorySource = activationReportSession?.storySource ?? checkoutIntent?.storySource
-  const activationVisitedSceneCount = activationReportSession?.visitedSceneCount ?? checkoutIntent?.visitedSceneCount
-  const activationSignalMarkerIds = activationReportSession?.signalMarkerIds ?? checkoutIntent?.signalMarkerIds ?? []
+  const activationStorySource = carriedActivationReportSession?.storySource ?? carriedActivationIntent?.storySource
+  const activationVisitedSceneCount = carriedActivationReportSession?.visitedSceneCount ?? carriedActivationIntent?.visitedSceneCount
+  const activationSignalMarkerIds = carriedActivationReportSession?.signalMarkerIds ?? carriedActivationIntent?.signalMarkerIds ?? []
   const activationSignalMarkerIdsForStorage = activationSignalMarkerIds.length ? activationSignalMarkerIds : undefined
   const activationSignalMarkerLabels = activationReport?.storyHandoff.signalMarkers.map((marker) => marker.label) ?? []
   const activationPainAxisLabels = activationSelectedPainAxisIds
@@ -87,8 +97,10 @@ export function ActivationPage() {
     {
       label: 'Payment context carried',
       status: 'ready',
-      detail: checkoutIntent
-        ? describeCheckoutIntent(checkoutIntent)
+      detail: carriedActivationIntent
+        ? describeCheckoutIntent(carriedActivationIntent)
+        : checkoutIntent
+          ? 'URL-only checkout context is attached, but activation will not carry it without a local locked-section receipt or controlled launcher packet.'
         : 'No checkout context is attached to this activation route.',
     },
     {
@@ -136,25 +148,25 @@ export function ActivationPage() {
           accessExpiresAt: response.accessExpiresAt ?? undefined,
           dataSource: response.dataSource ?? undefined,
           orderId: orderCode,
-          activationSource: checkoutIntent?.source,
-          activationReportId: checkoutIntent?.reportId,
-          activationArchetypeId: checkoutIntent?.archetypeId,
-          activationAxisId: checkoutIntent?.axisId,
+          activationSource: carriedActivationIntent?.source,
+          activationReportId: carriedActivationIntent?.reportId,
+          activationArchetypeId: carriedActivationIntent?.archetypeId,
+          activationAxisId: carriedActivationIntent?.axisId,
           activationStorySource,
           activationSelectedPainAxisIds: activationSelectedPainAxisIdsForStorage,
           activationVisitedSceneCount,
           activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
-          activationLockedSectionId: checkoutIntent?.lockedSectionId,
+          activationLockedSectionId: carriedActivationIntent?.lockedSectionId,
           activationLockedSectionTitle: activationLockedSection?.title,
           activationBridgeHeadline: activationReport?.resetProBridge.headline,
           activationBridgeDecisionQuestion: activationReport?.resetProBridge.decisionQuestion,
           activationBridgeWhyNow: activationReport?.resetProBridge.whyNow,
           activationBridgeLiveProof: activationReport?.resetProBridge.liveWorkspaceMustProve,
-          activationEngagementReportViewCount: activationEngagementSummary.reportViewCount,
-          activationEngagementLockedSectionClickCount: activationEngagementSummary.lockedSectionClickCount,
-          activationEngagementCurrentSectionClickCount: activationEngagementSummary.currentSectionClickCount,
-          activationEngagementPrivateDemoIntentCount: activationEngagementSummary.privateDemoIntentCount,
-          activationEngagementBoundary: activationEngagementSummary.boundary,
+          activationEngagementReportViewCount: carriedActivationIntent ? activationEngagementSummary.reportViewCount : undefined,
+          activationEngagementLockedSectionClickCount: carriedActivationIntent ? activationEngagementSummary.lockedSectionClickCount : undefined,
+          activationEngagementCurrentSectionClickCount: carriedActivationIntent ? activationEngagementSummary.currentSectionClickCount : undefined,
+          activationEngagementPrivateDemoIntentCount: carriedActivationIntent ? activationEngagementSummary.privateDemoIntentCount : undefined,
+          activationEngagementBoundary: carriedActivationIntent ? activationEngagementSummary.boundary : undefined,
         })
 
         await logTraderLifecycleEvent({
@@ -164,17 +176,17 @@ export function ActivationPage() {
           metadata: {
             orderCode,
             passwordRequired: response.passwordRequired ?? false,
-            activationSource: checkoutIntent?.source,
-            activationReportId: checkoutIntent?.reportId,
+            activationSource: carriedActivationIntent?.source,
+            activationReportId: carriedActivationIntent?.reportId,
             activationStorySource,
             activationVisitedSceneCount,
             activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
-            activationLockedSectionId: checkoutIntent?.lockedSectionId,
+            activationLockedSectionId: carriedActivationIntent?.lockedSectionId,
             activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
-            activationEngagementReportViewCount: activationEngagementSummary.reportViewCount,
-            activationEngagementLockedSectionClickCount: activationEngagementSummary.lockedSectionClickCount,
-            activationEngagementCurrentSectionClickCount: activationEngagementSummary.currentSectionClickCount,
-            activationEngagementPrivateDemoIntentCount: activationEngagementSummary.privateDemoIntentCount,
+            activationEngagementReportViewCount: carriedActivationIntent ? activationEngagementSummary.reportViewCount : undefined,
+            activationEngagementLockedSectionClickCount: carriedActivationIntent ? activationEngagementSummary.lockedSectionClickCount : undefined,
+            activationEngagementCurrentSectionClickCount: carriedActivationIntent ? activationEngagementSummary.currentSectionClickCount : undefined,
+            activationEngagementPrivateDemoIntentCount: carriedActivationIntent ? activationEngagementSummary.privateDemoIntentCount : undefined,
           },
         }).catch(() => undefined)
 
@@ -240,11 +252,11 @@ export function ActivationPage() {
             <div aria-label="LIVE PROOF READINESS activation contract">
               <LiveProofReadinessCard title="Before activation can become live proof." />
             </div>
-            {checkoutIntent ? (
+            {carriedActivationIntent ? (
               <div className="terminal-status terminal-status-success" style={{ marginTop: '1rem' }}>
                 <span className="status-icon">CTX</span>
                 <div>
-                  <p>{describeCheckoutIntent(checkoutIntent).toUpperCase()} CONTEXT DETECTED</p>
+                  <p>{describeCheckoutIntent(carriedActivationIntent).toUpperCase()} CONTEXT DETECTED</p>
                   <p className="terminal-muted">
                     {activationLockedSection?.title
                       ? `Activation will carry "${activationLockedSection.title}" into the live workspace as requested context.`
@@ -254,7 +266,7 @@ export function ActivationPage() {
                     This is routing context only. The private claim still requires live activation, upload proof, and generated workspace evidence.
                   </p>
                   <p className="terminal-muted">
-                    Report: {checkoutIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
+                    Report: {carriedActivationIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
                   </p>
                   <p className="terminal-muted">
                     Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationStorySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
@@ -306,6 +318,19 @@ export function ActivationPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            ) : checkoutIntent ? (
+              <div className="terminal-status" style={{ marginTop: '1rem', borderColor: 'rgba(251, 191, 36, 0.35)', background: 'rgba(251, 191, 36, 0.08)' }}>
+                <span className="status-icon">CTX</span>
+                <div>
+                  <p>ACTIVATION CONTEXT NOT CARRIED</p>
+                  <p className="terminal-muted">
+                    URL-only activation context is visible on this link, but it will not be written into the live workspace without a local locked-section intent receipt or controlled launcher packet.
+                  </p>
+                  <p className="terminal-muted">
+                    Activation can still verify the email and order code. It will create a live workspace without inheriting this public question.
+                  </p>
                 </div>
               </div>
             ) : null}
