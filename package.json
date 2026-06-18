@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "test:run": "vitest run",
     "demo:gate": "node scripts/shibuya_demo_readiness_gate.mjs",
+    "demo:build": "node scripts/build_private_demo_preview.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
