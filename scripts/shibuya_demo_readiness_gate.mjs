@@ -25,12 +25,17 @@ const REQUIRED_SURFACES = [
   {
     label: 'IFX demo launcher',
     file: 'src/pages/marketing/DemoLauncherPage.tsx',
-    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'One controlled path from story to private workspace.', 'The launcher is not live proof.', 'Secret values are never printed'],
+    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'One controlled path from story to private workspace.', 'The launcher is not live proof.', 'Secret values are never printed', 'DEMO_LAUNCHER_SAMPLE_PACKET_VALUE'],
   },
   {
     label: 'public upload',
     file: 'src/pages/marketing/PublicUploadPage.tsx',
     markers: ['Use Sample History', 'Generate Free Report'],
+  },
+  {
+    label: 'demo launcher sample packet',
+    file: 'src/lib/publicReportSession.ts',
+    markers: ['DEMO_LAUNCHER_SAMPLE_PACKET_VALUE', 'buildDemoLauncherSampleReportSession', 'Demo launcher initialized this sample packet from an explicit shared-link flag.', 'sample demo artifact'],
   },
   {
     label: 'locked free report',

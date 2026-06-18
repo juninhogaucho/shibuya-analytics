@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
@@ -11,7 +11,12 @@ import {
   hasPrivateDemoGateConfigured,
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
-import { getPublicReportSession } from '../../lib/publicReportSession'
+import {
+  buildDemoLauncherSampleReportSession,
+  getPublicReportSession,
+  hasDemoLauncherSamplePacketRequest,
+  persistPublicReportSession,
+} from '../../lib/publicReportSession'
 import {
   buildFreeReportPreview,
   findLockedReportSectionBySlug,
@@ -51,8 +56,30 @@ export default function PrivateDemoPage() {
   const handoffSource = params.get('source') ?? undefined
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
-  const reportSession = getPublicReportSession(handoffReportId)
+  const storedReportSession = getPublicReportSession(handoffReportId)
+  const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
+  const currentStoryHandoff = readPublicStoryHandoff(location.search)
+  const demoLauncherSession =
+    hasStoredReportSession || !handoffReportId || !hasDemoLauncherSamplePacketRequest(location.search)
+      ? null
+      : buildDemoLauncherSampleReportSession({
+        reportId: handoffReportId,
+        market,
+        archetypeId: handoffArchetype.id,
+        axisId: handoffAxis.id,
+        storySource: currentStoryHandoff?.storySource ?? params.get('story'),
+        selectedPainAxisIds: currentStoryHandoff?.selectedPainAxisIds,
+        visitedSceneCount: currentStoryHandoff?.visitedSceneCount,
+        signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
+      })
+  const reportSession = storedReportSession ?? demoLauncherSession
+
+  useEffect(() => {
+    if (demoLauncherSession) {
+      persistPublicReportSession(demoLauncherSession)
+    }
+  }, [demoLauncherSession])
   const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
   const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount

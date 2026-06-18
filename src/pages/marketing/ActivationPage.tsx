@@ -1,13 +1,23 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { verifyActivation } from '../../lib/api/auth'
 import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
-import { getPublicReportSession } from '../../lib/publicReportSession'
+import {
+  buildDemoLauncherSampleReportSession,
+  getPublicReportSession,
+  hasDemoLauncherSamplePacketRequest,
+  persistPublicReportSession,
+} from '../../lib/publicReportSession'
 import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
-import { buildFreeReportPreview, findLockedReportSectionBySlug, getFingerprintAxis } from '../../lib/storyExperience'
+import {
+  buildFreeReportPreview,
+  findLockedReportSectionBySlug,
+  getFingerprintAxis,
+  getTraderArchetype,
+} from '../../lib/storyExperience'
 
 export function ActivationPage() {
   const recentAccess = readRecentOrderAccess()
@@ -20,7 +30,27 @@ export function ActivationPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const checkoutIntent = readCheckoutIntent(location.search)
-  const activationReportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const storedActivationReportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const hasStoredActivationReportSession = Boolean(storedActivationReportSession)
+  const demoLauncherActivationSession =
+    hasStoredActivationReportSession || !checkoutIntent?.reportId || !hasDemoLauncherSamplePacketRequest(location.search)
+      ? null
+      : buildDemoLauncherSampleReportSession({
+        reportId: checkoutIntent.reportId,
+        market,
+        archetypeId: getTraderArchetype(checkoutIntent.archetypeId).id,
+        axisId: getFingerprintAxis(checkoutIntent.axisId).id,
+        storySource: checkoutIntent.storySource,
+        selectedPainAxisIds: checkoutIntent.selectedPainAxisIds,
+        visitedSceneCount: checkoutIntent.visitedSceneCount,
+      })
+  const activationReportSession = storedActivationReportSession ?? demoLauncherActivationSession
+
+  useEffect(() => {
+    if (demoLauncherActivationSession) {
+      persistPublicReportSession(demoLauncherActivationSession)
+    }
+  }, [demoLauncherActivationSession])
   const activationReport = checkoutIntent
     ? buildFreeReportPreview({
         reportId: checkoutIntent.reportId ?? 'activation-origin',

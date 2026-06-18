@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
+import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { ActivationPage } from '../ActivationPage'
 
@@ -179,6 +179,28 @@ describe('ActivationPage', () => {
       activationLockedSectionTitle: 'Highest-cost state',
       activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+    })
+  })
+
+  test('uses explicit demo launcher sample packet on direct activation links', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/activate?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(/Public packet: Demo launcher sample packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
+    expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
     })
   })
 })

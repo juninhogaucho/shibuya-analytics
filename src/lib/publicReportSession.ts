@@ -9,6 +9,8 @@ import {
 } from './storyExperience'
 
 export const PUBLIC_REPORT_SESSION_STORAGE_KEY = 'shibuya_public_report_sessions_v1'
+export const DEMO_LAUNCHER_SAMPLE_PACKET_PARAM = 'demo_packet'
+export const DEMO_LAUNCHER_SAMPLE_PACKET_VALUE = 'launcher_sample'
 
 export type PublicReportSource = 'file' | 'paste' | 'mixed' | 'sample'
 
@@ -254,6 +256,31 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     selectedPainAxisIds,
     visitedSceneCount,
     signalMarkerIds,
+  }
+}
+
+export function hasDemoLauncherSamplePacketRequest(search: string): boolean {
+  return new URLSearchParams(search).get(DEMO_LAUNCHER_SAMPLE_PACKET_PARAM) === DEMO_LAUNCHER_SAMPLE_PACKET_VALUE
+}
+
+export function buildDemoLauncherSampleReportSession(
+  params: Omit<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'>,
+): PublicReportSession {
+  const session = buildPublicReportSession({
+    ...params,
+    source: 'sample',
+  })
+
+  return {
+    ...session,
+    evidenceLabel: 'Demo launcher sample packet',
+    validationSummary: 'Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.',
+    validationFacts: [
+      ...session.validationFacts.filter((fact) => fact !== 'Sample packet selected for expo/demo flow.'),
+      'Demo launcher initialized this sample packet from an explicit shared-link flag.',
+      'No visitor file, raw trade row, production upload, or account-specific analysis is claimed.',
+    ],
+    boundary: 'This launcher packet is stored locally in the browser and contains no raw trade rows. It is a sample demo artifact, not a production report artifact.',
   }
 }
 

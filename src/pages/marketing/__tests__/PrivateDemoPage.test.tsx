@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
+import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import PrivateDemoPage from '../PrivateDemoPage'
 
@@ -161,6 +161,23 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionId: 'edge-decay-map',
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+    })
+  })
+
+  test('demo launcher private gate link seeds explicit sample packet context', async () => {
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?market=global&demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent')
+
+    expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(1)
+    expect(screen.getAllByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.').length).toBeGreaterThan(0)
+    expect(screen.getByText(/sample demo artifact/i)).toBeInTheDocument()
+    expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
     })
   })
 

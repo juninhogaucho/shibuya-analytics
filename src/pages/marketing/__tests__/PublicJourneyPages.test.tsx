@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
+import { getPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import FreeReportPage from '../FreeReportPage'
 import LockedInsightPage from '../LockedInsightPage'
@@ -300,6 +301,25 @@ describe('public Shibuya journey pages', () => {
     )
   })
 
+  test('demo launcher report link seeds an explicit sample packet without claiming live upload', async () => {
+    render(
+      <MemoryRouter initialEntries={['/report/sample-behavioral-leak-report?market=global&demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.').length).toBeGreaterThan(0)
+    expect(screen.getByText('Demo launcher initialized this sample packet from an explicit shared-link flag.')).toBeInTheDocument()
+    expect(screen.getByText('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
+    })
+  })
+
   test('locked report section opens the private insight interstitial before checkout', async () => {
     const user = userEvent.setup()
 
@@ -374,6 +394,28 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
     )
+  })
+
+  test('demo launcher locked insight link seeds the same sample packet before private demo', async () => {
+    render(
+      <MemoryRouter initialEntries={['/insight/edge-decay-map?market=global&demo_packet=launcher_sample&source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
+    expect(screen.getByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.')).toBeInTheDocument()
+    expect(screen.getByText(/sample demo artifact/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+
+    await waitFor(() => {
+      expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
+    })
   })
 
   test('locked insight page preserves upload-step evidence when report session exists', async () => {

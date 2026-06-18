@@ -3,6 +3,10 @@ import { Link, useLocation } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { hasPrivateDemoGateConfigured } from '../../lib/privateDemoAccess'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
+import {
+  DEMO_LAUNCHER_SAMPLE_PACKET_PARAM,
+  DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
+} from '../../lib/publicReportSession'
 
 const GUIDED_DEMO_PARAMS = new URLSearchParams({
   archetype: 'marco',
@@ -14,6 +18,7 @@ const GUIDED_DEMO_PARAMS = new URLSearchParams({
 })
 
 const LOCKED_INSIGHT_PARAMS = new URLSearchParams({
+  [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
   source: 'guided_report',
   report: 'sample-behavioral-leak-report',
   archetype: 'marco',
@@ -25,6 +30,7 @@ const LOCKED_INSIGHT_PARAMS = new URLSearchParams({
 })
 
 const PRIVATE_DEMO_PARAMS = new URLSearchParams({
+  [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
   source: 'locked_insight',
   report: 'sample-behavioral-leak-report',
   archetype: 'marco',
@@ -45,7 +51,13 @@ export function DemoLauncherPage() {
   const privateDemoQuery = PRIVATE_DEMO_PARAMS.toString()
   const storyPath = addMarketToPath('/story', market)
   const uploadPath = addMarketToPath(`/upload?${guidedQuery}`, market)
-  const reportPath = addMarketToPath(`/report/sample-behavioral-leak-report?${guidedQuery}`, market)
+  const reportPath = addMarketToPath(
+    `/report/sample-behavioral-leak-report?${new URLSearchParams({
+      [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
+      ...Object.fromEntries(GUIDED_DEMO_PARAMS),
+    }).toString()}`,
+    market,
+  )
   const lockedInsightPath = addMarketToPath(`/insight/edge-decay-map?${lockedInsightQuery}`, market)
   const privateDemoPath = addMarketToPath(`/private-demo?${privateDemoQuery}`, market)
   const activationPath = addMarketToPath(`/activate?${privateDemoQuery}`, market)
@@ -212,4 +224,3 @@ export function DemoLauncherPage() {
     </section>
   )
 }
-
