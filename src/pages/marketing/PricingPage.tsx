@@ -199,7 +199,7 @@ export default function PricingPage() {
             </h2>
             <p className="mt-3 text-sm leading-6 text-sky-50/75">
               {hasLockedInsightIntent
-                ? 'This page carries report, archetype, dominant axis, story handoff, and locked module into checkout or the founder demo gate.'
+                ? 'This page carries report, archetype, dominant axis, story handoff, and locked module into checkout or the presenter demo gate.'
                 : 'Generic pricing can explain the ladder, but it should route traders back to upload/report first so paid access starts from an explicit question.'}
             </p>
           </div>

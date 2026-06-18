@@ -48,7 +48,7 @@ export function ResetProDemoContextStrip({ sessionMeta }: ResetProDemoContextStr
       label: 'Claim boundary',
       value: 'sample route, not live answer',
       body: sessionMeta.demoUnlockBoundary
-        ?? 'Founder demo context can show workflow only; live proof still requires activation, upload, generated artifacts, and append history.',
+        ?? 'Presenter demo context can show workflow only; live proof still requires activation, upload, generated artifacts, and append history.',
     },
   ]
 

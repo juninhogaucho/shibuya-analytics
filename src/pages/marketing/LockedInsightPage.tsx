@@ -442,7 +442,7 @@ export default function LockedInsightPage() {
             <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-200">
-                  Founder demo continuation
+                  Presenter demo continuation
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
                   Carry this locked question into Reset Pro.

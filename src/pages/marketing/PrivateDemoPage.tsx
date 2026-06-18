@@ -321,7 +321,7 @@ export default function PrivateDemoPage() {
               'The public story and free report stay open to everyone.',
               'The Reset Pro sample workspace uses a client-side presenter code for temporary demos.',
               `The demo opens in the ${market} market context and carries the public handoff forward.`,
-              'The dashboard opens a founder talk track before the normal workspace cards.',
+              'The dashboard opens a presenter talk track before the normal workspace cards.',
               'The preview-only boundary stays visible after unlock.',
             ].map((item) => (
               <div key={item} className="flex gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-4">

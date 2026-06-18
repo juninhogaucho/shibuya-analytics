@@ -152,7 +152,7 @@ export interface ResetProDemoScript {
   headline: string
   subline: string
   demoThesis: string
-  founderTalkTrack: string[]
+  presenterTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
   livingMirror: ResetProDemoLivingMirror
   unlockReceipt: ResetProDemoUnlockReceipt
@@ -190,9 +190,9 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
 
   return {
     headline: 'Private Reset Pro command center',
-    subline: 'A controlled founder demo of the paid workspace: leak detection, next-session mandate, premium intervention, guided review, and proof loop.',
+    subline: 'A controlled presenter demo of the paid workspace: leak detection, next-session mandate, premium intervention, guided review, and proof loop.',
     demoThesis: 'Shibuya does not tell the trader what to buy or sell. It turns their trading history into a behavioral operating system that protects the next decision.',
-    founderTalkTrack: [
+    presenterTalkTrack: [
       'Start with the cost of the leak, not a generic dashboard.',
       currentEnemy,
       nextSessionCommand,
@@ -693,7 +693,7 @@ function buildBridgeCard(origin?: ResetProDemoOrigin): ResetProDemoBridgeCard | 
       ? origin.bridgePreviewShows
       : [
           'Sample mandate and pressure map.',
-          'Founder talk track for the private workspace.',
+          'Presenter talk track for the private workspace.',
           'The boundary between demo structure and live account evidence.',
         ],
   }

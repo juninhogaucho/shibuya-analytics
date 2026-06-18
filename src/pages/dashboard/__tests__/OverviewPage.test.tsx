@@ -117,7 +117,7 @@ describe('DashboardOverviewPage', () => {
       screen.getByText('PRIVATE RESET PRO DEMO').compareDocumentPosition(screen.getByText('Journey progress'))
       & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
-    expect(screen.getByText('Founder thesis')).toBeInTheDocument()
+    expect(screen.getByText('Presenter thesis')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO UNLOCK RECEIPT')).toBeInTheDocument()
     expect(screen.getByText('UNLOCK RECEIPT')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro received the public question; the sample workspace can only show the operating loop.')).toBeInTheDocument()
@@ -129,7 +129,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('RESET PRO OPERATOR STRIP')).toBeInTheDocument()
     expect(screen.getByText('One guided path after unlock. No dashboard wandering.')).toBeInTheDocument()
     expect(screen.getByText(/The deeper cards below are supporting evidence/i)).toBeInTheDocument()
-    expect(screen.getByText('FOUNDER SHOW SEQUENCE')).toBeInTheDocument()
+    expect(screen.getByText('PRESENTER SHOW SEQUENCE')).toBeInTheDocument()
     expect(screen.getByText('DEMO READINESS CHECKLIST')).toBeInTheDocument()
     expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
     expect(screen.getByText('Origin report: sample-behavioral-leak-report')).toBeInTheDocument()

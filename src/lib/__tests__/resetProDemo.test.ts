@@ -3,7 +3,7 @@ import { buildResetProDemoScript } from '../resetProDemo'
 import { getSampleWorkspaceOverview } from '../sampleWorkspace'
 
 describe('Reset Pro demo script', () => {
-  test('turns reset pro sample overview into a founder demo path', () => {
+  test('turns reset pro sample overview into a presenter demo path', () => {
     const script = buildResetProDemoScript(getSampleWorkspaceOverview('reset_pro'))
 
     expect(script.headline).toContain('Reset Pro')

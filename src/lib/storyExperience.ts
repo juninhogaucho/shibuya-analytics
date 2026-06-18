@@ -255,7 +255,7 @@ export function buildLockedInsightPreview(report: FreeReportPreview, sectionSlug
           'Which next-session constraint should be visible first.',
         ],
         demoMayPreview: [
-          'Sample cost-state card and founder talk track.',
+        'Sample cost-state card and presenter talk track.',
           'How the dashboard prioritizes one expensive behavior instead of flooding the trader with metrics.',
         ],
         proofRequired: [...commonProof, 'Normalized trade history with enough rows to estimate repeat behavioral cost.'],
@@ -923,7 +923,7 @@ function buildResetProBridge(
   ]
   const commonPreview = [
     'Sample mandate and pressure map.',
-    'Founder talk track for the private workspace.',
+    'Presenter talk track for the private workspace.',
     'The exact boundary between demo structure and live account evidence.',
   ]
 

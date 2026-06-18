@@ -35,7 +35,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'IFX public signal entry',
     file: 'src/pages/marketing/LaunchSignalPage.tsx',
-    markers: ['IFX demo launcher', 'Start 3-Minute Story', 'Founder Demo Gate', 'Operator Launcher', 'This IFX link is a truthful demo path', 'buildIfxDemoJourneyPaths', 'privateDemoPath', 'demoLauncherPath'],
+    markers: ['IFX demo launcher', 'Start 3-Minute Story', 'Presenter Demo Gate', 'Operator Launcher', 'This IFX link is a truthful demo path', 'buildIfxDemoJourneyPaths', 'privateDemoPath', 'demoLauncherPath'],
   },
   {
     label: 'public upload',
@@ -150,7 +150,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'append-proof exit',
     file: 'src/pages/dashboard/AppendTradesPage.tsx',
-    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'Activation engagement receipt', 'Engagement boundary:', 'LIVE PROOF READINESS', 'RESET PRO PROOF EXIT', 'activeStage="append"', 'Close the sample Reset Pro demo on append proof', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'FOUNDER-GATED APPEND SHORTCUT', 'This close was opened directly after the private gate.', 'Mission HQ was bypassed for append close', 'RESET PRO APPEND CLOSE CHECKLIST', 'End the demo by proving the workflow, not the trader.', 'Forbidden close', 'Live proof path', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'Engagement receipt carried', 'No private demo unlock receipt was attached'],
+    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'Activation engagement receipt', 'Engagement boundary:', 'LIVE PROOF READINESS', 'RESET PRO PROOF EXIT', 'activeStage="append"', 'Close the sample Reset Pro demo on append proof', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'PRESENTER-GATED APPEND SHORTCUT', 'This close was opened directly after the private gate.', 'Mission HQ was bypassed for append close', 'RESET PRO APPEND CLOSE CHECKLIST', 'End the demo by proving the workflow, not the trader.', 'Forbidden close', 'Live proof path', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'Engagement receipt carried', 'No private demo unlock receipt was attached'],
   },
   {
     label: 'partner economics',

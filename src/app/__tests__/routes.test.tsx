@@ -31,14 +31,6 @@ vi.mock('../../pages/marketing/LockedInsightPage', () => ({
   default: () => <div>Locked insight route</div>,
 }))
 
-vi.mock('../../pages/marketing/PrivateDemoPage', () => ({
-  default: () => <div>Private demo route</div>,
-}))
-
-vi.mock('../../pages/marketing/DemoLauncherPage', () => ({
-  DemoLauncherPage: () => <div>Demo launcher route</div>,
-}))
-
 vi.mock('../../pages/marketing/PartnersPage', () => ({
   PartnersPage: () => <div>Partners route</div>,
 }))
@@ -121,7 +113,7 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Private demo route')).toBeInTheDocument()
+    expect(await screen.findByText('Private demo preflight')).toBeInTheDocument()
   })
 
   test('/demo serves the controlled IFX demo launcher', async () => {
@@ -131,7 +123,7 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Demo launcher route')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /One controlled path from story to append-proof close/i })).toBeInTheDocument()
   })
 
   test('/ifx-demo serves the controlled IFX demo launcher alias', async () => {
@@ -141,7 +133,7 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Demo launcher route')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /One controlled path from story to append-proof close/i })).toBeInTheDocument()
   })
 
   test('/enterprise hands B2B traffic to the partner route', async () => {

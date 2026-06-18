@@ -559,7 +559,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/The behavioral state carrying the largest estimated cost/i)).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
-    expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
+    expect(screen.getByText('Presenter demo continuation')).toBeInTheDocument()
     expect(screen.getByText('Carry this locked question into Reset Pro.')).toBeInTheDocument()
     expect(screen.getByText('Private gate handoff checksum')).toBeInTheDocument()
     expect(screen.getByText('Verify the route before opening Reset Pro.')).toBeInTheDocument()
@@ -573,7 +573,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Opening line')).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro is not answering "Is the trader defending a setup that no longer deserves the same risk\?" yet/i)).toBeInTheDocument()
     expect(screen.getByText('One surface to show')).toBeInTheDocument()
-    expect(screen.getAllByText('Sample cost-state card and founder talk track.').length).toBeGreaterThan(1)
+    expect(screen.getAllByText('Sample cost-state card and presenter talk track.').length).toBeGreaterThan(1)
     expect(screen.getByText('Evidence checkpoint')).toBeInTheDocument()
     expect(screen.getAllByText('Normalized trade history with enough rows to estimate repeat behavioral cost.').length).toBeGreaterThan(1)
     expect(screen.getByText('Close condition')).toBeInTheDocument()
@@ -670,7 +670,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText(/Demo packet accepted/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Origin report')).toBeInTheDocument()
     expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
-    expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
+    expect(screen.getByText('Presenter demo continuation')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
       'href',
       '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&section=highest-cost-state&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',

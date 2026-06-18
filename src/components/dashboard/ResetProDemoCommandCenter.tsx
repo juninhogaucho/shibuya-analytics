@@ -56,7 +56,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
   const privateGateContinuityRows = [
     {
       label: 'Checksum status',
-      value: origin?.privateGateChecksum ? 'Attached after founder unlock' : 'Not attached',
+      value: origin?.privateGateChecksum ? 'Attached after presenter unlock' : 'Not attached',
       body: origin?.privateGateChecksum
         ?? 'No locked-insight checksum was stored. Treat this as a direct sample workspace, not a completed public-to-private route.',
     },
@@ -105,7 +105,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-5 h-5 text-emerald-300" style={{ marginTop: '0.15rem', flexShrink: 0 }} />
           <div>
-            <h4 style={{ marginBottom: '0.35rem' }}>Founder thesis</h4>
+            <h4 style={{ marginBottom: '0.35rem' }}>Presenter thesis</h4>
             <p className="text-muted" style={{ marginBottom: 0 }}>{script.demoThesis}</p>
           </div>
         </div>
@@ -562,7 +562,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>
-            <p className="badge" style={{ marginBottom: '0.5rem' }}>FOUNDER SHOW SEQUENCE</p>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>PRESENTER SHOW SEQUENCE</p>
             <h4 style={{ marginBottom: '0.35rem' }}>Three minutes, no improvising.</h4>
             <p className="text-muted" style={{ marginBottom: 0 }}>
               Use this path when the demo starts from a public story, locked report, or private insight handoff.
@@ -638,7 +638,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.025)' }}>
           <h4 style={{ marginBottom: '0.75rem' }}>Talk track</h4>
           <ol className="digest-preview" style={{ marginBottom: 0 }}>
-            {script.founderTalkTrack.map((line) => (
+            {script.presenterTalkTrack.map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ol>

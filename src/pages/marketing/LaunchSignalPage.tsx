@@ -71,7 +71,7 @@ export default function LaunchSignalPage() {
 
             <p className="mt-8 max-w-full break-words text-base leading-7 text-neutral-300 sm:text-xl sm:leading-8 lg:max-w-2xl">
               Shibuya is the public story experience for trader behavior: recognition, provisional fingerprint,
-              upload, sample report, locked private insight, then the Reset Pro workspace behind founder access.
+              upload, sample report, locked private insight, then the Reset Pro workspace behind presenter access.
               This IFX link is a truthful demo path, not a live backend proof claim.
             </p>
 
@@ -87,7 +87,7 @@ export default function LaunchSignalPage() {
                 to={privateDemoPath}
                 className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/15 bg-white/[0.03] px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:border-white/30 hover:bg-white/[0.06] sm:w-auto sm:px-6 sm:tracking-[0.18em]"
               >
-                Founder Demo Gate
+                Presenter Demo Gate
               </Link>
               <Link
                 to={demoLauncherPath}
@@ -122,7 +122,7 @@ export default function LaunchSignalPage() {
                     Show this first
                   </p>
                   <h2 className="mt-3 break-words text-xl font-black tracking-tight text-white sm:text-2xl">
-                    Public story / sample report / locked question / founder demo gate.
+                    Public story / sample report / locked question / presenter demo gate.
                   </h2>
                   <p className="mt-3 text-sm leading-6 text-neutral-300">
                     Use the story link for everyone. Use the presenter gate only when you explicitly want to show

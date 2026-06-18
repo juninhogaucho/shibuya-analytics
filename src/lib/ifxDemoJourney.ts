@@ -58,7 +58,7 @@ export const IFX_DEMO_OPERATOR_RUNBOOK: IfxDemoOperatorBeat[] = [
     timebox: '1:55-2:35',
     title: 'Turn the answer into a locked question',
     say: 'The private layer should not reveal magic. It should preserve the question the live workspace must answer.',
-    show: 'Locked insight, private gate checksum, engagement receipt, and founder boundary.',
+    show: 'Locked insight, private gate checksum, engagement receipt, and presenter boundary.',
     boundary: 'Private demo can show workflow relevance only.',
   },
   {

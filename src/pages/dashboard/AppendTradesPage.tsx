@@ -630,7 +630,7 @@ export function AppendTradesPage() {
                   background: 'rgba(251,191,36,0.08)',
                 }}
               >
-                <p className="badge" style={{ marginBottom: '0.5rem' }}>FOUNDER-GATED APPEND SHORTCUT</p>
+                <p className="badge" style={{ marginBottom: '0.5rem' }}>PRESENTER-GATED APPEND SHORTCUT</p>
                 <h4 style={{ marginBottom: '0.5rem' }}>This close was opened directly after the private gate.</h4>
                 <p className="text-muted" style={{ marginBottom: '1rem' }}>
                   The presenter code created Reset Pro sample context, then routed here to close the demo quickly.

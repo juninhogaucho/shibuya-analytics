@@ -113,7 +113,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('This is the demo endpoint, not live evidence.')).toBeInTheDocument()
     expect(screen.getByText('Sample only')).toBeInTheDocument()
     expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()
-    expect(screen.getByText('FOUNDER-GATED APPEND SHORTCUT')).toBeInTheDocument()
+    expect(screen.getByText('PRESENTER-GATED APPEND SHORTCUT')).toBeInTheDocument()
     expect(screen.getByText('This close was opened directly after the private gate.')).toBeInTheDocument()
     expect(screen.getByText(/Mission HQ was bypassed for append close/i)).toBeInTheDocument()
     expect(screen.getByText(/do not claim the full private workspace walkthrough happened/i)).toBeInTheDocument()
