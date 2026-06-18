@@ -48,6 +48,15 @@ export function PartnersPage() {
     'Merit/design-partner pilot: very low upfront only for a high-signal cohort where Shibuya can prove repeatable value.',
   ]
 
+  const economicsRows = [
+    { label: 'Eligible accounts', value: '1,000' },
+    { label: 'Access fee', value: 'USD 12 / account / month' },
+    { label: 'Monthly gross Shibuya revenue', value: 'USD 12,000' },
+    { label: 'Partner channel share at 30%', value: 'USD 3,600' },
+    { label: 'Shibuya retained base revenue', value: 'USD 8,400 / month' },
+    { label: 'Optional TVA success fee', value: '15% above agreed floor' },
+  ]
+
   return (
     <div className="bg-[#050505] text-white">
       <section className="mx-auto grid min-h-[82vh] max-w-7xl items-center gap-12 px-6 py-28 md:grid-cols-[1.05fr_0.95fr] md:py-36">
@@ -180,6 +189,28 @@ export function PartnersPage() {
                   </li>
                 ))}
               </ul>
+            </article>
+            <article className="rounded-[1.5rem] border border-indigo-300/20 bg-indigo-500/10 p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <Split className="h-5 w-5 text-indigo-200" />
+                <h3 className="text-lg font-bold text-white">Illustrative partner math</h3>
+              </div>
+              <p className="mb-5 text-sm leading-relaxed text-indigo-50/70">
+                This is the rev-share shape to discuss with tech providers: the partner gets paid for distribution,
+                Shibuya keeps the intelligence economics, and TVA is only added when measured uplift clears the agreed floor.
+              </p>
+              <dl className="grid gap-3">
+                {economicsRows.map((row) => (
+                  <div key={row.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+                    <dt className="text-xs font-medium text-indigo-50/60">{row.label}</dt>
+                    <dd className="text-right text-sm font-bold text-white">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-relaxed text-indigo-50/70">
+                Example: if verified annualized TVA is USD 80,000 and the agreed floor is USD 25,000, the eligible TVA is
+                USD 55,000. At 15%, Shibuya earns USD 8,250 only after reconciliation.
+              </p>
             </article>
           </div>
         </div>
