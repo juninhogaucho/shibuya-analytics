@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   getTraderProfileContext,
-  getTradePasteMemory,
   logTraderLifecycleEvent,
+} from '../../lib/api'
+import {
+  getTradePasteMemory,
   parseTradePaste,
   submitParsedTrades,
   uploadTradesCSV,
-} from '../../lib/api'
+} from '../../lib/api/dashboard'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'

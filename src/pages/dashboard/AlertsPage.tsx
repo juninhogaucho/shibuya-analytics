@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getDashboardAlerts } from '../../lib/api'
+import { getDashboardAlerts } from '../../lib/api/dashboard'
 import { getAlertAction } from '../../lib/decisionSupport'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import type { AlertItem } from '../../lib/types'

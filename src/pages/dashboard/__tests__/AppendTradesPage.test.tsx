@@ -16,11 +16,14 @@ const isReadOnlySessionMock = vi.fn()
 const updateSessionMetaMock = vi.fn()
 
 vi.mock('../../../lib/api', () => ({
+  logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
+}))
+
+vi.mock('../../../lib/api/dashboard', () => ({
   parseTradePaste: (...args: unknown[]) => parseTradePasteMock(...args),
   submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
   uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
   getTradePasteMemory: (...args: unknown[]) => getTradePasteMemoryMock(...args),
-  logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
 }))
 
 vi.mock('../../../lib/runtime', () => ({

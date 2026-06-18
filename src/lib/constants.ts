@@ -12,3 +12,7 @@ const getApiBaseUrl = (): string => {
 }
 
 export const API_BASE_URL = getApiBaseUrl()
+
+export function isApiBaseConfiguredForLive(): boolean {
+  return API_BASE_URL !== 'https://api-not-configured.invalid'
+}

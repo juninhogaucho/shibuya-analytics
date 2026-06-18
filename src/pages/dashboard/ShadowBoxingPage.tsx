@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getShadowBoxing } from '../../lib/api'
+import { getShadowBoxing } from '../../lib/api/dashboard'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import { Badge } from '../../components/ui/Badge'
 import { EngineTag } from '../../components/engine/EngineTag'

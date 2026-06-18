@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { WelcomeModal } from '../components/ui/WelcomeModal'
-import { getDashboardOverview } from '../lib/api'
+import { getDashboardOverview } from '../lib/api/dashboard'
 import { buildJourneyState } from '../lib/journeyState'
 import { addMarketToPath } from '../lib/market'
 import { clearShibuyaSession, getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isResetProSamplePreview, isSampleMode } from '../lib/runtime'

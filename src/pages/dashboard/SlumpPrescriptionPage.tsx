@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getSlumpPrescription } from '../../lib/api'
+import { getSlumpPrescription } from '../../lib/api/dashboard'
 import { buildSlumpExecutionChecklist } from '../../lib/decisionSupport'
 import { SkeletonCard, Skeleton, SkeletonMetricCard } from '../../components/ui/Skeleton'
 import { Badge } from '../../components/ui/Badge'

@@ -1,8 +1,23 @@
-import { getStoredSessionMeta, isSampleMode, updateSessionMeta } from './runtime'
+import { isSampleMode, updateSessionMeta } from './runtime'
 import { deriveTraderModeFromProfileContext } from './traderMode'
-import { SAMPLE_PROFILE_CONTEXT, SAMPLE_WORKSPACE_DATA, getSampleWorkspaceOverview } from './sampleWorkspace'
-import { http, withRetry } from './api/httpClient'
+import { SAMPLE_PROFILE_CONTEXT } from './sampleWorkspace'
+import { http } from './api/httpClient'
 export { ApiError } from './api/httpClient'
+export {
+  assertDashboardBackendReady,
+  getDashboardAlerts,
+  getDashboardOverview,
+  getEdgePortfolio,
+  getShadowBoxing,
+  getSlumpPrescription,
+  getTradeHistory,
+  getTradePasteMemory,
+  getTradingReportComparison,
+  getTradingReports,
+  parseTradePaste,
+  submitParsedTrades,
+  uploadTradesCSV,
+} from './api/dashboard'
 export {
   bootstrapPassword,
   changePassword,
@@ -35,16 +50,6 @@ export type {
   CheckoutSessionStatus,
 } from './api/checkout'
 import type { 
-  TradePastePreview,
-  TradePasteMemoryResponse,
-  TradeHistoryResponse,
-  TradingReportsResponse,
-  TradingReportComparisonResponse,
-  DashboardOverview,
-  AlertsResponse,
-  EdgePortfolioResponse,
-  SlumpPrescription,
-  ShadowBoxingResponse,
   TraderProfileContext,
   DailyBriefingState,
   DailyDebriefState,
@@ -57,150 +62,6 @@ import type {
   ShibuyaOpsCaseResponse,
   ShibuyaAffiliateReportResponse,
 } from './types'
-
-// Trade parsing
-export async function parseTradePaste(payload: { body: string }) {
-  const { data } = await http.post<TradePastePreview>('/v1/trader/trades/preview', payload)
-  return data
-}
-
-export async function getTradePasteMemory(): Promise<TradePasteMemoryResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    return { has_previous: false, deltas: [], message: 'Sample workspace does not retain paste memory.' } as TradePasteMemoryResponse
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<TradePasteMemoryResponse>('/v1/dashboard/trade-paste-memory')
-    return data
-  })
-}
-
-export async function getTradeHistory(): Promise<TradeHistoryResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 300))
-    return SAMPLE_WORKSPACE_DATA.tradeHistory
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<TradeHistoryResponse>('/v1/dashboard/trade-history')
-    return data
-  })
-}
-
-export async function getTradingReports(limit = 20): Promise<TradingReportsResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 250))
-    return SAMPLE_WORKSPACE_DATA.reports
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<TradingReportsResponse>('/v1/trading-reports', {
-      params: { limit },
-    })
-    return data
-  })
-}
-
-export async function getTradingReportComparison(): Promise<TradingReportComparisonResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 250))
-    return SAMPLE_WORKSPACE_DATA.comparison
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<TradingReportComparisonResponse>('/v1/trading-reports/comparison')
-    return data
-  })
-}
-
-// Dashboard endpoints
-export async function getDashboardOverview(): Promise<DashboardOverview> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 400)) // Simulate network
-    return getSampleWorkspaceOverview(getStoredSessionMeta()?.samplePreview ?? 'core')
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<DashboardOverview>('/v1/dashboard/overview')
-    updateSessionMeta({
-      customerId: data.customer_id,
-      tier: data.access_tier,
-      offerKind: data.offer_kind,
-      caseStatus: data.case_status,
-      traderMode: data.trader_mode,
-      nextAction: data.next_action,
-      accessExpiresAt: data.access_expires_at ?? null,
-      dataSource: data.data_source ?? null,
-    })
-    return data
-  })
-}
-
-export async function getDashboardAlerts(): Promise<AlertsResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 300))
-    return SAMPLE_WORKSPACE_DATA.alerts
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<AlertsResponse>('/v1/dashboard/alerts')
-    return data
-  })
-}
-
-export async function getEdgePortfolio(): Promise<EdgePortfolioResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 350))
-    return SAMPLE_WORKSPACE_DATA.edgePortfolio
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<EdgePortfolioResponse>('/v1/dashboard/edge-portfolio')
-    return data
-  })
-}
-
-export async function getSlumpPrescription(): Promise<SlumpPrescription> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 250))
-    return SAMPLE_WORKSPACE_DATA.slump
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<SlumpPrescription>('/v1/dashboard/slump-prescription')
-    return data
-  })
-}
-
-export async function getShadowBoxing(): Promise<ShadowBoxingResponse> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 400))
-    return SAMPLE_WORKSPACE_DATA.shadowBoxing
-  }
-  return withRetry(async () => {
-    const { data } = await http.get<ShadowBoxingResponse>('/v1/dashboard/shadow-boxing')
-    return data
-  })
-}
-
-// Upload
-export async function uploadTradesCSV(file: File): Promise<{ status: string; trades_uploaded: number; report: Record<string, unknown> }> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    return { status: 'sample', trades_uploaded: 0, report: { message: 'Upload disabled in sample workspace' } }
-  }
-  const formData = new FormData()
-  formData.append('file', file)
-  const { data } = await http.post('/v1/dashboard/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-  return data
-}
-
-// Submit parsed trades (from paste flow)
-export async function submitParsedTrades(payload: { trades: unknown[]; rawText: string }): Promise<{ status: string; trades_uploaded: number }> {
-  if (isSampleMode()) {
-    await new Promise(resolve => setTimeout(resolve, 800))
-    // Simulate counting trades from raw text
-    const lineCount = payload.rawText.trim().split('\n').filter(l => l.trim()).length
-    return { status: 'sample', trades_uploaded: lineCount }
-  }
-  const { data } = await http.post('/v1/dashboard/trades/submit', payload)
-  return data
-}
 
 // Public website contact form
 export interface ContactMessagePayload {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getEdgePortfolio } from '../../lib/api'
+import { getEdgePortfolio } from '../../lib/api/dashboard'
 import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 import { Badge, EdgeBadge } from '../../components/ui/Badge'

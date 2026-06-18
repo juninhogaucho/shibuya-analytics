@@ -167,12 +167,36 @@ Verification:
 
 ## Next Foundation Slice
 
-Continue splitting `src/lib/api.ts` into capability-specific API modules. Dashboard, profile/lifecycle, support/appointments, ops, and site-contact code still share the broad facade.
+Continue splitting `src/lib/api.ts` into capability-specific API modules. Profile/lifecycle, support/appointments, ops, and site-contact code still share the broad facade.
+
+## Sixth Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/constants.ts`
+- `src/lib/api.ts`
+- `src/lib/api/dashboard.ts`
+- `src/lib/api/__tests__/dashboard.test.ts`
+- Dashboard route/page imports that consume dashboard data, reports, trade history, alerts, edge portfolio, slump, shadow boxing, and upload APIs.
+- `src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`
+
+Behavior now verified:
+
+- Dashboard data, report history, trade history, premium dashboard surfaces, and upload calls now live in `src/lib/api/dashboard.ts`.
+- `src/lib/api.ts` keeps compatibility re-exports but no longer owns dashboard/sample branching or upload implementation.
+- Dashboard pages import dashboard capabilities from `api/dashboard` directly.
+- Sample mode still returns explicit sample workspace data.
+- Live dashboard/upload calls now fail locally with a clear `VITE_API_BASE is missing` boundary when a production-style backend URL is impossible, instead of making the UI look like live data can load truthfully.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/dashboard.test.ts src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`: passed.
+- `tsc -b`: passed.
 
 Success condition:
 
 - `api.ts` becomes either a temporary compatibility barrel or disappears.
-- Dashboard pages import dashboard functions from a dashboard API module.
+- Dashboard pages import dashboard functions from a dashboard API module. Done for current dashboard data/upload consumers.
 - Ops pages import ops functions from an ops API module.
 - Auth and checkout pages migrate from compatibility imports to their capability modules once the facade is thin enough.
 - Live dashboard functions fail loudly on missing backend/session instead of silently looking usable.
