@@ -41,12 +41,18 @@ describe('Reset Pro demo script', () => {
       reportId: 'free-report-123',
       archetypeLabel: 'Priya: Prop evaluation survivor',
       axisLabel: 'Drawdown Pressure',
+      reportSource: 'sample',
+      evidenceLabel: 'Sample history packet',
+      validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
     })
 
     expect(script.originCard?.title).toBe('Carried in from the public report')
     expect(script.originCard?.facts).toContain('Origin report: free-report-123')
     expect(script.originCard?.facts).toContain('Public archetype: Priya: Prop evaluation survivor')
     expect(script.originCard?.facts).toContain('Predicted axis: Drawdown Pressure')
+    expect(script.originCard?.facts).toContain('Public packet source: sample')
+    expect(script.originCard?.facts).toContain('Handoff evidence: Sample history packet')
+    expect(script.originCard?.facts).toContain('Validation note: Demo packet accepted. This proves the public journey transition, not live analytics.')
     expect(script.originCard?.body).toContain('not proof')
   })
 })

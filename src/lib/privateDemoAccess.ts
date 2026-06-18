@@ -25,6 +25,9 @@ export interface PrivateResetProDemoHandoff {
   reportId?: string
   archetypeId?: string
   axisId?: string
+  reportSource?: string
+  evidenceLabel?: string
+  validationSummary?: string
 }
 
 export function getConfiguredPrivateDemoCode(): string {
@@ -63,5 +66,8 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoReportId: handoff.reportId,
     demoArchetypeId: handoff.archetypeId,
     demoAxisId: handoff.axisId,
+    demoReportSource: handoff.reportSource,
+    demoEvidenceLabel: handoff.evidenceLabel,
+    demoValidationSummary: handoff.validationSummary,
   })
 }

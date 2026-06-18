@@ -58,6 +58,9 @@ describe('shibuya runtime', () => {
       demoReportId: 'free-report-123',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
+      demoReportSource: 'sample',
+      demoEvidenceLabel: 'Sample history packet',
+      demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
     })
 
     expect(getStoredSessionMeta()).toMatchObject({
@@ -70,6 +73,9 @@ describe('shibuya runtime', () => {
       demoReportId: 'free-report-123',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
+      demoReportSource: 'sample',
+      demoEvidenceLabel: 'Sample history packet',
+      demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
@@ -108,6 +114,9 @@ describe('shibuya runtime', () => {
       demoReportId: 'free-report-123',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
+      demoReportSource: 'sample',
+      demoEvidenceLabel: 'Sample history packet',
+      demoValidationSummary: 'Demo packet accepted.',
     })
     setLiveApiKey('live_123')
 
@@ -122,6 +131,9 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoReportId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoArchetypeId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoAxisId).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoReportSource).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEvidenceLabel).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoValidationSummary).toBeUndefined()
   })
 
   test('clears session state', () => {

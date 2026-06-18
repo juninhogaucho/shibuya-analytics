@@ -31,6 +31,9 @@ describe('ResetProDemoCommandCenter', () => {
             reportId: 'free-report-123',
             archetypeLabel: 'Priya: Prop evaluation survivor',
             axisLabel: 'Drawdown Pressure',
+            reportSource: 'sample',
+            evidenceLabel: 'Sample history packet',
+            validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
           }}
         />
       </MemoryRouter>,
@@ -40,6 +43,9 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Origin report: free-report-123')).toBeInTheDocument()
     expect(screen.getByText('Public archetype: Priya: Prop evaluation survivor')).toBeInTheDocument()
     expect(screen.getByText('Predicted axis: Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText('Public packet source: sample')).toBeInTheDocument()
+    expect(screen.getByText('Handoff evidence: Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText(/Validation note: Demo packet accepted/i)).toBeInTheDocument()
     expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
   })
 })

@@ -38,6 +38,9 @@ export interface ShibuyaSessionMeta {
   demoReportId?: string
   demoArchetypeId?: string
   demoAxisId?: string
+  demoReportSource?: string
+  demoEvidenceLabel?: string
+  demoValidationSummary?: string
 }
 
 export interface EnterSampleModeOptions {
@@ -47,6 +50,9 @@ export interface EnterSampleModeOptions {
   demoReportId?: string
   demoArchetypeId?: string
   demoAxisId?: string
+  demoReportSource?: string
+  demoEvidenceLabel?: string
+  demoValidationSummary?: string
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -194,6 +200,9 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoReportId: options.demoReportId,
       demoArchetypeId: options.demoArchetypeId,
       demoAxisId: options.demoAxisId,
+      demoReportSource: options.demoReportSource,
+      demoEvidenceLabel: options.demoEvidenceLabel,
+      demoValidationSummary: options.demoValidationSummary,
     }),
   )
 }
@@ -221,6 +230,9 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoReportId
   delete nextMeta.demoArchetypeId
   delete nextMeta.demoAxisId
+  delete nextMeta.demoReportSource
+  delete nextMeta.demoEvidenceLabel
+  delete nextMeta.demoValidationSummary
 
   if (Object.keys(nextMeta).length > 0) {
     localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))

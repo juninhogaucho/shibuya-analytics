@@ -53,6 +53,9 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
+    expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
+    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -68,6 +71,9 @@ describe('public Shibuya journey pages', () => {
       demoReportId: 'sample-behavioral-leak-report',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
+      demoReportSource: 'sample',
+      demoEvidenceLabel: 'Sample history packet',
+      demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
     })
   })
 

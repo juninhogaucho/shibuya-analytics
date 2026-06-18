@@ -188,6 +188,9 @@ export function DashboardOverviewPage() {
           ? `${getTraderArchetype(sessionMeta.demoArchetypeId).name}: ${getTraderArchetype(sessionMeta.demoArchetypeId).title}`
           : undefined,
         axisLabel: sessionMeta.demoAxisId ? getFingerprintAxis(sessionMeta.demoAxisId).label : undefined,
+        reportSource: sessionMeta.demoReportSource,
+        evidenceLabel: sessionMeta.demoEvidenceLabel,
+        validationSummary: sessionMeta.demoValidationSummary,
       }
     : undefined
   const premiumVisible = premiumAccess || resetProPreview

@@ -8,6 +8,7 @@ import {
   hasPrivateDemoGateConfigured,
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
+import { getPublicReportSession } from '../../lib/publicReportSession'
 import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 
 export default function PrivateDemoPage() {
@@ -19,6 +20,7 @@ export default function PrivateDemoPage() {
   const handoffArchetype = getTraderArchetype(params.get('archetype'))
   const handoffAxis = getFingerprintAxis(params.get('axis'))
   const hasReportHandoff = params.get('source') === 'free_report' || Boolean(handoffReportId)
+  const reportSession = getPublicReportSession(handoffReportId)
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
@@ -40,6 +42,9 @@ export default function PrivateDemoPage() {
       reportId: handoffReportId,
       archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
       axisId: hasReportHandoff ? handoffAxis.id : undefined,
+      reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
+      evidenceLabel: reportSession?.evidenceLabel,
+      validationSummary: reportSession?.validationSummary,
     })
     navigate('/dashboard', { replace: true })
   }
@@ -103,6 +108,20 @@ export default function PrivateDemoPage() {
                 the Reset Pro preview as a private demo origin. Demo archetype: <span className="text-white">{handoffArchetype.name}</span>.
                 Dominant axis: <span className="text-white">{handoffAxis.label}</span>.
               </p>
+              <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
+                  Handoff evidence boundary
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">
+                  {reportSession?.evidenceLabel ?? 'Direct-link fallback only'}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-indigo-50/75">
+                  {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. The private demo can still open, but the handoff is URL context only.'}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-indigo-50/55">
+                  {reportSession?.boundary ?? 'Use the public upload page to create a stronger local evidence packet before demoing the report-to-workspace transition.'}
+                </p>
+              </div>
             </div>
           ) : null}
 

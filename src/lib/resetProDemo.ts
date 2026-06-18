@@ -19,6 +19,9 @@ export interface ResetProDemoOrigin {
   reportId?: string
   archetypeLabel?: string
   axisLabel?: string
+  reportSource?: string
+  evidenceLabel?: string
+  validationSummary?: string
 }
 
 export interface ResetProDemoOriginCard {
@@ -138,6 +141,9 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.reportId ? `Origin report: ${origin.reportId}` : 'Origin report: direct private demo entry',
     origin.archetypeLabel ? `Public archetype: ${origin.archetypeLabel}` : 'Public archetype: not provided',
     origin.axisLabel ? `Predicted axis: ${origin.axisLabel}` : 'Predicted axis: not provided',
+    origin.reportSource ? `Public packet source: ${origin.reportSource}` : 'Public packet source: not available',
+    origin.evidenceLabel ? `Handoff evidence: ${origin.evidenceLabel}` : 'Handoff evidence: URL context only',
+    origin.validationSummary ? `Validation note: ${origin.validationSummary}` : 'Validation note: no local upload validation packet found',
   ]
 
   return {

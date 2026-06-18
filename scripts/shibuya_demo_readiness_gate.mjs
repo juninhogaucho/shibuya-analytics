@@ -35,12 +35,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Report handoff packet', 'Unlock Reset Pro Preview'],
+    markers: ['Report handoff packet', 'Handoff evidence boundary', 'Unlock Reset Pro Preview'],
   },
   {
     label: 'Reset Pro command center',
-    file: 'src/components/dashboard/ResetProDemoCommandCenter.tsx',
-    markers: ['PRIVATE RESET PRO DEMO', 'DEMO DATA ONLY'],
+    file: 'src/lib/resetProDemo.ts',
+    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:'],
   },
 ]
 
