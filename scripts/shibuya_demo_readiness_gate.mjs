@@ -25,7 +25,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'IFX demo launcher',
     file: 'src/pages/marketing/DemoLauncherPage.tsx',
-    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is founder-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'buildIfxDemoJourneyPaths'],
+    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'IFX operator run sheet', 'Three minutes. Five beats. One proof boundary.', 'Operator run sheet rule', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is founder-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'IFX_DEMO_OPERATOR_RUNBOOK', 'buildIfxDemoJourneyPaths'],
   },
   {
     label: 'public upload',

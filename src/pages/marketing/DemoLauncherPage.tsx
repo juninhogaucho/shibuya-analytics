@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { hasPrivateDemoGateConfigured } from '../../lib/privateDemoAccess'
 import { resolveMarket } from '../../lib/market'
-import { buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
+import { IFX_DEMO_OPERATOR_RUNBOOK, buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
 
 export function DemoLauncherPage() {
   const location = useLocation()
@@ -175,6 +175,44 @@ export function DemoLauncherPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="mb-8 rounded-[2rem] border border-sky-300/20 bg-sky-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
+                IFX operator run sheet
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Three minutes. Five beats. One proof boundary.</h2>
+            </div>
+            <p className="text-sm leading-7 text-sky-50/75">
+              Use this script before touching the fallback cards. The point is to make Shibuya feel like a controlled
+              product journey: recognition, evidence ask, locked question, private sample loop, append-proof close.
+            </p>
+          </div>
+          <div className="grid gap-3 xl:grid-cols-5">
+            {IFX_DEMO_OPERATOR_RUNBOOK.map((beat) => (
+              <article key={beat.beat} className="rounded-3xl border border-white/10 bg-black/25 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-sky-100">
+                  Beat {beat.beat} / {beat.timebox}
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">{beat.title}</h3>
+                <p className="mt-3 text-xs leading-5 text-sky-50/75">
+                  <span className="font-semibold text-white">Say:</span> {beat.say}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-sky-50/75">
+                  <span className="font-semibold text-white">Show:</span> {beat.show}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-amber-100/80">
+                  <span className="font-semibold text-amber-100">Boundary:</span> {beat.boundary}
+                </p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-sky-50/65">
+            Operator run sheet rule: if time is short, skip the fallback cards but do not skip the boundary. The presenter
+            must say what is recognition, what is sample continuity, and what live uploads still have to prove.
+          </p>
         </section>
 
         <section className="mb-8 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.055] p-5 md:p-8">
