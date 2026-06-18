@@ -22,12 +22,15 @@ export interface PrivateDemoAccessResult {
 }
 
 export interface PrivateResetProDemoHandoff {
+  source?: string
   reportId?: string
   archetypeId?: string
   axisId?: string
   reportSource?: string
   evidenceLabel?: string
   validationSummary?: string
+  lockedSectionId?: string
+  lockedSectionTitle?: string
 }
 
 export function getConfiguredPrivateDemoCode(): string {
@@ -62,12 +65,14 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
   enterSampleMode({
     market,
     preview: 'reset_pro',
-    demoSource: handoff.reportId ? 'free_report' : undefined,
+    demoSource: handoff.source ?? (handoff.reportId ? 'free_report' : undefined),
     demoReportId: handoff.reportId,
     demoArchetypeId: handoff.archetypeId,
     demoAxisId: handoff.axisId,
     demoReportSource: handoff.reportSource,
     demoEvidenceLabel: handoff.evidenceLabel,
     demoValidationSummary: handoff.validationSummary,
+    demoLockedSectionId: handoff.lockedSectionId,
+    demoLockedSectionTitle: handoff.lockedSectionTitle,
   })
 }

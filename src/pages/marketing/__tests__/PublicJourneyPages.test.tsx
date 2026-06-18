@@ -160,7 +160,7 @@ describe('public Shibuya journey pages', () => {
     )
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
-      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/private-demo?source=locked_insight&report=sample-free-report&archetype=marco&axis=edge_decay&section=highest-cost-state&market=global',
     )
   })
 
@@ -190,5 +190,45 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/report/sample-behavioral-leak-report?archetype=priya&axis=drawdown_pressure&market=india',
     )
+  })
+
+  test('locked insight intent survives into the private Reset Pro demo unlock', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=india&archetype=priya&axis=drawdown_pressure']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+          <Route path="/private-demo" element={<PrivateDemoPage />} />
+          <Route path="/dashboard" element={<div>Reset Pro dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
+    await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
+    await user.click(screen.getByRole('link', { name: /Open Private Demo Gate/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
+    expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard')
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      demoSource: 'locked_insight',
+      demoReportId: 'sample-behavioral-leak-report',
+      demoArchetypeId: 'priya',
+      demoAxisId: 'drawdown_pressure',
+      demoReportSource: 'sample',
+      demoLockedSectionId: 'highest-cost-state',
+      demoLockedSectionTitle: 'Highest-cost state',
+    })
   })
 })

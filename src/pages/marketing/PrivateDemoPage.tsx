@@ -9,7 +9,13 @@ import {
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
+import {
+  buildFreeReportPreview,
+  findLockedReportSectionBySlug,
+  getFingerprintAxis,
+  getTraderArchetype,
+  toReportSectionSlug,
+} from '../../lib/storyExperience'
 
 export default function PrivateDemoPage() {
   const location = useLocation()
@@ -19,8 +25,16 @@ export default function PrivateDemoPage() {
   const handoffReportId = params.get('report')?.trim() || undefined
   const handoffArchetype = getTraderArchetype(params.get('archetype'))
   const handoffAxis = getFingerprintAxis(params.get('axis'))
-  const hasReportHandoff = params.get('source') === 'free_report' || Boolean(handoffReportId)
+  const handoffSectionId = params.get('section')?.trim() || undefined
+  const handoffSource = params.get('source') ?? undefined
+  const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const reportSession = getPublicReportSession(handoffReportId)
+  const handoffReport = buildFreeReportPreview({
+    reportId: handoffReportId,
+    archetypeId: params.get('archetype'),
+    axisId: params.get('axis'),
+  })
+  const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
@@ -39,12 +53,15 @@ export default function PrivateDemoPage() {
     }
 
     enterPrivateResetProDemo(market, {
+      source: hasReportHandoff ? handoffSource : undefined,
       reportId: handoffReportId,
       archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
       axisId: hasReportHandoff ? handoffAxis.id : undefined,
       reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
       evidenceLabel: reportSession?.evidenceLabel,
       validationSummary: reportSession?.validationSummary,
+      lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
+      lockedSectionTitle: lockedSection?.title,
     })
     navigate('/dashboard', { replace: true })
   }
@@ -108,6 +125,19 @@ export default function PrivateDemoPage() {
                 the Reset Pro preview as a private demo origin. Demo archetype: <span className="text-white">{handoffArchetype.name}</span>.
                 Dominant axis: <span className="text-white">{handoffAxis.label}</span>.
               </p>
+              {handoffSectionId ? (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
+                    Locked insight intent
+                  </p>
+                  <h3 className="mt-2 text-base font-semibold text-white">
+                    {lockedSection?.title ?? 'Unknown locked module'}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-indigo-50/75">
+                    {lockedSection?.body ?? 'The private demo will preserve the requested section slug, but the section was not found in the current report model.'}
+                  </p>
+                </div>
+              ) : null}
               <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
                   Handoff evidence boundary

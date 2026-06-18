@@ -191,6 +191,8 @@ export function DashboardOverviewPage() {
         reportSource: sessionMeta.demoReportSource,
         evidenceLabel: sessionMeta.demoEvidenceLabel,
         validationSummary: sessionMeta.demoValidationSummary,
+        lockedSectionId: sessionMeta.demoLockedSectionId,
+        lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
       }
     : undefined
   const premiumVisible = premiumAccess || resetProPreview

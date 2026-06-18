@@ -22,6 +22,8 @@ export interface ResetProDemoOrigin {
   reportSource?: string
   evidenceLabel?: string
   validationSummary?: string
+  lockedSectionId?: string
+  lockedSectionTitle?: string
 }
 
 export interface ResetProDemoOriginCard {
@@ -144,10 +146,15 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.reportSource ? `Public packet source: ${origin.reportSource}` : 'Public packet source: not available',
     origin.evidenceLabel ? `Handoff evidence: ${origin.evidenceLabel}` : 'Handoff evidence: URL context only',
     origin.validationSummary ? `Validation note: ${origin.validationSummary}` : 'Validation note: no local upload validation packet found',
+    origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
   ]
 
   return {
-    title: origin.source === 'free_report' ? 'Carried in from the public report' : 'Private demo origin',
+    title: origin.source === 'locked_insight'
+      ? 'Carried in from locked private insight'
+      : origin.source === 'free_report'
+        ? 'Carried in from the public report'
+        : 'Private demo origin',
     body: 'This packet connects the public recognition moment to the private workspace demo. It is context for the walkthrough, not proof that the sample account belongs to the visitor.',
     facts,
   }

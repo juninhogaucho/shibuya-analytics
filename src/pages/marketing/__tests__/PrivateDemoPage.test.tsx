@@ -93,4 +93,29 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/URL context only/i)).toBeInTheDocument()
     expect(screen.getByText(/Use the public upload page/i)).toBeInTheDocument()
   })
+
+  test('carries locked insight intent into the Reset Pro sample metadata', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
+
+    expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
+    expect(screen.getByText('Edge decay map')).toBeInTheDocument()
+    expect(screen.getByText(/Which setup still deserves risk/i)).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      demoSource: 'locked_insight',
+      demoReportId: 'free-report-123',
+      demoArchetypeId: 'marco',
+      demoAxisId: 'edge_decay',
+      demoReportSource: 'direct_link',
+      demoLockedSectionId: 'edge-decay-map',
+      demoLockedSectionTitle: 'Edge decay map',
+    })
+  })
 })

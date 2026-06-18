@@ -61,6 +61,8 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoLockedSectionId: 'highest-cost-state',
+      demoLockedSectionTitle: 'Highest-cost state',
     })
 
     expect(getStoredSessionMeta()).toMatchObject({
@@ -76,6 +78,8 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      demoLockedSectionId: 'highest-cost-state',
+      demoLockedSectionTitle: 'Highest-cost state',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
@@ -117,6 +121,8 @@ describe('shibuya runtime', () => {
       demoReportSource: 'sample',
       demoEvidenceLabel: 'Sample history packet',
       demoValidationSummary: 'Demo packet accepted.',
+      demoLockedSectionId: 'highest-cost-state',
+      demoLockedSectionTitle: 'Highest-cost state',
     })
     setLiveApiKey('live_123')
 
@@ -134,6 +140,8 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoReportSource).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEvidenceLabel).toBeUndefined()
     expect(getStoredSessionMeta()?.demoValidationSummary).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
   })
 
   test('clears session state', () => {

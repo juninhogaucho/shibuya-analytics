@@ -44,6 +44,8 @@ describe('Reset Pro demo script', () => {
       reportSource: 'sample',
       evidenceLabel: 'Sample history packet',
       validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      lockedSectionId: 'highest-cost-state',
+      lockedSectionTitle: 'Highest-cost state',
     })
 
     expect(script.originCard?.title).toBe('Carried in from the public report')
@@ -53,6 +55,19 @@ describe('Reset Pro demo script', () => {
     expect(script.originCard?.facts).toContain('Public packet source: sample')
     expect(script.originCard?.facts).toContain('Handoff evidence: Sample history packet')
     expect(script.originCard?.facts).toContain('Validation note: Demo packet accepted. This proves the public journey transition, not live analytics.')
+    expect(script.originCard?.facts).toContain('Requested private insight: Highest-cost state')
     expect(script.originCard?.body).toContain('not proof')
+  })
+
+  test('labels locked-insight origins distinctly from generic free-report origins', () => {
+    const script = buildResetProDemoScript(getSampleWorkspaceOverview('reset_pro'), {
+      source: 'locked_insight',
+      reportId: 'free-report-123',
+      lockedSectionId: 'edge-decay-map',
+      lockedSectionTitle: 'Edge decay map',
+    })
+
+    expect(script.originCard?.title).toBe('Carried in from locked private insight')
+    expect(script.originCard?.facts).toContain('Requested private insight: Edge decay map')
   })
 })

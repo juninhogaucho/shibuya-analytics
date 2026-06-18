@@ -95,6 +95,14 @@ export function toReportSectionSlug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+export function findLockedReportSectionBySlug(report: FreeReportPreview, sectionSlug?: string | null): FreeReportPreview['locked'][number] | null {
+  if (!sectionSlug) {
+    return null
+  }
+
+  return report.locked.find((section) => toReportSectionSlug(section.title) === sectionSlug) ?? null
+}
+
 export const FINGERPRINT_AXES: FingerprintAxis[] = [
   {
     id: 'discipline_tax',

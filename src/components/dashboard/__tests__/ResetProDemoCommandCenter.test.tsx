@@ -34,6 +34,8 @@ describe('ResetProDemoCommandCenter', () => {
             reportSource: 'sample',
             evidenceLabel: 'Sample history packet',
             validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+            lockedSectionId: 'highest-cost-state',
+            lockedSectionTitle: 'Highest-cost state',
           }}
         />
       </MemoryRouter>,
@@ -46,6 +48,7 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Public packet source: sample')).toBeInTheDocument()
     expect(screen.getByText('Handoff evidence: Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Validation note: Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
   })
 })

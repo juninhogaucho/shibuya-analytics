@@ -30,7 +30,7 @@ export default function LockedInsightPage() {
     market,
   )
   const privateDemoPath = addMarketToPath(
-    `/private-demo?source=free_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
+    `/private-demo?source=locked_insight&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}&section=${sectionSlug}`,
     market,
   )
   const reportPath = addMarketToPath(
