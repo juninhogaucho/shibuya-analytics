@@ -172,7 +172,7 @@ export function AppendTradesPage() {
     {
       label: 'Unlock receipt carried',
       body: sessionMeta?.demoUnlockReceiptId
-        ? `${sessionMeta.demoUnlockReceiptId}. ${sessionMeta.demoUnlockBoundary ?? 'Founder gate receipt was attached without exposing the private code.'}`
+        ? `${sessionMeta.demoUnlockReceiptId}. ${sessionMeta.demoUnlockBoundary ?? 'Presenter gate receipt was attached without exposing the presenter code.'}`
         : 'No private demo unlock receipt was attached to this sample append.',
     },
     {

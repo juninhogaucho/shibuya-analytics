@@ -7,6 +7,7 @@ import { addMarketToPath, resolveMarket } from '../../lib/market'
 import { readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   PRIVATE_DEMO_CODE_ENV_KEY,
+  PRIVATE_DEMO_CLIENT_GATE_BOUNDARY,
   PRIVATE_DEMO_UNLOCK_BOUNDARY,
   buildPrivateDemoUnlockReceiptId,
   enterPrivateResetProDemo,
@@ -176,9 +177,9 @@ export default function PrivateDemoPage() {
     },
     {
       label: 'Access gate',
-      value: configured ? 'Private demo code configured' : 'Private demo disabled in this build',
+      value: configured ? 'Presenter demo code configured' : 'Presenter demo code disabled in this build',
       body: configured
-        ? 'The workspace can be unlocked with the founder-controlled code configured at build time.'
+        ? PRIVATE_DEMO_CLIENT_GATE_BOUNDARY
         : `Configure ${PRIVATE_DEMO_CODE_ENV_KEY} before sharing this demo path.`,
     },
     {
@@ -318,7 +319,7 @@ export default function PrivateDemoPage() {
           <div className="mt-8 grid gap-3 text-sm text-neutral-300">
             {[
               'The public story and free report stay open to everyone.',
-              'The Reset Pro workspace requires a private code configured at build time.',
+              'The Reset Pro sample workspace uses a client-side presenter code for temporary demos.',
               `The demo opens in the ${market} market context and carries the public handoff forward.`,
               'The dashboard opens a founder talk track before the normal workspace cards.',
               'The preview-only boundary stays visible after unlock.',
@@ -442,9 +443,12 @@ export default function PrivateDemoPage() {
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-                Founder-controlled access
+                Presenter-controlled access
               </p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">Enter private demo code.</h2>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Enter presenter demo code.</h2>
+              <p className="mt-3 text-sm leading-6 text-neutral-400">
+                {PRIVATE_DEMO_CLIENT_GATE_BOUNDARY}
+              </p>
             </div>
             <div className="rounded-2xl border border-indigo-300/20 bg-indigo-300/[0.08] p-3 text-indigo-100">
               <LockKeyhole className="h-5 w-5" />
@@ -555,7 +559,7 @@ export default function PrivateDemoPage() {
               Private demo unlock manifest
             </p>
             <h2 className="mt-2 text-xl font-semibold text-white">
-              What changes when the founder code succeeds.
+              What changes when the presenter code succeeds.
             </h2>
             <div className="mt-4 grid gap-3">
               {unlockManifestRows.map((row) => (
@@ -576,7 +580,7 @@ export default function PrivateDemoPage() {
               Reset Pro unlock receipt preview
             </p>
             <h2 className="mt-2 text-xl font-semibold text-white">
-              The workspace will store this receipt, not the private code.
+              The workspace will store this receipt, not the presenter code.
             </h2>
             <div className="mt-4 grid gap-3">
               <div className="rounded-2xl border border-white/10 bg-black/20 p-4">

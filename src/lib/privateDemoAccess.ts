@@ -3,6 +3,8 @@ import { enterSampleMode, type ShibuyaDemoEntryMode } from './runtime'
 
 export const PRIVATE_DEMO_CODE_ENV_KEY = 'VITE_PRIVATE_DEMO_ACCESS_CODE'
 export const PRIVATE_DEMO_MIN_CODE_LENGTH = 8
+export const PRIVATE_DEMO_CLIENT_GATE_BOUNDARY =
+  'This is a client-side presenter control for a temporary sample demo. It is not production authentication; real private access must be verified by the backend.'
 export const PRIVATE_DEMO_UNLOCK_BOUNDARY =
   'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.'
 

@@ -46,7 +46,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/Direct cold unlock is intentionally disabled/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open StoryExperience/i })).toHaveAttribute('href', '/story?market=global')
     expect(screen.getByRole('link', { name: /Open IFX Demo Launcher/i })).toHaveAttribute('href', '/demo?market=global')
-    expect(screen.getByText('Private demo disabled in this build')).toBeInTheDocument()
+    expect(screen.getByText('Presenter demo code disabled in this build')).toBeInTheDocument()
     expect(screen.getByText('Still missing by design')).toBeInTheDocument()
     expect(screen.getByText(/3-minute path through Mission HQ/i)).toBeInTheDocument()
     expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Do not claim live activation, backend normalization, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getByText(/unlock can demonstrate workflow readiness only/i)).toBeInTheDocument()
     expect(screen.getByText('Private demo unlock manifest')).toBeInTheDocument()
-    expect(screen.getByText('What changes when the founder code succeeds.')).toBeInTheDocument()
+    expect(screen.getByText('What changes when the presenter code succeeds.')).toBeInTheDocument()
     expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
     expect(screen.getAllByText('Mission HQ first').length).toBeGreaterThan(0)
     expect(screen.getByText('Stored after unlock')).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Mission HQ with the Reset Pro operator strip')).toBeInTheDocument()
     expect(screen.getByText(/a successful code changes access state only after locked insight intent is verified/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
-    expect(screen.getByText('The workspace will store this receipt, not the private code.')).toBeInTheDocument()
+    expect(screen.getByText('The workspace will store this receipt, not the presenter code.')).toBeInTheDocument()
     expect(screen.getByText('Receipt id')).toBeInTheDocument()
     expect(screen.getByText('reset-pro-demo:global:direct:no-report:no-archetype:no-axis:no-locked-module')).toBeInTheDocument()
     expect(screen.getByText('Receipt boundary')).toBeInTheDocument()
@@ -95,7 +95,7 @@ describe('PrivateDemoPage', () => {
 
     renderPrivateDemo()
 
-    expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
+    expect(screen.getByText('Presenter demo code configured')).toBeInTheDocument()
     expect(screen.getByText('Blocked: start from story/report')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
@@ -107,7 +107,7 @@ describe('PrivateDemoPage', () => {
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
 
-  test('unlocks reset pro sample preview only with the configured private code', async () => {
+  test('unlocks reset pro sample preview only with the configured presenter code', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
     persistPublicReportSession(buildPublicReportSession({
@@ -131,7 +131,8 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Private demo claim script')).toBeInTheDocument()
     expect(screen.getByText('Do not claim live activation, backend normalization, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(1)
-    expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
+    expect(screen.getByText('Presenter demo code configured')).toBeInTheDocument()
+    expect(screen.getAllByText(/client-side presenter control/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Locked insight intent verified')).toBeInTheDocument()
     expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
@@ -205,7 +206,7 @@ describe('PrivateDemoPage', () => {
     })
   })
 
-  test('requires presenter acknowledgement before unlocking with a valid private code', async () => {
+  test('requires presenter acknowledgement before unlocking with a valid presenter code', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
     recordLockedSectionIntent('free-report-123', 'edge-decay-map')
