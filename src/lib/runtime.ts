@@ -60,6 +60,10 @@ export interface ShibuyaSessionMeta {
   activationVisitedSceneCount?: number
   activationLockedSectionId?: string
   activationLockedSectionTitle?: string
+  activationBridgeHeadline?: string
+  activationBridgeDecisionQuestion?: string
+  activationBridgeWhyNow?: string
+  activationBridgeLiveProof?: string[]
 }
 
 export interface EnterSampleModeOptions {

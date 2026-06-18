@@ -86,6 +86,57 @@ export function DashboardOverviewPage() {
   const [campaignRefreshToken, setCampaignRefreshToken] = useState(0)
   const sessionMeta = getStoredSessionMeta()
   const premiumAccess = hasPremiumAccess()
+  const market = sessionMeta?.market ?? 'india'
+  const sampleActive = isSampleMode()
+  const resetProPreview = sampleActive && isResetProSamplePreview(sessionMeta)
+  const resetProDemoOrigin = resetProPreview && sessionMeta?.demoSource
+    ? {
+        source: sessionMeta.demoSource,
+        reportId: sessionMeta.demoReportId,
+        archetypeLabel: sessionMeta.demoArchetypeId
+          ? `${getTraderArchetype(sessionMeta.demoArchetypeId).name}: ${getTraderArchetype(sessionMeta.demoArchetypeId).title}`
+          : undefined,
+        axisLabel: sessionMeta.demoAxisId ? getFingerprintAxis(sessionMeta.demoAxisId).label : undefined,
+        reportSource: sessionMeta.demoReportSource,
+        evidenceLabel: sessionMeta.demoEvidenceLabel,
+        validationSummary: sessionMeta.demoValidationSummary,
+        storySource: sessionMeta.demoStorySource,
+        selectedPainAxisLabels: sessionMeta.demoSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
+        visitedSceneCount: sessionMeta.demoVisitedSceneCount,
+        lockedSectionId: sessionMeta.demoLockedSectionId,
+        lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
+        bridgeHeadline: sessionMeta.demoBridgeHeadline,
+        bridgeDecisionQuestion: sessionMeta.demoBridgeDecisionQuestion,
+        bridgeWhyNow: sessionMeta.demoBridgeWhyNow,
+        bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
+        bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
+      }
+    : undefined
+  const liveActivationOrigin = !sampleActive && sessionMeta?.activationSource
+    ? {
+        title: sessionMeta.activationSource === 'locked_insight'
+          ? 'Activated from locked private insight'
+          : sessionMeta.activationSource === 'locked_report'
+            ? 'Activated from locked report module'
+            : sessionMeta.activationSource === 'free_report'
+              ? 'Activated from public report'
+              : 'Activated from public journey',
+        reportId: sessionMeta.activationReportId,
+        archetypeLabel: sessionMeta.activationArchetypeId
+          ? `${getTraderArchetype(sessionMeta.activationArchetypeId).name}: ${getTraderArchetype(sessionMeta.activationArchetypeId).title}`
+          : undefined,
+        axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
+        storySource: sessionMeta.activationStorySource,
+        selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
+        visitedSceneCount: sessionMeta.activationVisitedSceneCount,
+        lockedSectionTitle: sessionMeta.activationLockedSectionTitle,
+        lockedSectionId: sessionMeta.activationLockedSectionId,
+        bridgeHeadline: sessionMeta.activationBridgeHeadline,
+        bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion,
+        bridgeWhyNow: sessionMeta.activationBridgeWhyNow,
+        bridgeLiveProof: sessionMeta.activationBridgeLiveProof,
+      }
+    : undefined
 
   useEffect(() => {
     async function fetchData() {
@@ -143,6 +194,75 @@ export function DashboardOverviewPage() {
   if (error) {
     return (
       <div className="dashboard-stack">
+        {liveActivationOrigin ? (
+          <section
+            className="glass-panel"
+            style={{
+              borderColor: 'rgba(99, 102, 241, 0.24)',
+              background: 'rgba(99, 102, 241, 0.06)',
+              marginBottom: '1.5rem',
+            }}
+          >
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE ACTIVATION ORIGIN</p>
+            <h3 style={{ marginBottom: '0.5rem' }}>{liveActivationOrigin.title}</h3>
+            <p className="text-muted" style={{ marginBottom: '1rem', maxWidth: '58rem' }}>
+              The backend is not loaded, so no account analytics are shown. This card only preserves the paid activation
+              route context for the first upload.
+            </p>
+            <div className="grid-responsive three">
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Requested private insight</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.lockedSectionTitle ?? liveActivationOrigin.lockedSectionId ?? 'Not provided'}
+                </p>
+              </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Origin report</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.reportId ?? 'Direct activation'}
+                </p>
+              </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Story handoff</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.storySource
+                    ? `${liveActivationOrigin.storySource}; scenes ${liveActivationOrigin.visitedSceneCount ?? 0}; axes ${liveActivationOrigin.selectedPainAxisLabels?.join(', ') || 'none captured'}`
+                    : 'No local story packet attached'}
+                </p>
+              </article>
+            </div>
+            {liveActivationOrigin.bridgeDecisionQuestion ? (
+              <article
+                className="glass-panel"
+                style={{
+                  background: 'rgba(16,185,129,0.07)',
+                  borderColor: 'rgba(16,185,129,0.2)',
+                  marginTop: '1rem',
+                }}
+              >
+                <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO LIVE QUESTION</p>
+                <h4 style={{ marginBottom: '0.5rem' }}>
+                  {liveActivationOrigin.bridgeHeadline ?? 'Reset Pro activation bridge received.'}
+                </h4>
+                <p style={{ marginBottom: '0.75rem', fontWeight: 700 }}>{liveActivationOrigin.bridgeDecisionQuestion}</p>
+                {liveActivationOrigin.bridgeWhyNow ? (
+                  <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{liveActivationOrigin.bridgeWhyNow}</p>
+                ) : null}
+                <p className="text-muted" style={{ marginBottom: liveActivationOrigin.bridgeLiveProof?.length ? '0.75rem' : 0 }}>
+                  Payment and activation preserved the question. The live workspace still needs first meaningful upload,
+                  generated artifacts, and append history before this becomes account-specific evidence.
+                </p>
+                {liveActivationOrigin.bridgeLiveProof?.length ? (
+                  <ul className="digest-preview" style={{ marginBottom: 0 }}>
+                    {liveActivationOrigin.bridgeLiveProof.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </article>
+            ) : null}
+          </section>
+        ) : null}
         <div className="error-panel glass-panel">
           <h3>Unable to load dashboard</h3>
           <p>{error}</p>
@@ -178,53 +298,6 @@ export function DashboardOverviewPage() {
     ? ((data.winning_trades / data.total_trades) * 100).toFixed(1)
     : null
   const tradingMandate = buildTradingMandate(data)
-  const market = sessionMeta?.market ?? 'india'
-  const sampleActive = isSampleMode()
-  const resetProPreview = sampleActive && isResetProSamplePreview(sessionMeta)
-  const resetProDemoOrigin = resetProPreview && sessionMeta?.demoSource
-    ? {
-        source: sessionMeta.demoSource,
-        reportId: sessionMeta.demoReportId,
-        archetypeLabel: sessionMeta.demoArchetypeId
-          ? `${getTraderArchetype(sessionMeta.demoArchetypeId).name}: ${getTraderArchetype(sessionMeta.demoArchetypeId).title}`
-          : undefined,
-        axisLabel: sessionMeta.demoAxisId ? getFingerprintAxis(sessionMeta.demoAxisId).label : undefined,
-        reportSource: sessionMeta.demoReportSource,
-        evidenceLabel: sessionMeta.demoEvidenceLabel,
-        validationSummary: sessionMeta.demoValidationSummary,
-        storySource: sessionMeta.demoStorySource,
-        selectedPainAxisLabels: sessionMeta.demoSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
-        visitedSceneCount: sessionMeta.demoVisitedSceneCount,
-        lockedSectionId: sessionMeta.demoLockedSectionId,
-        lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
-        bridgeHeadline: sessionMeta.demoBridgeHeadline,
-        bridgeDecisionQuestion: sessionMeta.demoBridgeDecisionQuestion,
-        bridgeWhyNow: sessionMeta.demoBridgeWhyNow,
-        bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
-        bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
-      }
-    : undefined
-  const liveActivationOrigin = !sampleActive && sessionMeta?.activationSource
-    ? {
-        title: sessionMeta.activationSource === 'locked_insight'
-          ? 'Activated from locked private insight'
-          : sessionMeta.activationSource === 'locked_report'
-            ? 'Activated from locked report module'
-            : sessionMeta.activationSource === 'free_report'
-              ? 'Activated from public report'
-              : 'Activated from public journey',
-        reportId: sessionMeta.activationReportId,
-        archetypeLabel: sessionMeta.activationArchetypeId
-          ? `${getTraderArchetype(sessionMeta.activationArchetypeId).name}: ${getTraderArchetype(sessionMeta.activationArchetypeId).title}`
-          : undefined,
-        axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
-        storySource: sessionMeta.activationStorySource,
-        selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
-        visitedSceneCount: sessionMeta.activationVisitedSceneCount,
-        lockedSectionTitle: sessionMeta.activationLockedSectionTitle,
-        lockedSectionId: sessionMeta.activationLockedSectionId,
-      }
-    : undefined
   const premiumVisible = premiumAccess || resetProPreview
   const accessTierLabel =
     sampleActive
@@ -477,6 +550,36 @@ export function DashboardOverviewPage() {
               </p>
             </article>
           </div>
+          {liveActivationOrigin.bridgeDecisionQuestion ? (
+            <article
+              className="glass-panel"
+              style={{
+                background: 'rgba(16,185,129,0.07)',
+                borderColor: 'rgba(16,185,129,0.2)',
+                marginTop: '1rem',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO LIVE QUESTION</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>
+                {liveActivationOrigin.bridgeHeadline ?? 'Reset Pro activation bridge received.'}
+              </h4>
+              <p style={{ marginBottom: '0.75rem', fontWeight: 700 }}>{liveActivationOrigin.bridgeDecisionQuestion}</p>
+              {liveActivationOrigin.bridgeWhyNow ? (
+                <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{liveActivationOrigin.bridgeWhyNow}</p>
+              ) : null}
+              <p className="text-muted" style={{ marginBottom: liveActivationOrigin.bridgeLiveProof?.length ? '0.75rem' : 0 }}>
+                Payment and activation preserved the question. The live workspace still needs first meaningful upload,
+                generated artifacts, and append history before this becomes account-specific evidence.
+              </p>
+              {liveActivationOrigin.bridgeLiveProof?.length ? (
+                <ul className="digest-preview" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.bridgeLiveProof.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </article>
+          ) : null}
         </section>
       ) : null}
       {data.market_context_status === 'estimated' ? (

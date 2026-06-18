@@ -74,6 +74,7 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
     expect(screen.getByText(/Report: sample-free-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -100,6 +101,8 @@ describe('ActivationPage', () => {
       activationVisitedSceneCount: 6,
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
+      activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
+      activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -109,6 +112,7 @@ describe('ActivationPage', () => {
           activationStorySource: 'guided',
           activationVisitedSceneCount: 6,
           activationLockedSectionId: 'highest-cost-state',
+          activationBridgeQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
         }),
       }),
     )
@@ -143,6 +147,7 @@ describe('ActivationPage', () => {
     )
 
     expect(screen.getByText(/Public packet: URL context only \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -162,6 +167,8 @@ describe('ActivationPage', () => {
       activationVisitedSceneCount: 6,
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
+      activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
+      activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
   })
 })

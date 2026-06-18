@@ -74,6 +74,10 @@ export function ActivationPage() {
           activationVisitedSceneCount,
           activationLockedSectionId: checkoutIntent?.lockedSectionId,
           activationLockedSectionTitle: activationLockedSection?.title,
+          activationBridgeHeadline: activationReport?.resetProBridge.headline,
+          activationBridgeDecisionQuestion: activationReport?.resetProBridge.decisionQuestion,
+          activationBridgeWhyNow: activationReport?.resetProBridge.whyNow,
+          activationBridgeLiveProof: activationReport?.resetProBridge.liveWorkspaceMustProve,
         })
 
         await logTraderLifecycleEvent({
@@ -88,6 +92,7 @@ export function ActivationPage() {
             activationStorySource,
             activationVisitedSceneCount,
             activationLockedSectionId: checkoutIntent?.lockedSectionId,
+            activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
           },
         }).catch(() => undefined)
 
@@ -169,6 +174,11 @@ export function ActivationPage() {
                   <p className="terminal-muted">
                     Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationStorySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
                   </p>
+                  {activationReport?.resetProBridge ? (
+                    <p className="terminal-muted">
+                      Reset Pro bridge: {activationReport.resetProBridge.decisionQuestion}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ) : null}
