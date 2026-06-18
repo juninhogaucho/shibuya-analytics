@@ -95,7 +95,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout success activation handoff',
     file: 'src/pages/checkout/CheckoutSuccessPage.tsx',
-    markers: ['Checkout success route integrity', 'Checkout record missing', 'cannot claim checkout completion without a stored order receipt or verified session id', 'Success route rule: order code, verified session, and activation handoff context are required', 'Carried into activation', 'Activation engagement receipt', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'URL context only', 'Activate Live Account'],
+    markers: ['Checkout success route integrity', 'Checkout record missing', 'cannot claim checkout completion without a stored order receipt or verified session id', 'Success route rule: order code, verified session, and activation handoff context are required', 'Carried into activation', 'Activation context not carried', 'URL-only checkout context is visible, but not trusted.', 'will not carry route text into activation', 'successContextReady', 'hasLockedSectionIntentProof', 'Activation engagement receipt', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'Activate Live Account'],
   },
   {
     label: 'checkout API public context payload',

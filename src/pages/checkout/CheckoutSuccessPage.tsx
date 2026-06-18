@@ -117,14 +117,23 @@ const CheckoutSuccessPage: React.FC = () => {
 
   const market = order?.market ?? urlMarket
   const plan = getPlanByPlanId(order?.planId)
-  const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
-  const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const rawCheckoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
+  const rawReportSession = getPublicReportSession(rawCheckoutIntent?.reportId)
   const activationEngagementSummary = order?.checkoutEngagementSummary ?? buildPublicReportEngagementSummary(
-    getPublicReportEngagement(checkoutIntent?.reportId),
-    checkoutIntent?.lockedSectionId,
+    getPublicReportEngagement(rawCheckoutIntent?.reportId),
+    rawCheckoutIntent?.lockedSectionId,
   )
   const shouldCarryDemoLauncherPacket =
-    isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
+    isDemoLauncherSampleReportSession(rawReportSession) || hasDemoLauncherSamplePacketRequest(location.search)
+  const hasLockedInsightSuccessIntent =
+    rawCheckoutIntent?.source === 'locked_insight' &&
+    Boolean(rawCheckoutIntent.reportId && rawCheckoutIntent.lockedSectionId)
+  const hasLockedSectionIntentProof = activationEngagementSummary.currentSectionClickCount > 0
+  const successContextReady =
+    hasLockedInsightSuccessIntent &&
+    (hasLockedSectionIntentProof || shouldCarryDemoLauncherPacket)
+  const checkoutIntent = successContextReady ? rawCheckoutIntent : null
+  const reportSession = checkoutIntent ? rawReportSession : null
   const selectedPainAxisIds = reportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
   const selectedPainAxisLabels = selectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
@@ -333,6 +342,30 @@ const CheckoutSuccessPage: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {rawCheckoutIntent && !checkoutIntent && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="mb-8 rounded-2xl border border-amber-300/25 bg-amber-300/[0.08] p-5 text-left"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100">Activation context not carried</p>
+          <h3 className="mt-2 font-semibold text-white">URL-only checkout context is visible, but not trusted.</h3>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-300">
+            Checkout success will not carry route text into activation unless this browser has a local locked-section intent receipt or the explicit controlled launcher packet.
+          </p>
+          <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
+            <p className="font-semibold text-amber-100">Success handoff boundary</p>
+            <p className="mt-1 text-neutral-400">
+              The order code can still be activated. The live workspace will start without inheriting this public question unless the activation route receives verified local context.
+            </p>
+            <p className="mt-2 text-neutral-500">
+              Blocked route context: report {rawCheckoutIntent.reportId ?? 'not provided'}; section {rawCheckoutIntent.lockedSectionId ?? 'not provided'}; source {rawCheckoutIntent.source}.
+            </p>
           </div>
         </motion.div>
       )}

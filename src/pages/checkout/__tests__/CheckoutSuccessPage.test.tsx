@@ -95,7 +95,7 @@ describe('CheckoutSuccessPage', () => {
     )
   })
 
-  test('shows URL-only boundary while preserving URL-carried story context', () => {
+  test('does not carry URL-only checkout context into activation', () => {
     window.localStorage.setItem(
       'shibuya_order',
       JSON.stringify({
@@ -127,14 +127,17 @@ describe('CheckoutSuccessPage', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByText('URL context only')).toBeInTheDocument()
-    expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
-    expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
-    expect(screen.getByText('Activation handoff contract')).toBeInTheDocument()
-    expect(screen.getByText('Activation must verify')).toBeInTheDocument()
+    expect(screen.getByText('Activation context not carried')).toBeInTheDocument()
+    expect(screen.getByText('URL-only checkout context is visible, but not trusted.')).toBeInTheDocument()
+    expect(screen.getByText(/will not carry route text into activation/i)).toBeInTheDocument()
+    expect(screen.getByText(/The order code can still be activated/i)).toBeInTheDocument()
+    expect(screen.getByText(/Blocked route context: report missing-report; section highest-cost-state; source locked_insight/i)).toBeInTheDocument()
+    expect(screen.queryByText('Carried into activation')).not.toBeInTheDocument()
+    expect(screen.queryByText('URL context only')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Story handoff: guided/i)).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected&market=global',
+      '/activate?market=global',
     )
   })
 
