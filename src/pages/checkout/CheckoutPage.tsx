@@ -20,6 +20,7 @@ import {
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
 } from '../../lib/publicReportSession'
+import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
 interface CheckoutForm {
@@ -45,6 +46,10 @@ const CheckoutPage: React.FC = () => {
     selectedPainAxisIds: reportSession?.selectedPainAxisIds,
     signalMarkerIds: reportSession?.signalMarkerIds,
   })
+  const checkoutEngagementSummary = buildPublicReportEngagementSummary(
+    getPublicReportEngagement(enrichedCheckoutIntent?.reportId),
+    enrichedCheckoutIntent?.lockedSectionId,
+  )
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
   const checkoutHandoffContractRows = [
@@ -153,6 +158,10 @@ const CheckoutPage: React.FC = () => {
                 : undefined,
             public_context_pain_axes: enrichedCheckoutIntent.selectedPainAxisIds?.join(',') || undefined,
             public_context_signal_markers: enrichedCheckoutIntent.signalMarkerIds?.join(',') || undefined,
+            public_context_report_views: String(checkoutEngagementSummary.reportViewCount),
+            public_context_locked_clicks: String(checkoutEngagementSummary.lockedSectionClickCount),
+            public_context_current_section_clicks: String(checkoutEngagementSummary.currentSectionClickCount),
+            public_context_private_gate_attempts: String(checkoutEngagementSummary.privateDemoIntentCount),
           }
         : {}
 
@@ -179,6 +188,7 @@ const CheckoutPage: React.FC = () => {
         orderId: session.order_id,
         sessionId: session.session_id,
         checkoutIntent: enrichedCheckoutIntent,
+        checkoutEngagementSummary,
         timestamp: new Date().toISOString(),
       }))
 
@@ -267,6 +277,13 @@ const CheckoutPage: React.FC = () => {
                   Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; axes {reportSession.selectedPainAxisIds.length}.
                 </p>
               ) : null}
+            </div>
+            <div className="mt-4 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] p-4 text-xs leading-6 text-neutral-300">
+              <p className="font-semibold uppercase tracking-[0.18em] text-sky-100">Checkout engagement receipt</p>
+              <p className="mt-2 text-neutral-400">
+                Views {checkoutEngagementSummary.reportViewCount}; locked clicks {checkoutEngagementSummary.lockedSectionClickCount}; this module {checkoutEngagementSummary.currentSectionClickCount}; private gate attempts {checkoutEngagementSummary.privateDemoIntentCount}.
+              </p>
+              <p className="mt-2 text-neutral-500">{checkoutEngagementSummary.boundary}</p>
             </div>
             <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100">Checkout handoff contract</p>

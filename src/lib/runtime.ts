@@ -76,6 +76,11 @@ export interface ShibuyaSessionMeta {
   activationBridgeDecisionQuestion?: string
   activationBridgeWhyNow?: string
   activationBridgeLiveProof?: string[]
+  activationEngagementReportViewCount?: number
+  activationEngagementLockedSectionClickCount?: number
+  activationEngagementCurrentSectionClickCount?: number
+  activationEngagementPrivateDemoIntentCount?: number
+  activationEngagementBoundary?: string
 }
 
 export interface EnterSampleModeOptions {

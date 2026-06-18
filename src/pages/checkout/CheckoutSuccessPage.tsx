@@ -12,6 +12,11 @@ import {
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
 } from '../../lib/publicReportSession'
+import {
+  buildPublicReportEngagementSummary,
+  getPublicReportEngagement,
+  type PublicReportEngagementSummary,
+} from '../../lib/publicReportEngagement'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 import { getFingerprintAxis } from '../../lib/storyExperience'
 
@@ -25,6 +30,7 @@ interface OrderInfo {
   orderId?: string
   sessionId?: string
   checkoutIntent?: CheckoutIntent | null
+  checkoutEngagementSummary?: PublicReportEngagementSummary
   timestamp: string
 }
 
@@ -85,6 +91,10 @@ const CheckoutSuccessPage: React.FC = () => {
             orderId: session.order_id,
             sessionId: session.session_id,
             checkoutIntent: urlCheckoutIntent,
+            checkoutEngagementSummary: buildPublicReportEngagementSummary(
+              getPublicReportEngagement(urlCheckoutIntent?.reportId),
+              urlCheckoutIntent?.lockedSectionId,
+            ),
             timestamp: new Date().toISOString(),
           }
           rememberRecentOrderAccess({
@@ -109,6 +119,10 @@ const CheckoutSuccessPage: React.FC = () => {
   const plan = getPlanByPlanId(order?.planId)
   const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const activationEngagementSummary = order?.checkoutEngagementSummary ?? buildPublicReportEngagementSummary(
+    getPublicReportEngagement(checkoutIntent?.reportId),
+    checkoutIntent?.lockedSectionId,
+  )
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
   const selectedPainAxisIds = reportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
@@ -265,6 +279,13 @@ const CheckoutSuccessPage: React.FC = () => {
             <p className="mt-2 text-neutral-500">
               Activation boundary: payment can carry this context forward, but the live workspace still needs a first meaningful upload before private claims are treated as account-specific evidence.
             </p>
+          </div>
+          <div className="mt-4 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] p-4 text-xs leading-6 text-neutral-300">
+            <p className="font-semibold uppercase tracking-[0.18em] text-sky-100">Activation engagement receipt</p>
+            <p className="mt-2 text-neutral-400">
+              Views {activationEngagementSummary.reportViewCount}; locked clicks {activationEngagementSummary.lockedSectionClickCount}; this module {activationEngagementSummary.currentSectionClickCount}; private gate attempts {activationEngagementSummary.privateDemoIntentCount}.
+            </p>
+            <p className="mt-2 text-neutral-500">{activationEngagementSummary.boundary}</p>
           </div>
           <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100">Activation handoff contract</p>

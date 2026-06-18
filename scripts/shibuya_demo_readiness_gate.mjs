@@ -65,7 +65,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'enrichedCheckoutIntent'],
+    markers: ['Checkout intent', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'enrichedCheckoutIntent'],
   },
   {
     label: 'pricing context ladder',
@@ -85,12 +85,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout success activation handoff',
     file: 'src/pages/checkout/CheckoutSuccessPage.tsx',
-    markers: ['Carried into activation', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'URL context only', 'Activate Live Account'],
+    markers: ['Carried into activation', 'Activation engagement receipt', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'URL context only', 'Activate Live Account'],
   },
   {
     label: 'checkout API public context payload',
     file: 'src/lib/api/checkout.ts',
-    markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes', 'public_context_signal_markers'],
+    markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes', 'public_context_signal_markers', 'public_context_report_views', 'public_context_private_gate_attempts'],
   },
   {
     label: 'live proof readiness contract',
@@ -105,12 +105,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
+    markers: ['CONTEXT DETECTED', 'ACTIVATION ENGAGEMENT RECEIPT', 'activationEngagementSummary', 'activationEngagementReportViewCount', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',
     file: 'src/pages/dashboard/OverviewPage.tsx',
-    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'No local story packet attached', 'LIVE FIRST UPLOAD CONTRACT', 'First upload must create', 'Append must prove', 'First screen after unlock is the Reset Pro command center'],
+    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'Activation engagement receipt', 'Engagement boundary:', 'No report engagement receipt attached', 'No local story packet attached', 'LIVE FIRST UPLOAD CONTRACT', 'First upload must create', 'Append must prove', 'First screen after unlock is the Reset Pro command center'],
   },
   {
     label: 'Reset Pro context strip',

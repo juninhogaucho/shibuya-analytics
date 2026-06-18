@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, test, vi } from 'vitest'
+import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildDemoLauncherSampleReportSession, buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import CheckoutSuccessPage from '../CheckoutSuccessPage'
 
@@ -21,6 +22,9 @@ describe('CheckoutSuccessPage', () => {
       visitedSceneCount: 5,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
+    recordPublicReportView('sample-free-report')
+    recordLockedSectionIntent('sample-free-report', 'highest-cost-state')
+    recordPrivateDemoIntent('sample-free-report')
     window.localStorage.setItem(
       'shibuya_order',
       JSON.stringify({
@@ -60,6 +64,9 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
+    expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText(/Views 1; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('Activation handoff contract')).toBeInTheDocument()
     expect(screen.getByText('Order code proves')).toBeInTheDocument()
     expect(screen.getByText('Activation must verify')).toBeInTheDocument()

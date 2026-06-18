@@ -184,6 +184,11 @@ describe('DashboardOverviewPage', () => {
           'First meaningful upload normalized by the live backend.',
           'Enough repeated setup history to mark stable, watchlist, or decayed behavior.',
         ],
+        activationEngagementReportViewCount: 2,
+        activationEngagementLockedSectionClickCount: 1,
+        activationEngagementCurrentSectionClickCount: 1,
+        activationEngagementPrivateDemoIntentCount: 1,
+        activationEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
       }),
     )
 
@@ -203,6 +208,9 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/guided; scenes 6; axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText('Public signal markers')).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
+    expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE FIRST UPLOAD CONTRACT')).toBeInTheDocument()
     expect(screen.getByText('Activation preserved the question. Upload must create the evidence.')).toBeInTheDocument()
     expect(screen.getByText('First upload must create')).toBeInTheDocument()
@@ -244,6 +252,11 @@ describe('DashboardOverviewPage', () => {
           'First meaningful upload normalized by the live backend.',
           'Enough repeated setup history to mark stable, watchlist, or decayed behavior.',
         ],
+        activationEngagementReportViewCount: 2,
+        activationEngagementLockedSectionClickCount: 1,
+        activationEngagementCurrentSectionClickCount: 1,
+        activationEngagementPrivateDemoIntentCount: 1,
+        activationEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
       }),
     )
 
@@ -257,6 +270,9 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
     expect(screen.getByText(/The backend is not loaded, so no account analytics are shown/i)).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
+    expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE FIRST UPLOAD CONTRACT')).toBeInTheDocument()
     expect(screen.getByText('Activation preserved')).toBeInTheDocument()
     expect(screen.getByText('First upload must create')).toBeInTheDocument()

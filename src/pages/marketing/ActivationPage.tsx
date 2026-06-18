@@ -11,6 +11,7 @@ import {
   hasDemoLauncherSamplePacketRequest,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
+import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
 import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 import {
@@ -47,6 +48,10 @@ export function ActivationPage() {
         signalMarkerIds: checkoutIntent.signalMarkerIds,
       })
   const activationReportSession = storedActivationReportSession ?? demoLauncherActivationSession
+  const activationEngagementSummary = buildPublicReportEngagementSummary(
+    getPublicReportEngagement(checkoutIntent?.reportId),
+    checkoutIntent?.lockedSectionId,
+  )
 
   useEffect(() => {
     if (demoLauncherActivationSession) {
@@ -145,6 +150,11 @@ export function ActivationPage() {
           activationBridgeDecisionQuestion: activationReport?.resetProBridge.decisionQuestion,
           activationBridgeWhyNow: activationReport?.resetProBridge.whyNow,
           activationBridgeLiveProof: activationReport?.resetProBridge.liveWorkspaceMustProve,
+          activationEngagementReportViewCount: activationEngagementSummary.reportViewCount,
+          activationEngagementLockedSectionClickCount: activationEngagementSummary.lockedSectionClickCount,
+          activationEngagementCurrentSectionClickCount: activationEngagementSummary.currentSectionClickCount,
+          activationEngagementPrivateDemoIntentCount: activationEngagementSummary.privateDemoIntentCount,
+          activationEngagementBoundary: activationEngagementSummary.boundary,
         })
 
         await logTraderLifecycleEvent({
@@ -161,6 +171,10 @@ export function ActivationPage() {
             activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
             activationLockedSectionId: checkoutIntent?.lockedSectionId,
             activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
+            activationEngagementReportViewCount: activationEngagementSummary.reportViewCount,
+            activationEngagementLockedSectionClickCount: activationEngagementSummary.lockedSectionClickCount,
+            activationEngagementCurrentSectionClickCount: activationEngagementSummary.currentSectionClickCount,
+            activationEngagementPrivateDemoIntentCount: activationEngagementSummary.privateDemoIntentCount,
           },
         }).catch(() => undefined)
 
@@ -255,6 +269,19 @@ export function ActivationPage() {
                       Reset Pro bridge: {activationReport.resetProBridge.decisionQuestion}
                     </p>
                   ) : null}
+                  <div
+                    className="terminal-status terminal-status-success"
+                    style={{ marginTop: '1rem', background: 'rgba(56, 189, 248, 0.08)', borderColor: 'rgba(125, 211, 252, 0.28)' }}
+                  >
+                    <span className="status-icon">REC</span>
+                    <div>
+                      <p>ACTIVATION ENGAGEMENT RECEIPT</p>
+                      <p className="terminal-muted">
+                        Views {activationEngagementSummary.reportViewCount}; locked clicks {activationEngagementSummary.lockedSectionClickCount}; this module {activationEngagementSummary.currentSectionClickCount}; private gate attempts {activationEngagementSummary.privateDemoIntentCount}.
+                      </p>
+                      <p className="terminal-muted">{activationEngagementSummary.boundary}</p>
+                    </div>
+                  </div>
                   <div
                     className="terminal-status terminal-status-success"
                     style={{ marginTop: '1rem', background: 'rgba(14, 165, 233, 0.08)', borderColor: 'rgba(125, 211, 252, 0.28)' }}

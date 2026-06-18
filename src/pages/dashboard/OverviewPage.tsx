@@ -148,6 +148,11 @@ export function DashboardOverviewPage() {
         bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion,
         bridgeWhyNow: sessionMeta.activationBridgeWhyNow,
         bridgeLiveProof: sessionMeta.activationBridgeLiveProof,
+        engagementReportViewCount: sessionMeta.activationEngagementReportViewCount,
+        engagementLockedSectionClickCount: sessionMeta.activationEngagementLockedSectionClickCount,
+        engagementCurrentSectionClickCount: sessionMeta.activationEngagementCurrentSectionClickCount,
+        engagementPrivateDemoIntentCount: sessionMeta.activationEngagementPrivateDemoIntentCount,
+        engagementBoundary: sessionMeta.activationEngagementBoundary,
       }
     : undefined
   const liveFirstUploadContractRows = liveActivationOrigin
@@ -269,7 +274,20 @@ export function DashboardOverviewPage() {
                     : 'No public markers attached'}
                 </p>
               </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Activation engagement receipt</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {typeof liveActivationOrigin.engagementReportViewCount === 'number'
+                    ? `${liveActivationOrigin.engagementReportViewCount} view(s), ${liveActivationOrigin.engagementLockedSectionClickCount ?? 0} locked click(s), ${liveActivationOrigin.engagementPrivateDemoIntentCount ?? 0} gate attempt(s)`
+                    : 'No report engagement receipt attached'}
+                </p>
+              </article>
             </div>
+            {liveActivationOrigin.engagementBoundary ? (
+              <p className="text-muted" style={{ marginTop: '1rem', marginBottom: 0 }}>
+                Engagement boundary: {liveActivationOrigin.engagementBoundary}
+              </p>
+            ) : null}
             <article
               className="glass-panel"
               style={{
@@ -615,7 +633,20 @@ export function DashboardOverviewPage() {
                   : 'No public markers attached'}
               </p>
             </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Activation engagement receipt</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {typeof liveActivationOrigin.engagementReportViewCount === 'number'
+                  ? `${liveActivationOrigin.engagementReportViewCount} view(s), ${liveActivationOrigin.engagementLockedSectionClickCount ?? 0} locked click(s), ${liveActivationOrigin.engagementPrivateDemoIntentCount ?? 0} gate attempt(s)`
+                  : 'No report engagement receipt attached'}
+              </p>
+            </article>
           </div>
+          {liveActivationOrigin.engagementBoundary ? (
+            <p className="text-muted" style={{ marginTop: '1rem', marginBottom: 0 }}>
+              Engagement boundary: {liveActivationOrigin.engagementBoundary}
+            </p>
+          ) : null}
           <article
             className="glass-panel"
             style={{

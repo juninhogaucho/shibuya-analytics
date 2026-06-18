@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildDemoLauncherSampleReportSession, buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import CheckoutPage from '../CheckoutPage'
 
@@ -50,6 +51,9 @@ describe('CheckoutPage', () => {
       visitedSceneCount: 5,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
+    recordPublicReportView('sample-free-report')
+    recordLockedSectionIntent('sample-free-report', 'highest-cost-state')
+    recordPrivateDemoIntent('sample-free-report')
 
     render(
       <MemoryRouter
@@ -74,6 +78,9 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText('Checkout engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText(/Views 1; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('Checkout handoff contract')).toBeInTheDocument()
     expect(screen.getByText('Payment can carry')).toBeInTheDocument()
     expect(screen.getByText('Payment cannot prove')).toBeInTheDocument()
@@ -107,6 +114,10 @@ describe('CheckoutPage', () => {
         public_context_story_scene_count: '5',
         public_context_pain_axes: 'edge_decay',
         public_context_signal_markers: 'mirror_selected,upload_intent',
+        public_context_report_views: '1',
+        public_context_locked_clicks: '1',
+        public_context_current_section_clicks: '1',
+        public_context_private_gate_attempts: '1',
       }),
     )
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
@@ -130,6 +141,12 @@ describe('CheckoutPage', () => {
         visitedSceneCount: 5,
         selectedPainAxisIds: ['edge_decay'],
         signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      },
+      checkoutEngagementSummary: {
+        reportViewCount: 1,
+        lockedSectionClickCount: 1,
+        currentSectionClickCount: 1,
+        privateDemoIntentCount: 1,
       },
     })
   })
@@ -173,6 +190,10 @@ describe('CheckoutPage', () => {
             public_context_story_scene_count: '6',
             public_context_pain_axes: 'edge_decay',
             public_context_signal_markers: undefined,
+            public_context_report_views: '0',
+            public_context_locked_clicks: '0',
+            public_context_current_section_clicks: '0',
+            public_context_private_gate_attempts: '0',
           }),
         )
       }))

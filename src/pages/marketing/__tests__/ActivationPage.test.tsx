@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { ActivationPage } from '../ActivationPage'
@@ -56,6 +57,9 @@ describe('ActivationPage', () => {
       visitedSceneCount: 6,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
+    recordPublicReportView('sample-free-report')
+    recordLockedSectionIntent('sample-free-report', 'highest-cost-state')
+    recordPrivateDemoIntent('sample-free-report')
 
     render(
       <MemoryRouter
@@ -77,6 +81,9 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
+    expect(screen.getByText('ACTIVATION ENGAGEMENT RECEIPT')).toBeInTheDocument()
+    expect(screen.getByText(/Views 1; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText('LIVE PROOF READINESS')).toBeInTheDocument()
     expect(screen.getByText('Before activation can become live proof.')).toBeInTheDocument()
@@ -122,6 +129,10 @@ describe('ActivationPage', () => {
       activationLockedSectionTitle: 'Highest-cost state',
       activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      activationEngagementReportViewCount: 1,
+      activationEngagementLockedSectionClickCount: 1,
+      activationEngagementCurrentSectionClickCount: 1,
+      activationEngagementPrivateDemoIntentCount: 1,
     })
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -133,6 +144,10 @@ describe('ActivationPage', () => {
           activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
           activationLockedSectionId: 'highest-cost-state',
           activationBridgeQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+          activationEngagementReportViewCount: 1,
+          activationEngagementLockedSectionClickCount: 1,
+          activationEngagementCurrentSectionClickCount: 1,
+          activationEngagementPrivateDemoIntentCount: 1,
         }),
       }),
     )
