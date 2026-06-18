@@ -20,6 +20,7 @@ import {
   type StoryArchetypeId,
 } from '../../lib/storyExperience'
 import { BehavioralFingerprint } from './BehavioralFingerprint'
+import { PublicJourneySpine } from './PublicJourneySpine'
 
 export default function StoryExperience() {
   const navigate = useNavigate()
@@ -174,6 +175,13 @@ export default function StoryExperience() {
               This is not your report. It is a website-level prediction based on interaction. Upload history or activate a live account before treating anything as account-specific analysis.
             </p>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <PublicJourneySpine
+            activeStage="story"
+            detail="The first public job is recognition. The page can route a hypothesis forward, but upload/report/private claims stay behind evidence."
+          />
         </div>
 
         <div className="mb-6 grid gap-3 md:grid-cols-4">

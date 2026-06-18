@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { appendCheckoutIntentToPath, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import { readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
@@ -131,6 +132,13 @@ export default function PrivateDemoPage() {
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
+          <div className="mb-6">
+            <PublicJourneySpine
+              activeStage="demo"
+              detail="This is the controlled sample workspace handoff. It demonstrates structure only; live proof still requires activation, upload, backend artifacts, and append history."
+            />
+          </div>
+
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">

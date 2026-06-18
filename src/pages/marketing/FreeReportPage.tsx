@@ -1,6 +1,7 @@
 import { ArrowRight, Lock, ShieldCheck, UnlockKeyhole } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
+import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { getPublicReportSession } from '../../lib/publicReportSession'
@@ -122,6 +123,13 @@ export default function FreeReportPage() {
             <h2 className="mt-2 text-2xl font-semibold text-white">{report.dominantAxis.label}</h2>
             <p className="mt-3 text-sm leading-7 text-neutral-400">{report.dominantAxis.description}</p>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <PublicJourneySpine
+            activeStage="report"
+            detail="The report gives a useful baseline and names the private question. It still does not cross into account-specific truth without live evidence."
+          />
         </div>
 
         <section className="mb-8 min-w-0 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">

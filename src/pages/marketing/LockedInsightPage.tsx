@@ -1,5 +1,6 @@
 import { ArrowRight, Lock, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
+import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { getPublicReportSession } from '../../lib/publicReportSession'
@@ -102,6 +103,11 @@ export default function LockedInsightPage() {
         </div>
 
         <div className="space-y-6">
+          <PublicJourneySpine
+            activeStage="insight"
+            detail="The private insight page explains the locked module and proof contract before checkout or founder-gated demo access."
+          />
+
           <article className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>

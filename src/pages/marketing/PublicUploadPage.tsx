@@ -1,6 +1,7 @@
 import { type FormEvent, useMemo, useState } from 'react'
 import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
@@ -124,6 +125,11 @@ export default function PublicUploadPage() {
         </div>
 
         <div className="space-y-6">
+          <PublicJourneySpine
+            activeStage="upload"
+            detail="This step turns the public hypothesis into a report packet. In preview mode, it stores only local handoff metadata and never raw trade rows."
+          />
+
           <form onSubmit={handleSubmit} className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
