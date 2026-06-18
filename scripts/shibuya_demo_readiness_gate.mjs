@@ -75,7 +75,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'pricing context ladder',
     file: 'src/pages/marketing/PricingPage.tsx',
-    markers: ['readCheckoutIntent', 'appendCheckoutIntentToPath', 'Generate Free Report First', 'Continue Private Demo Gate'],
+    markers: ['readCheckoutIntent', 'appendCheckoutIntentToPath', 'Pricing route integrity', 'Start paid intent from the report, not a cold checkout.', 'Checkout unlocks only after locked insight context.', 'Generate Free Report First', 'Continue Private Demo Gate', 'hasLockedInsightIntent'],
   },
   {
     label: 'checkout intent URL handoff',

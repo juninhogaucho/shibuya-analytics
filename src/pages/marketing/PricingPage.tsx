@@ -44,9 +44,11 @@ function getPlanFit(plan: PricingPlan): { bestFor: string; outcome: string } {
 function PlanCard({
   plan,
   ctaHref,
+  ctaLabel,
 }: {
   plan: PricingPlan
   ctaHref: string
+  ctaLabel?: string
 }) {
   const cadenceLabel = plan.type === 'subscription' ? 'per month' : 'one time'
   const fit = getPlanFit(plan)
@@ -123,7 +125,7 @@ function PlanCard({
             : 'border border-white/10 text-white hover:border-transparent hover:bg-white hover:text-black'
         }`}
       >
-        {plan.ctaLabel}
+        {ctaLabel ?? plan.ctaLabel}
       </Link>
     </article>
   )
@@ -133,12 +135,15 @@ export default function PricingPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const checkoutIntent = readCheckoutIntent(location.search)
-  const privateDemoHref = checkoutIntent?.source === 'locked_insight'
+  const hasLockedInsightIntent = checkoutIntent?.source === 'locked_insight'
+  const reportFirstHref = addMarketToPath('/upload', market)
+  const privateDemoHref = hasLockedInsightIntent
     ? addMarketToPath(appendCheckoutIntentToPath('/private-demo', checkoutIntent), market)
-    : addMarketToPath('/upload', market)
-  const privateDemoLabel = checkoutIntent?.source === 'locked_insight'
+    : reportFirstHref
+  const privateDemoLabel = hasLockedInsightIntent
     ? 'Continue Private Demo Gate'
     : 'Generate Free Report First'
+  const planCtaLabel = hasLockedInsightIntent ? undefined : 'Generate Free Report First'
   const monthlyPlans = getPlansForType(market, 'subscription')
 
   useEffect(() => {
@@ -183,6 +188,21 @@ export default function PricingPage() {
               ? 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'
               : 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'}
           </p>
+          <div className="mt-8 rounded-3xl border border-sky-300/20 bg-sky-300/[0.06] p-5 text-left">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
+              Pricing route integrity
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              {hasLockedInsightIntent
+                ? 'Checkout unlocks only after locked insight context.'
+                : 'Start paid intent from the report, not a cold checkout.'}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-sky-50/75">
+              {hasLockedInsightIntent
+                ? 'This page carries report, archetype, dominant axis, story handoff, and locked module into checkout or the founder demo gate.'
+                : 'Generic pricing can explain the ladder, but it should route traders back to upload/report first so paid access starts from an explicit question.'}
+            </p>
+          </div>
         </div>
 
         <section className="mb-20">
@@ -203,7 +223,10 @@ export default function PricingPage() {
               <PlanCard
                 key={plan.id}
                 plan={plan}
-                ctaHref={addMarketToPath(appendCheckoutIntentToPath(`/checkout/${plan.checkoutSlug}`, checkoutIntent), market)}
+                ctaHref={hasLockedInsightIntent
+                  ? addMarketToPath(appendCheckoutIntentToPath(`/checkout/${plan.checkoutSlug}`, checkoutIntent), market)
+                  : reportFirstHref}
+                ctaLabel={planCtaLabel}
               />
             ))}
           </div>

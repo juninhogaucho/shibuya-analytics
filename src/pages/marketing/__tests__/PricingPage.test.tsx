@@ -21,9 +21,18 @@ describe('PricingPage', () => {
     )
 
     expect(screen.queryByRole('link', { name: /Private Demo Access/i })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Generate Free Report First/i })).toHaveAttribute('href', '/upload?market=global')
-    expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute('href', '/checkout/reset-pro-live?market=global')
-    expect(screen.getByRole('link', { name: /^Start Psych Audit$/i })).toHaveAttribute('href', '/checkout/psych-audit-live?market=global')
+    expect(screen.getByText('Pricing route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Start paid intent from the report, not a cold checkout.')).toBeInTheDocument()
+    expect(screen.getByText(/Generic pricing can explain the ladder/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Start Reset Pro$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Start Psych Audit$/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Activate Live Trader Account/i })).toHaveAttribute('href', '/activate?market=global')
+
+    for (const link of screen.getAllByRole('link', { name: /Generate Free Report First/i })) {
+      expect(link).toHaveAttribute('href', '/upload?market=global')
+    }
+    expect(document.querySelector('a[href="/checkout/reset-pro-live?market=global"]')).toBeNull()
+    expect(document.querySelector('a[href="/checkout/psych-audit-live?market=global"]')).toBeNull()
   })
 
   test('locked insight pricing preserves context into checkout and private demo', () => {
@@ -35,6 +44,9 @@ describe('PricingPage', () => {
 
     const expectedQuery = 'source=locked_insight&report=sample-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global'
 
+    expect(screen.getByText('Pricing route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Checkout unlocks only after locked insight context.')).toBeInTheDocument()
+    expect(screen.getByText(/carries report, archetype, dominant axis/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute(
       'href',
       `/checkout/reset-pro-live?${expectedQuery}`,
