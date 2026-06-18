@@ -60,6 +60,15 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Pain axis tapped')).toBeInTheDocument()
     expect(screen.getByText('Evidence intent')).toBeInTheDocument()
     expect(screen.getByText(/These are public website markers only/i)).toBeInTheDocument()
+    expect(screen.getByText('Prediction survival test')).toBeInTheDocument()
+    expect(screen.getByText('What is allowed to survive from story to report.')).toBeInTheDocument()
+    expect(screen.getByText('Public prediction')).toBeInTheDocument()
+    expect(screen.getByText('Priya: Prop evaluation survivor / Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText(/Carried from the guided StoryExperience after 1 scene/i)).toBeInTheDocument()
+    expect(screen.getByText('What survives upload')).toBeInTheDocument()
+    expect(screen.getByText('Still locked')).toBeInTheDocument()
+    expect(screen.getByText('Account-specific conclusion')).toBeInTheDocument()
+    expect(screen.getByText(/Survival rule: if a claim requires account-specific proof/i)).toBeInTheDocument()
     expect(screen.getByText('Report packet contract')).toBeInTheDocument()
     expect(screen.getByText('What this upload step is allowed to prove.')).toBeInTheDocument()
     expect(screen.getByText(/Creates a local report handoff with source, market, archetype/i)).toBeInTheDocument()
@@ -164,6 +173,10 @@ describe('public Shibuya journey pages', () => {
     )
 
     expect(screen.getByRole('heading', { name: /Upload your trade history/i })).toBeInTheDocument()
+    expect(screen.getByText('Prediction survival test')).toBeInTheDocument()
+    expect(screen.getByText('Priya: Prop evaluation survivor / Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText('Selected on this upload page without a guided story packet.')).toBeInTheDocument()
+    expect(screen.getByText(/Only secret-free metadata survives in this public preview/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 

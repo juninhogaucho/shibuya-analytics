@@ -59,6 +59,25 @@ export default function PublicUploadPage() {
     'Stores no raw trade rows in this public preview surface.',
     'Requires live backend normalization before any account-specific private claim.',
   ]
+  const predictionSurvivalRows = [
+    {
+      label: 'Public prediction',
+      value: `${archetype.name}: ${archetype.title} / ${axis.label}`,
+      body: hasStoryHandoff
+        ? `Carried from ${storySource === 'guided' ? 'the guided StoryExperience' : 'direct upload context'} after ${Number.isFinite(visitedSceneCount) ? visitedSceneCount : 0} scene${visitedSceneCount === 1 ? '' : 's'}.`
+        : 'Selected on this upload page without a guided story packet.',
+    },
+    {
+      label: 'What survives upload',
+      value: selectedPainAxes.length ? selectedPainAxes.map((candidate) => candidate.label).join(', ') : axis.label,
+      body: 'Only secret-free metadata survives in this public preview: source, market, archetype, axis, story route, scene count, and public signal markers.',
+    },
+    {
+      label: 'Still locked',
+      value: 'Account-specific conclusion',
+      body: 'The report can name the private question, but live activation, normalized trade history, generated artifacts, and append history must prove the answer.',
+    },
+  ]
 
   const buildReportSearch = (source: 'upload' | 'sample') => {
     const reportSearchParams = appendDemoLauncherSamplePacketParam(
@@ -227,6 +246,28 @@ export default function PublicUploadPage() {
                 </p>
               </div>
             ) : null}
+
+            <div className="mb-6 rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.055] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">Prediction survival test</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">What is allowed to survive from story to report.</h3>
+              <p className="mt-3 text-sm leading-6 text-cyan-50/75">
+                The upload step should not pretend the public story was analysis. It carries a hypothesis into a local report packet,
+                then forces the private answer to wait for real account evidence.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {predictionSurvivalRows.map((row) => (
+                  <article key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100">{row.label}</span>
+                    <strong className="mt-2 block text-sm text-white">{row.value}</strong>
+                    <span className="mt-2 block text-xs leading-5 text-cyan-50/65">{row.body}</span>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-cyan-50/60">
+                Survival rule: if a claim requires account-specific proof, it belongs behind activation, upload normalization,
+                generated artifacts, and append history.
+              </p>
+            </div>
 
             <div className="mb-6 rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Report packet contract</p>
