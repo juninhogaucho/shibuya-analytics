@@ -38,6 +38,33 @@ describe('CheckoutPage', () => {
     })
   })
 
+  test('blocks cold checkout without locked insight route context', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/checkout/reset-pro-live?market=global']}>
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Checkout route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Cold checkout is blocked before payment.')).toBeInTheDocument()
+    expect(screen.getByText(/should not start from a naked plan URL/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Generate Free Report First/i })).toHaveAttribute('href', '/upload?market=global')
+    expect(screen.getByRole('link', { name: /Return To Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
+    expect(screen.getByRole('link', { name: /Back to Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
+    expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    expect(checkoutMocks.createCheckoutSession).not.toHaveBeenCalled()
+    expect(checkoutMocks.redirectBrowser).not.toHaveBeenCalled()
+  })
+
   test('preserves locked insight context in checkout URLs and stored order state', async () => {
     const user = userEvent.setup()
     persistPublicReportSession(buildPublicReportSession({
@@ -68,6 +95,13 @@ describe('CheckoutPage', () => {
     )
 
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
+    expect(screen.getByText('Checkout route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Checkout can carry the locked private question.')).toBeInTheDocument()
+    expect(screen.getByText(/includes report, locked module, archetype, axis/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Back to Pricing/i })).toHaveAttribute(
+      'href',
+      '/pricing?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
     expect(screen.getByText('Locked private insight')).toBeInTheDocument()
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Archetype: marco')).toBeInTheDocument()

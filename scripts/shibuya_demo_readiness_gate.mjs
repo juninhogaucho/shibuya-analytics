@@ -70,7 +70,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'enrichedCheckoutIntent'],
+    markers: ['Checkout intent', 'Checkout route integrity', 'Cold checkout is blocked before payment.', 'Checkout can carry the locked private question.', 'Start checkout from a locked private insight', 'Generate Free Report First', 'Return To Pricing', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'enrichedCheckoutIntent', 'checkoutRouteReady'],
   },
   {
     label: 'pricing context ladder',

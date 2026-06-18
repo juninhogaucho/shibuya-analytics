@@ -50,6 +50,11 @@ const CheckoutPage: React.FC = () => {
     getPublicReportEngagement(enrichedCheckoutIntent?.reportId),
     enrichedCheckoutIntent?.lockedSectionId,
   )
+  const checkoutRouteReady =
+    enrichedCheckoutIntent?.source === 'locked_insight' &&
+    Boolean(enrichedCheckoutIntent.reportId && enrichedCheckoutIntent.lockedSectionId)
+  const pricingBackPath = addMarketToPath(appendCheckoutIntentToPath('/pricing', enrichedCheckoutIntent), market)
+  const reportFirstPath = addMarketToPath('/upload', market)
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
   const checkoutHandoffContractRows = [
@@ -131,6 +136,12 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+
+    if (!checkoutRouteReady) {
+      setCheckoutError('Start checkout from a locked private insight so payment carries a report, section, archetype, axis, and proof boundary.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -214,7 +225,7 @@ const CheckoutPage: React.FC = () => {
       <div className="mx-auto max-w-2xl px-6 py-24 md:py-32">
         <div className="mb-8">
           <Link
-            to={addMarketToPath('/pricing', market)}
+            to={pricingBackPath}
             className="mb-6 inline-flex items-center gap-2 text-neutral-400 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -225,6 +236,46 @@ const CheckoutPage: React.FC = () => {
             Checkout unlocks the live workspace where you upload history, separate edge from sabotage, and get a next-session mandate.
           </p>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mb-8 rounded-2xl border p-5 text-left ${
+            checkoutRouteReady
+              ? 'border-sky-300/20 bg-sky-300/[0.06]'
+              : 'border-rose-300/25 bg-rose-300/[0.08]'
+          }`}
+        >
+          <p className={`text-xs font-bold uppercase tracking-[0.18em] ${checkoutRouteReady ? 'text-sky-100' : 'text-rose-200'}`}>
+            Checkout route integrity
+          </p>
+          <h2 className="mt-2 text-lg font-semibold text-white">
+            {checkoutRouteReady
+              ? 'Checkout can carry the locked private question.'
+              : 'Cold checkout is blocked before payment.'}
+          </h2>
+          <p className={`mt-2 text-sm leading-6 ${checkoutRouteReady ? 'text-sky-50/75' : 'text-rose-50/75'}`}>
+            {checkoutRouteReady
+              ? 'This payment path includes report, locked module, archetype, axis, and public-story handoff context.'
+              : 'The live workspace should not start from a naked plan URL. Generate a report and open a locked private insight before checkout so activation receives a real question.'}
+          </p>
+          {!checkoutRouteReady ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Link
+                to={reportFirstPath}
+                className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+              >
+                Generate Free Report First
+              </Link>
+              <Link
+                to={addMarketToPath('/pricing', market)}
+                className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+              >
+                Return To Pricing
+              </Link>
+            </div>
+          ) : null}
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -477,9 +528,10 @@ const CheckoutPage: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            disabled={loading}
             type="submit"
             className="flex w-full items-center justify-center gap-3 rounded-xl bg-indigo-600 py-4 font-semibold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-neutral-700"
+            aria-disabled={!checkoutRouteReady || loading}
+            disabled={!checkoutRouteReady || loading}
           >
             {loading ? (
               <>
