@@ -37,6 +37,8 @@ describe('StoryExperience', () => {
     expect(screen.getByText(/No public accuracy percentage/i)).toBeInTheDocument()
     expect(screen.getByText('IFX presenter brief')).toBeInTheDocument()
     expect(screen.getByText(/Do not pitch signals\. Pitch state, proof, and the next-session operating loop/i)).toBeInTheDocument()
+    expect(screen.getByText(/Every provider sells dashboards\. Shibuya sells self-knowledge/i)).toBeInTheDocument()
+    expect(screen.getByText(/Upload proves or rejects the mirror/i)).toBeInTheDocument()
     expect(screen.getByText('Public StoryExperience demo script')).toBeInTheDocument()
     expect(screen.getByText('Guided demo conductor')).toBeInTheDocument()
     expect(screen.getByText('Run this as a 3-minute story, not a scrolling website.')).toBeInTheDocument()
@@ -73,8 +75,8 @@ describe('StoryExperience', () => {
     expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
     expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
     expect(screen.getByText('Private Reset Pro demo opens only behind the founder gate.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Start Guided Demo Path/i })).toBeInTheDocument()
-    expect(screen.getByText(/For a fast handoff, the guided path uses Marco \/ Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Run 3-Min Story/i })).toBeInTheDocument()
+    expect(screen.getByText(/For a fast handoff, run the public story first/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Priya/i }))
     await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))
@@ -149,7 +151,7 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
   })
 
-  test('exposes the deterministic guided demo path in the hero', async () => {
+  test('primes the deterministic IFX story path in the hero before upload', async () => {
     const user = userEvent.setup()
 
     render(
@@ -159,14 +161,13 @@ describe('StoryExperience', () => {
       </MemoryRouter>,
     )
 
-    await user.click(screen.getByRole('button', { name: /Start Guided Demo Path/i }))
+    await user.click(screen.getByRole('button', { name: /Run 3-Min Story/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/upload')
-    expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
-    expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
-    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
-    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=6')
-    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
-    expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
+    expect(screen.getByTestId('location')).toHaveTextContent('/story')
+    expect(screen.getAllByText('Pick the uncomfortable mirror').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Select Marco and edge decay for the expo path/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Marco/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Edge Decay/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/Pain selected:/i).parentElement).toHaveTextContent('Edge Decay')
   })
 })

@@ -271,6 +271,24 @@ export default function StoryExperience() {
     navigate(addMarketToPath('/pricing', market))
   }
 
+  const primeIfxStory = () => {
+    const demoSignal = togglePainAxis(
+      selectArchetype(
+        IFX_DEMO_STORY_SCENE_IDS.reduce(
+          (current, sceneId) => recordSceneView(current, sceneId),
+          createInitialStorySignal(),
+        ),
+        IFX_DEMO_ARCHETYPE_ID,
+      ),
+      IFX_DEMO_AXIS_ID,
+    )
+    const conductorIndex = 1
+
+    setActiveConductorIndex(conductorIndex)
+    setActiveSceneIndex(GUIDED_CONDUCTOR_STEPS[conductorIndex].sceneIndex)
+    setSignal(demoSignal)
+  }
+
   const inspectUploadFlow = () => {
     const nextSignal = recordUploadIntent(signal)
     const archetypeId = nextSignal.archetypeId ?? 'john'
@@ -329,14 +347,26 @@ export default function StoryExperience() {
                 In three minutes: show the trader mirror, reveal the provisional fingerprint, then make upload the
                 evidence step. Do not pitch signals. Pitch state, proof, and the next-session operating loop.
               </p>
+              <div className="mt-4 grid gap-2 text-xs leading-5 text-indigo-50/75 sm:grid-cols-3">
+                {[
+                  ['Open', 'Every provider sells dashboards. Shibuya sells self-knowledge that survives evidence.'],
+                  ['Show', 'Marco / Edge Decay, pressure index, and the claim boundary before upload.'],
+                  ['Close', 'Upload proves or rejects the mirror; Reset Pro is the private operating loop.'],
+                ].map(([label, body]) => (
+                  <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-100">{label}</span>
+                    <span className="mt-1 block">{body}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
-                onClick={openGuidedDemoPath}
+                onClick={primeIfxStory}
                 className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
               >
-                Start Guided Demo Path
+                Run 3-Min Story
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
@@ -357,8 +387,8 @@ export default function StoryExperience() {
               </button>
             </div>
             <p className="mt-3 max-w-full break-words text-xs leading-5 text-neutral-500 lg:max-w-xl">
-              For a fast handoff, the guided path uses Marco / Edge Decay and carries that public context into upload,
-              free report, locked insight, and the private demo gate.
+              For a fast handoff, run the public story first. The proof path then carries Marco / Edge Decay into upload,
+              free report, locked insight, and the private demo gate without pretending the website analyzed an account.
             </p>
           </div>
           <div className="min-w-0 space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
