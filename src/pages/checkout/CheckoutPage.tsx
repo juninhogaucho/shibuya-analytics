@@ -43,6 +43,7 @@ const CheckoutPage: React.FC = () => {
     storySource: reportSession?.storySource,
     visitedSceneCount: reportSession?.visitedSceneCount,
     selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+    signalMarkerIds: reportSession?.signalMarkerIds,
   })
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
@@ -137,6 +138,7 @@ const CheckoutPage: React.FC = () => {
                 ? String(enrichedCheckoutIntent.visitedSceneCount)
                 : undefined,
             public_context_pain_axes: enrichedCheckoutIntent.selectedPainAxisIds?.join(',') || undefined,
+            public_context_signal_markers: enrichedCheckoutIntent.signalMarkerIds?.join(',') || undefined,
           }
         : {}
 
@@ -237,6 +239,7 @@ const CheckoutPage: React.FC = () => {
               {enrichedCheckoutIntent.storySource && <span>Story: {enrichedCheckoutIntent.storySource}</span>}
               {typeof enrichedCheckoutIntent.visitedSceneCount === 'number' && <span>Scenes: {enrichedCheckoutIntent.visitedSceneCount}</span>}
               {enrichedCheckoutIntent.selectedPainAxisIds?.length ? <span>Pain axes: {enrichedCheckoutIntent.selectedPainAxisIds.join(', ')}</span> : null}
+              {enrichedCheckoutIntent.signalMarkerIds?.length ? <span>Signals: {enrichedCheckoutIntent.signalMarkerIds.join(', ')}</span> : null}
             </div>
             <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
               <p className="font-semibold text-amber-100">

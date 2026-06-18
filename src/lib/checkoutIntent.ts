@@ -9,6 +9,7 @@ export interface CheckoutIntent {
   storySource?: 'guided' | 'direct'
   visitedSceneCount?: number
   selectedPainAxisIds?: string[]
+  signalMarkerIds?: string[]
 }
 
 const SOURCE_VALUES = new Set<CheckoutIntentSource>([
@@ -54,6 +55,16 @@ function readSelectedPainAxisIds(params: URLSearchParams): string[] | undefined 
   return uniqueAxisIds.length ? uniqueAxisIds : undefined
 }
 
+function readSignalMarkerIds(params: URLSearchParams): string[] | undefined {
+  const markerIds = (params.get('signals') ?? '')
+    .split(',')
+    .map((value) => cleanToken(value, 64))
+    .filter((value): value is string => Boolean(value))
+  const uniqueMarkerIds = [...new Set(markerIds)]
+
+  return uniqueMarkerIds.length ? uniqueMarkerIds : undefined
+}
+
 export function readCheckoutIntent(search: string): CheckoutIntent | null {
   const params = new URLSearchParams(search)
   const source = readSource(params)
@@ -71,6 +82,7 @@ export function readCheckoutIntent(search: string): CheckoutIntent | null {
     storySource: readStorySource(params),
     visitedSceneCount: readVisitedSceneCount(params),
     selectedPainAxisIds: readSelectedPainAxisIds(params),
+    signalMarkerIds: readSignalMarkerIds(params),
   }
 
   return intent
@@ -82,6 +94,7 @@ export function enrichCheckoutIntent(
     storySource?: 'guided' | 'direct'
     visitedSceneCount?: number
     selectedPainAxisIds?: string[]
+    signalMarkerIds?: string[]
   } | null,
 ): CheckoutIntent | null {
   if (!intent) {
@@ -93,6 +106,7 @@ export function enrichCheckoutIntent(
     storySource: intent.storySource ?? context?.storySource,
     visitedSceneCount: intent.visitedSceneCount ?? context?.visitedSceneCount,
     selectedPainAxisIds: intent.selectedPainAxisIds?.length ? intent.selectedPainAxisIds : context?.selectedPainAxisIds,
+    signalMarkerIds: intent.signalMarkerIds?.length ? intent.signalMarkerIds : context?.signalMarkerIds,
   }
 }
 
@@ -124,6 +138,9 @@ export function appendCheckoutIntentToPath(path: string, intent: CheckoutIntent 
   }
   if (intent.selectedPainAxisIds?.length) {
     params.set('pain_axes', intent.selectedPainAxisIds.join(','))
+  }
+  if (intent.signalMarkerIds?.length) {
+    params.set('signals', intent.signalMarkerIds.join(','))
   }
 
   return `${path}${path.includes('?') ? '&' : '?'}${params.toString()}`

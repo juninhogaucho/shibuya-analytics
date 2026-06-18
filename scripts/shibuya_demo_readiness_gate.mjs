@@ -70,7 +70,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout intent URL handoff',
     file: 'src/lib/checkoutIntent.ts',
-    markers: ['storySource', 'scene_count', 'pain_axes', 'enrichCheckoutIntent'],
+    markers: ['storySource', 'scene_count', 'pain_axes', 'signals', 'enrichCheckoutIntent'],
   },
   {
     label: 'checkout success activation handoff',
@@ -80,17 +80,17 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout API public context payload',
     file: 'src/lib/api/checkout.ts',
-    markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes'],
+    markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes', 'public_context_signal_markers'],
   },
   {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Private conclusion still locked'],
+    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',
     file: 'src/pages/dashboard/OverviewPage.tsx',
-    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'No local story packet attached'],
+    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'No local story packet attached'],
   },
   {
     label: 'Reset Pro command center',

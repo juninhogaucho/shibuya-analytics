@@ -234,6 +234,7 @@ const CheckoutSuccessPage: React.FC = () => {
             {checkoutIntent.reportId && <span>Report: {checkoutIntent.reportId}</span>}
             {checkoutIntent.archetypeId && <span>Archetype: {checkoutIntent.archetypeId}</span>}
             {checkoutIntent.axisId && <span>Axis: {checkoutIntent.axisId}</span>}
+            {checkoutIntent.signalMarkerIds?.length ? <span>Signals: {checkoutIntent.signalMarkerIds.join(', ')}</span> : null}
           </div>
           <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
             <p className="font-semibold text-amber-100">

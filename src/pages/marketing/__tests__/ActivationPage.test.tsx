@@ -54,6 +54,7 @@ describe('ActivationPage', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
 
     render(
@@ -74,6 +75,7 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
     expect(screen.getByText(/Report: sample-free-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText(/what payment can carry from what only the first live upload can prove/i)).toBeInTheDocument()
@@ -107,6 +109,7 @@ describe('ActivationPage', () => {
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
       activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
@@ -119,6 +122,7 @@ describe('ActivationPage', () => {
           activationReportId: 'sample-free-report',
           activationStorySource: 'guided',
           activationVisitedSceneCount: 6,
+          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
           activationLockedSectionId: 'highest-cost-state',
           activationBridgeQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
         }),
@@ -143,7 +147,7 @@ describe('ActivationPage', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+          '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent&market=global',
         ]}
       >
         <Routes>
@@ -155,6 +159,7 @@ describe('ActivationPage', () => {
     )
 
     expect(screen.getByText(/Public packet: URL context only \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
@@ -175,6 +180,7 @@ describe('ActivationPage', () => {
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
       activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
@@ -186,7 +192,7 @@ describe('ActivationPage', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          '/activate?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+          '/activate?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent&market=global',
         ]}
       >
         <Routes>
@@ -196,6 +202,7 @@ describe('ActivationPage', () => {
     )
 
     expect(screen.getByText(/Public packet: Demo launcher sample packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
 

@@ -48,6 +48,7 @@ describe('CheckoutPage', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 5,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
 
     render(
@@ -70,6 +71,7 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Story: guided')).toBeInTheDocument()
     expect(screen.getByText('Scenes: 5')).toBeInTheDocument()
     expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
 
@@ -87,9 +89,9 @@ describe('CheckoutPage', () => {
         email: 'founder@shibuya.test',
         name: 'Luis Shibuya',
         success_url:
-          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
+          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
         cancel_url:
-          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
+          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
         public_context_source: 'locked_insight',
         public_context_report_id: 'sample-free-report',
         public_context_section_id: 'highest-cost-state',
@@ -99,6 +101,7 @@ describe('CheckoutPage', () => {
         public_context_story_source: 'guided',
         public_context_story_scene_count: '5',
         public_context_pain_axes: 'edge_decay',
+        public_context_signal_markers: 'mirror_selected,upload_intent',
       }),
     )
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
@@ -121,6 +124,7 @@ describe('CheckoutPage', () => {
         storySource: 'guided',
         visitedSceneCount: 5,
         selectedPainAxisIds: ['edge_decay'],
+        signalMarkerIds: ['mirror_selected', 'upload_intent'],
       },
     })
   })
@@ -161,6 +165,7 @@ describe('CheckoutPage', () => {
             public_context_story_source: 'guided',
             public_context_story_scene_count: '6',
             public_context_pain_axes: 'edge_decay',
+            public_context_signal_markers: undefined,
           }),
         )
       }))
@@ -176,6 +181,7 @@ describe('CheckoutPage', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
 
     render(
@@ -201,9 +207,9 @@ describe('CheckoutPage', () => {
     expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         success_url:
-          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
         cancel_url:
-          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
       }),
     )
   })

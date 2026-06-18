@@ -201,7 +201,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Paid Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+      '/activate?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
     )
 
     await waitFor(() => {

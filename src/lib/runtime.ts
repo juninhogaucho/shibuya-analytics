@@ -59,6 +59,7 @@ export interface ShibuyaSessionMeta {
   activationStorySource?: string
   activationSelectedPainAxisIds?: string[]
   activationVisitedSceneCount?: number
+  activationSignalMarkerIds?: string[]
   activationLockedSectionId?: string
   activationLockedSectionTitle?: string
   activationBridgeHeadline?: string

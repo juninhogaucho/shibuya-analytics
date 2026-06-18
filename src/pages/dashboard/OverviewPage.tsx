@@ -130,6 +130,7 @@ export function DashboardOverviewPage() {
         storySource: sessionMeta.activationStorySource,
         selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
         visitedSceneCount: sessionMeta.activationVisitedSceneCount,
+        signalMarkerLabels: getPublicStorySignalMarkers(sessionMeta.activationSignalMarkerIds).map((marker) => marker.label),
         lockedSectionTitle: sessionMeta.activationLockedSectionTitle,
         lockedSectionId: sessionMeta.activationLockedSectionId,
         bridgeHeadline: sessionMeta.activationBridgeHeadline,
@@ -229,6 +230,14 @@ export function DashboardOverviewPage() {
                   {liveActivationOrigin.storySource
                     ? `${liveActivationOrigin.storySource}; scenes ${liveActivationOrigin.visitedSceneCount ?? 0}; axes ${liveActivationOrigin.selectedPainAxisLabels?.join(', ') || 'none captured'}`
                     : 'No local story packet attached'}
+                </p>
+              </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Public signal markers</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.signalMarkerLabels?.length
+                    ? liveActivationOrigin.signalMarkerLabels.join(', ')
+                    : 'No public markers attached'}
                 </p>
               </article>
             </div>
@@ -548,6 +557,14 @@ export function DashboardOverviewPage() {
                 {liveActivationOrigin.storySource
                   ? `${liveActivationOrigin.storySource}; scenes ${liveActivationOrigin.visitedSceneCount ?? 0}; axes ${liveActivationOrigin.selectedPainAxisLabels?.join(', ') || 'none captured'}`
                   : 'No local story packet attached'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Public signal markers</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.signalMarkerLabels?.length
+                  ? liveActivationOrigin.signalMarkerLabels.join(', ')
+                  : 'No public markers attached'}
               </p>
             </article>
           </div>

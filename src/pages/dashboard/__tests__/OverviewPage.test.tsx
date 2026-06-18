@@ -169,6 +169,7 @@ describe('DashboardOverviewPage', () => {
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay'],
         activationVisitedSceneCount: 6,
+        activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
         activationLockedSectionId: 'highest-cost-state',
         activationLockedSectionTitle: 'Highest-cost state',
         activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
@@ -195,6 +196,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/Marco: Profitable refiner - Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText('Story handoff')).toBeInTheDocument()
     expect(screen.getByText(/guided; scenes 6; axes Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText('Public signal markers')).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO LIVE QUESTION')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro should separate real edge decay from normal variance.')).toBeInTheDocument()
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
@@ -220,6 +223,7 @@ describe('DashboardOverviewPage', () => {
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay'],
         activationVisitedSceneCount: 6,
+        activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
         activationLockedSectionId: 'highest-cost-state',
         activationLockedSectionTitle: 'Highest-cost state',
         activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
@@ -241,6 +245,7 @@ describe('DashboardOverviewPage', () => {
     expect(await screen.findByText('LIVE ACTIVATION ORIGIN')).toBeInTheDocument()
     expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
     expect(screen.getByText(/The backend is not loaded, so no account analytics are shown/i)).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO LIVE QUESTION')).toBeInTheDocument()
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
     expect(screen.getByText(/Payment and activation preserved the question/i)).toBeInTheDocument()

@@ -17,6 +17,7 @@ export interface CheckoutSessionRequest {
   public_context_story_source?: string
   public_context_story_scene_count?: string
   public_context_pain_axes?: string
+  public_context_signal_markers?: string
   affiliate_slug?: string
   ref_code?: string
   utm_source?: string

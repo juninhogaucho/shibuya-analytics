@@ -19,6 +19,7 @@ describe('CheckoutSuccessPage', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 5,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
     window.localStorage.setItem(
       'shibuya_order',
@@ -39,6 +40,7 @@ describe('CheckoutSuccessPage', () => {
           storySource: 'guided',
           visitedSceneCount: 5,
           selectedPainAxisIds: ['edge_decay'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
         },
         timestamp: new Date().toISOString(),
       }),
@@ -54,12 +56,13 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('Locked private insight')).toBeInTheDocument()
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Report: sample-free-report')).toBeInTheDocument()
+    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
+      '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
     )
   })
 
@@ -83,6 +86,7 @@ describe('CheckoutSuccessPage', () => {
           storySource: 'guided',
           visitedSceneCount: 5,
           selectedPainAxisIds: ['edge_decay'],
+          signalMarkerIds: ['mirror_selected'],
         },
         timestamp: new Date().toISOString(),
       }),
@@ -99,7 +103,7 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
+      '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected&market=global',
     )
   })
 
@@ -112,6 +116,7 @@ describe('CheckoutSuccessPage', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     }))
     window.localStorage.setItem(
       'shibuya_order',
@@ -132,6 +137,7 @@ describe('CheckoutSuccessPage', () => {
           storySource: 'guided',
           visitedSceneCount: 6,
           selectedPainAxisIds: ['edge_decay'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
         },
         timestamp: new Date().toISOString(),
       }),
@@ -145,7 +151,7 @@ describe('CheckoutSuccessPage', () => {
 
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&demo_packet=launcher_sample&market=global',
+      '/activate?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
     )
   })
 })

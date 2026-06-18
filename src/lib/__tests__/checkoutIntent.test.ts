@@ -5,7 +5,7 @@ describe('checkout intent', () => {
   test('reads and sanitizes locked insight context from a query string', () => {
     expect(
       readCheckoutIntent(
-        '?source=locked_insight&section=highest cost state&report=sample-free-report&archetype=marco&axis=edge_decay&story=guided&scene_count=99&pain_axes=edge_decay,not real,edge_decay',
+        '?source=locked_insight&section=highest cost state&report=sample-free-report&archetype=marco&axis=edge_decay&story=guided&scene_count=99&pain_axes=edge_decay,not real,edge_decay&signals=mirror_selected,bad marker,mirror_selected',
       ),
     ).toEqual({
       source: 'locked_insight',
@@ -16,6 +16,7 @@ describe('checkout intent', () => {
       storySource: 'guided',
       visitedSceneCount: 15,
       selectedPainAxisIds: ['edge_decay', 'not-real'],
+      signalMarkerIds: ['mirror_selected', 'bad-marker'],
     })
   })
 
@@ -32,9 +33,10 @@ describe('checkout intent', () => {
         storySource: 'guided',
         visitedSceneCount: 6,
         selectedPainAxisIds: ['edge_decay'],
+        signalMarkerIds: ['mirror_selected', 'upload_intent'],
       }),
     ).toBe(
-      '/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay',
+      '/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent',
     )
   })
 
@@ -50,6 +52,7 @@ describe('checkout intent', () => {
           storySource: 'guided',
           visitedSceneCount: 6,
           selectedPainAxisIds: ['edge_decay'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
         },
       ),
     ).toEqual({
@@ -59,6 +62,7 @@ describe('checkout intent', () => {
       storySource: 'guided',
       visitedSceneCount: 6,
       selectedPainAxisIds: ['edge_decay'],
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     })
   })
 

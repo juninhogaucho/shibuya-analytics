@@ -43,6 +43,7 @@ export function ActivationPage() {
         storySource: checkoutIntent.storySource,
         selectedPainAxisIds: checkoutIntent.selectedPainAxisIds,
         visitedSceneCount: checkoutIntent.visitedSceneCount,
+        signalMarkerIds: checkoutIntent.signalMarkerIds,
       })
   const activationReportSession = storedActivationReportSession ?? demoLauncherActivationSession
 
@@ -59,6 +60,7 @@ export function ActivationPage() {
         storySource: activationReportSession?.storySource ?? checkoutIntent.storySource,
         selectedPainAxisIds: activationReportSession?.selectedPainAxisIds ?? checkoutIntent.selectedPainAxisIds,
         visitedSceneCount: activationReportSession?.visitedSceneCount ?? checkoutIntent.visitedSceneCount,
+        signalMarkerIds: activationReportSession?.signalMarkerIds ?? checkoutIntent.signalMarkerIds,
       })
     : null
   const activationLockedSection = activationReport
@@ -68,6 +70,9 @@ export function ActivationPage() {
   const activationSelectedPainAxisIdsForStorage = activationSelectedPainAxisIds.length ? activationSelectedPainAxisIds : undefined
   const activationStorySource = activationReportSession?.storySource ?? checkoutIntent?.storySource
   const activationVisitedSceneCount = activationReportSession?.visitedSceneCount ?? checkoutIntent?.visitedSceneCount
+  const activationSignalMarkerIds = activationReportSession?.signalMarkerIds ?? checkoutIntent?.signalMarkerIds ?? []
+  const activationSignalMarkerIdsForStorage = activationSignalMarkerIds.length ? activationSignalMarkerIds : undefined
+  const activationSignalMarkerLabels = activationReport?.storyHandoff.signalMarkers.map((marker) => marker.label) ?? []
   const activationPainAxisLabels = activationSelectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
     .filter((axis, index, axes) => activationSelectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
@@ -127,6 +132,7 @@ export function ActivationPage() {
           activationStorySource,
           activationSelectedPainAxisIds: activationSelectedPainAxisIdsForStorage,
           activationVisitedSceneCount,
+          activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
           activationLockedSectionId: checkoutIntent?.lockedSectionId,
           activationLockedSectionTitle: activationLockedSection?.title,
           activationBridgeHeadline: activationReport?.resetProBridge.headline,
@@ -146,6 +152,7 @@ export function ActivationPage() {
             activationReportId: checkoutIntent?.reportId,
             activationStorySource,
             activationVisitedSceneCount,
+            activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
             activationLockedSectionId: checkoutIntent?.lockedSectionId,
             activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
           },
@@ -229,6 +236,11 @@ export function ActivationPage() {
                   <p className="terminal-muted">
                     Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationStorySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
                   </p>
+                  {activationSignalMarkerLabels.length ? (
+                    <p className="terminal-muted">
+                      Public signal markers: {activationSignalMarkerLabels.join(', ')}
+                    </p>
+                  ) : null}
                   {activationReport?.resetProBridge ? (
                     <p className="terminal-muted">
                       Reset Pro bridge: {activationReport.resetProBridge.decisionQuestion}
