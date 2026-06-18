@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import CheckoutPage from '../CheckoutPage'
 
 const checkoutMocks = vi.hoisted(() => ({
@@ -23,6 +24,7 @@ vi.mock('../../../lib/browserNavigation', () => ({
 
 describe('CheckoutPage', () => {
   beforeEach(() => {
+    window.localStorage.clear()
     checkoutMocks.createCheckoutSession.mockReset()
     checkoutMocks.redirectBrowser.mockReset()
     checkoutMocks.trackAffiliateClick.mockReset()
@@ -37,6 +39,16 @@ describe('CheckoutPage', () => {
 
   test('preserves locked insight context in checkout URLs and stored order state', async () => {
     const user = userEvent.setup()
+    persistPublicReportSession(buildPublicReportSession({
+      reportId: 'sample-free-report',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'sample',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 5,
+    }))
 
     render(
       <MemoryRouter
@@ -55,6 +67,8 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Archetype: marco')).toBeInTheDocument()
     expect(screen.getByText('Axis: edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
     await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
@@ -94,5 +108,23 @@ describe('CheckoutPage', () => {
         axisId: 'edge_decay',
       },
     })
+  })
+
+  test('labels checkout intent as URL-only when no local report packet exists', () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=missing-report&archetype=marco&axis=edge_decay&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Checkout intent')).toBeInTheDocument()
+    expect(screen.getByText('URL context only')).toBeInTheDocument()
+    expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
   })
 })

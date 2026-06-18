@@ -6,6 +6,7 @@ import { getCheckoutSession } from '../../lib/api/checkout'
 import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import type { CheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getMarketHomePath, getPlanByPlanId, inferMarketFromPlanId, persistMarket, resolveMarket } from '../../lib/market'
+import { getPublicReportSession } from '../../lib/publicReportSession'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
 interface OrderInfo {
@@ -101,6 +102,7 @@ const CheckoutSuccessPage: React.FC = () => {
   const market = order?.market ?? urlMarket
   const plan = getPlanByPlanId(order?.planId)
   const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
+  const reportSession = getPublicReportSession(checkoutIntent?.reportId)
   const activationPath = addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)
 
   if (loading) {
@@ -213,6 +215,19 @@ const CheckoutSuccessPage: React.FC = () => {
             {checkoutIntent.reportId && <span>Report: {checkoutIntent.reportId}</span>}
             {checkoutIntent.archetypeId && <span>Archetype: {checkoutIntent.archetypeId}</span>}
             {checkoutIntent.axisId && <span>Axis: {checkoutIntent.axisId}</span>}
+          </div>
+          <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
+            <p className="font-semibold text-amber-100">
+              {reportSession?.evidenceLabel ?? 'URL context only'}
+            </p>
+            <p className="mt-1 text-neutral-400">
+              {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}
+            </p>
+            {reportSession?.storySource ? (
+              <p className="mt-2 text-neutral-500">
+                Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; axes {reportSession.selectedPainAxisIds.length}.
+              </p>
+            ) : null}
           </div>
         </motion.div>
       )}
