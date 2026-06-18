@@ -52,12 +52,12 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/No guaranteed profit uplift/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
-      '/private-demo?market=global',
+      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.queryByRole('button', { name: /Preview Reset Pro/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Private Demo Access/i })).toHaveAttribute(
       'href',
-      '/private-demo?market=global',
+      '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
       'href',

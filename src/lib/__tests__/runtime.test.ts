@@ -51,7 +51,14 @@ describe('shibuya runtime', () => {
   })
 
   test('can enter a Reset Pro sample preview without pretending to be live', () => {
-    enterSampleMode({ market: 'global', preview: 'reset_pro' })
+    enterSampleMode({
+      market: 'global',
+      preview: 'reset_pro',
+      demoSource: 'free_report',
+      demoReportId: 'free-report-123',
+      demoArchetypeId: 'priya',
+      demoAxisId: 'drawdown_pressure',
+    })
 
     expect(getStoredSessionMeta()).toMatchObject({
       tier: 'sample',
@@ -59,6 +66,10 @@ describe('shibuya runtime', () => {
       offerKind: 'sample',
       caseStatus: 'sample_preview',
       samplePreview: 'reset_pro',
+      demoSource: 'free_report',
+      demoReportId: 'free-report-123',
+      demoArchetypeId: 'priya',
+      demoAxisId: 'drawdown_pressure',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
@@ -90,7 +101,14 @@ describe('shibuya runtime', () => {
   })
 
   test('strips sample-only metadata when a live key is stored without fresh metadata', () => {
-    enterSampleMode({ market: 'global', preview: 'reset_pro' })
+    enterSampleMode({
+      market: 'global',
+      preview: 'reset_pro',
+      demoSource: 'free_report',
+      demoReportId: 'free-report-123',
+      demoArchetypeId: 'priya',
+      demoAxisId: 'drawdown_pressure',
+    })
     setLiveApiKey('live_123')
 
     expect(getStoredApiKey()).toBe('live_123')
@@ -100,6 +118,10 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.tier).toBeUndefined()
     expect(getStoredSessionMeta()?.offerKind).toBeUndefined()
     expect(getStoredSessionMeta()?.caseStatus).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoSource).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoReportId).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoArchetypeId).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoAxisId).toBeUndefined()
   })
 
   test('clears session state', () => {

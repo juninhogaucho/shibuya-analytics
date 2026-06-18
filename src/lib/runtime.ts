@@ -34,11 +34,19 @@ export interface ShibuyaSessionMeta {
   affiliateSlug?: string
   refCode?: string
   samplePreview?: ShibuyaSamplePreview
+  demoSource?: string
+  demoReportId?: string
+  demoArchetypeId?: string
+  demoAxisId?: string
 }
 
 export interface EnterSampleModeOptions {
   market?: Market
   preview?: ShibuyaSamplePreview
+  demoSource?: string
+  demoReportId?: string
+  demoArchetypeId?: string
+  demoAxisId?: string
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -182,6 +190,10 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       offerKind: 'sample',
       caseStatus: 'sample_preview',
       samplePreview: preview,
+      demoSource: options.demoSource,
+      demoReportId: options.demoReportId,
+      demoArchetypeId: options.demoArchetypeId,
+      demoAxisId: options.demoAxisId,
     }),
   )
 }
@@ -205,6 +217,10 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   if (nextMeta.dataSource === 'sample_dataset') {
     delete nextMeta.dataSource
   }
+  delete nextMeta.demoSource
+  delete nextMeta.demoReportId
+  delete nextMeta.demoArchetypeId
+  delete nextMeta.demoAxisId
 
   if (Object.keys(nextMeta).length > 0) {
     localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))

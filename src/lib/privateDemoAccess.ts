@@ -8,6 +8,12 @@ export interface PrivateDemoAccessResult {
   reason?: 'not_configured' | 'invalid_code'
 }
 
+export interface PrivateResetProDemoHandoff {
+  reportId?: string
+  archetypeId?: string
+  axisId?: string
+}
+
 export function getConfiguredPrivateDemoCode(): string {
   return (import.meta.env.VITE_PRIVATE_DEMO_ACCESS_CODE ?? '').trim()
 }
@@ -30,6 +36,13 @@ export function verifyPrivateDemoCode(input: string): PrivateDemoAccessResult {
   return { ok: true }
 }
 
-export function enterPrivateResetProDemo(market: Market): void {
-  enterSampleMode({ market, preview: 'reset_pro' })
+export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetProDemoHandoff = {}): void {
+  enterSampleMode({
+    market,
+    preview: 'reset_pro',
+    demoSource: handoff.reportId ? 'free_report' : undefined,
+    demoReportId: handoff.reportId,
+    demoArchetypeId: handoff.archetypeId,
+    demoAxisId: handoff.axisId,
+  })
 }

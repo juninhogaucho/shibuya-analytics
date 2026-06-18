@@ -48,8 +48,11 @@ describe('PrivateDemoPage', () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
-    renderPrivateDemo()
+    renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
 
+    expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
+    expect(screen.getByText(/free-report-123/i)).toBeInTheDocument()
+    expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -59,6 +62,10 @@ describe('PrivateDemoPage', () => {
       market: 'global',
       samplePreview: 'reset_pro',
       caseStatus: 'sample_preview',
+      demoSource: 'free_report',
+      demoReportId: 'free-report-123',
+      demoArchetypeId: 'priya',
+      demoAxisId: 'drawdown_pressure',
     })
   })
 })

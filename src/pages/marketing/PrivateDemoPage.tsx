@@ -8,11 +8,17 @@ import {
   hasPrivateDemoGateConfigured,
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
+import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 
 export default function PrivateDemoPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const market = resolveMarket(location.pathname, location.search)
+  const params = new URLSearchParams(location.search)
+  const handoffReportId = params.get('report')?.trim() || undefined
+  const handoffArchetype = getTraderArchetype(params.get('archetype'))
+  const handoffAxis = getFingerprintAxis(params.get('axis'))
+  const hasReportHandoff = params.get('source') === 'free_report' || Boolean(handoffReportId)
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
@@ -30,7 +36,11 @@ export default function PrivateDemoPage() {
       return
     }
 
-    enterPrivateResetProDemo(market)
+    enterPrivateResetProDemo(market, {
+      reportId: handoffReportId,
+      archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
+      axisId: hasReportHandoff ? handoffAxis.id : undefined,
+    })
     navigate('/dashboard', { replace: true })
   }
 
@@ -82,6 +92,17 @@ export default function PrivateDemoPage() {
           {!configured ? (
             <div className="mb-5 rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 text-sm leading-7 text-amber-100">
               Private demo access is intentionally disabled because <span className="font-mono">{PRIVATE_DEMO_CODE_ENV_KEY}</span> is not configured in this build.
+            </div>
+          ) : null}
+
+          {hasReportHandoff ? (
+            <div className="mb-5 rounded-2xl border border-indigo-300/20 bg-indigo-300/[0.08] p-4 text-sm leading-7 text-indigo-50/85">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Report handoff packet</p>
+              <p className="mt-2">
+                This unlock will carry <span className="font-mono text-white">{handoffReportId ?? 'direct-report'}</span> into
+                the Reset Pro preview as a private demo origin. Demo archetype: <span className="text-white">{handoffArchetype.name}</span>.
+                Dominant axis: <span className="text-white">{handoffAxis.label}</span>.
+              </p>
             </div>
           ) : null}
 

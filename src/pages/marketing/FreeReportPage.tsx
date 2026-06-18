@@ -22,6 +22,10 @@ export default function FreeReportPage() {
   const reportSession = getPublicReportSession(report.reportId)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
+  const privateDemoPath = addMarketToPath(
+    `/private-demo?source=free_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
+    market,
+  )
 
   return (
     <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
@@ -181,7 +185,7 @@ export default function FreeReportPage() {
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
-                    to={addMarketToPath('/private-demo', market)}
+                    to={privateDemoPath}
                     className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.08]"
                   >
                     Open Private Demo Gate
@@ -204,7 +208,7 @@ export default function FreeReportPage() {
                 {auditPlan.ctaLabel}
               </Link>
               <Link
-                to={addMarketToPath('/private-demo', market)}
+                to={privateDemoPath}
                 className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50"
               >
                 Private Demo Access
