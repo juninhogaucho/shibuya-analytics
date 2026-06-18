@@ -33,6 +33,38 @@ export default function StoryExperience() {
   const pressureBand = getBehavioralPressureBand(pressureIndex)
   const activeScene = STORY_SCENES[activeSceneIndex]
   const progress = Math.round(((activeSceneIndex + 1) / STORY_SCENES.length) * 100)
+  const selectedArchetype = TRADER_ARCHETYPES.find((archetype) => archetype.id === signal.archetypeId)
+  const selectedPainAxisLabels = signal.selectedPainAxes
+    .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
+    .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
+    .map((axis) => axis.label)
+
+  const presenterSteps = [
+    {
+      time: '00:00',
+      title: 'Hook',
+      body: 'State problem, not strategy problem.',
+      onSelect: () => inspectScene(0),
+    },
+    {
+      time: '00:45',
+      title: 'Mirror',
+      body: 'Pick the trader and pain axis that feels true.',
+      onSelect: () => inspectScene(3),
+    },
+    {
+      time: '01:45',
+      title: 'Reveal',
+      body: 'Show the provisional fingerprint and the boundary.',
+      onSelect: () => inspectScene(9),
+    },
+    {
+      time: '02:30',
+      title: 'Evidence',
+      body: 'Upload/sample history to test the prediction.',
+      onSelect: () => inspectUploadFlow(),
+    },
+  ]
 
   const inspectScene = (index: number) => {
     const scene = STORY_SCENES[index]
@@ -80,18 +112,22 @@ export default function StoryExperience() {
   }
 
   return (
-    <section id="story-experience" className="border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
-      <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <div className="mb-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
-            <h2 className="font-display text-3xl font-bold uppercase leading-tight text-white md:text-5xl">
+    <section id="story-experience" className="overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 md:px-12">
+        <div className="mb-10 grid min-w-0 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div className="min-w-0">
+            <h2 className="break-words font-display text-[2rem] font-bold uppercase leading-tight text-white sm:text-3xl md:text-5xl">
               You do not have a strategy problem. You have a state problem.
             </h2>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-neutral-300 md:text-lg">
+              Shibuya is the trader operating mirror: a public story that earns the upload, a report that names the leak,
+              and a private workspace that turns the next session into a controlled experiment.
+            </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={inspectUploadFlow}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-sm font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm"
               >
                 <UploadCloud className="h-4 w-4" />
                 Upload Trade History
@@ -99,14 +135,14 @@ export default function StoryExperience() {
               <button
                 type="button"
                 onClick={() => inspectScene(1)}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-4 text-sm font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm"
               >
                 See How It Works
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
-          <div className="space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
+          <div className="min-w-0 space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
             <p>
               P&L tells you what happened. Shibuya shows the repeatable behavioral state that appeared before it happened.
               This page builds a provisional fingerprint from the way you move through the story, then asks your trade history to confirm or reject it.
@@ -124,6 +160,21 @@ export default function StoryExperience() {
               This is not your report. It is a website-level prediction based on interaction. Upload history or activate a live account before treating anything as account-specific analysis.
             </p>
           </div>
+        </div>
+
+        <div className="mb-6 grid gap-3 md:grid-cols-4">
+          {presenterSteps.map((step) => (
+            <button
+              key={step.time}
+              type="button"
+              onClick={step.onSelect}
+              className="group rounded-3xl border border-white/10 bg-white/[0.035] p-4 text-left transition hover:border-indigo-300/50 hover:bg-indigo-300/[0.08]"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-indigo-200">{step.time}</span>
+              <span className="mt-2 block text-sm font-semibold text-white">{step.title}</span>
+              <span className="mt-2 block text-xs leading-relaxed text-neutral-400 group-hover:text-neutral-200">{step.body}</span>
+            </button>
+          ))}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
@@ -211,6 +262,10 @@ export default function StoryExperience() {
                 <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
                   Choose the uncomfortable mirror
                 </p>
+                <p className="mb-4 text-sm leading-relaxed text-neutral-400">
+                  For a live demo, choose one mirror and one pain axis. Shibuya carries that public context into upload,
+                  checkout, activation, and the private demo without claiming it is account evidence yet.
+                </p>
                 <div className="grid gap-3 md:grid-cols-3">
                   {TRADER_ARCHETYPES.map((archetype) => (
                     <button
@@ -258,6 +313,19 @@ export default function StoryExperience() {
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">Predicted dominant axis</p>
                 <h4 className="mt-2 text-xl font-semibold text-white">{dominantAxis.label}</h4>
                 <p className="mt-3 text-sm leading-relaxed text-neutral-400">{dominantAxis.description}</p>
+                <div className="mt-4 grid gap-2 text-xs leading-relaxed text-neutral-400">
+                  <p>
+                    Mirror:{' '}
+                    <span className="text-neutral-200">{selectedArchetype ? `${selectedArchetype.name} - ${selectedArchetype.title}` : 'not selected yet'}</span>
+                  </p>
+                  <p>
+                    Pain selected:{' '}
+                    <span className="text-neutral-200">{selectedPainAxisLabels.length ? selectedPainAxisLabels.join(', ') : 'none yet'}</span>
+                  </p>
+                  <p>
+                    Scenes viewed: <span className="text-neutral-200">{signal.visitedSceneIds.length}</span>
+                  </p>
+                </div>
                 <p className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-xs leading-relaxed text-neutral-500">
                   Based only on how you moved through this page. This is not diagnostic proof.
                 </p>
