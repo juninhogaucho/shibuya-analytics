@@ -62,12 +62,20 @@ export interface ResetProDemoBridgeCard {
   previewShows: string[]
 }
 
+export interface ResetProDemoProofStage {
+  label: string
+  status: 'ready' | 'warning' | 'locked'
+  evidence: string
+  boundary: string
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
   demoThesis: string
   founderTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
+  proofLadder: ResetProDemoProofStage[]
   readinessChecklist: ResetProDemoChecklistItem[]
   pressureMetrics: ResetProDemoMetric[]
   steps: ResetProDemoStep[]
@@ -88,6 +96,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const resetPacket = overview.artifact_descriptors?.find((artifact) => artifact.kind === 'reset_pro_review_packet')
   const originCard = buildOriginCard(origin)
   const bridgeCard = buildBridgeCard(origin)
+  const proofLadder = buildProofLadder(origin, Boolean(originCard), Boolean(bridgeCard))
 
   return {
     headline: 'Private Reset Pro command center',
@@ -137,6 +146,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
         boundary: 'The demo ends at sample workflow proof. Live Reset Pro still needs account-specific evidence before private conclusions are presented as truth.',
       },
     ],
+    proofLadder,
     readinessChecklist: [
       {
         label: 'Public context carried',
@@ -231,6 +241,49 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
   }
+}
+
+function buildProofLadder(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoProofStage[] {
+  return [
+    {
+      label: 'Public recognition',
+      status: origin?.storySource ? 'ready' : 'warning',
+      evidence: origin?.storySource
+        ? `Story handoff: ${origin.storySource}; scenes ${origin.visitedSceneCount ?? 0}; axes ${origin.selectedPainAxisLabels?.join(', ') || 'none captured'}.`
+        : 'No guided public story packet is attached to this demo entry.',
+      boundary: 'Recognition routes the walkthrough. It is not account evidence.',
+    },
+    {
+      label: 'Report handoff packet',
+      status: hasOriginCard ? 'ready' : 'warning',
+      evidence: origin?.evidenceLabel
+        ? `${origin.evidenceLabel}${origin.reportSource ? ` from ${origin.reportSource}` : ''}.`
+        : 'No local upload/sample validation packet is attached.',
+      boundary: 'A report packet can explain the path; raw live analytics still require backend artifacts.',
+    },
+    {
+      label: 'Locked private question',
+      status: hasBridgeCard || origin?.lockedSectionTitle ? 'ready' : 'warning',
+      evidence: origin?.bridgeDecisionQuestion ?? origin?.lockedSectionTitle ?? 'No locked module or Reset Pro bridge question was carried in.',
+      boundary: 'The question is allowed in a demo. The answer is locked until live proof exists.',
+    },
+    {
+      label: 'Sample command center',
+      status: 'ready',
+      evidence: 'Reset Pro preview workspace is explicitly marked demo data only.',
+      boundary: 'This proves product structure, not account-specific trader truth.',
+    },
+    {
+      label: 'Append-proof exit',
+      status: 'locked',
+      evidence: 'The next required proof is a live first upload plus append history.',
+      boundary: 'The demo should end by showing the upload path, not by claiming improvement.',
+    },
+  ]
 }
 
 function buildBridgeCard(origin?: ResetProDemoOrigin): ResetProDemoBridgeCard | undefined {

@@ -63,6 +63,47 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </div>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO PROOF LADDER</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>What is context, what is demo, and what still needs live proof.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              This keeps the private workspace honest after the founder code unlocks the sample account.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {script.proofLadder.map((stage) => (
+            <div
+              key={stage.label}
+              className="glass-panel"
+              style={{
+                background: stage.status === 'ready'
+                  ? 'rgba(16,185,129,0.07)'
+                  : stage.status === 'locked'
+                    ? 'rgba(99,102,241,0.07)'
+                    : 'rgba(245,158,11,0.07)',
+                borderColor: stage.status === 'ready'
+                  ? 'rgba(16,185,129,0.22)'
+                  : stage.status === 'locked'
+                    ? 'rgba(99,102,241,0.22)'
+                    : 'rgba(245,158,11,0.22)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>
+                {stage.status === 'ready' ? 'CARRIED' : stage.status === 'locked' ? 'LIVE PROOF NEEDED' : 'CALL OUT'}
+              </p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{stage.label}</h4>
+              <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{stage.evidence}</p>
+              <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.8rem' }}>
+                <strong className="text-amber-100">Boundary:</strong> {stage.boundary}
+              </p>
+            </div>
+          ))}
+        </div>
+      </article>
+
       {script.bridgeCard ? (
         <article
           className="glass-panel"

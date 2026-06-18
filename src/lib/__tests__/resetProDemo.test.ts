@@ -16,6 +16,29 @@ describe('Reset Pro demo script', () => {
     ])
     expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
     expect(script.showSequence[3].show).toContain('Append proof flow')
+    expect(script.proofLadder).toEqual([
+      expect.objectContaining({
+        label: 'Public recognition',
+        status: 'warning',
+        boundary: 'Recognition routes the walkthrough. It is not account evidence.',
+      }),
+      expect.objectContaining({
+        label: 'Report handoff packet',
+        status: 'warning',
+      }),
+      expect.objectContaining({
+        label: 'Locked private question',
+        status: 'warning',
+      }),
+      expect.objectContaining({
+        label: 'Sample command center',
+        status: 'ready',
+      }),
+      expect.objectContaining({
+        label: 'Append-proof exit',
+        status: 'locked',
+      }),
+    ])
     expect(script.readinessChecklist).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -68,8 +91,12 @@ describe('Reset Pro demo script', () => {
       reportSource: 'sample',
       evidenceLabel: 'Sample history packet',
       validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
+      storySource: 'guided',
+      selectedPainAxisLabels: ['Drawdown Pressure'],
+      visitedSceneCount: 4,
       lockedSectionId: 'highest-cost-state',
       lockedSectionTitle: 'Highest-cost state',
+      bridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })
 
     expect(script.originCard?.title).toBe('Carried in from the public report')
@@ -82,10 +109,35 @@ describe('Reset Pro demo script', () => {
     expect(script.originCard?.facts).toContain('Requested private insight: Highest-cost state')
     expect(script.originCard?.body).toContain('not proof')
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
-    expect(script.showSequence[0].say).toContain('Highest-cost state')
+    expect(script.showSequence[0].say).toContain('Does the trader become a different operator near the drawdown line?')
     expect(script.showSequence[0].boundary).toContain('not proof')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.status).toBe('ready')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.detail).toContain('Report, archetype, axis')
+    expect(script.proofLadder).toEqual([
+      expect.objectContaining({
+        label: 'Public recognition',
+        status: 'ready',
+        evidence: 'Story handoff: guided; scenes 4; axes Drawdown Pressure.',
+      }),
+      expect.objectContaining({
+        label: 'Report handoff packet',
+        status: 'ready',
+        evidence: 'Sample history packet from sample.',
+      }),
+      expect.objectContaining({
+        label: 'Locked private question',
+        status: 'ready',
+        evidence: 'Does the trader become a different operator near the drawdown line?',
+      }),
+      expect.objectContaining({
+        label: 'Sample command center',
+        status: 'ready',
+      }),
+      expect.objectContaining({
+        label: 'Append-proof exit',
+        status: 'locked',
+      }),
+    ])
   })
 
   test('labels locked-insight origins distinctly from generic free-report origins', () => {
