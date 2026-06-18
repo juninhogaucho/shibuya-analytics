@@ -1,7 +1,7 @@
 import { type FormEvent, useMemo, useState } from 'react'
 import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { addMarketToPath, resolveMarket } from '../../lib/market'
+import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   buildPublicReportSession,
@@ -43,6 +43,12 @@ export default function PublicUploadPage() {
     [selectedPainAxisIds],
   )
   const hasStoryHandoff = storySource === 'guided' || visitedSceneCount > 0 || selectedPainAxes.length > 0
+  const storyHomePath = getMarketHomePath(market)
+  const reportPacketContract = [
+    'Creates a local report handoff with source, market, archetype, dominant pain, story source, scenes viewed, and selected public pain axes.',
+    'Stores no raw trade rows in this public preview surface.',
+    'Requires live backend normalization before any account-specific private claim.',
+  ]
 
   const reportSearchParams = appendPublicStoryHandoffParams(
     new URLSearchParams({
@@ -159,6 +165,19 @@ export default function PublicUploadPage() {
               </div>
             ) : null}
 
+            <div className="mb-6 rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Report packet contract</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">What this upload step is allowed to prove.</h3>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-emerald-50/80">
+                {reportPacketContract.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block">
                 <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Closest archetype</span>
@@ -244,7 +263,7 @@ export default function PublicUploadPage() {
             <Link to={addMarketToPath('/pricing', market)} className="text-neutral-400 underline-offset-4 transition hover:text-white hover:underline">
               Skip to paid ladder
             </Link>
-            <Link to="/" className="text-neutral-400 underline-offset-4 transition hover:text-white hover:underline">
+            <Link to={storyHomePath} className="text-neutral-400 underline-offset-4 transition hover:text-white hover:underline">
               Back to story
             </Link>
           </div>

@@ -52,6 +52,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Drawdown Pressure').length).toBeGreaterThan(0)
     expect(screen.getByText('Current upload hypothesis')).toBeInTheDocument()
     expect(screen.getByText('Priya / Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText('Report packet contract')).toBeInTheDocument()
+    expect(screen.getByText('What this upload step is allowed to prove.')).toBeInTheDocument()
+    expect(screen.getByText(/Creates a local report handoff with source, market, archetype/i)).toBeInTheDocument()
+    expect(screen.getByText(/Stores no raw trade rows in this public preview surface/i)).toBeInTheDocument()
+    expect(screen.getByText(/Requires live backend normalization before any account-specific private claim/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
@@ -125,6 +130,19 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/No production upload or account-specific analysis is claimed/i)).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText(/Direct report route. No guided StoryExperience packet was attached/i)).toBeInTheDocument()
+  })
+
+  test('global upload route keeps story and pricing navigation in the global market', () => {
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('link', { name: /Skip to paid ladder/i })).toHaveAttribute('href', '/pricing?market=global')
+    expect(screen.getByRole('link', { name: /Back to story/i })).toHaveAttribute('href', '/global')
   })
 
   test('free report keeps private demo access behind activation instead of public sample mode', () => {
