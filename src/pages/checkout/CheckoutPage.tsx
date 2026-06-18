@@ -111,6 +111,22 @@ const CheckoutPage: React.FC = () => {
       const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, checkoutIntent)
       const successUrl = `${origin}${addMarketToPath(successPath, market)}`
       const cancelUrl = `${origin}${addMarketToPath(cancelPath, market)}`
+      const publicContextPayload = checkoutIntent
+        ? {
+            public_context_source: checkoutIntent.source,
+            public_context_report_id: checkoutIntent.reportId,
+            public_context_section_id: checkoutIntent.lockedSectionId,
+            public_context_archetype_id: checkoutIntent.archetypeId,
+            public_context_axis_id: checkoutIntent.axisId,
+            public_context_packet_source: reportSession?.source,
+            public_context_story_source: reportSession?.storySource,
+            public_context_story_scene_count:
+              typeof reportSession?.visitedSceneCount === 'number'
+                ? String(reportSession.visitedSceneCount)
+                : undefined,
+            public_context_pain_axes: reportSession?.selectedPainAxisIds.join(',') || undefined,
+          }
+        : {}
 
       const session = await createCheckoutSession({
         plan_id: currentPlan.planId,
@@ -118,6 +134,7 @@ const CheckoutPage: React.FC = () => {
         name: form.name.trim(),
         success_url: successUrl,
         cancel_url: cancelUrl,
+        ...publicContextPayload,
         referral_code: form.referral.trim() || undefined,
       })
 

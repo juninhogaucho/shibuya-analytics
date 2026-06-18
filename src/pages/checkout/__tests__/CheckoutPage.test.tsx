@@ -87,6 +87,15 @@ describe('CheckoutPage', () => {
           'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',
         cancel_url:
           'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',
+        public_context_source: 'locked_insight',
+        public_context_report_id: 'sample-free-report',
+        public_context_section_id: 'highest-cost-state',
+        public_context_archetype_id: 'marco',
+        public_context_axis_id: 'edge_decay',
+        public_context_packet_source: 'sample',
+        public_context_story_source: 'guided',
+        public_context_story_scene_count: '5',
+        public_context_pain_axes: 'edge_decay',
       }),
     )
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
@@ -111,6 +120,7 @@ describe('CheckoutPage', () => {
   })
 
   test('labels checkout intent as URL-only when no local report packet exists', () => {
+    const user = userEvent.setup()
     render(
       <MemoryRouter
         initialEntries={[
@@ -126,5 +136,24 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
     expect(screen.getByText('URL context only')).toBeInTheDocument()
     expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
+
+    return user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+      .then(() => user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test'))
+      .then(() => user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i })))
+      .then(() => waitFor(() => {
+        expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            public_context_source: 'locked_insight',
+            public_context_report_id: 'missing-report',
+            public_context_section_id: 'highest-cost-state',
+            public_context_archetype_id: 'marco',
+            public_context_axis_id: 'edge_decay',
+            public_context_packet_source: undefined,
+            public_context_story_source: undefined,
+            public_context_story_scene_count: undefined,
+            public_context_pain_axes: undefined,
+          }),
+        )
+      }))
   })
 })

@@ -8,6 +8,15 @@ export interface CheckoutSessionRequest {
   name: string
   success_url?: string
   cancel_url?: string
+  public_context_source?: string
+  public_context_report_id?: string
+  public_context_section_id?: string
+  public_context_archetype_id?: string
+  public_context_axis_id?: string
+  public_context_packet_source?: string
+  public_context_story_source?: string
+  public_context_story_scene_count?: string
+  public_context_pain_axes?: string
   affiliate_slug?: string
   ref_code?: string
   utm_source?: string
