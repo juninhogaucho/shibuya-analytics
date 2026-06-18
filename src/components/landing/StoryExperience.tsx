@@ -1,20 +1,11 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, Lock, UploadCloud } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import {
-  IFX_DEMO_ARCHETYPE_ID,
-  IFX_DEMO_AXIS_ID,
-  IFX_DEMO_STORY_SCENE_IDS,
-  buildIfxDemoJourneyPaths,
-  buildIfxGuidedDemoParams,
-} from '../../lib/ifxDemoJourney'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
   FINGERPRINT_AXES,
   STORY_SCENES,
   TRADER_ARCHETYPES,
-  buildPublicStoryDemoScript,
   buildBehavioralPressureIndex,
   buildPredictedFingerprint,
   buildPublicStorySignalMarkerIds,
@@ -66,57 +57,11 @@ const ENGINE_PIPELINE_STAGES = [
   },
 ] as const
 
-const GUIDED_CONDUCTOR_STEPS: Array<{
-  beat: string
-  timebox: string
-  title: string
-  body: string
-  sceneIndex: number
-  archetypeId?: StoryArchetypeId
-  painAxisId?: FingerprintAxisId
-}> = [
-  {
-    beat: '01',
-    timebox: '0:00-0:35',
-    title: 'Name the real problem',
-    body: 'Open with state, not signals. The visitor should understand that Shibuya studies the decision condition before the outcome.',
-    sceneIndex: 0,
-  },
-  {
-    beat: '02',
-    timebox: '0:35-1:20',
-    title: 'Pick the uncomfortable mirror',
-    body: 'Select Marco and edge decay for the expo path: a serious trader whose issue is not beginner education, but protecting a decaying edge.',
-    sceneIndex: 3,
-    archetypeId: 'marco',
-    painAxisId: 'edge_decay',
-  },
-  {
-    beat: '03',
-    timebox: '1:20-2:05',
-    title: 'Reveal the provisional fingerprint',
-    body: 'Show the pressure index and dominant axis while keeping the boundary visible: public recognition is routing context, not account evidence.',
-    sceneIndex: 9,
-    archetypeId: 'marco',
-    painAxisId: 'edge_decay',
-  },
-  {
-    beat: '04',
-    timebox: '2:05-3:00',
-    title: 'Turn recognition into evidence',
-    body: 'Move to upload/sample history so the free report and locked insight can carry the question into the Reset Pro workspace.',
-    sceneIndex: 10,
-    archetypeId: 'marco',
-    painAxisId: 'edge_decay',
-  },
-] as const
-
 export default function StoryExperience() {
   const navigate = useNavigate()
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const [activeSceneIndex, setActiveSceneIndex] = useState(0)
-  const [activeConductorIndex, setActiveConductorIndex] = useState(0)
   const [signal, setSignal] = useState(() => recordSceneView(createInitialStorySignal(), STORY_SCENES[0].id))
   const scores = useMemo(() => buildPredictedFingerprint(signal), [signal])
   const dominantAxis = getDominantFingerprintAxis(scores)
@@ -125,8 +70,6 @@ export default function StoryExperience() {
   const activeScene = STORY_SCENES[activeSceneIndex]
   const progress = Math.round(((activeSceneIndex + 1) / STORY_SCENES.length) * 100)
   const selectedArchetype = TRADER_ARCHETYPES.find((archetype) => archetype.id === signal.archetypeId)
-  const publicDemoScript = useMemo(() => buildPublicStoryDemoScript(signal), [signal])
-  const activeConductorStep = GUIDED_CONDUCTOR_STEPS[activeConductorIndex]
   const selectedPainAxisLabels = signal.selectedPainAxes
     .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
     .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
@@ -174,85 +117,6 @@ export default function StoryExperience() {
     },
   ]
 
-  const presenterSteps = [
-    {
-      time: '00:00',
-      title: 'Hook',
-      body: 'State problem, not strategy problem.',
-      onSelect: () => inspectScene(0),
-    },
-    {
-      time: '00:45',
-      title: 'Mirror',
-      body: 'Pick the trader and pain axis that feels true.',
-      onSelect: () => inspectScene(3),
-    },
-    {
-      time: '01:45',
-      title: 'Reveal',
-      body: 'Show the provisional fingerprint and the boundary.',
-      onSelect: () => inspectScene(9),
-    },
-    {
-      time: '02:30',
-      title: 'Evidence',
-      body: 'Upload/sample history to test the prediction.',
-      onSelect: () => inspectUploadFlow(),
-    },
-  ]
-  const {
-    storyPath,
-    uploadPath: guidedUploadPath,
-    reportPath: guidedReportPath,
-    lockedInsightPath: guidedInsightPath,
-    privateDemoPath: guidedPrivateDemoPath,
-    appendProofPath: guidedAppendProofPath,
-  } = buildIfxDemoJourneyPaths(market)
-  const emergencyDemoStops = [
-    {
-      label: '01',
-      title: 'Public story',
-      body: 'Start here when there is time. Run the mirror, pressure index, and boundary out loud.',
-      href: storyPath,
-      cta: 'Show Story',
-    },
-    {
-      label: '02',
-      title: 'Sample upload',
-      body: 'Fallback link with Marco / Edge Decay attached. For strongest proof, click Generate Guided Sample Report from upload.',
-      href: guidedUploadPath,
-      cta: 'Open Upload',
-    },
-    {
-      label: '03',
-      title: 'Sample report',
-      body: 'Direct report fallback for fast demos. It carries the explicit launcher sample flag and states the proof boundary.',
-      href: guidedReportPath,
-      cta: 'Open Report',
-    },
-    {
-      label: '04',
-      title: 'Locked insight',
-      body: 'Opens the edge-decay private question with the same launcher sample packet and no account-specific claim.',
-      href: guidedInsightPath,
-      cta: 'Open Insight',
-    },
-    {
-      label: '05',
-      title: 'Reset Pro gate',
-      body: 'Presenter-gated sample workspace. It can show structure only; live proof still requires activation and uploads.',
-      href: guidedPrivateDemoPath,
-      cta: 'Open Gate',
-    },
-    {
-      label: '06',
-      title: 'Append proof close',
-      body: 'Presenter-gated recovery shortcut. It unlocks sample context first, then ends the demo at upload/append proof.',
-      href: guidedAppendProofPath,
-      cta: 'Open Append',
-    },
-  ] as const
-
   const inspectScene = (index: number) => {
     const scene = STORY_SCENES[index]
     setActiveSceneIndex(index)
@@ -275,55 +139,16 @@ export default function StoryExperience() {
     inspectScene(Math.min(activeSceneIndex + 1, STORY_SCENES.length - 1))
   }
 
-  const applyConductorStep = (index: number) => {
-    const step = GUIDED_CONDUCTOR_STEPS[index]
-    const scene = STORY_SCENES[step.sceneIndex]
-    setActiveConductorIndex(index)
-    setActiveSceneIndex(step.sceneIndex)
-    setSignal((current) => {
-      let next = recordSceneView(current, scene.id)
-
-      if (step.archetypeId) {
-        next = selectArchetype(next, step.archetypeId)
-      }
-
-      if (step.painAxisId && !next.selectedPainAxes.includes(step.painAxisId)) {
-        next = {
-          ...next,
-          selectedPainAxes: [...next.selectedPainAxes, step.painAxisId],
-        }
-      }
-
-      return next
-    })
-  }
-
-  const goNextConductorStep = () => {
-    const nextIndex = Math.min(activeConductorIndex + 1, GUIDED_CONDUCTOR_STEPS.length - 1)
-    applyConductorStep(nextIndex)
-  }
-
   const goPricing = () => {
     setSignal((current) => recordPricingInterest(current))
     navigate(addMarketToPath('/pricing', market))
   }
 
-  const primeIfxStory = () => {
-    const demoSignal = togglePainAxis(
-      selectArchetype(
-        IFX_DEMO_STORY_SCENE_IDS.reduce(
-          (current, sceneId) => recordSceneView(current, sceneId),
-          createInitialStorySignal(),
-        ),
-        IFX_DEMO_ARCHETYPE_ID,
-      ),
-      IFX_DEMO_AXIS_ID,
-    )
-    const conductorIndex = 1
+  const startTruthMirror = () => {
+    const mirrorSceneIndex = STORY_SCENES.findIndex((scene) => scene.id === 'archetypes')
+    const nextIndex = mirrorSceneIndex >= 0 ? mirrorSceneIndex : 1
 
-    setActiveConductorIndex(conductorIndex)
-    setActiveSceneIndex(GUIDED_CONDUCTOR_STEPS[conductorIndex].sceneIndex)
-    setSignal(demoSignal)
+    inspectScene(nextIndex)
   }
 
   const inspectUploadFlow = () => {
@@ -345,27 +170,6 @@ export default function StoryExperience() {
     navigate(addMarketToPath(`/upload?${uploadParams.toString()}`, market))
   }
 
-  const openGuidedDemoPath = () => {
-    const demoSignal = recordUploadIntent(
-      togglePainAxis(
-        selectArchetype(
-          IFX_DEMO_STORY_SCENE_IDS.reduce(
-            (current, sceneId) => recordSceneView(current, sceneId),
-            createInitialStorySignal(),
-          ),
-          IFX_DEMO_ARCHETYPE_ID,
-        ),
-        IFX_DEMO_AXIS_ID,
-      ),
-    )
-    const demoParams = buildIfxGuidedDemoParams()
-    const uploadMomentIndex = STORY_SCENES.findIndex((scene) => scene.id === 'upload-moment')
-
-    setActiveSceneIndex(uploadMomentIndex >= 0 ? uploadMomentIndex : activeSceneIndex)
-    setSignal(demoSignal)
-    navigate(addMarketToPath(`/upload?${demoParams.toString()}`, market))
-  }
-
   return (
     <section id="story-experience" className="shibuya-story-experience overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
       <div className="mx-auto w-full max-w-full px-5 sm:px-6 md:px-12 lg:max-w-7xl">
@@ -375,20 +179,21 @@ export default function StoryExperience() {
               You do not have a strategy problem. You have a state problem.
             </h2>
             <p className="mt-6 max-w-full break-words text-base leading-relaxed text-neutral-300 md:text-lg lg:max-w-2xl">
-              Shibuya is the trader operating mirror: a public story that earns the upload, a report that names the leak,
-              and a private workspace that turns the next session into a controlled experiment.
+              Shibuya is the trader truth layer. The public story is the first mirror; upload turns recognition into
+              evidence; Reset Pro turns the next session into a controlled operating loop.
             </p>
             <div className="mt-6 min-w-0 overflow-hidden rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.07] p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100 sm:tracking-[0.24em]">IFX presenter brief</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100 sm:tracking-[0.24em]">Story is the product</p>
               <p className="mt-3 break-words text-sm leading-relaxed text-neutral-200">
-                In three minutes: show the trader mirror, reveal the provisional fingerprint, then make upload the
-                evidence step. Do not pitch signals. Pitch state, proof, and the next-session operating loop.
+                This is not a landing page before the experience. This is the experience: recognize the state, choose
+                the uncomfortable mirror, reveal a provisional fingerprint, then decide whether your trade history can
+                prove or reject it.
               </p>
               <div className="mt-4 grid gap-2 text-xs leading-5 text-indigo-50/75 sm:grid-cols-3">
                 {[
-                  ['Open', 'Every provider sells dashboards. Shibuya sells self-knowledge that survives evidence.'],
-                  ['Show', 'Marco / Edge Decay, pressure index, and the claim boundary before upload.'],
-                  ['Close', 'Upload proves or rejects the mirror; Reset Pro is the private operating loop.'],
+                  ['Mirror', 'Name the pressure state before talking about strategy, signals, or dashboards.'],
+                  ['Evidence', 'Carry only a public hypothesis forward until upload proves something real.'],
+                  ['Operating loop', 'Use Reset Pro privately to prepare the next session around what evidence survived.'],
                 ].map(([label, body]) => (
                   <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
                     <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-100">{label}</span>
@@ -400,10 +205,10 @@ export default function StoryExperience() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
-                onClick={primeIfxStory}
+                onClick={startTruthMirror}
                 className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
               >
-                Run 3-Min Story
+                Start The Mirror
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
@@ -424,8 +229,8 @@ export default function StoryExperience() {
               </button>
             </div>
             <p className="mt-3 max-w-full break-words text-xs leading-5 text-neutral-500 lg:max-w-xl">
-              For a fast handoff, run the public story first. The proof path then carries Marco / Edge Decay into upload,
-              free report, locked insight, and the private demo gate without pretending the website analyzed an account.
+              Public interaction can only create a hypothesis. The proof path carries that hypothesis into upload,
+              free report, locked insight, and the private Reset Pro gate without pretending the website analyzed an account.
             </p>
           </div>
           <div className="min-w-0 space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
@@ -455,227 +260,13 @@ export default function StoryExperience() {
           />
         </div>
 
-        <section className="mb-8 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 md:p-6">
-          <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">
-                IFX emergency demo lane
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">
-                One narrative, six stops, no live-proof overclaim.
-              </h3>
-              <p className="mt-4 text-sm leading-7 text-cyan-50/75">
-                Use this lane when the conversation needs a linkable walkthrough immediately. The sample links are
-                URL-only fallback context unless the upload page generates the local sample packet in this browser.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {emergencyDemoStops.map((stop) => (
-                <Link
-                  key={stop.label}
-                  to={stop.href}
-                  className="group rounded-3xl border border-white/10 bg-black/25 p-4 transition hover:border-cyan-200/50 hover:bg-cyan-300/[0.08]"
-                >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-200">
-                    Stop {stop.label}
-                  </span>
-                  <span className="mt-2 block text-base font-semibold text-white">{stop.title}</span>
-                  <span className="mt-2 block text-xs leading-5 text-cyan-50/65">{stop.body}</span>
-                  <span className="mt-4 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-100">
-                    {stop.cta}
-                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-cyan-50/60">
-            Presenter boundary: direct report, insight, and private-demo links are fallback navigation. Stronger evidence comes from the guided story
-            plus upload page sample generation; live evidence still requires backend activation, normalized uploads, generated artifacts, and append history.
+        <div className="mb-8 rounded-[2rem] border border-white/10 bg-white/[0.035] p-5 text-sm leading-7 text-neutral-300 md:p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Public mirror contract</p>
+          <p className="mt-3">
+            Shibuya starts by helping the trader recognize a possible state, not by selling a platform. Every public click
+            is treated as routing context until upload/report evidence proves or rejects it.
           </p>
-        </section>
-
-        <section className="mb-8 overflow-hidden rounded-[2rem] border border-indigo-300/20 bg-[radial-gradient(circle_at_top_left,rgba(129,140,248,0.18),rgba(9,9,11,0.98)_42%)] p-4 shadow-2xl shadow-indigo-950/30 md:p-6">
-          <div className="grid gap-5 lg:grid-cols-[0.84fr_1.16fr] lg:items-stretch">
-            <div className="min-w-0 rounded-3xl border border-white/10 bg-black/25 p-5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Guided demo conductor</p>
-              <h3 className="mt-3 text-2xl font-semibold text-white">Run this as a 3-minute story, not a scrolling website.</h3>
-              <p className="mt-4 text-sm leading-7 text-neutral-300">
-                This mobile-first conductor keeps the public demo tight: recognition, mirror, reveal, evidence. It updates
-                the live fingerprint as the operator moves through each beat.
-              </p>
-              <div className="mt-5 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4 lg:grid-cols-2">
-                {[
-                  ['Time', '3:00 max'],
-                  ['Path', 'Marco / Edge Decay'],
-                  ['Claim', 'Website-level only'],
-                  ['Exit', 'Upload proof'],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-2xl border border-white/8 bg-white/[0.04] p-3">
-                    <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">{label}</span>
-                    <span className="mt-1 block font-semibold text-white">{value}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col">
-                <button
-                  type="button"
-                  onClick={goNextConductorStep}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
-                >
-                  Next Demo Beat
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={openGuidedDemoPath}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
-                >
-                  Finish To Sample Upload
-                  <UploadCloud className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="min-w-0 rounded-3xl border border-white/10 bg-[#09090B]/85 p-4 md:p-5">
-              <div className="mb-4 grid gap-2 sm:grid-cols-4">
-                {GUIDED_CONDUCTOR_STEPS.map((step, index) => {
-                  const selected = index === activeConductorIndex
-
-                  return (
-                    <button
-                      key={step.beat}
-                      type="button"
-                      onClick={() => applyConductorStep(index)}
-                      className={`rounded-2xl border p-3 text-left transition ${
-                        selected
-                          ? 'border-indigo-300/50 bg-indigo-300/[0.12]'
-                          : 'border-white/8 bg-black/20 hover:border-white/20 hover:bg-white/[0.04]'
-                      }`}
-                      aria-pressed={selected}
-                    >
-                      <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
-                        Beat {step.beat}
-                      </span>
-                      <span className="mt-1 block text-xs font-semibold text-white">{step.timebox}</span>
-                      <span className="mt-2 block text-xs leading-5 text-neutral-400">{step.title}</span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              <motion.article
-                key={activeConductorStep.beat}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18 }}
-                className="rounded-3xl border border-white/8 bg-black/25 p-5"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
-                      Beat {activeConductorStep.beat} / {activeConductorStep.timebox}
-                    </p>
-                    <h4 className="mt-2 text-xl font-semibold text-white">{activeConductorStep.title}</h4>
-                  </div>
-                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-300">
-                    Scene {activeConductorStep.sceneIndex + 1}
-                  </span>
-                </div>
-                <p className="mt-4 text-sm leading-7 text-neutral-300">{activeConductorStep.body}</p>
-                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                  <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-3">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-200">Say</p>
-                    <p className="mt-2 text-xs leading-5 text-emerald-50/75">State is the product wedge. The trader needs proof of how they operate under pressure.</p>
-                  </div>
-                  <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.06] p-3">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-200">Show</p>
-                    <p className="mt-2 text-xs leading-5 text-cyan-50/75">Mirror, fingerprint, pressure index, and the journey spine into evidence.</p>
-                  </div>
-                  <div className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-3">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-amber-200">Boundary</p>
-                    <p className="mt-2 text-xs leading-5 text-amber-50/75">No account claim until upload, activation, and generated artifacts prove it.</p>
-                  </div>
-                </div>
-              </motion.article>
-            </div>
-          </div>
-        </section>
-
-        <div className="mb-6 grid gap-3 md:grid-cols-4">
-          {presenterSteps.map((step) => (
-            <button
-              key={step.time}
-              type="button"
-              onClick={step.onSelect}
-              className="group rounded-3xl border border-white/10 bg-white/[0.035] p-4 text-left transition hover:border-indigo-300/50 hover:bg-indigo-300/[0.08]"
-            >
-              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-indigo-200">{step.time}</span>
-              <span className="mt-2 block text-sm font-semibold text-white">{step.title}</span>
-              <span className="mt-2 block text-xs leading-relaxed text-neutral-400 group-hover:text-neutral-200">{step.body}</span>
-            </button>
-          ))}
         </div>
-
-        <section className="mb-8 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
-          <div className="mb-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">
-                Public StoryExperience demo script
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">{publicDemoScript.headline}</h3>
-            </div>
-            <p className="text-sm leading-7 text-emerald-50/75">{publicDemoScript.operatorBrief}</p>
-          </div>
-
-          <div className="grid gap-3 lg:grid-cols-4">
-            {publicDemoScript.moments.map((moment) => (
-              <article key={`${moment.timebox}-${moment.title}`} className="rounded-3xl border border-white/10 bg-black/20 p-4">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">{moment.timebox}</p>
-                <h4 className="mt-2 text-base font-semibold text-white">{moment.title}</h4>
-                <p className="mt-3 text-xs leading-5 text-neutral-300">
-                  <span className="font-semibold text-white">Say:</span> {moment.say}
-                </p>
-                <p className="mt-3 text-xs leading-5 text-neutral-300">
-                  <span className="font-semibold text-white">Show:</span> {moment.show}
-                </p>
-                <p className="mt-3 text-xs leading-5 text-amber-100/75">
-                  <span className="font-semibold text-amber-100">Boundary:</span> {moment.boundary}
-                </p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <article className="rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
-              <h4 className="text-base font-semibold text-white">Allowed public claims</h4>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-emerald-50/80">
-                {publicDemoScript.allowedClaims.map((claim) => (
-                  <li key={claim} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
-                    <span>{claim}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-            <article className="rounded-3xl border border-rose-300/20 bg-rose-300/[0.06] p-5">
-              <h4 className="text-base font-semibold text-white">Forbidden public claims</h4>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-rose-50/80">
-                {publicDemoScript.forbiddenClaims.map((claim) => (
-                  <li key={claim} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-300" />
-                    <span>{claim}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </div>
-
-          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-7 text-emerald-50/75">
-            <span className="font-semibold text-white">Next action:</span> {publicDemoScript.nextAction}
-          </p>
-        </section>
-
         <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div className="order-2 space-y-3 lg:order-1">
             <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
@@ -895,14 +486,14 @@ export default function StoryExperience() {
                 </p>
               </div>
               <div className="rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">3-minute demo path</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Truth ladder</p>
                 <div className="mt-4 grid gap-3 text-sm leading-relaxed text-neutral-300">
                   {[
-                    ['1', 'Public story predicts a provisional fingerprint.'],
-                    ['2', 'Upload or sample history creates the free report packet.'],
-                    ['3', 'Locked insight explains what live evidence must prove.'],
-                    ['4', 'Private Reset Pro demo opens only behind the presenter gate.'],
-                    ['5', 'Append proof closes the demo where live evidence must begin.'],
+                    ['1', 'Public story creates a provisional mirror.'],
+                    ['2', 'Upload or sample history tests what the mirror got right.'],
+                    ['3', 'Free report names the leak without pretending to finish the answer.'],
+                    ['4', 'Locked insight asks the private question the trader now cares about.'],
+                    ['5', 'Reset Pro becomes the operating loop only after access and evidence boundaries are clear.'],
                   ].map(([step, body]) => (
                     <div key={step} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 p-3">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-black text-black">
@@ -913,14 +504,14 @@ export default function StoryExperience() {
                   ))}
                 </div>
                 <p className="mt-4 text-xs leading-relaxed text-indigo-50/65">
-                  The public page earns the upload. The private demo shows structure with sample data only, then closes on append proof.
+                  The public story earns the upload. Private workspace access can show the operating loop, but live proof still begins at upload and append history.
                 </p>
                 <button
                   type="button"
-                  onClick={openGuidedDemoPath}
+                  onClick={inspectUploadFlow}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-sm font-bold uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
                 >
-                  Use Guided Demo Path
+                  Turn Mirror Into Evidence
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>

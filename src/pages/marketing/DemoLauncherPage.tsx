@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { hasPrivateDemoGateConfigured } from '../../lib/privateDemoAccess'
 import { resolveMarket } from '../../lib/market'
-import { IFX_DEMO_OPERATOR_RUNBOOK, buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
+import { SHIBUYA_DEMO_OPERATOR_RUNBOOK, buildDemoJourneyPaths } from '../../lib/demoJourney'
 
 export function DemoLauncherPage() {
   const location = useLocation()
@@ -17,7 +17,7 @@ export function DemoLauncherPage() {
     privateDemoPath,
     appendProofPath,
     activationPath,
-  } = buildIfxDemoJourneyPaths(market)
+  } = buildDemoJourneyPaths(market)
   const primaryRoute = [
     {
       label: 'Start',
@@ -113,7 +113,7 @@ export function DemoLauncherPage() {
         <div className="mb-8 grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-cyan-300">
-              IFX Demo Launcher
+              Shibuya Demo Launcher
             </p>
             <h1 className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
               One controlled path from story to append-proof close.
@@ -181,7 +181,7 @@ export function DemoLauncherPage() {
           <div className="mb-6 grid gap-4 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
-                IFX operator run sheet
+                Operator run sheet
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-white">Three minutes. Five beats. One proof boundary.</h2>
             </div>
@@ -191,7 +191,7 @@ export function DemoLauncherPage() {
             </p>
           </div>
           <div className="grid gap-3 xl:grid-cols-5">
-            {IFX_DEMO_OPERATOR_RUNBOOK.map((beat) => (
+            {SHIBUYA_DEMO_OPERATOR_RUNBOOK.map((beat) => (
               <article key={beat.beat} className="rounded-3xl border border-white/10 bg-black/25 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-sky-100">
                   Beat {beat.beat} / {beat.timebox}
@@ -219,7 +219,7 @@ export function DemoLauncherPage() {
           <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
-                PRIMARY IFX ROUTE
+                PRIMARY STORY ROUTE
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-white">Story first. Shortcuts are fallback only.</h2>
             </div>

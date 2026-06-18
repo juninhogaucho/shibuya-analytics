@@ -65,7 +65,7 @@ export default function PublicUploadPage() {
       body: hasGuidedStoryHandoff
         ? 'The public story selected the provisional archetype, pain axis, scene count, and website-level markers before this upload step.'
         : shouldUseDemoLauncherSamplePacket
-          ? 'The IFX launcher explicitly marks this path as a sample packet for continuity, not visitor analytics evidence.'
+          ? 'The demo launcher explicitly marks this path as a sample packet for continuity, not visitor analytics evidence.'
           : 'No guided public story packet is attached. This route can create a report preview, but it must be treated as a weaker recovery path.',
     },
     {

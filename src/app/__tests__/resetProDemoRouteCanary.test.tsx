@@ -32,7 +32,7 @@ describe('Reset Pro demo route canary', () => {
     )
 
     expect(await screen.findByRole('heading', { name: /One controlled path from story to append-proof close/i })).toBeInTheDocument()
-    expect(screen.getByText('PRIMARY IFX ROUTE')).toBeInTheDocument()
+    expect(screen.getByText('PRIMARY STORY ROUTE')).toBeInTheDocument()
     expect(screen.getByText(/Append close is presenter-gated even when opened from this launcher/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /^Close Demo$/i }))

@@ -4,13 +4,13 @@ import {
   DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
 } from './publicReportSession'
 
-export const IFX_DEMO_REPORT_ID = 'sample-behavioral-leak-report'
-export const IFX_DEMO_ARCHETYPE_ID = 'marco'
-export const IFX_DEMO_AXIS_ID = 'edge_decay'
-export const IFX_DEMO_LOCKED_SECTION_ID = 'edge-decay-map'
-export const IFX_DEMO_SCENE_COUNT = 6
-export const IFX_DEMO_SIGNAL_MARKERS = 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent'
-export const IFX_DEMO_STORY_SCENE_IDS = [
+export const SHIBUYA_DEMO_REPORT_ID = 'sample-behavioral-leak-report'
+export const SHIBUYA_DEMO_ARCHETYPE_ID = 'marco'
+export const SHIBUYA_DEMO_AXIS_ID = 'edge_decay'
+export const SHIBUYA_DEMO_LOCKED_SECTION_ID = 'edge-decay-map'
+export const SHIBUYA_DEMO_SCENE_COUNT = 6
+export const SHIBUYA_DEMO_SIGNAL_MARKERS = 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent'
+export const SHIBUYA_DEMO_STORY_SCENE_IDS = [
   'cold-open',
   'pnl-lie',
   'vaep',
@@ -19,7 +19,7 @@ export const IFX_DEMO_STORY_SCENE_IDS = [
   'upload-moment',
 ] as const
 
-export interface IfxDemoOperatorBeat {
+export interface DemoOperatorBeat {
   beat: string
   timebox: string
   title: string
@@ -28,7 +28,7 @@ export interface IfxDemoOperatorBeat {
   boundary: string
 }
 
-export const IFX_DEMO_OPERATOR_RUNBOOK: IfxDemoOperatorBeat[] = [
+export const SHIBUYA_DEMO_OPERATOR_RUNBOOK: DemoOperatorBeat[] = [
   {
     beat: '01',
     timebox: '0:00-0:30',
@@ -71,68 +71,68 @@ export const IFX_DEMO_OPERATOR_RUNBOOK: IfxDemoOperatorBeat[] = [
   },
 ] as const
 
-export function buildIfxGuidedDemoParams(): URLSearchParams {
+export function buildGuidedDemoParams(): URLSearchParams {
   return new URLSearchParams({
     [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-    archetype: IFX_DEMO_ARCHETYPE_ID,
-    axis: IFX_DEMO_AXIS_ID,
+    archetype: SHIBUYA_DEMO_ARCHETYPE_ID,
+    axis: SHIBUYA_DEMO_AXIS_ID,
     story: 'guided',
-    scene_count: String(IFX_DEMO_SCENE_COUNT),
-    pain_axes: IFX_DEMO_AXIS_ID,
-    signals: IFX_DEMO_SIGNAL_MARKERS,
+    scene_count: String(SHIBUYA_DEMO_SCENE_COUNT),
+    pain_axes: SHIBUYA_DEMO_AXIS_ID,
+    signals: SHIBUYA_DEMO_SIGNAL_MARKERS,
   })
 }
 
-export function buildIfxDemoReportParams(): URLSearchParams {
+export function buildDemoReportParams(): URLSearchParams {
   return new URLSearchParams({
     [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
-    archetype: IFX_DEMO_ARCHETYPE_ID,
-    axis: IFX_DEMO_AXIS_ID,
+    archetype: SHIBUYA_DEMO_ARCHETYPE_ID,
+    axis: SHIBUYA_DEMO_AXIS_ID,
     story: 'guided',
-    scene_count: String(IFX_DEMO_SCENE_COUNT),
-    pain_axes: IFX_DEMO_AXIS_ID,
-    signals: IFX_DEMO_SIGNAL_MARKERS,
+    scene_count: String(SHIBUYA_DEMO_SCENE_COUNT),
+    pain_axes: SHIBUYA_DEMO_AXIS_ID,
+    signals: SHIBUYA_DEMO_SIGNAL_MARKERS,
   })
 }
 
-export function buildIfxLockedInsightParams(source: 'guided_report' | 'locked_insight'): URLSearchParams {
+export function buildLockedInsightParams(source: 'guided_report' | 'locked_insight'): URLSearchParams {
   const params = new URLSearchParams({
     [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
     source,
-    report: IFX_DEMO_REPORT_ID,
-    archetype: IFX_DEMO_ARCHETYPE_ID,
-    axis: IFX_DEMO_AXIS_ID,
+    report: SHIBUYA_DEMO_REPORT_ID,
+    archetype: SHIBUYA_DEMO_ARCHETYPE_ID,
+    axis: SHIBUYA_DEMO_AXIS_ID,
   })
 
   if (source === 'locked_insight') {
-    params.set('section', IFX_DEMO_LOCKED_SECTION_ID)
+    params.set('section', SHIBUYA_DEMO_LOCKED_SECTION_ID)
   }
 
   params.set('story', 'guided')
-  params.set('scene_count', String(IFX_DEMO_SCENE_COUNT))
-  params.set('pain_axes', IFX_DEMO_AXIS_ID)
-  params.set('signals', IFX_DEMO_SIGNAL_MARKERS)
+  params.set('scene_count', String(SHIBUYA_DEMO_SCENE_COUNT))
+  params.set('pain_axes', SHIBUYA_DEMO_AXIS_ID)
+  params.set('signals', SHIBUYA_DEMO_SIGNAL_MARKERS)
 
   return params
 }
 
-export function buildIfxAppendProofGateParams(): URLSearchParams {
-  const params = buildIfxLockedInsightParams('locked_insight')
+export function buildAppendProofGateParams(): URLSearchParams {
+  const params = buildLockedInsightParams('locked_insight')
   params.set('destination', 'append_proof')
   return params
 }
 
-export function buildIfxDemoJourneyPaths(market: Market) {
+export function buildDemoJourneyPaths(market: Market) {
   return {
     storyPath: addMarketToPath('/story', market),
-    uploadPath: addMarketToPath(`/upload?${buildIfxGuidedDemoParams().toString()}`, market),
-    reportPath: addMarketToPath(`/report/${IFX_DEMO_REPORT_ID}?${buildIfxDemoReportParams().toString()}`, market),
+    uploadPath: addMarketToPath(`/upload?${buildGuidedDemoParams().toString()}`, market),
+    reportPath: addMarketToPath(`/report/${SHIBUYA_DEMO_REPORT_ID}?${buildDemoReportParams().toString()}`, market),
     lockedInsightPath: addMarketToPath(
-      `/insight/${IFX_DEMO_LOCKED_SECTION_ID}?${buildIfxLockedInsightParams('guided_report').toString()}`,
+      `/insight/${SHIBUYA_DEMO_LOCKED_SECTION_ID}?${buildLockedInsightParams('guided_report').toString()}`,
       market,
     ),
-    privateDemoPath: addMarketToPath(`/private-demo?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
-    appendProofPath: addMarketToPath(`/private-demo?${buildIfxAppendProofGateParams().toString()}`, market),
-    activationPath: addMarketToPath(`/activate?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
+    privateDemoPath: addMarketToPath(`/private-demo?${buildLockedInsightParams('locked_insight').toString()}`, market),
+    appendProofPath: addMarketToPath(`/private-demo?${buildAppendProofGateParams().toString()}`, market),
+    activationPath: addMarketToPath(`/activate?${buildLockedInsightParams('locked_insight').toString()}`, market),
   }
 }

@@ -162,7 +162,7 @@ export default function PrivateDemoPage() {
         ? 'The presenter gate can open because this browser has a locked-section intent receipt or a controlled launcher packet.'
         : hasReportHandoff
           ? 'Private demo unlocks require a local locked-section intent receipt or an explicit controlled launcher packet. A URL alone is not enough.'
-          : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
+          : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the Shibuya demo launcher so Reset Pro receives a real question.',
     },
     {
       label: 'Locked question',
@@ -409,7 +409,7 @@ export default function PrivateDemoPage() {
                   to={addMarketToPath('/demo', market)}
                   className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white hover:text-black"
                 >
-                  Open IFX Demo Launcher
+                  Open Shibuya Demo Launcher
                 </Link>
               </div>
             </div>

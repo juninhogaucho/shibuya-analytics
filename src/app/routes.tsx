@@ -68,7 +68,6 @@ export function AppRoutes() {
         <Route path="/global" element={<HomePage />} />
         <Route path="/intl" element={<HomePage />} />
         <Route path="/story" element={<HomePage />} />
-        <Route path="/ifx" element={<LaunchSignalPage />} />
         <Route path="/signal" element={<LaunchSignalPage />} />
 
         <Route element={<PublicLayout />}>
@@ -79,7 +78,6 @@ export function AppRoutes() {
           <Route path="/enterprise" element={<Navigate to="/partners" replace />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/demo" element={<DemoLauncherPage />} />
-          <Route path="/ifx-demo" element={<DemoLauncherPage />} />
           <Route path="/upload" element={<PublicUploadPage />} />
           <Route path="/report/:id" element={<FreeReportPage />} />
           <Route path="/insight/:section" element={<LockedInsightPage />} />

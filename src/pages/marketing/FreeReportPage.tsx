@@ -196,7 +196,7 @@ export default function FreeReportPage() {
         <section className="mb-8 min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
           <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">IFX guided continuation</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Guided continuation</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">The next click should answer one private question.</h2>
               <p className="mt-4 text-sm leading-7 text-neutral-300">
                 For a live walkthrough, do not browse every locked module. Carry this report into the module that best matches the dominant axis:

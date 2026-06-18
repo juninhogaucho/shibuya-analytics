@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, Eye, LockKeyhole, RadioTower, Sparkles } from 'lucide-react'
-import { buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
+import { buildDemoJourneyPaths } from '../../lib/demoJourney'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 
 const ecosystemLanes = [
@@ -33,11 +33,11 @@ export default function LaunchSignalPage() {
   const {
     storyPath,
     privateDemoPath,
-  } = buildIfxDemoJourneyPaths(market)
+  } = buildDemoJourneyPaths(market)
   const demoLauncherPath = addMarketToPath('/demo', market)
 
   return (
-    <main className="shibuya-ifx-page relative min-h-screen overflow-hidden bg-[#020204] text-white selection:bg-white selection:text-black">
+    <main className="shibuya-signal-page relative min-h-screen overflow-hidden bg-[#020204] text-white selection:bg-white selection:text-black">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.18),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(249,115,22,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_38%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:56px_56px] opacity-30 [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
 
@@ -61,7 +61,7 @@ export default function LaunchSignalPage() {
         <div className="grid min-w-0 flex-1 items-center gap-12 py-16 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.72fr)]">
           <div className="min-w-0 max-w-full lg:max-w-4xl">
             <p className="mb-6 max-w-full text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500 sm:text-sm sm:tracking-[0.32em] lg:max-w-xl">
-              IFX demo launcher
+              Shibuya demo launcher
             </p>
 
             <h1 className="max-w-full break-words text-4xl font-black leading-[0.96] tracking-[-0.055em] text-white sm:text-7xl sm:tracking-[-0.07em] lg:max-w-5xl lg:text-8xl">
@@ -72,7 +72,7 @@ export default function LaunchSignalPage() {
             <p className="mt-8 max-w-full break-words text-base leading-7 text-neutral-300 sm:text-xl sm:leading-8 lg:max-w-2xl">
               Shibuya is the public story experience for trader behavior: recognition, provisional fingerprint,
               upload, sample report, locked private insight, then the Reset Pro workspace behind presenter access.
-              This IFX link is a truthful demo path, not a live backend proof claim.
+              This shared link is a truthful demo path, not a live backend proof claim.
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">

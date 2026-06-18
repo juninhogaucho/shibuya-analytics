@@ -45,7 +45,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Private Reset Pro requires a carried public question.')).toBeInTheDocument()
     expect(screen.getByText(/Direct cold unlock is intentionally disabled/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open StoryExperience/i })).toHaveAttribute('href', '/story?market=global')
-    expect(screen.getByRole('link', { name: /Open IFX Demo Launcher/i })).toHaveAttribute('href', '/demo?market=global')
+    expect(screen.getByRole('link', { name: /Open Shibuya Demo Launcher/i })).toHaveAttribute('href', '/demo?market=global')
     expect(screen.getByText('Presenter demo code disabled in this build')).toBeInTheDocument()
     expect(screen.getByText('Still missing by design')).toBeInTheDocument()
     expect(screen.getByText(/3-minute path through Mission HQ/i)).toBeInTheDocument()

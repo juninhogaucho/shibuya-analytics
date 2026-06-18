@@ -20,7 +20,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first', 'Presenter-gated recovery shortcut', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
+    markers: ['Story is the product', 'Shibuya is the trader truth layer', 'Start The Mirror', 'Public mirror contract', 'not by selling a platform', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
   },
   {
     label: 'public journey contract',
@@ -28,14 +28,14 @@ const REQUIRED_SURFACES = [
     markers: ['PUBLIC_JOURNEY_CONTRACT', 'public StoryExperience -> locked upload/report/private insight -> private Reset Pro workspace demo', 'Website-level recognition only.', 'Presenter-gated sample workspace.', 'Must carry the report, section, public handoff, and evidence status', 'first meaningful upload and repeat append history'],
   },
   {
-    label: 'IFX demo launcher',
+    label: 'Shibuya demo launcher',
     file: 'src/pages/marketing/DemoLauncherPage.tsx',
-    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'IFX operator run sheet', 'Three minutes. Five beats. One proof boundary.', 'Operator run sheet rule', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is presenter-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'IFX_DEMO_OPERATOR_RUNBOOK', 'buildIfxDemoJourneyPaths'],
+    markers: ['Shibuya Demo Launcher', 'DEMO LAUNCH PACKET', 'Operator run sheet', 'Three minutes. Five beats. One proof boundary.', 'Operator run sheet rule', 'PRIMARY STORY ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is presenter-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'SHIBUYA_DEMO_OPERATOR_RUNBOOK', 'buildDemoJourneyPaths'],
   },
   {
-    label: 'IFX public signal entry',
+    label: 'Public signal entry',
     file: 'src/pages/marketing/LaunchSignalPage.tsx',
-    markers: ['IFX demo launcher', 'Start 3-Minute Story', 'Presenter Demo Gate', 'Operator Launcher', 'This IFX link is a truthful demo path', 'buildIfxDemoJourneyPaths', 'privateDemoPath', 'demoLauncherPath'],
+    markers: ['Shibuya demo launcher', 'Start 3-Minute Story', 'Presenter Demo Gate', 'Operator Launcher', 'This shared link is a truthful demo path', 'buildDemoJourneyPaths', 'privateDemoPath', 'demoLauncherPath'],
   },
   {
     label: 'public upload',
@@ -70,7 +70,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Route integrity', 'Blocked: start from story/report', 'Blocked: open locked insight first', 'Private demo unlocks require a local locked-section intent receipt or an explicit controlled launcher packet.', 'Route integrity blocked', 'Private Reset Pro requires a carried public question.', 'Direct cold unlock is intentionally disabled.', 'Open StoryExperience', 'Open IFX Demo Launcher', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private gate engagement receipt', 'Intent survived into the presenter gate. It still is not evidence.', 'route continuity only, never trader proof', 'Private gate engagement rule: views, locked clicks, and gate attempts can explain routing intent only.', 'engagementReportViewCount', 'engagementPrivateDemoIntentCount', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Post-unlock destination', 'Append proof close after unlock', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only after locked insight intent is verified.', 'nothing; URL-only, report-only, and cold private-demo unlocks are blocked', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the presenter code.', 'Presenter-controlled access', 'PRIVATE_DEMO_CLIENT_GATE_BOUNDARY', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview', 'append_proof_shortcut'],
+    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Route integrity', 'Blocked: start from story/report', 'Blocked: open locked insight first', 'Private demo unlocks require a local locked-section intent receipt or an explicit controlled launcher packet.', 'Route integrity blocked', 'Private Reset Pro requires a carried public question.', 'Direct cold unlock is intentionally disabled.', 'Open StoryExperience', 'Open Shibuya Demo Launcher', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private gate engagement receipt', 'Intent survived into the presenter gate. It still is not evidence.', 'route continuity only, never trader proof', 'Private gate engagement rule: views, locked clicks, and gate attempts can explain routing intent only.', 'engagementReportViewCount', 'engagementPrivateDemoIntentCount', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Post-unlock destination', 'Append proof close after unlock', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only after locked insight intent is verified.', 'nothing; URL-only, report-only, and cold private-demo unlocks are blocked', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the presenter code.', 'Presenter-controlled access', 'PRIVATE_DEMO_CLIENT_GATE_BOUNDARY', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview', 'append_proof_shortcut'],
   },
   {
     label: 'private demo access boundary',
@@ -98,9 +98,9 @@ const REQUIRED_SURFACES = [
     markers: ['storySource', 'scene_count', 'pain_axes', 'signals', 'enrichCheckoutIntent'],
   },
   {
-    label: 'IFX append gate handoff',
-    file: 'src/lib/ifxDemoJourney.ts',
-    markers: ['buildIfxAppendProofGateParams', 'destination', 'append_proof', 'appendProofPath'],
+    label: 'demo append gate handoff',
+    file: 'src/lib/demoJourney.ts',
+    markers: ['buildAppendProofGateParams', 'destination', 'append_proof', 'appendProofPath'],
   },
   {
     label: 'checkout success activation handoff',

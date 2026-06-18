@@ -37,19 +37,19 @@ describe('checkout API boundary', () => {
     httpPostMock.mockResolvedValueOnce({
       data: {
         valid: true,
-        code: 'IFX',
+        code: 'SHIBUYA',
         dashboard_months_bonus: 1,
         message: 'Code applied.',
       },
     })
 
-    await expect(validatePromoCode(' ifx ')).resolves.toEqual({
+    await expect(validatePromoCode(' shibuya ')).resolves.toEqual({
       valid: true,
-      code: 'IFX',
+      code: 'SHIBUYA',
       dashboard_months_bonus: 1,
       message: 'Code applied.',
     })
-    expect(httpPostMock).toHaveBeenCalledWith('/v1/promo/validate', { code: 'ifx' })
+    expect(httpPostMock).toHaveBeenCalledWith('/v1/promo/validate', { code: 'shibuya' })
   })
 
   test('normalizes backend promo rejection into a user-safe invalid result', async () => {
@@ -71,6 +71,6 @@ describe('checkout API boundary', () => {
 
     httpPostMock.mockRejectedValueOnce(new ApiError('Unable to connect', 0))
 
-    await expect(validatePromoCode('IFX')).rejects.toThrow('Unable to connect')
+    await expect(validatePromoCode('SHIBUYA')).rejects.toThrow('Unable to connect')
   })
 })

@@ -106,19 +106,9 @@ describe('public route contract', () => {
     expect(await screen.findByText('Private demo preflight')).toBeInTheDocument()
   })
 
-  test('/demo serves the controlled IFX demo launcher', async () => {
+  test('/demo serves the controlled Shibuya demo launcher', async () => {
     render(
       <MemoryRouter initialEntries={['/demo?market=global']}>
-        <AppRoutes />
-      </MemoryRouter>,
-    )
-
-    expect(await screen.findByRole('heading', { name: /One controlled path from story to append-proof close/i })).toBeInTheDocument()
-  })
-
-  test('/ifx-demo serves the controlled IFX demo launcher alias', async () => {
-    render(
-      <MemoryRouter initialEntries={['/ifx-demo?market=india']}>
         <AppRoutes />
       </MemoryRouter>,
     )

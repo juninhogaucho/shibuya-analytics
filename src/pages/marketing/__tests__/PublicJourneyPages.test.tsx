@@ -123,7 +123,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Live workspace must prove')).toBeInTheDocument()
     expect(screen.getByText('Private demo may show')).toBeInTheDocument()
     expect(screen.getByText(/This bridge is a product handoff, not a live diagnosis/i)).toBeInTheDocument()
-    expect(screen.getByText('IFX guided continuation')).toBeInTheDocument()
+    expect(screen.getByText('Guided continuation')).toBeInTheDocument()
     expect(screen.getByText('The next click should answer one private question.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
       'href',
@@ -306,7 +306,7 @@ describe('public Shibuya journey pages', () => {
     })
   })
 
-  test('IFX launcher upload path carries controlled sample context into Reset Pro dashboard metadata', async () => {
+  test('demo launcher upload path carries controlled sample context into Reset Pro dashboard metadata', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
