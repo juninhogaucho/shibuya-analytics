@@ -8,6 +8,7 @@ import type { CheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getMarketHomePath, getPlanByPlanId, inferMarketFromPlanId, persistMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
+import { getFingerprintAxis } from '../../lib/storyExperience'
 
 interface OrderInfo {
   name: string
@@ -103,6 +104,10 @@ const CheckoutSuccessPage: React.FC = () => {
   const plan = getPlanByPlanId(order?.planId)
   const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const selectedPainAxisLabels = (reportSession?.selectedPainAxisIds ?? [])
+    .map((axisId) => getFingerprintAxis(axisId))
+    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
+    .map((axis) => axis.label)
   const activationPath = addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)
 
   if (loading) {
@@ -225,9 +230,12 @@ const CheckoutSuccessPage: React.FC = () => {
             </p>
             {reportSession?.storySource ? (
               <p className="mt-2 text-neutral-500">
-                Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; axes {reportSession.selectedPainAxisIds.length}.
+                Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; pain axes {selectedPainAxisLabels.length ? selectedPainAxisLabels.join(', ') : 'none captured'}.
               </p>
             ) : null}
+            <p className="mt-2 text-neutral-500">
+              Activation boundary: payment can carry this context forward, but the live workspace still needs a first meaningful upload before private claims are treated as account-specific evidence.
+            </p>
           </div>
         </motion.div>
       )}

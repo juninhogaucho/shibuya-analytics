@@ -52,7 +52,8 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Report: sample-free-report')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',

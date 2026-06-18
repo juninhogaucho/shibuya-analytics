@@ -203,11 +203,14 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByText('Carried into activation')).toBeInTheDocument()
     expect(screen.getByText('Report: sample-behavioral-leak-report')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Story handoff: guided; scenes 6; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided; scenes 6; pain axes Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Activate Live Account/i }))
     expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT DETECTED')).toBeInTheDocument()
     expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report: sample-behavioral-leak-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
 
     await user.clear(screen.getByLabelText(/EMAIL_ADDRESS/i))
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')

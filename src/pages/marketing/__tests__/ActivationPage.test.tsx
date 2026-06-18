@@ -72,6 +72,8 @@ describe('ActivationPage', () => {
 
     expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT DETECTED')).toBeInTheDocument()
     expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report: sample-free-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')

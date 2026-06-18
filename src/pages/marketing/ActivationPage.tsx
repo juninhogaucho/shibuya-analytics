@@ -7,7 +7,7 @@ import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/marke
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
-import { buildFreeReportPreview, findLockedReportSectionBySlug } from '../../lib/storyExperience'
+import { buildFreeReportPreview, findLockedReportSectionBySlug, getFingerprintAxis } from '../../lib/storyExperience'
 
 export function ActivationPage() {
   const recentAccess = readRecentOrderAccess()
@@ -31,6 +31,10 @@ export function ActivationPage() {
   const activationLockedSection = activationReport
     ? findLockedReportSectionBySlug(activationReport, checkoutIntent?.lockedSectionId)
     : null
+  const activationPainAxisLabels = (activationReportSession?.selectedPainAxisIds ?? [])
+    .map((axisId) => getFingerprintAxis(axisId))
+    .filter((axis, index, axes) => activationReportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
+    .map((axis) => axis.label)
   const navigate = useNavigate()
 
   const handleSubmit = async (event: FormEvent) => {
@@ -151,6 +155,12 @@ export function ActivationPage() {
                   </p>
                   <p className="terminal-muted">
                     This is routing context only. The private claim still requires live activation, upload proof, and generated workspace evidence.
+                  </p>
+                  <p className="terminal-muted">
+                    Report: {checkoutIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
+                  </p>
+                  <p className="terminal-muted">
+                    Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationReportSession?.storySource ?? 'not available'} | Scenes: {activationReportSession?.visitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
                   </p>
                 </div>
               </div>
