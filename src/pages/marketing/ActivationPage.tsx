@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
 import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { verifyActivation } from '../../lib/api/auth'
 import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
@@ -222,6 +223,9 @@ export function ActivationPage() {
                 This offer includes a guided review checkpoint after your first meaningful upload. Activation is step one, not the finish line.
               </p>
             ) : null}
+            <div aria-label="LIVE PROOF READINESS activation contract">
+              <LiveProofReadinessCard title="Before activation can become live proof." />
+            </div>
             {checkoutIntent ? (
               <div className="terminal-status terminal-status-success" style={{ marginTop: '1rem' }}>
                 <span className="status-icon">CTX</span>

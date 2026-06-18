@@ -98,6 +98,10 @@ describe('AppendTradesPage', () => {
     renderPage()
 
     expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
+    expect(screen.getByText('LIVE PROOF READINESS')).toBeInTheDocument()
+    expect(screen.getByText('Before this upload can become live proof.')).toBeInTheDocument()
+    expect(screen.getByText('First meaningful upload')).toBeInTheDocument()
+    expect(screen.getByText('Append history')).toBeInTheDocument()
     expect(screen.getByText('Public-to-private journey')).toBeInTheDocument()
     expect(screen.getByText('Append proof close')).toBeInTheDocument()
     expect(screen.getByText('Demo ends where live evidence must begin.')).toBeInTheDocument()
@@ -190,6 +194,8 @@ describe('AppendTradesPage', () => {
     renderPage()
 
     expect(screen.getByText('LIVE ACTIVATION PROOF TARGET')).toBeInTheDocument()
+    expect(screen.getByText('LIVE PROOF READINESS')).toBeInTheDocument()
+    expect(screen.getByText('Before this upload can become live proof.')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload turns this from carried context into account evidence.')).toBeInTheDocument()
     expect(screen.getByText('Activated from locked report module')).toBeInTheDocument()
     expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()

@@ -88,9 +88,19 @@ const REQUIRED_SURFACES = [
     markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes', 'public_context_signal_markers'],
   },
   {
+    label: 'live proof readiness contract',
+    file: 'src/lib/liveProofReadiness.ts',
+    markers: ['LIVE BACKEND BLOCKED', 'BACKEND TARGET PRESENT', 'First meaningful upload', 'Append history', 'Sample routes, URL context, and founder codes'],
+  },
+  {
+    label: 'live proof readiness card',
+    file: 'src/components/dashboard/LiveProofReadinessCard.tsx',
+    markers: ['LIVE PROOF READINESS', 'Backend target', 'First meaningful upload', 'Append history', 'Boundary:'],
+  },
+  {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
+    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',
@@ -115,7 +125,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'append-proof exit',
     file: 'src/pages/dashboard/AppendTradesPage.tsx',
-    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'RESET PRO PROOF EXIT', 'activeStage="append"', 'Close the sample Reset Pro demo on append proof', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'FOUNDER-GATED APPEND SHORTCUT', 'This close was opened directly after the private gate.', 'Mission HQ was bypassed for append close', 'RESET PRO APPEND CLOSE CHECKLIST', 'End the demo by proving the workflow, not the trader.', 'Forbidden close', 'Live proof path', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'No private demo unlock receipt was attached'],
+    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'LIVE PROOF READINESS', 'RESET PRO PROOF EXIT', 'activeStage="append"', 'Close the sample Reset Pro demo on append proof', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'FOUNDER-GATED APPEND SHORTCUT', 'This close was opened directly after the private gate.', 'Mission HQ was bypassed for append close', 'RESET PRO APPEND CLOSE CHECKLIST', 'End the demo by proving the workflow, not the trader.', 'Forbidden close', 'Live proof path', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'No private demo unlock receipt was attached'],
   },
   {
     label: 'partner economics',

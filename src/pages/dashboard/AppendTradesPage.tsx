@@ -12,6 +12,7 @@ import {
 } from '../../lib/api/dashboard'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
+import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
@@ -461,6 +462,10 @@ export function AppendTradesPage() {
           </p>
         )}
       </section>
+
+      <div aria-label="LIVE PROOF READINESS append contract">
+        <LiveProofReadinessCard title="Before this upload can become live proof." />
+      </div>
 
       {liveActivationProofTarget ? (
         <section
