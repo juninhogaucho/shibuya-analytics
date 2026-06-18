@@ -91,6 +91,14 @@ export interface FreeReportPreview {
   conversionLine: string
 }
 
+export interface LockedInsightPreview {
+  sectionTitle: string
+  thesis: string
+  liveWorkspaceShows: string[]
+  demoMayPreview: string[]
+  proofRequired: string[]
+}
+
 export function toReportSectionSlug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
@@ -101,6 +109,96 @@ export function findLockedReportSectionBySlug(report: FreeReportPreview, section
   }
 
   return report.locked.find((section) => toReportSectionSlug(section.title) === sectionSlug) ?? null
+}
+
+export function buildLockedInsightPreview(report: FreeReportPreview, sectionSlug?: string | null): LockedInsightPreview {
+  const section = findLockedReportSectionBySlug(report, sectionSlug) ?? report.locked[0]
+  const slug = toReportSectionSlug(section.title)
+
+  const commonProof = [
+    'Live activation or explicitly labeled private demo mode.',
+    'Visible upload/sample boundary before any private claim.',
+    'No instrument-level trade recommendation.',
+  ]
+
+  switch (slug) {
+    case 'breach-sequence':
+      return {
+        sectionTitle: section.title,
+        thesis: 'The private layer reconstructs the decision chain that tends to appear before account damage, not just the final loss.',
+        liveWorkspaceShows: [
+          'Pre-breach decision sequence grouped by session state.',
+          'Rulebook pressure points where size, timing, or re-entry changed.',
+          'Which warning should fire before the next similar sequence.',
+        ],
+        demoMayPreview: [
+          'Sample breach-style sequence and talk track.',
+          'How the warning would be framed without pretending it is the visitor account.',
+        ],
+        proofRequired: [...commonProof, 'Normalized trades with timestamps, order sequence, and account/rule context.'],
+      }
+    case 'edge-decay-map':
+      return {
+        sectionTitle: section.title,
+        thesis: 'The private layer separates real edge decay from ordinary variance so the trader stops defending setups that no longer pay.',
+        liveWorkspaceShows: [
+          'Setup clusters marked stable, watchlist, or decayed.',
+          'Performance drift across repeated uploads instead of one sample.',
+          'Where confidence stayed high while expectancy weakened.',
+        ],
+        demoMayPreview: [
+          'Sample edge portfolio structure.',
+          'How Shibuya talks about setup health without giving buy/sell calls.',
+        ],
+        proofRequired: [...commonProof, 'Enough historical trades to compare setup behavior across windows.'],
+      }
+    case 'next-session-state-warning':
+      return {
+        sectionTitle: section.title,
+        thesis: 'The private layer turns the report into a pre-session warning, so the next order starts under a visible state constraint.',
+        liveWorkspaceShows: [
+          'The state most likely to contaminate the next session.',
+          'A next-session mandate tied to behavior, not market direction.',
+          'Append-proof comparison after the next upload.',
+        ],
+        demoMayPreview: [
+          'Sample mandate and warning language.',
+          'How the append-proof loop confirms improvement or relapse.',
+        ],
+        proofRequired: [...commonProof, 'At least one follow-up upload to compare mandate versus next-session behavior.'],
+      }
+    case 'historical-fingerprint-trace':
+      return {
+        sectionTitle: section.title,
+        thesis: 'The private layer makes the fingerprint historical, showing whether the trader is changing or repeating the same leak under new language.',
+        liveWorkspaceShows: [
+          'Fingerprint movement across upload windows.',
+          'Which axes improved, worsened, or stayed stubborn.',
+          'Whether the paid loop is changing behavior or only creating insight.',
+        ],
+        demoMayPreview: [
+          'Sample historical trace with demo data only.',
+          'The progress narrative without claiming live persistence.',
+        ],
+        proofRequired: [...commonProof, 'Multiple uploaded windows or a durable account history.'],
+      }
+    case 'highest-cost-state':
+    default:
+      return {
+        sectionTitle: section.title,
+        thesis: 'The private layer identifies which trader state is doing the most account damage after trade history is normalized.',
+        liveWorkspaceShows: [
+          'The behavioral state carrying the largest estimated cost.',
+          'How often that state appears before losses, givebacks, or rule pressure.',
+          'Which next-session constraint should be visible first.',
+        ],
+        demoMayPreview: [
+          'Sample cost-state card and founder talk track.',
+          'How the dashboard prioritizes one expensive behavior instead of flooding the trader with metrics.',
+        ],
+        proofRequired: [...commonProof, 'Normalized trade history with enough rows to estimate repeat behavioral cost.'],
+      }
+  }
 }
 
 export const FINGERPRINT_AXES: FingerprintAxis[] = [

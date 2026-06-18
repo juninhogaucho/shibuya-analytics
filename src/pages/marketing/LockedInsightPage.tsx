@@ -2,7 +2,7 @@ import { ArrowRight, Lock, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
+import { buildFreeReportPreview, buildLockedInsightPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
 export default function LockedInsightPage() {
   const { section } = useParams()
@@ -21,6 +21,7 @@ export default function LockedInsightPage() {
   const requestedSection = report.locked.find((candidate) => toReportSectionSlug(candidate.title) === section)
   const lockedSection = requestedSection ?? report.locked[0]
   const sectionSlug = toReportSectionSlug(lockedSection.title)
+  const lockedInsightPreview = buildLockedInsightPreview(report, sectionSlug)
   const checkoutPath = addMarketToPath(
     `/checkout/${resetPlan.checkoutSlug}?source=locked_insight&section=${sectionSlug}&report=${encodeURIComponent(report.reportId)}`,
     market,
@@ -90,6 +91,38 @@ export default function LockedInsightPage() {
                 <div key={label} className="rounded-3xl border border-white/8 bg-white/[0.03] p-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">{label}</p>
                   <p className="mt-2 text-sm font-semibold text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
+              Private module preview
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">{lockedInsightPreview.sectionTitle}</h2>
+            <p className="mt-4 text-sm leading-7 text-indigo-50/75">{lockedInsightPreview.thesis}</p>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              {[
+                ['Live workspace shows', lockedInsightPreview.liveWorkspaceShows, 'emerald'],
+                ['Demo may preview', lockedInsightPreview.demoMayPreview, 'indigo'],
+                ['Proof required', lockedInsightPreview.proofRequired, 'amber'],
+              ].map(([title, items, tone]) => (
+                <div key={title as string} className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                  <h3 className="text-base font-semibold text-white">{title as string}</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-300">
+                    {(items as string[]).map((item) => (
+                      <li key={item} className="flex gap-3">
+                        <span
+                          className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${
+                            tone === 'emerald' ? 'bg-emerald-300' : tone === 'amber' ? 'bg-amber-300' : 'bg-indigo-300'
+                          }`}
+                        />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>

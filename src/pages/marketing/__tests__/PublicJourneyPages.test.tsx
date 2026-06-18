@@ -151,7 +151,12 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
     expect(screen.getByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
     expect(screen.getByText('Requested locked module')).toBeInTheDocument()
-    expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
+    expect(screen.getAllByText('Highest-cost state').length).toBeGreaterThan(0)
+    expect(screen.getByText('Private module preview')).toBeInTheDocument()
+    expect(screen.getByText('Live workspace shows')).toBeInTheDocument()
+    expect(screen.getByText('Demo may preview')).toBeInTheDocument()
+    expect(screen.getByText('Proof required')).toBeInTheDocument()
+    expect(screen.getByText(/The behavioral state carrying the largest estimated cost/i)).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(

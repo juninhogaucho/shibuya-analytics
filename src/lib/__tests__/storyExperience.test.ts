@@ -3,6 +3,7 @@ import {
   buildPredictedFingerprint,
   buildBehavioralPressureIndex,
   buildFreeReportPreview,
+  buildLockedInsightPreview,
   createInitialStorySignal,
   getBehavioralPressureBand,
   getDominantFingerprintAxis,
@@ -74,5 +75,20 @@ describe('story experience signal model', () => {
     )
     expect(report.privateInsightGate.refusesToClaim).toContain('No guaranteed profit uplift.')
     expect(report.conversionLine).toContain('live workspace')
+  })
+
+  test('builds module-specific locked insight previews', () => {
+    const report = buildFreeReportPreview({
+      reportId: 'sample-report',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+    })
+    const preview = buildLockedInsightPreview(report, 'edge-decay-map')
+
+    expect(preview.sectionTitle).toBe('Edge decay map')
+    expect(preview.thesis).toContain('separates real edge decay from ordinary variance')
+    expect(preview.liveWorkspaceShows).toContain('Setup clusters marked stable, watchlist, or decayed.')
+    expect(preview.demoMayPreview).toContain('Sample edge portfolio structure.')
+    expect(preview.proofRequired).toContain('Enough historical trades to compare setup behavior across windows.')
   })
 })

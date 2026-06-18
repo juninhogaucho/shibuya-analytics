@@ -35,7 +35,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked private insight',
     file: 'src/pages/marketing/LockedInsightPage.tsx',
-    markers: ['Locked Private Insight', 'This is where recognition becomes evidence.', 'Claims this page refuses'],
+    markers: ['Locked Private Insight', 'Private module preview', 'This is where recognition becomes evidence.', 'Claims this page refuses'],
   },
   {
     label: 'private demo gate',
