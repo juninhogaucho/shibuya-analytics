@@ -164,6 +164,28 @@ export function AppendTradesPage() {
       body: 'Activation, first meaningful upload, generated artifacts, and append history are still required before any account-specific Reset Pro conclusion.',
     },
   ]
+  const resetProCloseChecklistRows = [
+    {
+      label: 'Context carried',
+      body: sessionMeta?.demoBridgeDecisionQuestion
+        ? `Close with the carried question: ${sessionMeta.demoBridgeDecisionQuestion}`
+        : sessionMeta?.demoLockedSectionTitle
+          ? `Close with the locked module: ${sessionMeta.demoLockedSectionTitle}`
+          : 'No private question was attached; call this a cold sample append.',
+    },
+    {
+      label: 'Workflow to show',
+      body: 'Load sample trades, parse preview, confirm sample append, then read the append receipt.',
+    },
+    {
+      label: 'Forbidden close',
+      body: 'Do not claim persistence, backend analytics, trader improvement, or live account evidence from sample mode.',
+    },
+    {
+      label: 'Live proof path',
+      body: 'Activation, real upload, generated artifacts, and repeat append packets are the evidence path.',
+    },
+  ]
 
   useEffect(() => {
     if (sampleMode) {
@@ -556,24 +578,49 @@ export function AppendTradesPage() {
           ))}
         </div>
         {resetProPreview ? (
-          <div
-            className="glass-panel"
-            style={{
-              marginTop: '1rem',
-              borderColor: 'rgba(125,211,252,0.22)',
-              background: 'rgba(14,165,233,0.07)',
-            }}
-          >
-            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO SAMPLE APPEND PACKET</p>
-            <h4 style={{ marginBottom: '0.5rem' }}>Load the closing sample in one click.</h4>
-            <p className="text-muted" style={{ marginBottom: '1rem' }}>
-              This fills the paste parser with a tiny trade block so the presenter can show parse, confirm, and append receipt.
-              It is still sample workflow proof only.
-            </p>
-            <button className="btn btn-sm btn-secondary" type="button" onClick={loadResetProSampleAppend}>
-              Load Reset Pro Sample Trades
-            </button>
-          </div>
+          <>
+            <div
+              className="glass-panel"
+              style={{
+                marginTop: '1rem',
+                borderColor: 'rgba(129, 140, 248, 0.3)',
+                background: 'rgba(99,102,241,0.08)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO APPEND CLOSE CHECKLIST</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>End the demo by proving the workflow, not the trader.</h4>
+              <p className="text-muted" style={{ marginBottom: '1rem' }}>
+                Use this before loading the sample packet so the close stays tight: context carried, workflow shown,
+                claims bounded, live proof path stated.
+              </p>
+              <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+                {resetProCloseChecklistRows.map((row) => (
+                  <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                    <h4 style={{ marginBottom: '0.5rem' }}>{row.label}</h4>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div
+              className="glass-panel"
+              style={{
+                marginTop: '1rem',
+                borderColor: 'rgba(125,211,252,0.22)',
+                background: 'rgba(14,165,233,0.07)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO SAMPLE APPEND PACKET</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>Load the closing sample in one click.</h4>
+              <p className="text-muted" style={{ marginBottom: '1rem' }}>
+                This fills the paste parser with a tiny trade block so the presenter can show parse, confirm, and append receipt.
+                It is still sample workflow proof only.
+              </p>
+              <button className="btn btn-sm btn-secondary" type="button" onClick={loadResetProSampleAppend}>
+                Load Reset Pro Sample Trades
+              </button>
+            </div>
+          </>
         ) : null}
       </section>
 
