@@ -1,7 +1,16 @@
 import { ArrowRight, BarChart3, Handshake, LineChart, ShieldCheck, Split, Target, TimerReset } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import {
+  DEFAULT_PARTNER_ECONOMICS,
+  TVA_LEDGER_SOURCES,
+  buildTvaReconciliationLine,
+  calculatePartnerEconomics,
+  formatPercent,
+  formatUsd,
+} from '../../lib/partnerEconomics'
 
 export function PartnersPage() {
+  const economics = calculatePartnerEconomics(DEFAULT_PARTNER_ECONOMICS)
   const audiences = [
     {
       title: 'Prop firms',
@@ -15,13 +24,6 @@ export function PartnersPage() {
       title: 'Tech providers',
       body: 'Keep your platform stack. Add Shibuya as the intelligence layer that explains what the trader is actually doing inside it.',
     },
-  ]
-
-  const tvaItems = [
-    'Incremental conversion or attach rate after a Shibuya-assisted flow.',
-    'Renewal, retention, or reactivation lift in eligible trader cohorts.',
-    'Reduced preventable abuse, support load, or review burden.',
-    'Verified add-on revenue tied to Shibuya reports, coaching, or workspace access.',
   ]
 
   const dealModels = [
@@ -49,12 +51,20 @@ export function PartnersPage() {
   ]
 
   const economicsRows = [
-    { label: 'Eligible accounts', value: '1,000' },
-    { label: 'Access fee', value: 'USD 12 / account / month' },
-    { label: 'Monthly gross Shibuya revenue', value: 'USD 12,000' },
-    { label: 'Partner channel share at 30%', value: 'USD 3,600' },
-    { label: 'Shibuya retained base revenue', value: 'USD 8,400 / month' },
-    { label: 'Optional TVA success fee', value: '15% above agreed floor' },
+    { label: 'Eligible accounts', value: economics.eligibleAccounts.toLocaleString('en-US') },
+    { label: 'Access fee', value: `${formatUsd(economics.accountFeeUsd)} / account / month` },
+    { label: 'Monthly gross Shibuya revenue', value: formatUsd(economics.monthlyGrossRevenueUsd) },
+    { label: `Partner channel share at ${formatPercent(economics.partnerChannelShareRate)}`, value: formatUsd(economics.partnerMonthlyShareUsd) },
+    { label: 'Shibuya retained base revenue', value: `${formatUsd(economics.shibuyaMonthlyRetainedUsd)} / month` },
+    { label: 'Optional TVA success fee', value: `${formatPercent(economics.tvaSuccessShareRate)} above agreed floor` },
+  ]
+
+  const reconciliationRows = [
+    { label: 'Verified annualized TVA', value: formatUsd(economics.verifiedAnnualizedTvaUsd) },
+    { label: 'Agreed value floor', value: formatUsd(economics.tvaFloorUsd) },
+    { label: 'Eligible TVA after floor', value: formatUsd(economics.eligibleAnnualizedTvaUsd) },
+    { label: 'Shibuya TVA success fee', value: formatUsd(economics.shibuyaTvaSuccessFeeUsd) },
+    { label: 'Shibuya first-year revenue example', value: formatUsd(economics.shibuyaFirstYearRevenueUsd) },
   ]
 
   return (
@@ -179,16 +189,19 @@ export function PartnersPage() {
             <article className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
               <div className="mb-4 flex items-center gap-3">
                 <LineChart className="h-5 w-5 text-indigo-300" />
-                <h3 className="text-lg font-bold text-white">What can count</h3>
+                <h3 className="text-lg font-bold text-white">TVA proof ledger</h3>
               </div>
-              <ul className="grid gap-3 text-sm leading-relaxed text-neutral-400">
-                {tvaItems.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300" />
-                    <span>{item}</span>
-                  </li>
+              <div className="grid gap-3">
+                {TVA_LEDGER_SOURCES.map((item) => (
+                  <div key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <h4 className="text-sm font-bold text-white">{item.label}</h4>
+                    <p className="mt-2 text-xs leading-relaxed text-neutral-400">{item.body}</p>
+                    <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-indigo-200">
+                      {item.billableRule}
+                    </p>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </article>
             <article className="rounded-[1.5rem] border border-indigo-300/20 bg-indigo-500/10 p-6">
               <div className="mb-5 flex items-center gap-3">
@@ -208,8 +221,24 @@ export function PartnersPage() {
                 ))}
               </dl>
               <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-relaxed text-indigo-50/70">
-                Example: if verified annualized TVA is USD 80,000 and the agreed floor is USD 25,000, the eligible TVA is
-                USD 55,000. At 15%, Shibuya earns USD 8,250 only after reconciliation.
+                {buildTvaReconciliationLine(economics)}
+              </p>
+            </article>
+            <article className="rounded-[1.5rem] border border-emerald-300/20 bg-emerald-500/10 p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <BarChart3 className="h-5 w-5 text-emerald-200" />
+                <h3 className="text-lg font-bold text-white">TVA reconciliation ladder</h3>
+              </div>
+              <dl className="grid gap-3">
+                {reconciliationRows.map((row) => (
+                  <div key={row.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+                    <dt className="text-xs font-medium text-emerald-50/60">{row.label}</dt>
+                    <dd className="text-right text-sm font-bold text-white">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-relaxed text-emerald-50/70">
+                The floor protects partners from paying for value Shibuya did not create. The ledger protects Shibuya from giving away measured upside after the proof window.
               </p>
             </article>
           </div>
