@@ -21,6 +21,13 @@ describe('Reset Pro demo script', () => {
       headline: 'Reset Pro opened without public context; frame this as a cold sample workspace.',
       nextAction: 'Run Mission HQ first, inspect one intervention surface, then close on append proof.',
     })
+    expect(script.decisionPacket).toMatchObject({
+      statusLabel: 'WARNING: COLD DEMO',
+      headline: 'Open as a generic sample workspace. Do not imply the public journey happened.',
+      sayFirst: 'This is a cold sample workspace. No public story, report, upload, or locked private question is attached.',
+    })
+    expect(script.decisionPacket.proceedIf).toContain('The presenter says this is a generic sample account before showing any metric.')
+    expect(script.decisionPacket.stopIf).toContain('Someone asks whether these are the viewer real trades.')
     expect(script.unlockReceipt.facts).toContain('Report carried: none')
     expect(script.unlockReceipt.facts).toContain('Evidence packet: direct demo only')
     expect(script.unlockReceipt.boundary).toContain('does not prove live activation')
@@ -143,6 +150,14 @@ describe('Reset Pro demo script', () => {
     expect(script.unlockReceipt.facts).toContain('Story route: guided; scenes 4')
     expect(script.unlockReceipt.facts).toContain('Evidence packet: Sample history packet')
     expect(script.unlockReceipt.facts).toContain('Public markers: Mirror selected, Pain axis tapped, Evidence intent')
+    expect(script.decisionPacket).toMatchObject({
+      statusLabel: 'GO: CONTEXT CARRIED',
+      headline: 'Open with the carried private question, then show only the sample operating loop.',
+      sayFirst: 'We are carrying one question forward: Does the trader become a different operator near the drawdown line?',
+    })
+    expect(script.decisionPacket.proceedIf).toContain('The evidence label is stated out loud: Sample history packet.')
+    expect(script.decisionPacket.proceedIf).toContain('The locked private question is framed as what live data must prove.')
+    expect(script.decisionPacket.stopIf).toContain('The presenter cannot explain that backend upload/payment proof is still missing.')
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
     expect(script.showSequence[0].say).toContain('Does the trader become a different operator near the drawdown line?')
     expect(script.showSequence[0].boundary).toContain('not proof')

@@ -72,6 +72,44 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         className="glass-panel"
         style={{
           marginTop: '1rem',
+          background: 'rgba(245,158,11,0.07)',
+          borderColor: 'rgba(245,158,11,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO DEMO DECISION PACKET</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>{script.decisionPacket.headline}</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              <strong className="text-white">Say first:</strong> {script.decisionPacket.sayFirst}
+            </p>
+          </div>
+          <span className="badge">{script.decisionPacket.statusLabel}</span>
+        </div>
+        <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+          <article className="glass-panel" style={{ background: 'rgba(16,185,129,0.07)', borderColor: 'rgba(16,185,129,0.2)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Proceed if</h4>
+            <ul className="digest-preview" style={{ marginBottom: 0 }}>
+              {script.decisionPacket.proceedIf.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+          <article className="glass-panel" style={{ background: 'rgba(244,63,94,0.07)', borderColor: 'rgba(244,63,94,0.2)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Stop if</h4>
+            <ul className="digest-preview" style={{ marginBottom: 0 }}>
+              {script.decisionPacket.stopIf.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </article>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
           background: 'rgba(14,165,233,0.075)',
           borderColor: 'rgba(125,211,252,0.22)',
         }}

@@ -82,6 +82,14 @@ export interface ResetProDemoUnlockReceipt {
   boundary: string
 }
 
+export interface ResetProDemoDecisionPacket {
+  statusLabel: string
+  headline: string
+  sayFirst: string
+  proceedIf: string[]
+  stopIf: string[]
+}
+
 export interface ResetProDemoProofStage {
   label: string
   status: 'ready' | 'warning' | 'locked'
@@ -96,6 +104,7 @@ export interface ResetProDemoScript {
   founderTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
   unlockReceipt: ResetProDemoUnlockReceipt
+  decisionPacket: ResetProDemoDecisionPacket
   proofLadder: ResetProDemoProofStage[]
   readinessChecklist: ResetProDemoChecklistItem[]
   claimLedger: ResetProDemoClaimLedger
@@ -120,6 +129,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const originCard = buildOriginCard(origin)
   const bridgeCard = buildBridgeCard(origin)
   const unlockReceipt = buildUnlockReceipt(origin, Boolean(originCard), Boolean(bridgeCard))
+  const decisionPacket = buildDecisionPacket(origin, Boolean(originCard), Boolean(bridgeCard))
   const proofLadder = buildProofLadder(origin, Boolean(originCard), Boolean(bridgeCard))
   const steps = buildResetProDemoSteps()
 
@@ -172,6 +182,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
       },
     ],
     unlockReceipt,
+    decisionPacket,
     proofLadder,
     claimLedger: {
       allowed: [
@@ -248,6 +259,43 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     originCard,
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildDecisionPacket(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoDecisionPacket {
+  const carriedEvidence = origin?.evidenceLabel ?? (hasOriginCard ? 'URL context only' : 'direct sample only')
+  const carriedQuestion = origin?.bridgeDecisionQuestion ?? origin?.lockedSectionTitle
+
+  return {
+    statusLabel: hasOriginCard ? 'GO: CONTEXT CARRIED' : 'WARNING: COLD DEMO',
+    headline: hasBridgeCard
+      ? 'Open with the carried private question, then show only the sample operating loop.'
+      : hasOriginCard
+        ? 'Open with the carried report context, then state that the private answer remains unproven.'
+        : 'Open as a generic sample workspace. Do not imply the public journey happened.',
+    sayFirst: carriedQuestion
+      ? `We are carrying one question forward: ${carriedQuestion}`
+      : hasOriginCard
+        ? `We are carrying public report context forward with evidence status: ${carriedEvidence}.`
+        : 'This is a cold sample workspace. No public story, report, upload, or locked private question is attached.',
+    proceedIf: [
+      hasOriginCard
+        ? `The evidence label is stated out loud: ${carriedEvidence}.`
+        : 'The presenter says this is a generic sample account before showing any metric.',
+      hasBridgeCard
+        ? 'The locked private question is framed as what live data must prove.'
+        : 'The operator avoids claiming a private question has already been asked.',
+      'The demo closes on append proof instead of performance promises.',
+    ],
+    stopIf: [
+      'Someone asks whether these are the viewer real trades.',
+      'The presenter cannot explain that backend upload/payment proof is still missing.',
+      'The conversation drifts toward profit, pass-rate, drawdown-reduction, or account-specific outcome claims.',
+    ],
   }
 }
 
