@@ -40,12 +40,37 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Report handoff packet', 'Locked insight intent', 'Handoff evidence boundary', 'Unlock Reset Pro Preview'],
+    markers: ['Report handoff packet', 'Locked insight intent', 'Handoff evidence boundary', 'Story handoff:', 'Unlock Reset Pro Preview'],
+  },
+  {
+    label: 'checkout evidence boundary',
+    file: 'src/pages/checkout/CheckoutPage.tsx',
+    markers: ['Checkout intent', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source'],
+  },
+  {
+    label: 'checkout success activation handoff',
+    file: 'src/pages/checkout/CheckoutSuccessPage.tsx',
+    markers: ['Carried into activation', 'URL context only', 'Activate Live Account'],
+  },
+  {
+    label: 'checkout API public context payload',
+    file: 'src/lib/api/checkout.ts',
+    markers: ['public_context_source', 'public_context_report_id', 'public_context_pain_axes'],
+  },
+  {
+    label: 'live activation context',
+    file: 'src/pages/marketing/ActivationPage.tsx',
+    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount'],
+  },
+  {
+    label: 'live workspace activation origin',
+    file: 'src/pages/dashboard/OverviewPage.tsx',
+    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'No local story packet attached'],
   },
   {
     label: 'Reset Pro command center',
     file: 'src/lib/resetProDemo.ts',
-    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:'],
+    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:'],
   },
 ]
 
@@ -139,7 +164,7 @@ if (!apiBase) {
 }
 
 console.log('Shibuya demo readiness gate')
-console.log('Mode: public story -> upload/report -> private Reset Pro sample demo')
+console.log('Mode: public story -> upload/report -> locked insight -> checkout/activation -> private Reset Pro sample demo')
 console.log('')
 
 for (const check of checks) {
