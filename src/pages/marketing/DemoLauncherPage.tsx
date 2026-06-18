@@ -17,6 +17,36 @@ export function DemoLauncherPage() {
     privateDemoPath,
     activationPath,
   } = buildIfxDemoJourneyPaths(market)
+  const primaryRoute = [
+    {
+      label: 'Start',
+      title: 'Story first',
+      body: 'Open with recognition: state problem, Marco mirror, Edge Decay pain, proof boundary.',
+      href: storyPath,
+      cta: 'Run Story',
+    },
+    {
+      label: 'Prove',
+      title: 'Generate upload packet',
+      body: 'Use guided upload to create the local sample report packet instead of relying on URL context only.',
+      href: uploadPath,
+      cta: 'Generate Packet',
+    },
+    {
+      label: 'Name',
+      title: 'Show locked question',
+      body: 'Continue into the private insight so the viewer sees the question live Reset Pro must prove.',
+      href: lockedInsightPath,
+      cta: 'Show Question',
+    },
+    {
+      label: 'Demo',
+      title: 'Unlock Reset Pro',
+      body: 'Use the founder gate to show the sample operating loop, then close on append proof.',
+      href: privateDemoPath,
+      cta: 'Open Gate',
+    },
+  ] as const
   const demoStops = [
     {
       label: '01',
@@ -130,6 +160,43 @@ export function DemoLauncherPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="mb-8 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">
+                PRIMARY IFX ROUTE
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Story first. Shortcuts are fallback only.</h2>
+            </div>
+            <p className="text-sm leading-7 text-indigo-50/75">
+              Use this row when you are presenting. It keeps the product thesis intact: public recognition earns upload,
+              upload creates the packet, locked insight names the question, and Reset Pro demonstrates the operating loop.
+            </p>
+          </div>
+          <div className="grid gap-3 lg:grid-cols-4">
+            {primaryRoute.map((step, index) => (
+              <article key={step.label} className="rounded-3xl border border-white/10 bg-black/25 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100">
+                  {index + 1}. {step.label}
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">{step.title}</h3>
+                <p className="mt-2 text-xs leading-5 text-indigo-50/70">{step.body}</p>
+                <Link
+                  to={step.href}
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-center text-xs font-black uppercase tracking-[0.13em] text-black transition hover:bg-indigo-100"
+                >
+                  {step.cta}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-indigo-50/60">
+            Fallback rule: direct report, direct insight, and activation links are recovery routes. They are useful for speed,
+            but they are weaker proof than the story-to-upload packet path and must be described that way.
+          </p>
         </section>
 
         <section className="grid gap-4 lg:grid-cols-3">
