@@ -135,6 +135,7 @@ export function AppendTradesPage() {
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
   const resetProPreview = sampleMode && sessionMeta?.samplePreview === 'reset_pro'
+  const resetProAppendShortcut = resetProPreview && sessionMeta?.demoEntryMode === 'append_proof_shortcut'
   const market = sessionMeta?.market ?? 'india'
   const readOnlyAccess = isReadOnlySession(sessionMeta)
   const premiumAccess = sessionMeta?.tier === 'reset_pro'
@@ -579,6 +580,44 @@ export function AppendTradesPage() {
         </div>
         {resetProPreview ? (
           <>
+            {resetProAppendShortcut ? (
+              <div
+                className="glass-panel"
+                style={{
+                  marginTop: '1rem',
+                  borderColor: 'rgba(251,191,36,0.3)',
+                  background: 'rgba(251,191,36,0.08)',
+                }}
+              >
+                <p className="badge" style={{ marginBottom: '0.5rem' }}>FOUNDER-GATED APPEND SHORTCUT</p>
+                <h4 style={{ marginBottom: '0.5rem' }}>This close was opened directly after the private gate.</h4>
+                <p className="text-muted" style={{ marginBottom: '1rem' }}>
+                  The founder code created Reset Pro sample context, then routed here to close the demo quickly.
+                  This bypasses Mission HQ intentionally for recovery speed; it does not prove live persistence or account analytics.
+                </p>
+                <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+                  {[
+                    {
+                      label: 'Gate proof',
+                      body: 'Founder code accepted; sample context attached.',
+                    },
+                    {
+                      label: 'Route skipped',
+                      body: 'Mission HQ was bypassed for append close; do not claim the full private workspace walkthrough happened.',
+                    },
+                    {
+                      label: 'Correct close',
+                      body: 'Load sample trades, parse, confirm, then read the append proof receipt.',
+                    },
+                  ].map((row) => (
+                    <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                      <h4 style={{ marginBottom: '0.5rem' }}>{row.label}</h4>
+                      <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <div
               className="glass-panel"
               style={{

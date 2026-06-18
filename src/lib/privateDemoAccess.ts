@@ -1,5 +1,5 @@
 import type { Market } from './market'
-import { enterSampleMode } from './runtime'
+import { enterSampleMode, type ShibuyaDemoEntryMode } from './runtime'
 
 export const PRIVATE_DEMO_CODE_ENV_KEY = 'VITE_PRIVATE_DEMO_ACCESS_CODE'
 export const PRIVATE_DEMO_MIN_CODE_LENGTH = 8
@@ -42,6 +42,7 @@ export interface PrivateResetProDemoHandoff {
   bridgeWhyNow?: string
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
+  demoEntryMode?: ShibuyaDemoEntryMode
 }
 
 function normalizeReceiptPart(value?: string): string {
@@ -114,5 +115,6 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoBridgePreviewShows: handoff.bridgePreviewShows,
     demoUnlockReceiptId,
     demoUnlockBoundary: PRIVATE_DEMO_UNLOCK_BOUNDARY,
+    demoEntryMode: handoff.demoEntryMode,
   })
 }

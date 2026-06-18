@@ -11,6 +11,7 @@ import {
   buildPrivateDemoUnlockReceiptId,
   enterPrivateResetProDemo,
   hasPrivateDemoGateConfigured,
+  type PrivateResetProDemoHandoff,
   verifyPrivateDemoCode,
 } from '../../lib/privateDemoAccess'
 import {
@@ -200,7 +201,7 @@ export default function PrivateDemoPage() {
         : 'Start there, show one intervention surface, then close on append proof.',
     },
   ]
-  const privateDemoHandoff = {
+  const privateDemoHandoff: PrivateResetProDemoHandoff = {
     source: hasReportHandoff ? handoffSource : undefined,
     reportId: handoffReportId,
     archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
@@ -219,6 +220,7 @@ export default function PrivateDemoPage() {
     bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
     bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
     bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
+    demoEntryMode: postUnlockDestination === 'append_proof' ? 'append_proof_shortcut' : 'mission_hq',
   }
   const unlockReceiptId = buildPrivateDemoUnlockReceiptId(market, privateDemoHandoff)
 

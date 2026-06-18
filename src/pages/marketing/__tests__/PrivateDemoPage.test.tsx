@@ -156,6 +156,7 @@ describe('PrivateDemoPage', () => {
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
       demoUnlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+      demoEntryMode: 'mission_hq',
     })
   })
 
@@ -205,6 +206,7 @@ describe('PrivateDemoPage', () => {
       demoReportId: 'free-report-123',
       demoLockedSectionId: 'edge-decay-map',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoEntryMode: 'append_proof_shortcut',
     })
   })
 
@@ -245,6 +247,7 @@ describe('PrivateDemoPage', () => {
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
       demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
+      demoEntryMode: 'mission_hq',
     })
   })
 
@@ -297,6 +300,7 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionTitle: 'Edge decay map',
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoEntryMode: 'mission_hq',
     })
   })
 

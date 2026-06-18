@@ -8,6 +8,7 @@ export const SHIBUYA_SAMPLE_API_KEY = 'shibuya_demo_mode'
 export type ShibuyaRuntimeMode = 'anonymous' | 'sample' | 'live'
 export type ShibuyaRuntimePersistence = 'none' | 'local_only' | 'backend'
 export type ShibuyaSamplePreview = 'core' | 'reset_pro'
+export type ShibuyaDemoEntryMode = 'mission_hq' | 'append_proof_shortcut'
 
 export interface ShibuyaRuntimeContract {
   mode: ShibuyaRuntimeMode
@@ -54,6 +55,7 @@ export interface ShibuyaSessionMeta {
   demoBridgePreviewShows?: string[]
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
+  demoEntryMode?: ShibuyaDemoEntryMode
   activationSource?: string
   activationReportId?: string
   activationArchetypeId?: string
@@ -93,6 +95,7 @@ export interface EnterSampleModeOptions {
   demoBridgePreviewShows?: string[]
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
+  demoEntryMode?: ShibuyaDemoEntryMode
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -256,6 +259,7 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoBridgePreviewShows: options.demoBridgePreviewShows,
       demoUnlockReceiptId: options.demoUnlockReceiptId,
       demoUnlockBoundary: options.demoUnlockBoundary,
+      demoEntryMode: options.demoEntryMode,
     }),
   )
 }
@@ -299,6 +303,7 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoBridgePreviewShows
   delete nextMeta.demoUnlockReceiptId
   delete nextMeta.demoUnlockBoundary
+  delete nextMeta.demoEntryMode
 
   if (Object.keys(nextMeta).length > 0) {
     localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))

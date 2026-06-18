@@ -67,6 +67,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoEntryMode: 'append_proof_shortcut',
     })
 
     expect(getStoredSessionMeta()).toMatchObject({
@@ -88,6 +89,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoEntryMode: 'append_proof_shortcut',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
@@ -135,6 +137,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoEntryMode: 'append_proof_shortcut',
     })
     setLiveApiKey('live_123')
 
@@ -158,6 +161,7 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoSignalMarkerIds).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEntryMode).toBeUndefined()
   })
 
   test('clears session state', () => {

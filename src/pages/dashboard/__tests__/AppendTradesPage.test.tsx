@@ -63,6 +63,7 @@ describe('AppendTradesPage', () => {
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
       demoUnlockReceiptId: 'reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+      demoEntryMode: 'append_proof_shortcut',
     })
     isReadOnlySessionMock.mockReturnValue(false)
     updateSessionMetaMock.mockReset()
@@ -104,6 +105,10 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('This is the demo endpoint, not live evidence.')).toBeInTheDocument()
     expect(screen.getByText('Sample only')).toBeInTheDocument()
     expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()
+    expect(screen.getByText('FOUNDER-GATED APPEND SHORTCUT')).toBeInTheDocument()
+    expect(screen.getByText('This close was opened directly after the private gate.')).toBeInTheDocument()
+    expect(screen.getByText(/Mission HQ was bypassed for append close/i)).toBeInTheDocument()
+    expect(screen.getByText(/do not claim the full private workspace walkthrough happened/i)).toBeInTheDocument()
     expect(screen.getByText('RESET PRO APPEND CLOSE CHECKLIST')).toBeInTheDocument()
     expect(screen.getByText('End the demo by proving the workflow, not the trader.')).toBeInTheDocument()
     expect(screen.getByText('Context carried')).toBeInTheDocument()
