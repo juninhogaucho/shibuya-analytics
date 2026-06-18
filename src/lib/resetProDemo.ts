@@ -14,6 +14,14 @@ export interface ResetProDemoStep {
   proof: string
 }
 
+export interface ResetProDemoShowMoment {
+  timebox: string
+  title: string
+  say: string
+  show: string
+  boundary: string
+}
+
 export interface ResetProDemoOrigin {
   source?: string
   reportId?: string
@@ -40,6 +48,7 @@ export interface ResetProDemoScript {
   subline: string
   demoThesis: string
   founderTalkTrack: string[]
+  showSequence: ResetProDemoShowMoment[]
   pressureMetrics: ResetProDemoMetric[]
   steps: ResetProDemoStep[]
   proofArtifacts: string[]
@@ -67,6 +76,40 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
       currentEnemy,
       nextSessionCommand,
       'Then show the premium surfaces only as decision-support and proof workflow, never as a fake live account claim.',
+    ],
+    showSequence: [
+      {
+        timebox: '0:00-0:30',
+        title: origin?.lockedSectionTitle ? 'Connect the public pain to the private module' : 'Start from the public recognition moment',
+        say: origin?.lockedSectionTitle
+          ? `The trader tried to unlock ${origin.lockedSectionTitle}. Reset Pro turns that curiosity into an operating brief.`
+          : 'The public story gets the trader to recognize the leak. Reset Pro is where the leak becomes an operating record.',
+        show: originCard
+          ? `${originCard.title}: report, archetype, axis, evidence label, and requested private insight.`
+          : 'Origin card, or direct private demo entry when no public handoff exists.',
+        boundary: 'This is context for the walkthrough, not proof that the sample account belongs to the visitor.',
+      },
+      {
+        timebox: '0:30-1:15',
+        title: 'Name the current enemy',
+        say: currentEnemy,
+        show: 'Mission HQ, behavioral leak metric, ruin pressure, and next-session mandate.',
+        boundary: 'The numbers are demo data; live claims require payment, activation, upload, and generated artifacts.',
+      },
+      {
+        timebox: '1:15-2:10',
+        title: 'Show intervention surfaces',
+        say: 'The product is not another analytics dashboard. It changes what the trader is allowed to do next.',
+        show: 'Slump protocol, alerts, edge portfolio, and prop rule survivability.',
+        boundary: 'This is decision support and workflow proof, not investment advice or a prediction of performance.',
+      },
+      {
+        timebox: '2:10-3:00',
+        title: 'Close with the proof loop',
+        say: nextSessionCommand,
+        show: 'Append proof flow and Reset Pro review packet.',
+        boundary: 'The demo ends at sample workflow proof. Live Reset Pro still needs account-specific evidence before private conclusions are presented as truth.',
+      },
     ],
     pressureMetrics: [
       {

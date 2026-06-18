@@ -8,6 +8,14 @@ describe('Reset Pro demo script', () => {
 
     expect(script.headline).toContain('Reset Pro')
     expect(script.demoThesis).toContain('behavioral operating system')
+    expect(script.showSequence.map((moment) => moment.timebox)).toEqual([
+      '0:00-0:30',
+      '0:30-1:15',
+      '1:15-2:10',
+      '2:10-3:00',
+    ])
+    expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
+    expect(script.showSequence[3].show).toContain('Append proof flow')
     expect(script.steps.map((step) => step.route)).toEqual([
       '/dashboard',
       '/dashboard/slump',
@@ -57,6 +65,9 @@ describe('Reset Pro demo script', () => {
     expect(script.originCard?.facts).toContain('Validation note: Demo packet accepted. This proves the public journey transition, not live analytics.')
     expect(script.originCard?.facts).toContain('Requested private insight: Highest-cost state')
     expect(script.originCard?.body).toContain('not proof')
+    expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
+    expect(script.showSequence[0].say).toContain('Highest-cost state')
+    expect(script.showSequence[0].boundary).toContain('not proof')
   })
 
   test('labels locked-insight origins distinctly from generic free-report origins', () => {

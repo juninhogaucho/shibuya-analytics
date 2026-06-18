@@ -110,7 +110,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
     expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
-    expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
   })
 

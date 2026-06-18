@@ -61,6 +61,39 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </div>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>FOUNDER SHOW SEQUENCE</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Three minutes, no improvising.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              Use this path when the demo starts from a public story, locked report, or private insight handoff.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {script.showSequence.map((moment) => (
+            <div
+              key={`${moment.timebox}-${moment.title}`}
+              className="glass-panel"
+              style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{moment.timebox}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{moment.title}</h4>
+              <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
+                <strong className="text-white">Say:</strong> {moment.say}
+              </p>
+              <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
+                <strong className="text-white">Show:</strong> {moment.show}
+              </p>
+              <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.8rem' }}>
+                <strong className="text-amber-100">Boundary:</strong> {moment.boundary}
+              </p>
+            </div>
+          ))}
+        </div>
+      </article>
+
       <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
         {script.pressureMetrics.map((metric) => (
           <article key={metric.label} className="glass-panel" style={{ background: 'rgba(255,255,255,0.025)' }}>
