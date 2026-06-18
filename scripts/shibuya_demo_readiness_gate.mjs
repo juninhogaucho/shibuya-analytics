@@ -20,7 +20,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'IFX emergency demo lane', 'One narrative, five stops, no live-proof overclaim.', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first'],
+    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, five stops, no live-proof overclaim.', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first'],
   },
   {
     label: 'IFX demo launcher',
@@ -105,7 +105,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'append-proof exit',
     file: 'src/pages/dashboard/AppendTradesPage.tsx',
-    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'RESET PRO PROOF EXIT', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'No private demo unlock receipt was attached'],
+    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'RESET PRO PROOF EXIT', 'activeStage="append"', 'Close the sample Reset Pro demo on append proof', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT', 'Unlock receipt carried', 'No private demo unlock receipt was attached'],
   },
   {
     label: 'partner economics',

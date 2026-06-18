@@ -97,6 +97,10 @@ describe('AppendTradesPage', () => {
     renderPage()
 
     expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
+    expect(screen.getByText('Public-to-private journey')).toBeInTheDocument()
+    expect(screen.getByText('Append proof close')).toBeInTheDocument()
+    expect(screen.getByText('Demo ends where live evidence must begin.')).toBeInTheDocument()
+    expect(screen.getByText(/Close the sample Reset Pro demo on append proof/i)).toBeInTheDocument()
     expect(screen.getByText('This is the demo endpoint, not live evidence.')).toBeInTheDocument()
     expect(screen.getByText('Sample only')).toBeInTheDocument()
     expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()

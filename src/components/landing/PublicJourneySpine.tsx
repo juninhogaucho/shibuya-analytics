@@ -1,6 +1,6 @@
 import { Check, LockKeyhole } from 'lucide-react'
 
-export type PublicJourneyStage = 'story' | 'upload' | 'report' | 'insight' | 'demo'
+export type PublicJourneyStage = 'story' | 'upload' | 'report' | 'insight' | 'demo' | 'append'
 
 const PUBLIC_JOURNEY_STAGES: Array<{
   id: PublicJourneyStage
@@ -37,6 +37,12 @@ const PUBLIC_JOURNEY_STAGES: Array<{
     label: '05',
     title: 'Reset Pro demo',
     boundary: 'Founder-gated sample workspace.',
+  },
+  {
+    id: 'append',
+    label: '06',
+    title: 'Append proof close',
+    boundary: 'Demo ends where live evidence must begin.',
   },
 ]
 
@@ -79,7 +85,7 @@ export function PublicJourneySpine({
         ) : null}
       </div>
 
-      <div className="grid min-w-0 gap-3 lg:grid-cols-5">
+      <div className="grid min-w-0 gap-3 lg:grid-cols-6">
         {PUBLIC_JOURNEY_STAGES.map((stage) => {
           const state = getStageState(stage.id, activeStage)
 

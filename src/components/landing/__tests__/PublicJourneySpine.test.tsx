@@ -17,9 +17,11 @@ describe('PublicJourneySpine', () => {
     expect(within(spine).getByText('Free baseline')).toBeInTheDocument()
     expect(within(spine).getByText('Private insight lock')).toBeInTheDocument()
     expect(within(spine).getByText('Reset Pro demo')).toBeInTheDocument()
+    expect(within(spine).getByText('Append proof close')).toBeInTheDocument()
 
     expect(within(spine).getByText('Website-level recognition only.')).toBeInTheDocument()
     expect(within(spine).getByText('One sharp preview, private proof still locked.')).toBeInTheDocument()
     expect(within(spine).getByText('Founder-gated sample workspace.')).toBeInTheDocument()
+    expect(within(spine).getByText('Demo ends where live evidence must begin.')).toBeInTheDocument()
   })
 })

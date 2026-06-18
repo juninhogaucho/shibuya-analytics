@@ -12,6 +12,7 @@ import {
 } from '../../lib/api/dashboard'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
+import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
 import { addMarketToPath } from '../../lib/market'
@@ -404,6 +405,13 @@ export function AppendTradesPage() {
   return (
     <div className="append-trades">
       {!sampleMode && <JourneyProgressCard state={journeyState} />}
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <PublicJourneySpine
+          activeStage="append"
+          detail="Close the sample Reset Pro demo on append proof. The endpoint shows workflow continuity, while live evidence still requires activation, normalized upload, generated artifacts, and repeat append history."
+        />
+      </div>
 
       <header className="section-header">
         <p className="badge">Append model</p>

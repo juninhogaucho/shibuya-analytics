@@ -845,6 +845,7 @@ export default function StoryExperience() {
                     ['2', 'Upload or sample history creates the free report packet.'],
                     ['3', 'Locked insight explains what live evidence must prove.'],
                     ['4', 'Private Reset Pro demo opens only behind the founder gate.'],
+                    ['5', 'Append proof closes the demo where live evidence must begin.'],
                   ].map(([step, body]) => (
                     <div key={step} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 p-3">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-black text-black">
@@ -855,7 +856,7 @@ export default function StoryExperience() {
                   ))}
                 </div>
                 <p className="mt-4 text-xs leading-relaxed text-indigo-50/65">
-                  The public page earns the upload. The private demo shows structure with sample data only.
+                  The public page earns the upload. The private demo shows structure with sample data only, then closes on append proof.
                 </p>
                 <button
                   type="button"
