@@ -30,7 +30,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked free report',
     file: 'src/pages/marketing/FreeReportPage.tsx',
-    markers: ['Private insight contract', 'Locked until live workspace'],
+    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary'],
+  },
+  {
+    label: 'story handoff model',
+    file: 'src/lib/storyExperience.ts',
+    markers: ['storyHandoff', 'Guided StoryExperience signal', 'website-level handoff'],
   },
   {
     label: 'locked private insight',

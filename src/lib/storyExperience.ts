@@ -76,6 +76,13 @@ export interface FreeReportPreview {
   dominantAxis: FingerprintScore
   pressureIndex: number
   pressureBand: BehavioralPressureBand
+  storyHandoff: {
+    source: 'guided' | 'direct'
+    selectedPainAxes: FingerprintAxis[]
+    visitedSceneCount: number
+    summary: string
+    boundary: string
+  }
   recommendedPath: RecommendedProductPath
   scores: FingerprintScore[]
   unlocked: Array<{
@@ -555,18 +562,44 @@ export function getTraderArchetype(archetypeId?: string | null): TraderArchetype
   return TRADER_ARCHETYPES.find((archetype) => archetype.id === archetypeId) ?? TRADER_ARCHETYPES[0]
 }
 
+export function normalizeFingerprintAxisIds(axisIds?: string[] | null): FingerprintAxisId[] {
+  const seen = new Set<FingerprintAxisId>()
+
+  for (const axisId of axisIds ?? []) {
+    const axis = getFingerprintAxis(axisId)
+    if (axis.id === axisId && !seen.has(axis.id)) {
+      seen.add(axis.id)
+    }
+  }
+
+  return [...seen]
+}
+
+function buildVisitedSceneIdsFromCount(count?: number | null): string[] {
+  if (!Number.isFinite(count) || !count) {
+    return ['cold-open', 'archetypes', 'predicted-reveal', 'upload-moment']
+  }
+
+  return STORY_SCENES.slice(0, Math.max(1, Math.min(STORY_SCENES.length, Math.floor(count)))).map((scene) => scene.id)
+}
+
 export function createSignalFromPublicJourney(params: {
   archetypeId?: string | null
   axisId?: string | null
+  selectedPainAxisIds?: string[] | null
+  visitedSceneCount?: number | null
   visitedSceneIds?: string[]
 } = {}): StorySignalState {
   const archetype = getTraderArchetype(params.archetypeId)
   const axis = getFingerprintAxis(params.axisId)
+  const selectedPainAxisIds = normalizeFingerprintAxisIds(params.selectedPainAxisIds)
 
   return {
     archetypeId: archetype.id,
-    selectedPainAxes: [axis.id],
-    visitedSceneIds: params.visitedSceneIds?.length ? params.visitedSceneIds : ['cold-open', 'archetypes', 'predicted-reveal', 'upload-moment'],
+    selectedPainAxes: selectedPainAxisIds.length ? selectedPainAxisIds : [axis.id],
+    visitedSceneIds: params.visitedSceneIds?.length
+      ? params.visitedSceneIds
+      : buildVisitedSceneIdsFromCount(params.visitedSceneCount),
     pricingInterest: 0,
     uploadIntent: 1,
   }
@@ -576,10 +609,15 @@ export function buildFreeReportPreview(params: {
   reportId?: string
   archetypeId?: string | null
   axisId?: string | null
+  selectedPainAxisIds?: string[] | null
+  visitedSceneCount?: number | null
+  storySource?: string | null
 } = {}): FreeReportPreview {
   const signal = createSignalFromPublicJourney({
     archetypeId: params.archetypeId,
     axisId: params.axisId,
+    selectedPainAxisIds: params.selectedPainAxisIds,
+    visitedSceneCount: params.visitedSceneCount,
   })
   const scores = buildPredictedFingerprint(signal)
   const dominantAxis = getDominantFingerprintAxis(scores)
@@ -587,6 +625,12 @@ export function buildFreeReportPreview(params: {
   const pressureBand = getBehavioralPressureBand(pressureIndex)
   const archetype = getTraderArchetype(params.archetypeId)
   const recommendedPath = inferRecommendedProductPath(pressureIndex, dominantAxis.id)
+  const storySource = params.storySource === 'guided' ? 'guided' : 'direct'
+  const selectedPainAxes = signal.selectedPainAxes.map((axisId) => getFingerprintAxis(axisId))
+  const visitedSceneCount = signal.visitedSceneIds.length
+  const selectedPainLabel = selectedPainAxes.length
+    ? selectedPainAxes.map((axis) => axis.label).join(', ')
+    : 'none captured'
 
   return {
     reportId: params.reportId ?? 'sample-free-report',
@@ -594,6 +638,15 @@ export function buildFreeReportPreview(params: {
     dominantAxis,
     pressureIndex,
     pressureBand,
+    storyHandoff: {
+      source: storySource,
+      selectedPainAxes,
+      visitedSceneCount,
+      summary: storySource === 'guided'
+        ? `Guided StoryExperience signal: ${visitedSceneCount} scene${visitedSceneCount === 1 ? '' : 's'} viewed; public pain axes: ${selectedPainLabel}.`
+        : `Direct upload/report signal: public pain axes from URL or fallback model: ${selectedPainLabel}.`,
+      boundary: 'This is a website-level handoff. It is not account-specific evidence until trade history is normalized by the live backend.',
+    },
     recommendedPath,
     scores,
     unlocked: [

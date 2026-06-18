@@ -3,22 +3,24 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
-import { buildFreeReportPreview, getFingerprintAxis, toReportSectionSlug } from '../../lib/storyExperience'
+import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
 export default function FreeReportPage() {
   const { id } = useParams()
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const params = new URLSearchParams(location.search)
+  const reportId = id ?? 'sample-free-report'
+  const reportSession = getPublicReportSession(reportId)
   const report = buildFreeReportPreview({
-    reportId: id,
+    reportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
+    storySource: reportSession?.storySource,
+    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+    visitedSceneCount: reportSession?.visitedSceneCount,
   })
-  const reportSession = getPublicReportSession(report.reportId)
-  const selectedPainAxes = (reportSession?.selectedPainAxisIds ?? [])
-    .map((axisId) => getFingerprintAxis(axisId))
-    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
+  const selectedPainAxes = report.storyHandoff.selectedPainAxes
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
   const reportCheckoutQuery = new URLSearchParams({
@@ -108,13 +110,14 @@ export default function FreeReportPage() {
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Public prediction</p>
               <h3 className="mt-2 text-lg font-semibold text-white">{report.archetype.name} / {report.dominantAxis.label}</h3>
               <p className="mt-3 text-sm leading-6 text-neutral-300">
-                {reportSession?.storySource === 'guided'
-                  ? `Guided story route with ${reportSession.visitedSceneCount} scene${reportSession.visitedSceneCount === 1 ? '' : 's'} viewed before upload.`
+                {report.storyHandoff.source === 'guided'
+                  ? report.storyHandoff.summary
                   : 'Direct report route. No guided StoryExperience packet was attached in this browser.'}
               </p>
               <p className="mt-3 text-xs leading-5 text-indigo-50/60">
                 Public pain axes: {selectedPainAxes.length ? selectedPainAxes.map((axis) => axis.label).join(', ') : 'none captured'}.
               </p>
+              <p className="mt-3 text-xs leading-5 text-indigo-50/60">{report.storyHandoff.boundary}</p>
             </article>
 
             <article className="rounded-3xl border border-white/10 bg-black/25 p-5">

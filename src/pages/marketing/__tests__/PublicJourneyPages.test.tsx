@@ -61,7 +61,8 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Selected public pain axes: Drawdown Pressure.')).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText('What survived from the public story?')).toBeInTheDocument()
-    expect(screen.getByText(/Guided story route with 1 scene viewed before upload/i)).toBeInTheDocument()
+    expect(screen.getByText(/Guided StoryExperience signal: 1 scene viewed; public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
+    expect(screen.getByText(/This is a website-level handoff/i)).toBeInTheDocument()
     expect(screen.getByText(/Live workspace evidence must still prove the pattern/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))

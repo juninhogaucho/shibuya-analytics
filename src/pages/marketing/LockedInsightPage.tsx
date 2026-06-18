@@ -10,12 +10,15 @@ export default function LockedInsightPage() {
   const market = resolveMarket(location.pathname, location.search)
   const params = new URLSearchParams(location.search)
   const reportId = params.get('report') || 'direct-locked-insight'
+  const reportSession = getPublicReportSession(reportId)
   const report = buildFreeReportPreview({
     reportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
+    storySource: reportSession?.storySource,
+    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+    visitedSceneCount: reportSession?.visitedSceneCount,
   })
-  const reportSession = getPublicReportSession(report.reportId)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
   const requestedSection = report.locked.find((candidate) => toReportSectionSlug(candidate.title) === section)

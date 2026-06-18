@@ -77,6 +77,26 @@ describe('story experience signal model', () => {
     expect(report.conversionLine).toContain('live workspace')
   })
 
+  test('carries guided story handoff into the free report fingerprint', () => {
+    const report = buildFreeReportPreview({
+      reportId: 'guided-report',
+      archetypeId: 'priya',
+      axisId: 'drawdown_pressure',
+      storySource: 'guided',
+      selectedPainAxisIds: ['drawdown_pressure', 'revenge_reentry', 'not-real', 'drawdown_pressure'],
+      visitedSceneCount: 9,
+    })
+
+    expect(report.storyHandoff).toMatchObject({
+      source: 'guided',
+      visitedSceneCount: 9,
+      summary: 'Guided StoryExperience signal: 9 scenes viewed; public pain axes: Drawdown Pressure, Revenge Re-entry.',
+    })
+    expect(report.storyHandoff.selectedPainAxes.map((axis) => axis.id)).toEqual(['drawdown_pressure', 'revenge_reentry'])
+    expect(report.scores.find((axis) => axis.id === 'revenge_reentry')?.score).toBeGreaterThan(60)
+    expect(report.storyHandoff.boundary).toContain('website-level handoff')
+  })
+
   test('builds module-specific locked insight previews', () => {
     const report = buildFreeReportPreview({
       reportId: 'sample-report',

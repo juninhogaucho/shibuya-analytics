@@ -26,6 +26,9 @@ export function ActivationPage() {
         reportId: checkoutIntent.reportId ?? 'activation-origin',
         archetypeId: checkoutIntent.archetypeId,
         axisId: checkoutIntent.axisId,
+        storySource: activationReportSession?.storySource,
+        selectedPainAxisIds: activationReportSession?.selectedPainAxisIds,
+        visitedSceneCount: activationReportSession?.visitedSceneCount,
       })
     : null
   const activationLockedSection = activationReport

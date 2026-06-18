@@ -31,14 +31,15 @@ export default function PrivateDemoPage() {
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const reportSession = getPublicReportSession(handoffReportId)
-  const selectedPainAxes = (reportSession?.selectedPainAxisIds ?? [])
-    .map((axisId) => getFingerprintAxis(axisId))
-    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
   const handoffReport = buildFreeReportPreview({
     reportId: handoffReportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
+    storySource: reportSession?.storySource,
+    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+    visitedSceneCount: reportSession?.visitedSceneCount,
   })
+  const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
