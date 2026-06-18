@@ -65,7 +65,34 @@ Practical commercial model:
 - TVA share is optional and only activates above a pre-agreed threshold.
 - Suggested range for discussion: 10-25% of verified annualized value added, depending on upfront fee, exclusivity, partner data access, and implementation burden.
 
-### 3. Deal Shapes
+### 3. Partner Revenue Share Layer
+
+This is separate from TVA.
+
+Revenue share pays the distribution partner for selling, bundling, or embedding Shibuya into their installed base. TVA pays Shibuya for measurable value created after deployment.
+
+Default partner-channel structure:
+
+- Shibuya subscription or account fee is collected either by Shibuya or the partner.
+- Partner receives a channel share only on net collected Shibuya revenue from its referred or embedded accounts.
+- Default discussion range: 20-35% partner share, depending on who owns billing, support, refunds, taxes, and first-line account management.
+- Shibuya should avoid giving away both a high partner revenue share and a high TVA share unless the partner provides serious distribution, data access, and implementation leverage.
+
+Recommended default for a tech-provider partner:
+
+```text
+partner_revenue_share = net_collected_shibuya_revenue * partner_share_rate
+shibuya_base_revenue = net_collected_shibuya_revenue - partner_revenue_share
+shibuya_success_fee = verified_eligible_tva * tva_share_rate
+```
+
+Commercial interpretation:
+
+- The partner gets paid for reach.
+- Shibuya gets paid for the intelligence layer.
+- Shibuya gets extra upside only when the agreed measurement says the product created additional value.
+
+### 4. Deal Shapes
 
 These are commercial shapes, not public guarantees.
 
@@ -90,7 +117,7 @@ These are commercial shapes, not public guarantees.
 - TVA share can be 20-25% of eligible annualized TVA above an agreed floor.
 - Best for strategic partners where the upside and proof value justify heavier Shibuya involvement.
 
-### 4. TVA Formula
+### 5. TVA Formula
 
 Use this structure before any TVA deal is signed:
 
@@ -124,6 +151,56 @@ Recommended default:
 - Calculate TVA on verified annualized net uplift, not gross vanity metrics.
 - Pay success fee quarterly or at the end of the pilot period after reconciliation.
 - Keep partner rev share separate from TVA. Rev share pays for distribution; TVA pays for measured incremental value.
+
+### 6. Prop / Tech-Provider Example
+
+Illustrative only. Do not present this as a guarantee.
+
+Assume a tech provider introduces Shibuya to one prop firm cohort:
+
+- 1,000 eligible active accounts.
+- USD 12/account/month Shibuya access fee.
+- Partner share: 30% of net collected Shibuya revenue.
+- Six-month pilot.
+- TVA share: 15% of verified annualized net uplift above a USD 25,000 floor.
+
+Base economics:
+
+```text
+gross_monthly_shibuya_revenue = 1,000 * 12 = 12,000
+partner_monthly_share = 12,000 * 30% = 3,600
+shibuya_monthly_base_revenue = 8,400
+six_month_shibuya_base_revenue = 50,400
+```
+
+TVA example:
+
+```text
+verified_incremental_revenue = 42,000
+verified_retention_value = 18,000
+verified_support_load_removed = 6,000
+verified_risk_loss_reduction = 14,000
+
+gross_tva = 80,000
+eligible_tva = 80,000 - 25,000 = 55,000
+success_fee = 55,000 * 15% = 8,250
+```
+
+What this proves commercially:
+
+- A partner can make immediate channel revenue without rebuilding their stack.
+- Shibuya can keep a clean base SaaS/account model.
+- Upside economics remain tied to measured business outcomes, not vague "AI value."
+- The model scales better than custom consulting because TVA is a measurement overlay, not the main fulfillment mechanism.
+
+What must be locked before signing:
+
+- whether account count is active accounts, funded accounts, challenges sold, or trader-months,
+- whether partner share applies before or after payment fees, refunds, taxes, and chargebacks,
+- whether TVA is measured on gross uplift or net uplift after costs,
+- what events prove attribution,
+- whether the partner can veto publication of case-study claims,
+- who owns trader relationship, support, and data-processing obligations.
 
 ## Claim Boundaries
 

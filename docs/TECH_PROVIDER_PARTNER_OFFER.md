@@ -138,12 +138,14 @@ This is the opening structure, not a public rate card.
 Default commercial options:
 - revenue share: 70 percent Shibuya / 30 percent partner on net collected Shibuya revenue through the partner channel
 - wholesale: EUR 7 per active trader per month with a EUR 1,500 monthly floor
+- optional TVA/value-added upside overlay: see `docs/SHIBUYA_B2B_DISTRIBUTION_MODEL_2026_06_18.md`
 
 ### Operator Intelligence
 
 Default commercial option:
 - EUR 2,500 monthly floor
 - plus EUR 0.50 per monitored account
+- optional success fee only when baseline, attribution, eligible cohorts, and verified uplift are agreed in advance
 
 ### PropOS Expansion
 
