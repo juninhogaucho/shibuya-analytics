@@ -9,6 +9,7 @@ export type ShibuyaRuntimeMode = 'anonymous' | 'sample' | 'live'
 export type ShibuyaRuntimePersistence = 'none' | 'local_only' | 'backend'
 export type ShibuyaSamplePreview = 'core' | 'reset_pro'
 export type ShibuyaDemoEntryMode = 'mission_hq' | 'append_proof_shortcut'
+export type ShibuyaWorkspaceAccessReason = 'anonymous' | 'live_session' | 'private_demo_receipt' | 'sample_without_private_gate'
 
 export interface ShibuyaRuntimeContract {
   mode: ShibuyaRuntimeMode
@@ -83,6 +84,14 @@ export interface ShibuyaSessionMeta {
   activationEngagementBoundary?: string
 }
 
+export interface ShibuyaWorkspaceAccessState {
+  ok: boolean
+  mode: ShibuyaRuntimeMode
+  market: Market
+  reason: ShibuyaWorkspaceAccessReason
+  redirectPath?: string
+}
+
 export interface EnterSampleModeOptions {
   market?: Market
   preview?: ShibuyaSamplePreview
@@ -146,6 +155,49 @@ export function getStoredSessionOfferKind(): string | null {
 export function hasPremiumAccess(): boolean {
   const meta = getStoredSessionMeta()
   return meta?.tier === 'reset_pro' || (getShibuyaRuntimeMode() === 'sample' && meta?.samplePreview === 'reset_pro')
+}
+
+export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
+  return Boolean(
+    meta?.samplePreview === 'reset_pro'
+    && meta.demoSource
+    && meta.demoReportId
+    && meta.demoPrivateGateChecksum
+    && meta.demoUnlockReceiptId
+    && meta.demoUnlockBoundary,
+  )
+}
+
+export function getWorkspaceAccessState(): ShibuyaWorkspaceAccessState {
+  const mode = getShibuyaRuntimeMode()
+  const meta = getStoredSessionMeta()
+  const market = meta?.market ?? 'india'
+
+  if (mode === 'live') {
+    return { ok: true, mode, market, reason: 'live_session' }
+  }
+
+  if (mode === 'sample' && hasPrivateResetProDemoReceipt(meta)) {
+    return { ok: true, mode, market, reason: 'private_demo_receipt' }
+  }
+
+  if (mode === 'sample') {
+    return {
+      ok: false,
+      mode,
+      market,
+      reason: 'sample_without_private_gate',
+      redirectPath: `/private-demo?market=${market}`,
+    }
+  }
+
+  return {
+    ok: false,
+    mode,
+    market,
+    reason: 'anonymous',
+    redirectPath: '/activate',
+  }
 }
 
 export function isOneTimeOffer(offerKind?: string | null): boolean {

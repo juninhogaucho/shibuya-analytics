@@ -8,7 +8,9 @@ import {
   getShibuyaRuntimeMode,
   getStoredApiKey,
   getStoredSessionMeta,
+  getWorkspaceAccessState,
   hasPremiumAccess,
+  hasPrivateResetProDemoReceipt,
   isResetProSamplePreview,
   requireLiveRuntime,
   setLiveApiKey,
@@ -18,6 +20,12 @@ describe('shibuya runtime', () => {
   test('starts anonymous with no stored key', () => {
     expect(getStoredApiKey()).toBeNull()
     expect(getShibuyaRuntimeMode()).toBe('anonymous')
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: false,
+      mode: 'anonymous',
+      reason: 'anonymous',
+      redirectPath: '/activate',
+    })
     expect(getShibuyaRuntimeContract()).toMatchObject({
       mode: 'anonymous',
       canUseSampleData: false,
@@ -48,6 +56,13 @@ describe('shibuya runtime', () => {
     })
     expect(hasPremiumAccess()).toBe(false)
     expect(isResetProSamplePreview()).toBe(false)
+    expect(hasPrivateResetProDemoReceipt()).toBe(false)
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: false,
+      mode: 'sample',
+      reason: 'sample_without_private_gate',
+      redirectPath: '/private-demo?market=india',
+    })
   })
 
   test('can enter a Reset Pro sample preview without pretending to be live', () => {
@@ -106,6 +121,14 @@ describe('shibuya runtime', () => {
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
     expect(hasPremiumAccess()).toBe(true)
+    expect(hasPrivateResetProDemoReceipt()).toBe(false)
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: false,
+      mode: 'sample',
+      market: 'global',
+      reason: 'sample_without_private_gate',
+      redirectPath: '/private-demo?market=global',
+    })
     expect(getShibuyaRuntimeContract()).toMatchObject({
       mode: 'sample',
       canUseSampleData: true,
@@ -122,6 +145,11 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()).toMatchObject({ tier: 'psych_audit' })
     expect(getStoredSessionMeta()?.samplePreview).toBeUndefined()
     expect(getShibuyaRuntimeMode()).toBe('live')
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: true,
+      mode: 'live',
+      reason: 'live_session',
+    })
     expect(hasPremiumAccess()).toBe(false)
     expect(getShibuyaRuntimeContract()).toMatchObject({
       mode: 'live',
@@ -186,6 +214,26 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoEngagementPrivateDemoIntentCount).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEngagementBoundary).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEntryMode).toBeUndefined()
+  })
+
+  test('allows private Reset Pro sample workspace only with a gate receipt', () => {
+    enterSampleMode({
+      market: 'global',
+      preview: 'reset_pro',
+      demoSource: 'locked_insight',
+      demoReportId: 'sample-behavioral-leak-report',
+      demoPrivateGateChecksum: 'source=locked_insight; report=sample-behavioral-leak-report; sample route, not live answer',
+      demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:sample-behavioral-leak-report:marco:edge-decay:edge-decay-map',
+      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only.',
+    })
+
+    expect(hasPrivateResetProDemoReceipt()).toBe(true)
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: true,
+      mode: 'sample',
+      market: 'global',
+      reason: 'private_demo_receipt',
+    })
   })
 
   test('clears session state', () => {

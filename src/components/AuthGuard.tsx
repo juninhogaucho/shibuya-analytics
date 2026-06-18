@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { isAuthenticated } from '../lib/api/auth'
+import { getWorkspaceAccessState } from '../lib/runtime'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -7,11 +7,12 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const location = useLocation()
-  
-  if (!isAuthenticated()) {
-    // Redirect to activation page, preserving the intended destination
-    return <Navigate to="/activate" state={{ from: location }} replace />
+
+  const access = getWorkspaceAccessState()
+
+  if (!access.ok) {
+    return <Navigate to={access.redirectPath ?? '/activate'} state={{ from: location, workspaceAccessReason: access.reason }} replace />
   }
-  
+
   return <>{children}</>
 }
