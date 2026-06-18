@@ -75,6 +75,14 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Report: sample-free-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
+    expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
+    expect(screen.getByText(/what payment can carry from what only the first live upload can prove/i)).toBeInTheDocument()
+    expect(screen.getByText('Payment context carried')).toBeInTheDocument()
+    expect(screen.getByText('Activation pending')).toBeInTheDocument()
+    expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
+    expect(screen.getByText('Private conclusion still locked')).toBeInTheDocument()
+    expect(screen.getByText(/Email plus order code must verify/i)).toBeInTheDocument()
+    expect(screen.getByText(/uploaded history is normalized into generated artifacts/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -148,6 +156,8 @@ describe('ActivationPage', () => {
 
     expect(screen.getByText(/Public packet: URL context only \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
+    expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
+    expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')

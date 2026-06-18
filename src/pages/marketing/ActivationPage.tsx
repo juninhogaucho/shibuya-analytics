@@ -42,6 +42,31 @@ export function ActivationPage() {
     .map((axisId) => getFingerprintAxis(axisId))
     .filter((axis, index, axes) => activationSelectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
     .map((axis) => axis.label)
+  const activationProofLadder = [
+    {
+      label: 'Payment context carried',
+      status: 'ready',
+      detail: checkoutIntent
+        ? describeCheckoutIntent(checkoutIntent)
+        : 'No checkout context is attached to this activation route.',
+    },
+    {
+      label: 'Activation pending',
+      status: 'pending',
+      detail: 'Email plus order code must verify before any live workspace state is created.',
+    },
+    {
+      label: 'First meaningful upload required',
+      status: 'locked',
+      detail: 'The live workspace cannot make account-specific private claims until uploaded history is normalized into generated artifacts.',
+    },
+    {
+      label: 'Private conclusion still locked',
+      status: 'locked',
+      detail: activationReport?.resetProBridge.decisionQuestion
+        ?? 'The private answer remains locked until activation, upload proof, and append history exist.',
+    },
+  ]
   const navigate = useNavigate()
 
   const handleSubmit = async (event: FormEvent) => {
@@ -179,6 +204,27 @@ export function ActivationPage() {
                       Reset Pro bridge: {activationReport.resetProBridge.decisionQuestion}
                     </p>
                   ) : null}
+                  <div
+                    className="terminal-status terminal-status-success"
+                    style={{ marginTop: '1rem', background: 'rgba(14, 165, 233, 0.08)', borderColor: 'rgba(125, 211, 252, 0.28)' }}
+                  >
+                    <span className="status-icon">LAD</span>
+                    <div>
+                      <p>LIVE ACTIVATION PROOF LADDER</p>
+                      <p className="terminal-muted">
+                        This ladder separates what payment can carry from what only the first live upload can prove.
+                      </p>
+                      <div className="grid-responsive" style={{ marginTop: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+                        {activationProofLadder.map((item) => (
+                          <div key={item.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.18)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                            <p className="badge" style={{ marginBottom: '0.5rem' }}>{item.status.toUpperCase()}</p>
+                            <h4 style={{ marginBottom: '0.5rem' }}>{item.label}</h4>
+                            <p className="terminal-muted" style={{ marginBottom: 0 }}>{item.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : null}
