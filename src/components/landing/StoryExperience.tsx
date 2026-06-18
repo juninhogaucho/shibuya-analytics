@@ -218,7 +218,7 @@ export default function StoryExperience() {
     {
       label: '06',
       title: 'Append proof close',
-      body: 'End the sample demo at upload/append proof so the missing live evidence is explicit.',
+      body: 'Founder-gated recovery shortcut. It unlocks sample context first, then ends the demo at upload/append proof.',
       href: guidedAppendProofPath,
       cta: 'Open Append',
     },

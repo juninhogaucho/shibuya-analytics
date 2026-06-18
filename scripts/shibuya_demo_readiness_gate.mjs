@@ -20,12 +20,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first'],
+    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first', 'Founder-gated recovery shortcut'],
   },
   {
     label: 'IFX demo launcher',
     file: 'src/pages/marketing/DemoLauncherPage.tsx',
-    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'buildIfxDemoJourneyPaths'],
+    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is founder-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'buildIfxDemoJourneyPaths'],
   },
   {
     label: 'public upload',
@@ -55,7 +55,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the private code.', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
+    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Post-unlock destination', 'Append proof close after unlock', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the private code.', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
   },
   {
     label: 'checkout evidence boundary',
@@ -71,6 +71,11 @@ const REQUIRED_SURFACES = [
     label: 'checkout intent URL handoff',
     file: 'src/lib/checkoutIntent.ts',
     markers: ['storySource', 'scene_count', 'pain_axes', 'signals', 'enrichCheckoutIntent'],
+  },
+  {
+    label: 'IFX append gate handoff',
+    file: 'src/lib/ifxDemoJourney.ts',
+    markers: ['buildIfxAppendProofGateParams', 'destination', 'append_proof', 'appendProofPath'],
   },
   {
     label: 'checkout success activation handoff',

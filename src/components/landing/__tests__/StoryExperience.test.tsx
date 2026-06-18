@@ -61,7 +61,11 @@ describe('StoryExperience', () => {
       'href',
       '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
-    expect(screen.getByRole('link', { name: /Open Append/i })).toHaveAttribute('href', '/dashboard/upload?market=india')
+    expect(screen.getByText(/Founder-gated recovery shortcut/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Open Append/i })).toHaveAttribute(
+      'href',
+      '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&destination=append_proof&market=india',
+    )
     expect(screen.getByText('Path')).toBeInTheDocument()
     expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Next Demo Beat/i })).toBeInTheDocument()

@@ -56,6 +56,8 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/unlock can demonstrate workflow readiness only/i)).toBeInTheDocument()
     expect(screen.getByText('Private demo unlock manifest')).toBeInTheDocument()
     expect(screen.getByText('What changes when the founder code succeeds.')).toBeInTheDocument()
+    expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
+    expect(screen.getAllByText('Mission HQ first').length).toBeGreaterThan(0)
     expect(screen.getByText('Stored after unlock')).toBeInTheDocument()
     expect(screen.getByText('sample mode, market, and direct demo boundary only')).toBeInTheDocument()
     expect(screen.getByText('Not stored or proven')).toBeInTheDocument()
@@ -177,6 +179,33 @@ describe('PrivateDemoPage', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
+  })
+
+  test('gates append-proof shortcut before redirecting to the close screen', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&destination=append_proof&market=global')
+
+    expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
+    expect(screen.getAllByText('Append proof close after unlock').length).toBeGreaterThan(0)
+    expect(screen.getByText(/public shortcut still requires the founder gate/i)).toBeInTheDocument()
+    expect(screen.getByText('Append proof close with Reset Pro sample context')).toBeInTheDocument()
+    expect(screen.getByText(/Use this only as the public recovery shortcut for closing the demo/i)).toBeInTheDocument()
+
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard/upload?market=global')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      samplePreview: 'reset_pro',
+      demoSource: 'locked_insight',
+      demoReportId: 'free-report-123',
+      demoLockedSectionId: 'edge-decay-map',
+      demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+    })
   })
 
   test('keeps direct private-demo report links visibly weaker than upload handoffs', () => {

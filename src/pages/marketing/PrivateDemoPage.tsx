@@ -76,6 +76,11 @@ export default function PrivateDemoPage() {
   const handoffAxis = getFingerprintAxis(params.get('axis'))
   const handoffSectionId = params.get('section')?.trim() || undefined
   const handoffSource = params.get('source') ?? undefined
+  const postUnlockDestination = params.get('destination') === 'append_proof' ? 'append_proof' : 'mission_hq'
+  const postUnlockPath = addMarketToPath(
+    postUnlockDestination === 'append_proof' ? '/dashboard/upload' : '/dashboard',
+    market,
+  )
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const storedReportSession = getPublicReportSession(handoffReportId)
@@ -152,6 +157,13 @@ export default function PrivateDemoPage() {
       value: 'Still missing by design',
       body: 'This demo does not prove live activation, live upload, generated artifacts, durable append history, or account-specific conclusions.',
     },
+    {
+      label: 'Post-unlock destination',
+      value: postUnlockDestination === 'append_proof' ? 'Append proof close after unlock' : 'Mission HQ first',
+      body: postUnlockDestination === 'append_proof'
+        ? 'This public shortcut still requires the founder gate, then opens the append-proof endpoint with Reset Pro sample context attached.'
+        : 'The normal demo opens Mission HQ first, then the operator closes on append proof.',
+    },
   ]
   const workspaceHandoffFacts = [
     ['Source', hasReportHandoff ? handoffSource ?? 'report_link' : 'direct_private_demo'],
@@ -180,8 +192,12 @@ export default function PrivateDemoPage() {
     },
     {
       label: 'First screen after unlock',
-      value: 'Mission HQ with the Reset Pro operator strip',
-      body: 'Start there, show one intervention surface, then close on append proof.',
+      value: postUnlockDestination === 'append_proof'
+        ? 'Append proof close with Reset Pro sample context'
+        : 'Mission HQ with the Reset Pro operator strip',
+      body: postUnlockDestination === 'append_proof'
+        ? 'Use this only as the public recovery shortcut for closing the demo; the sample context is still founder-gated.'
+        : 'Start there, show one intervention surface, then close on append proof.',
     },
   ]
   const privateDemoHandoff = {
@@ -225,7 +241,7 @@ export default function PrivateDemoPage() {
     }
 
     enterPrivateResetProDemo(market, privateDemoHandoff)
-    navigate(addMarketToPath('/dashboard', market), { replace: true })
+    navigate(postUnlockPath, { replace: true })
   }
 
   return (

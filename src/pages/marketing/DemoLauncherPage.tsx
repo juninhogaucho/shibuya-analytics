@@ -50,7 +50,7 @@ export function DemoLauncherPage() {
     {
       label: 'Close',
       title: 'Append proof close',
-      body: 'End at the parser and append receipt so the viewer sees where live evidence has to begin.',
+      body: 'Route through the founder gate, then end at the parser and append receipt so the viewer sees where live evidence has to begin.',
       href: appendProofPath,
       cta: 'Close Demo',
     },
@@ -94,7 +94,7 @@ export function DemoLauncherPage() {
     {
       label: '06',
       title: 'Append Proof Close',
-      body: 'Final sample-demo endpoint. Show parse, confirm, and the receipt that says live proof is still locked.',
+      body: 'Founder-gated final sample-demo endpoint. The shortcut unlocks sample context first, then opens parse, confirm, and the live-proof boundary receipt.',
       href: appendProofPath,
       cta: 'Open Append',
     },
@@ -211,6 +211,7 @@ export function DemoLauncherPage() {
           <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-indigo-50/60">
             Fallback rule: direct report, direct insight, and activation links are recovery routes. They are useful for speed,
             but they are weaker proof than the story-to-upload packet path and must be described that way.
+            Append close is founder-gated even when opened from this launcher.
           </p>
         </section>
 

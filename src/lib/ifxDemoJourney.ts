@@ -64,6 +64,12 @@ export function buildIfxLockedInsightParams(source: 'guided_report' | 'locked_in
   return params
 }
 
+export function buildIfxAppendProofGateParams(): URLSearchParams {
+  const params = buildIfxLockedInsightParams('locked_insight')
+  params.set('destination', 'append_proof')
+  return params
+}
+
 export function buildIfxDemoJourneyPaths(market: Market) {
   return {
     storyPath: addMarketToPath('/story', market),
@@ -74,7 +80,7 @@ export function buildIfxDemoJourneyPaths(market: Market) {
       market,
     ),
     privateDemoPath: addMarketToPath(`/private-demo?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
-    appendProofPath: addMarketToPath('/dashboard/upload', market),
+    appendProofPath: addMarketToPath(`/private-demo?${buildIfxAppendProofGateParams().toString()}`, market),
     activationPath: addMarketToPath(`/activate?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
   }
 }

@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import {
   IFX_DEMO_REPORT_ID,
   IFX_DEMO_SCENE_COUNT,
+  buildIfxAppendProofGateParams,
   buildIfxDemoJourneyPaths,
   buildIfxGuidedDemoParams,
   buildIfxLockedInsightParams,
@@ -17,6 +18,9 @@ describe('ifx demo journey', () => {
     expect(buildIfxLockedInsightParams('locked_insight').toString()).toBe(
       'demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent',
     )
+    expect(buildIfxAppendProofGateParams().toString()).toBe(
+      'demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&destination=append_proof',
+    )
   })
 
   test('builds stable launcher paths for a market', () => {
@@ -30,6 +34,8 @@ describe('ifx demo journey', () => {
         '/insight/edge-decay-map?demo_packet=launcher_sample&source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=global',
       privateDemoPath:
         '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=global',
+      appendProofPath:
+        '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&destination=append_proof&market=global',
       activationPath:
         '/activate?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=global',
     })
