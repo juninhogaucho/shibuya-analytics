@@ -554,8 +554,8 @@ export function DashboardOverviewPage() {
             <article key={card.title} className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
               <h4 style={{ marginBottom: '0.75rem' }}>{card.title}</h4>
               <ul className="digest-preview">
-                {card.items.map((item) => (
-                  <li key={item}>{item}</li>
+                {card.items.map((item, index) => (
+                  <li key={`${card.title}-${index}-${item}`}>{item}</li>
                 ))}
               </ul>
             </article>
