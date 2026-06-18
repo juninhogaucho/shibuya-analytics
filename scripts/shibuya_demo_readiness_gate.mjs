@@ -20,12 +20,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, five stops, no live-proof overclaim.', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first'],
+    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first'],
   },
   {
     label: 'IFX demo launcher',
     file: 'src/pages/marketing/DemoLauncherPage.tsx',
-    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'One controlled path from story to private workspace.', 'The launcher is not live proof.', 'Secret values are never printed', 'buildIfxDemoJourneyPaths'],
+    markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'buildIfxDemoJourneyPaths'],
   },
   {
     label: 'public upload',

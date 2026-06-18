@@ -15,6 +15,7 @@ export function DemoLauncherPage() {
     reportPath,
     lockedInsightPath,
     privateDemoPath,
+    appendProofPath,
     activationPath,
   } = buildIfxDemoJourneyPaths(market)
   const primaryRoute = [
@@ -45,6 +46,13 @@ export function DemoLauncherPage() {
       body: 'Use the founder gate to show the sample operating loop, then close on append proof.',
       href: privateDemoPath,
       cta: 'Open Gate',
+    },
+    {
+      label: 'Close',
+      title: 'Append proof close',
+      body: 'End at the parser and append receipt so the viewer sees where live evidence has to begin.',
+      href: appendProofPath,
+      cta: 'Close Demo',
     },
   ] as const
   const demoStops = [
@@ -85,6 +93,13 @@ export function DemoLauncherPage() {
     },
     {
       label: '06',
+      title: 'Append Proof Close',
+      body: 'Final sample-demo endpoint. Show parse, confirm, and the receipt that says live proof is still locked.',
+      href: appendProofPath,
+      cta: 'Open Append',
+    },
+    {
+      label: '07',
       title: 'Activation Proof Boundary',
       body: 'Payment/activation context route for showing what live still has to prove after checkout.',
       href: activationPath,
@@ -101,11 +116,11 @@ export function DemoLauncherPage() {
               IFX Demo Launcher
             </p>
             <h1 className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
-              One controlled path from story to private workspace.
+              One controlled path from story to append-proof close.
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-neutral-300">
               This launcher is the operator surface for fast live demos. It keeps Shibuya in the right order:
-              public recognition, upload/report evidence, locked private question, then the Reset Pro sample workspace.
+              public recognition, upload/report evidence, locked private question, Reset Pro sample workspace, then append-proof close.
             </p>
           </div>
           <div className="rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.06] p-5">
@@ -125,7 +140,7 @@ export function DemoLauncherPage() {
         <div className="mb-8">
           <PublicJourneySpine
             activeStage="story"
-            detail="The launcher preserves the public StoryExperience first, then upload/report, locked insight, private demo, and activation proof boundary."
+            detail="The launcher preserves the public StoryExperience first, then upload/report, locked insight, private demo, append-proof close, and separate activation proof boundary."
           />
         </div>
 
@@ -172,10 +187,10 @@ export function DemoLauncherPage() {
             </div>
             <p className="text-sm leading-7 text-indigo-50/75">
               Use this row when you are presenting. It keeps the product thesis intact: public recognition earns upload,
-              upload creates the packet, locked insight names the question, and Reset Pro demonstrates the operating loop.
+              upload creates the packet, locked insight names the question, Reset Pro demonstrates the operating loop, and append proof closes the demo.
             </p>
           </div>
-          <div className="grid gap-3 lg:grid-cols-4">
+          <div className="grid gap-3 lg:grid-cols-5">
             {primaryRoute.map((step, index) => (
               <article key={step.label} className="rounded-3xl border border-white/10 bg-black/25 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100">

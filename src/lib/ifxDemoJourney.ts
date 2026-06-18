@@ -74,6 +74,7 @@ export function buildIfxDemoJourneyPaths(market: Market) {
       market,
     ),
     privateDemoPath: addMarketToPath(`/private-demo?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
+    appendProofPath: addMarketToPath('/dashboard/upload', market),
     activationPath: addMarketToPath(`/activate?${buildIfxLockedInsightParams('locked_insight').toString()}`, market),
   }
 }

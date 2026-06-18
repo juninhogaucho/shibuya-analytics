@@ -177,6 +177,7 @@ export default function StoryExperience() {
     reportPath: guidedReportPath,
     lockedInsightPath: guidedInsightPath,
     privateDemoPath: guidedPrivateDemoPath,
+    appendProofPath: guidedAppendProofPath,
   } = buildIfxDemoJourneyPaths(market)
   const emergencyDemoStops = [
     {
@@ -213,6 +214,13 @@ export default function StoryExperience() {
       body: 'Founder-gated sample workspace. It can show structure only; live proof still requires activation and uploads.',
       href: guidedPrivateDemoPath,
       cta: 'Open Gate',
+    },
+    {
+      label: '06',
+      title: 'Append proof close',
+      body: 'End the sample demo at upload/append proof so the missing live evidence is explicit.',
+      href: guidedAppendProofPath,
+      cta: 'Open Append',
     },
   ] as const
 
@@ -425,7 +433,7 @@ export default function StoryExperience() {
                 IFX emergency demo lane
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-white">
-                One narrative, five stops, no live-proof overclaim.
+                One narrative, six stops, no live-proof overclaim.
               </h3>
               <p className="mt-4 text-sm leading-7 text-cyan-50/75">
                 Use this lane when the conversation needs a linkable walkthrough immediately. The sample links are
