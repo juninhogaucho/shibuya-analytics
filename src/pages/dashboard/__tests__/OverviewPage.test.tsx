@@ -107,4 +107,37 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
   })
+
+  test('renders live activation origin separately from sample demo metadata', async () => {
+    window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token-123')
+    window.localStorage.setItem(
+      SHIBUYA_SESSION_META_STORAGE_KEY,
+      JSON.stringify({
+        tier: 'reset_pro',
+        market: 'global',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+        activationSource: 'locked_insight',
+        activationReportId: 'sample-free-report',
+        activationArchetypeId: 'marco',
+        activationAxisId: 'edge_decay',
+        activationLockedSectionId: 'highest-cost-state',
+        activationLockedSectionTitle: 'Highest-cost state',
+      }),
+    )
+
+    render(
+      <MemoryRouter>
+        <DashboardOverviewPage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('LIVE ACTIVATION ORIGIN')).toBeInTheDocument()
+    expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
+    expect(screen.getByText(/routing context for what the trader tried to unlock/i)).toBeInTheDocument()
+    expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
+    expect(screen.getByText('sample-free-report')).toBeInTheDocument()
+    expect(screen.getByText(/Marco: Profitable refiner - Edge Decay/i)).toBeInTheDocument()
+    expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
+  })
 })

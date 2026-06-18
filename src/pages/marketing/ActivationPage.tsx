@@ -2,9 +2,11 @@ import { type FormEvent, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { verifyActivation } from '../../lib/api/auth'
+import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
 import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
+import { buildFreeReportPreview, findLockedReportSectionBySlug } from '../../lib/storyExperience'
 
 export function ActivationPage() {
   const recentAccess = readRecentOrderAccess()
@@ -16,6 +18,17 @@ export function ActivationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
+  const checkoutIntent = readCheckoutIntent(location.search)
+  const activationReport = checkoutIntent
+    ? buildFreeReportPreview({
+        reportId: checkoutIntent.reportId ?? 'activation-origin',
+        archetypeId: checkoutIntent.archetypeId,
+        axisId: checkoutIntent.axisId,
+      })
+    : null
+  const activationLockedSection = activationReport
+    ? findLockedReportSectionBySlug(activationReport, checkoutIntent?.lockedSectionId)
+    : null
   const navigate = useNavigate()
 
   const handleSubmit = async (event: FormEvent) => {
@@ -39,6 +52,12 @@ export function ActivationPage() {
           accessExpiresAt: response.accessExpiresAt ?? undefined,
           dataSource: response.dataSource ?? undefined,
           orderId: orderCode,
+          activationSource: checkoutIntent?.source,
+          activationReportId: checkoutIntent?.reportId,
+          activationArchetypeId: checkoutIntent?.archetypeId,
+          activationAxisId: checkoutIntent?.axisId,
+          activationLockedSectionId: checkoutIntent?.lockedSectionId,
+          activationLockedSectionTitle: activationLockedSection?.title,
         })
 
         await logTraderLifecycleEvent({
@@ -48,6 +67,9 @@ export function ActivationPage() {
           metadata: {
             orderCode,
             passwordRequired: response.passwordRequired ?? false,
+            activationSource: checkoutIntent?.source,
+            activationReportId: checkoutIntent?.reportId,
+            activationLockedSectionId: checkoutIntent?.lockedSectionId,
           },
         }).catch(() => undefined)
 
@@ -109,6 +131,22 @@ export function ActivationPage() {
               <p className="terminal-muted">
                 This offer includes a guided review checkpoint after your first meaningful upload. Activation is step one, not the finish line.
               </p>
+            ) : null}
+            {checkoutIntent ? (
+              <div className="terminal-status terminal-status-success" style={{ marginTop: '1rem' }}>
+                <span className="status-icon">CTX</span>
+                <div>
+                  <p>{describeCheckoutIntent(checkoutIntent).toUpperCase()} CONTEXT DETECTED</p>
+                  <p className="terminal-muted">
+                    {activationLockedSection?.title
+                      ? `Activation will carry "${activationLockedSection.title}" into the live workspace as requested context.`
+                      : 'Activation will carry this public-story context into the live workspace.'}
+                  </p>
+                  <p className="terminal-muted">
+                    This is routing context only. The private claim still requires live activation, upload proof, and generated workspace evidence.
+                  </p>
+                </div>
+              </div>
             ) : null}
           </div>
 

@@ -43,6 +43,12 @@ export interface ShibuyaSessionMeta {
   demoValidationSummary?: string
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
+  activationSource?: string
+  activationReportId?: string
+  activationArchetypeId?: string
+  activationAxisId?: string
+  activationLockedSectionId?: string
+  activationLockedSectionTitle?: string
 }
 
 export interface EnterSampleModeOptions {

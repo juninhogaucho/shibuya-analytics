@@ -195,6 +195,24 @@ export function DashboardOverviewPage() {
         lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
       }
     : undefined
+  const liveActivationOrigin = !sampleActive && sessionMeta?.activationSource
+    ? {
+        title: sessionMeta.activationSource === 'locked_insight'
+          ? 'Activated from locked private insight'
+          : sessionMeta.activationSource === 'locked_report'
+            ? 'Activated from locked report module'
+            : sessionMeta.activationSource === 'free_report'
+              ? 'Activated from public report'
+              : 'Activated from public journey',
+        reportId: sessionMeta.activationReportId,
+        archetypeLabel: sessionMeta.activationArchetypeId
+          ? `${getTraderArchetype(sessionMeta.activationArchetypeId).name}: ${getTraderArchetype(sessionMeta.activationArchetypeId).title}`
+          : undefined,
+        axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
+        lockedSectionTitle: sessionMeta.activationLockedSectionTitle,
+        lockedSectionId: sessionMeta.activationLockedSectionId,
+      }
+    : undefined
   const premiumVisible = premiumAccess || resetProPreview
   const accessTierLabel =
     sampleActive
@@ -403,6 +421,43 @@ export function DashboardOverviewPage() {
       <JourneyProgressCard state={journeyState} />
       {resetProPreview ? (
         <ResetProDemoCommandCenter market={market} overview={data} origin={resetProDemoOrigin} />
+      ) : null}
+      {liveActivationOrigin ? (
+        <section
+          className="glass-panel"
+          style={{
+            borderColor: 'rgba(99, 102, 241, 0.24)',
+            background: 'rgba(99, 102, 241, 0.06)',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE ACTIVATION ORIGIN</p>
+          <h3 style={{ marginBottom: '0.5rem' }}>{liveActivationOrigin.title}</h3>
+          <p className="text-muted" style={{ marginBottom: '1rem', maxWidth: '58rem' }}>
+            This connects the public story path to the live workspace. It is routing context for what the trader tried to unlock,
+            not proof that a private claim is true before live upload and generated evidence exist.
+          </p>
+          <div className="grid-responsive three">
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Requested private insight</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.lockedSectionTitle ?? liveActivationOrigin.lockedSectionId ?? 'Not provided'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Origin report</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.reportId ?? 'Direct activation'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Public signal</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {[liveActivationOrigin.archetypeLabel, liveActivationOrigin.axisLabel].filter(Boolean).join(' - ') || 'Not provided'}
+              </p>
+            </article>
+          </div>
+        </section>
       ) : null}
       {data.market_context_status === 'estimated' ? (
         <div
