@@ -23,6 +23,11 @@ const Navbar: React.FC = () => {
     navigate(addMarketToPath('/pricing', market))
   }
 
+  const goFirms = () => {
+    persistMarket(market)
+    navigate('/partners')
+  }
+
   const goLogin = () => {
     persistMarket(market)
     navigate(addMarketToPath('/login', market))
@@ -61,6 +66,7 @@ const Navbar: React.FC = () => {
           {[
             { label: 'Story', active: location.hash === '#story-experience' || ['/', '/global', '/intl', '/story'].includes(location.pathname), onClick: goStory },
             { label: 'Upload', active: location.pathname === '/upload', onClick: goPrimary },
+            { label: 'For Firms', active: location.pathname === '/partners' || location.pathname === '/enterprise', onClick: goFirms },
             { label: 'Pricing', active: location.pathname === '/pricing', onClick: goPricing },
             { label: 'Sign In', active: location.pathname === '/login', onClick: goLogin },
           ].map((item, index) => (

@@ -9,7 +9,6 @@ Shibuya is a direct-trader performance operating system.
 It does **not** sell:
 - prop-firm infrastructure
 - broker tooling
-- white-label platform contracts
 - PDF-only report delivery as the main product
 
 It sells a live trader workspace that helps a trader answer three questions:
@@ -84,7 +83,7 @@ Backend touched files:
    - `STRIPE_PRICE_SHIBUYA_RESET_PRO_MONTHLY`
    - `STRIPE_PRICE_SHIBUYA_INDIA_AUDIT_MONTHLY`
    - `STRIPE_PRICE_SHIBUYA_INDIA_RESET_PRO_MONTHLY`
-2. set `VITE_DECRYPT_B2B_URL` if `/partners` should hard-handoff to Decrypt automatically
+2. keep `/partners` as the Shibuya B2B distribution surface; do not redirect it to Decrypt unless the strategy changes again
 3. run one real paid canary:
    - checkout
    - success

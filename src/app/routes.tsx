@@ -73,6 +73,7 @@ export function AppRoutes() {
           <Route path="/india" element={<Navigate to="/" replace />} />
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/partners" element={<PartnersPage />} />
+          <Route path="/firms" element={<Navigate to="/partners" replace />} />
           <Route path="/enterprise" element={<Navigate to="/partners" replace />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/upload" element={<PublicUploadPage />} />

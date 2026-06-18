@@ -115,4 +115,14 @@ describe('public route contract', () => {
 
     expect(await screen.findByText('Partners route')).toBeInTheDocument()
   })
+
+  test('/firms hands B2B traffic to the partner route', async () => {
+    render(
+      <MemoryRouter initialEntries={['/firms']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Partners route')).toBeInTheDocument()
+  })
 })

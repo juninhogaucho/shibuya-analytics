@@ -26,8 +26,6 @@ export type PricingCatalog = Record<PlanKey, PricingPlan>
 
 const MARKET_STORAGE_KEY = 'shibuya_market'
 
-export const DECRYPT_B2B_URL = import.meta.env.VITE_DECRYPT_B2B_URL ?? ''
-
 export const MARKET_PRICING: Record<Market, PricingCatalog> = {
   global: {
     audit_monthly: {
