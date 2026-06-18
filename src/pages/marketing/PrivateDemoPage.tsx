@@ -48,6 +48,24 @@ const PRIVATE_DEMO_OPERATOR_RUNBOOK = [
   },
 ] as const
 
+const PRIVATE_DEMO_CLAIM_SCRIPT = [
+  {
+    label: 'Say',
+    value: 'This is the Reset Pro operating loop Shibuya is building toward.',
+    body: 'Frame the sample workspace as product structure: mission, question, interventions, and append proof.',
+  },
+  {
+    label: 'Show',
+    value: 'One carried question, one intervention surface, one append-proof close.',
+    body: 'Keep the walkthrough under three minutes and avoid wandering through every dashboard card.',
+  },
+  {
+    label: 'Refuse',
+    value: 'Do not claim live activation, backend normalization, or account-specific improvement.',
+    body: 'Those claims require configured backend, real uploads, generated artifacts, durable append history, and measured deltas.',
+  },
+] as const
+
 export default function PrivateDemoPage() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -294,6 +312,31 @@ export default function PrivateDemoPage() {
             </div>
             <p className="mt-4 text-xs leading-5 text-cyan-50/55">
               Preflight approval does not create live proof. It only prevents the presenter from overstating what this sample route proves.
+            </p>
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-violet-300/20 bg-violet-300/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-200">
+              Private demo claim script
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              What to say before the code goes in.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-violet-50/70">
+              The founder gate is where the pitch can accidentally overclaim. Use this script to keep the demo focused on
+              structure, not unfinished live proof.
+            </p>
+            <div className="mt-4 grid gap-3">
+              {PRIVATE_DEMO_CLAIM_SCRIPT.map((row) => (
+                <div key={row.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-100">{row.label}</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{row.value}</p>
+                  <p className="mt-2 text-xs leading-5 text-violet-50/65">{row.body}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-violet-50/60">
+              Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.
             </p>
           </div>
 
