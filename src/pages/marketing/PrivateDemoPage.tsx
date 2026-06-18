@@ -102,6 +102,7 @@ export default function PrivateDemoPage() {
   const resetProBridge = handoffReport.resetProBridge
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [boundaryAcknowledged, setBoundaryAcknowledged] = useState(false)
   const configured = hasPrivateDemoGateConfigured()
   const preflightChecks = [
     {
@@ -155,6 +156,11 @@ export default function PrivateDemoPage() {
           ? `Private demo access is disabled in this build. Configure ${PRIVATE_DEMO_CODE_ENV_KEY} before sharing a Reset Pro demo.`
           : 'That demo code does not unlock the private Reset Pro workspace.',
       )
+      return
+    }
+
+    if (!boundaryAcknowledged) {
+      setError('Acknowledge the evidence boundary before unlocking the private Reset Pro workspace.')
       return
     }
 
@@ -355,6 +361,23 @@ export default function PrivateDemoPage() {
           ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <label className="flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-50/85">
+              <input
+                type="checkbox"
+                checked={boundaryAcknowledged}
+                onChange={(event) => {
+                  setBoundaryAcknowledged(event.target.checked)
+                  setError(null)
+                }}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-white/20 bg-black/40 text-amber-300"
+              />
+              <span>
+                <span className="block font-semibold text-white">I acknowledge the private demo boundary.</span>
+                This unlock shows sample Reset Pro structure only. It does not prove live activation, live uploads,
+                generated backend artifacts, durable append history, or account-specific trader conclusions.
+              </span>
+            </label>
+
             <label className="block">
               <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">
                 Demo code

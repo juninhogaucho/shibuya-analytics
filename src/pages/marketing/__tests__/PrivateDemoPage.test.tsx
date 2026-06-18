@@ -102,6 +102,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Bridge question')).toBeInTheDocument()
     expect(screen.getAllByText(/Does the trader become a different operator near the drawdown line/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo routing context/i).length).toBeGreaterThan(0)
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -126,6 +127,28 @@ describe('PrivateDemoPage', () => {
     })
   })
 
+  test('requires presenter acknowledgement before unlocking with a valid private code', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
+
+    expect(screen.getByLabelText(/I acknowledge the private demo boundary/i)).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByText(/Acknowledge the evidence boundary before unlocking/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
+  })
+
   test('keeps direct private-demo report links visibly weaker than upload handoffs', () => {
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
@@ -148,6 +171,7 @@ describe('PrivateDemoPage', () => {
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&market=global')
 
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -199,6 +223,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getAllByText('locked_insight').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Edge decay map').length).toBeGreaterThan(1)
 
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 

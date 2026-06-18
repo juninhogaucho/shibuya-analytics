@@ -121,6 +121,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Public signal markers')).toBeInTheDocument()
     expect(screen.getAllByText('Mirror selected, Pain axis tapped, Evidence intent').length).toBeGreaterThan(0)
 
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -257,6 +258,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
     expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(1)
 
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
@@ -590,6 +592,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Highest-cost state').length).toBeGreaterThan(0)
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
 
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
