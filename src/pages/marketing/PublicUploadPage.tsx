@@ -53,6 +53,36 @@ export default function PublicUploadPage() {
     [selectedPainAxisIds],
   )
   const hasStoryHandoff = storySource === 'guided' || visitedSceneCount > 0 || selectedPainAxes.length > 0
+  const hasGuidedStoryHandoff = storySource === 'guided'
+  const routeIntegrityRows = [
+    {
+      label: 'Entry status',
+      value: hasGuidedStoryHandoff
+        ? 'Guided StoryExperience handoff'
+        : shouldUseDemoLauncherSamplePacket
+          ? 'Controlled demo launcher sample'
+          : 'Direct upload recovery route',
+      body: hasGuidedStoryHandoff
+        ? 'The public story selected the provisional archetype, pain axis, scene count, and website-level markers before this upload step.'
+        : shouldUseDemoLauncherSamplePacket
+          ? 'The IFX launcher explicitly marks this path as a sample packet for continuity, not visitor analytics evidence.'
+          : 'No guided public story packet is attached. This route can create a report preview, but it must be treated as a weaker recovery path.',
+    },
+    {
+      label: 'Report source label',
+      value: hasGuidedStoryHandoff ? 'story-carried' : 'direct-public',
+      body: hasGuidedStoryHandoff
+        ? 'The next report may say it preserved public-story context, while still refusing account-specific conclusions.'
+        : 'The next report must say direct upload recovery, not completed storyline proof.',
+    },
+    {
+      label: 'Safe next click',
+      value: hasGuidedStoryHandoff ? 'Generate Guided Sample Report' : 'Run story or use recovery sample',
+      body: hasGuidedStoryHandoff
+        ? 'Use the guided sample when demo speed matters and the route already carries story context.'
+        : 'For a cleaner public demo, return to the story first. The sample button remains available for recovery only.',
+    },
+  ]
   const storyHomePath = getMarketHomePath(market)
   const reportPacketContract = [
     'Creates a local report handoff with source, market, archetype, dominant pain, story source, scenes viewed, and selected public pain axes.',
@@ -64,7 +94,7 @@ export default function PublicUploadPage() {
       label: 'Public prediction',
       value: `${archetype.name}: ${archetype.title} / ${axis.label}`,
       body: hasStoryHandoff
-        ? `Carried from ${storySource === 'guided' ? 'the guided StoryExperience' : 'direct upload context'} after ${Number.isFinite(visitedSceneCount) ? visitedSceneCount : 0} scene${visitedSceneCount === 1 ? '' : 's'}.`
+        ? `Carried from ${storySource === 'guided' ? 'the guided StoryExperience' : 'direct upload recovery context'} after ${Number.isFinite(visitedSceneCount) ? visitedSceneCount : 0} scene${visitedSceneCount === 1 ? '' : 's'}.`
         : 'Selected on this upload page without a guided story packet.',
     },
     {
@@ -213,6 +243,39 @@ export default function PublicUploadPage() {
               </div>
             </div>
 
+            <div className="mb-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.055] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-sky-200">Upload route integrity</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">
+                {hasGuidedStoryHandoff ? 'Story-first context is attached.' : 'Cold upload is recovery-only.'}
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-sky-50/75">
+                This page can accept a public preview input from several routes, but only the StoryExperience path is the
+                canonical public demo. Direct upload stays available so nobody gets stranded; it is labelled weaker on purpose.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {routeIntegrityRows.map((row) => (
+                  <article key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-sky-100">{row.label}</span>
+                    <strong className="mt-2 block text-sm text-white">{row.value}</strong>
+                    <span className="mt-2 block text-xs leading-5 text-sky-50/65">{row.body}</span>
+                  </article>
+                ))}
+              </div>
+              {!hasGuidedStoryHandoff ? (
+                <Link
+                  to={storyHomePath}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-4 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black sm:w-auto"
+                >
+                  Run StoryExperience First
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              ) : null}
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-sky-50/60">
+                Route rule: guided story can seed the question; direct upload can only create a local recovery packet.
+                Neither route proves private analytics until live activation, normalization, generated artifacts, and append history exist.
+              </p>
+            </div>
+
             {hasStoryHandoff ? (
               <div className="mb-6 rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Story handoff packet</p>
@@ -223,7 +286,7 @@ export default function PublicUploadPage() {
                 <div className="mt-4 grid gap-3 text-sm text-neutral-300 md:grid-cols-2">
                   <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
                     <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Source</span>
-                    <span className="mt-1 block text-white">{storySource === 'guided' ? 'Guided StoryExperience route' : 'Direct upload route'}</span>
+                    <span className="mt-1 block text-white">{storySource === 'guided' ? 'Guided StoryExperience route' : 'Direct upload recovery route'}</span>
                   </div>
                   <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
                     <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Scenes before upload</span>

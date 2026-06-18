@@ -210,7 +210,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
             ? `Website-level signal markers: ${signalMarkers.map((marker) => marker.label).join(', ')}.`
             : 'Website-level signal markers: none captured.',
         ]
-      : ['Public story handoff: direct upload route.']
+      : ['Public story handoff: direct upload recovery route; no guided StoryExperience packet was attached.']
   const evidenceLabel =
     source === 'sample'
       ? 'Sample history packet'

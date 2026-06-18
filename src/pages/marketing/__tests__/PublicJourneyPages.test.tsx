@@ -241,6 +241,12 @@ describe('public Shibuya journey pages', () => {
     )
 
     expect(screen.getByRole('heading', { name: /Upload your trade history/i })).toBeInTheDocument()
+    expect(screen.getByText('Upload route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Cold upload is recovery-only.')).toBeInTheDocument()
+    expect(screen.getByText('Direct upload recovery route')).toBeInTheDocument()
+    expect(screen.getByText('direct-public')).toBeInTheDocument()
+    expect(screen.getByText(/No guided public story packet is attached/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Run StoryExperience First/i })).toHaveAttribute('href', '/')
     expect(screen.getByText('Prediction survival test')).toBeInTheDocument()
     expect(screen.getByText('Priya: Prop evaluation survivor / Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Selected on this upload page without a guided story packet.')).toBeInTheDocument()
@@ -251,7 +257,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report?market=india&archetype=priya&axis=drawdown_pressure')
     expect(screen.getByText('Public report packet')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
-    expect(screen.getByText('Public story handoff: direct upload route.')).toBeInTheDocument()
+    expect(screen.getByText('Public story handoff: direct upload recovery route; no guided StoryExperience packet was attached.')).toBeInTheDocument()
     expect(screen.getByText(/No production upload or account-specific analysis is claimed/i)).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText(/Direct report route. No guided StoryExperience packet was attached/i)).toBeInTheDocument()
@@ -276,6 +282,10 @@ describe('public Shibuya journey pages', () => {
       </MemoryRouter>,
     )
 
+    expect(screen.getByText('Upload route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Story-first context is attached.')).toBeInTheDocument()
+    expect(screen.getByText('Guided StoryExperience handoff')).toBeInTheDocument()
+    expect(screen.getByText('story-carried')).toBeInTheDocument()
     expect(screen.getByText(/This route is marked as a controlled launcher sample/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Generate Guided Sample Report/i }))
