@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, Lock, UploadCloud } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
   FINGERPRINT_AXES,
@@ -164,6 +164,73 @@ export default function StoryExperience() {
       onSelect: () => inspectUploadFlow(),
     },
   ]
+  const guidedDemoParams = new URLSearchParams({
+    archetype: 'marco',
+    axis: 'edge_decay',
+    story: 'guided',
+    scene_count: '4',
+    pain_axes: 'edge_decay',
+    signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
+  })
+  const guidedDemoQuery = guidedDemoParams.toString()
+  const guidedUploadPath = addMarketToPath(`/upload?${guidedDemoQuery}`, market)
+  const guidedReportPath = addMarketToPath(`/report/sample-behavioral-leak-report?${guidedDemoQuery}`, market)
+  const guidedInsightPath = addMarketToPath(
+    `/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&${guidedDemoQuery}`,
+    market,
+  )
+  const guidedPrivateDemoParams = new URLSearchParams({
+    source: 'locked_insight',
+    report: 'sample-behavioral-leak-report',
+    archetype: 'marco',
+    axis: 'edge_decay',
+    section: 'edge-decay-map',
+    story: 'guided',
+    scene_count: '4',
+    pain_axes: 'edge_decay',
+    signals: 'mirror_selected,pain_axis_selected,scene_depth_light,upload_intent',
+  })
+  const guidedPrivateDemoPath = addMarketToPath(
+    `/private-demo?${guidedPrivateDemoParams.toString()}`,
+    market,
+  )
+  const emergencyDemoStops = [
+    {
+      label: '01',
+      title: 'Public story',
+      body: 'Start here when there is time. Run the mirror, pressure index, and boundary out loud.',
+      href: addMarketToPath('/story', market),
+      cta: 'Show Story',
+    },
+    {
+      label: '02',
+      title: 'Sample upload',
+      body: 'Fallback link with Marco / Edge Decay attached. For strongest proof, click Generate Guided Sample Report from upload.',
+      href: guidedUploadPath,
+      cta: 'Open Upload',
+    },
+    {
+      label: '03',
+      title: 'Sample report',
+      body: 'Direct report fallback for fast demos. It is weaker than clicking sample generation from upload.',
+      href: guidedReportPath,
+      cta: 'Open Report',
+    },
+    {
+      label: '04',
+      title: 'Locked insight',
+      body: 'Opens the edge-decay private question without claiming a local upload packet exists.',
+      href: guidedInsightPath,
+      cta: 'Open Insight',
+    },
+    {
+      label: '05',
+      title: 'Reset Pro gate',
+      body: 'Founder-gated sample workspace. It can show structure only; live proof still requires activation and uploads.',
+      href: guidedPrivateDemoPath,
+      cta: 'Open Gate',
+    },
+  ] as const
 
   const inspectScene = (index: number) => {
     const scene = STORY_SCENES[index]
@@ -344,6 +411,46 @@ export default function StoryExperience() {
             detail="The first public job is recognition. The page can route a hypothesis forward, but upload/report/private claims stay behind evidence."
           />
         </div>
+
+        <section className="mb-8 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 md:p-6">
+          <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">
+                IFX emergency demo lane
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">
+                One narrative, five stops, no live-proof overclaim.
+              </h3>
+              <p className="mt-4 text-sm leading-7 text-cyan-50/75">
+                Use this lane when the conversation needs a linkable walkthrough immediately. The sample links are
+                URL-only fallback context unless the upload page generates the local sample packet in this browser.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {emergencyDemoStops.map((stop) => (
+                <Link
+                  key={stop.label}
+                  to={stop.href}
+                  className="group rounded-3xl border border-white/10 bg-black/25 p-4 transition hover:border-cyan-200/50 hover:bg-cyan-300/[0.08]"
+                >
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-200">
+                    Stop {stop.label}
+                  </span>
+                  <span className="mt-2 block text-base font-semibold text-white">{stop.title}</span>
+                  <span className="mt-2 block text-xs leading-5 text-cyan-50/65">{stop.body}</span>
+                  <span className="mt-4 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-100">
+                    {stop.cta}
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+          <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-cyan-50/60">
+            Presenter boundary: direct report, insight, and private-demo links are fallback navigation. Stronger evidence comes from the guided story
+            plus upload page sample generation; live evidence still requires backend activation, normalized uploads, generated artifacts, and append history.
+          </p>
+        </section>
 
         <section className="mb-8 overflow-hidden rounded-[2rem] border border-indigo-300/20 bg-[radial-gradient(circle_at_top_left,rgba(129,140,248,0.18),rgba(9,9,11,0.98)_42%)] p-4 shadow-2xl shadow-indigo-950/30 md:p-6">
           <div className="grid gap-5 lg:grid-cols-[0.84fr_1.16fr] lg:items-stretch">

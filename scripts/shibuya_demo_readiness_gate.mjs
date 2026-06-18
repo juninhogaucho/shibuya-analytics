@@ -20,7 +20,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Finish To Sample Upload'],
+    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Finish To Sample Upload', 'IFX emergency demo lane', 'One narrative, five stops, no live-proof overclaim.', 'URL-only fallback context'],
   },
   {
     label: 'public upload',

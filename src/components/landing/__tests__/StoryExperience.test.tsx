@@ -40,6 +40,25 @@ describe('StoryExperience', () => {
     expect(screen.getByText('Public StoryExperience demo script')).toBeInTheDocument()
     expect(screen.getByText('Guided demo conductor')).toBeInTheDocument()
     expect(screen.getByText('Run this as a 3-minute story, not a scrolling website.')).toBeInTheDocument()
+    expect(screen.getByText('IFX emergency demo lane')).toBeInTheDocument()
+    expect(screen.getByText('One narrative, five stops, no live-proof overclaim.')).toBeInTheDocument()
+    expect(screen.getByText(/URL-only fallback context unless the upload page generates the local sample packet/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Open Upload/i })).toHaveAttribute(
+      'href',
+      '/upload?archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+    )
+    expect(screen.getByRole('link', { name: /Open Report/i })).toHaveAttribute(
+      'href',
+      '/report/sample-behavioral-leak-report?archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+    )
+    expect(screen.getByRole('link', { name: /Open Insight/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+    )
+    expect(screen.getByRole('link', { name: /Open Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=4&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+    )
     expect(screen.getByText('Path')).toBeInTheDocument()
     expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Next Demo Beat/i })).toBeInTheDocument()
