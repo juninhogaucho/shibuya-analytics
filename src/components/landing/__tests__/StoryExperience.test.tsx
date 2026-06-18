@@ -31,6 +31,8 @@ describe('StoryExperience', () => {
     expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
     expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
     expect(screen.getByText('Private Reset Pro demo opens only behind the founder gate.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Start Guided Demo Path/i })).toBeInTheDocument()
+    expect(screen.getByText(/For a fast handoff, the guided path uses Marco \/ Edge Decay/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Priya/i }))
     await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))
@@ -57,6 +59,26 @@ describe('StoryExperience', () => {
     )
 
     await user.click(screen.getByRole('button', { name: /Use Guided Demo Path/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
+    expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
+  })
+
+  test('exposes the deterministic guided demo path in the hero', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/story']}>
+        <StoryExperience />
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Start Guided Demo Path/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')

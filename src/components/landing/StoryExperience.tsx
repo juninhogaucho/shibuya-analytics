@@ -166,11 +166,19 @@ export default function StoryExperience() {
               Shibuya is the trader operating mirror: a public story that earns the upload, a report that names the leak,
               and a private workspace that turns the next session into a controlled experiment.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                onClick={openGuidedDemoPath}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm"
+              >
+                Start Guided Demo Path
+                <ArrowRight className="h-4 w-4" />
+              </button>
               <button
                 type="button"
                 onClick={inspectUploadFlow}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm"
               >
                 <UploadCloud className="h-4 w-4" />
                 Upload Trade History
@@ -184,6 +192,10 @@ export default function StoryExperience() {
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
+            <p className="mt-3 max-w-xl text-xs leading-5 text-neutral-500">
+              For a fast handoff, the guided path uses Marco / Edge Decay and carries that public context into upload,
+              free report, locked insight, and the private demo gate.
+            </p>
           </div>
           <div className="min-w-0 space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
             <p>
