@@ -1,65 +1,11 @@
 import { Check, LockKeyhole } from 'lucide-react'
+import {
+  PUBLIC_JOURNEY_CONTRACT,
+  getPublicJourneyStageState,
+  type PublicJourneyStage,
+} from '../../lib/publicJourneyContract'
 
-export type PublicJourneyStage = 'story' | 'upload' | 'report' | 'insight' | 'demo' | 'append'
-
-const PUBLIC_JOURNEY_STAGES: Array<{
-  id: PublicJourneyStage
-  label: string
-  title: string
-  boundary: string
-}> = [
-  {
-    id: 'story',
-    label: '01',
-    title: 'Public story',
-    boundary: 'Website-level recognition only.',
-  },
-  {
-    id: 'upload',
-    label: '02',
-    title: 'Upload packet',
-    boundary: 'Local handoff or live normalization.',
-  },
-  {
-    id: 'report',
-    label: '03',
-    title: 'Free baseline',
-    boundary: 'One sharp preview, private proof still locked.',
-  },
-  {
-    id: 'insight',
-    label: '04',
-    title: 'Private insight lock',
-    boundary: 'Shows what evidence must exist first.',
-  },
-  {
-    id: 'demo',
-    label: '05',
-    title: 'Reset Pro demo',
-    boundary: 'Founder-gated sample workspace.',
-  },
-  {
-    id: 'append',
-    label: '06',
-    title: 'Append proof close',
-    boundary: 'Demo ends where live evidence must begin.',
-  },
-]
-
-function getStageState(stage: PublicJourneyStage, activeStage: PublicJourneyStage): 'complete' | 'active' | 'locked' {
-  const stageIndex = PUBLIC_JOURNEY_STAGES.findIndex((candidate) => candidate.id === stage)
-  const activeIndex = PUBLIC_JOURNEY_STAGES.findIndex((candidate) => candidate.id === activeStage)
-
-  if (stageIndex < activeIndex) {
-    return 'complete'
-  }
-
-  if (stageIndex === activeIndex) {
-    return 'active'
-  }
-
-  return 'locked'
-}
+export type { PublicJourneyStage }
 
 export function PublicJourneySpine({
   activeStage,
@@ -86,8 +32,8 @@ export function PublicJourneySpine({
       </div>
 
       <div className="grid min-w-0 gap-3 lg:grid-cols-6">
-        {PUBLIC_JOURNEY_STAGES.map((stage) => {
-          const state = getStageState(stage.id, activeStage)
+        {PUBLIC_JOURNEY_CONTRACT.map((stage) => {
+          const state = getPublicJourneyStageState(stage.id, activeStage)
 
           return (
             <div
@@ -112,6 +58,11 @@ export function PublicJourneySpine({
               </div>
               <h3 className="break-words text-sm font-semibold text-white">{stage.title}</h3>
               <p className="mt-2 break-words text-xs leading-5 text-neutral-400">{stage.boundary}</p>
+              {state === 'active' ? (
+                <p className="mt-2 break-words text-[11px] leading-5 text-indigo-100/75">
+                  {stage.proofContract}
+                </p>
+              ) : null}
             </div>
           )
         })}

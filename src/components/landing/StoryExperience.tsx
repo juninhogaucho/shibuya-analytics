@@ -240,14 +240,14 @@ export default function StoryExperience() {
     {
       label: '05',
       title: 'Reset Pro gate',
-      body: 'Founder-gated sample workspace. It can show structure only; live proof still requires activation and uploads.',
+      body: 'Presenter-gated sample workspace. It can show structure only; live proof still requires activation and uploads.',
       href: guidedPrivateDemoPath,
       cta: 'Open Gate',
     },
     {
       label: '06',
       title: 'Append proof close',
-      body: 'Founder-gated recovery shortcut. It unlocks sample context first, then ends the demo at upload/append proof.',
+      body: 'Presenter-gated recovery shortcut. It unlocks sample context first, then ends the demo at upload/append proof.',
       href: guidedAppendProofPath,
       cta: 'Open Append',
     },
@@ -901,7 +901,7 @@ export default function StoryExperience() {
                     ['1', 'Public story predicts a provisional fingerprint.'],
                     ['2', 'Upload or sample history creates the free report packet.'],
                     ['3', 'Locked insight explains what live evidence must prove.'],
-                    ['4', 'Private Reset Pro demo opens only behind the founder gate.'],
+                    ['4', 'Private Reset Pro demo opens only behind the presenter gate.'],
                     ['5', 'Append proof closes the demo where live evidence must begin.'],
                   ].map(([step, body]) => (
                     <div key={step} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 p-3">

@@ -83,7 +83,7 @@ describe('story experience signal model', () => {
     ])
     expect(script.moments[1].say).toContain('Edge Decay')
     expect(script.allowedClaims).toContain('This public story builds a website-level hypothesis.')
-    expect(script.allowedClaims).toContain('The locked private insight carries a question into the paid or founder-gated workspace.')
+    expect(script.allowedClaims).toContain('The locked private insight carries a question into the paid or presenter-gated workspace.')
     expect(script.forbiddenClaims).toContain('Do not say Shibuya analyzed the visitor account from the story page.')
     expect(script.forbiddenClaims).toContain('Do not promise profit, challenge pass rates, or drawdown reduction.')
     expect(script.nextAction).toContain('locked private question')

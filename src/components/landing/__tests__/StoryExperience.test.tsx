@@ -69,7 +69,7 @@ describe('StoryExperience', () => {
       'href',
       '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
-    expect(screen.getByText(/Founder-gated recovery shortcut/i)).toBeInTheDocument()
+    expect(screen.getByText(/Presenter-gated recovery shortcut/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open Append/i })).toHaveAttribute(
       'href',
       '/private-demo?demo_packet=launcher_sample&source=locked_insight&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&destination=append_proof&market=india',
@@ -87,7 +87,7 @@ describe('StoryExperience', () => {
     expect(screen.getByText('3-minute demo path')).toBeInTheDocument()
     expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
     expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
-    expect(screen.getByText('Private Reset Pro demo opens only behind the founder gate.')).toBeInTheDocument()
+    expect(screen.getByText('Private Reset Pro demo opens only behind the presenter gate.')).toBeInTheDocument()
     expect(screen.getByText('Append proof closes the demo where live evidence must begin.')).toBeInTheDocument()
     expect(screen.getByText(/then closes on append proof/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Run 3-Min Story/i })).toBeInTheDocument()

@@ -685,14 +685,14 @@ export function buildPublicStoryDemoScript(state: StorySignalState): PublicStory
         timebox: '2:05-3:00',
         title: 'Private Question',
         say: 'The free report should name the private question; the Reset Pro workspace must prove the answer later.',
-        show: 'Guided upload path, locked private insight, then founder-gated Reset Pro preview.',
+        show: 'Guided upload path, locked private insight, then presenter-gated Reset Pro preview.',
         boundary: 'No profit uplift, pass-rate, drawdown, or live-account claim is allowed from the public story.',
       },
     ],
     allowedClaims: [
       'This public story builds a website-level hypothesis.',
       'The upload/report step decides what survives contact with evidence.',
-      'The locked private insight carries a question into the paid or founder-gated workspace.',
+      'The locked private insight carries a question into the paid or presenter-gated workspace.',
       'The Reset Pro demo uses sample data unless a live activation and upload are proven.',
     ],
     forbiddenClaims: [

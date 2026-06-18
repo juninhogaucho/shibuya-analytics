@@ -20,7 +20,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first', 'Founder-gated recovery shortcut', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
+    markers: ['3-minute demo path', 'Public story predicts a provisional fingerprint.', 'Guided demo conductor', 'Run 3-Min Story', 'Finish To Sample Upload', 'Append proof closes the demo where live evidence must begin.', 'IFX emergency demo lane', 'One narrative, six stops, no live-proof overclaim.', 'Open Append', 'URL-only fallback context', 'Every provider sells dashboards. Shibuya sells self-knowledge', 'run the public story first', 'Presenter-gated recovery shortcut', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
+  },
+  {
+    label: 'public journey contract',
+    file: 'src/lib/publicJourneyContract.ts',
+    markers: ['PUBLIC_JOURNEY_CONTRACT', 'public StoryExperience -> locked upload/report/private insight -> private Reset Pro workspace demo', 'Website-level recognition only.', 'Presenter-gated sample workspace.', 'Must carry the report, section, public handoff, and evidence status', 'first meaningful upload and repeat append history'],
   },
   {
     label: 'IFX demo launcher',
