@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
 import { formatMoney } from '../../lib/display'
-import { buildResetProDemoScript } from '../../lib/resetProDemo'
+import { buildResetProDemoScript, type ResetProDemoOrigin } from '../../lib/resetProDemo'
 import type { Market } from '../../lib/market'
 import type { DashboardOverview } from '../../lib/types'
 
 interface ResetProDemoCommandCenterProps {
   market: Market
   overview: DashboardOverview
+  origin?: ResetProDemoOrigin
 }
 
 function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['pressureMetrics'][number], market: Market) {
@@ -22,8 +23,8 @@ function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['p
   return metric.value
 }
 
-export function ResetProDemoCommandCenter({ market, overview }: ResetProDemoCommandCenterProps) {
-  const script = buildResetProDemoScript(overview)
+export function ResetProDemoCommandCenter({ market, overview, origin }: ResetProDemoCommandCenterProps) {
+  const script = buildResetProDemoScript(overview, origin)
 
   return (
     <section
@@ -90,6 +91,18 @@ export function ResetProDemoCommandCenter({ market, overview }: ResetProDemoComm
           </ul>
         </article>
       </div>
+
+      {script.originCard ? (
+        <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(99,102,241,0.08)', borderColor: 'rgba(129,140,248,0.22)' }}>
+          <h4 style={{ marginBottom: '0.5rem' }}>{script.originCard.title}</h4>
+          <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{script.originCard.body}</p>
+          <ul className="digest-preview" style={{ marginBottom: 0 }}>
+            {script.originCard.facts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        </article>
+      ) : null}
 
       <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
         {script.steps.map((step) => (

@@ -14,6 +14,19 @@ export interface ResetProDemoStep {
   proof: string
 }
 
+export interface ResetProDemoOrigin {
+  source?: string
+  reportId?: string
+  archetypeLabel?: string
+  axisLabel?: string
+}
+
+export interface ResetProDemoOriginCard {
+  title: string
+  body: string
+  facts: string[]
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
@@ -22,6 +35,7 @@ export interface ResetProDemoScript {
   pressureMetrics: ResetProDemoMetric[]
   steps: ResetProDemoStep[]
   proofArtifacts: string[]
+  originCard?: ResetProDemoOriginCard
   truthBoundary: string
 }
 
@@ -29,11 +43,12 @@ function toPercent(value: number): number {
   return Math.round(value * 1000) / 10
 }
 
-export function buildResetProDemoScript(overview: DashboardOverview): ResetProDemoScript {
+export function buildResetProDemoScript(overview: DashboardOverview, origin?: ResetProDemoOrigin): ResetProDemoScript {
   const currentEnemy = overview.analysis_summary?.current_enemy ?? 'The demo account is paying a behavioral tax that has to be named before it can be reduced.'
   const nextSessionCommand = overview.analysis_summary?.next_session_command ?? overview.next_action ?? 'Run the next session from a bounded mandate, then append the evidence.'
   const firstArtifact = overview.artifact_descriptors?.find((artifact) => artifact.available)
   const resetPacket = overview.artifact_descriptors?.find((artifact) => artifact.kind === 'reset_pro_review_packet')
+  const originCard = buildOriginCard(origin)
 
   return {
     headline: 'Private Reset Pro command center',
@@ -109,6 +124,25 @@ export function buildResetProDemoScript(overview: DashboardOverview): ResetProDe
       'Next-session mandate',
       'Guided review checkpoint',
     ],
+    originCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | undefined {
+  if (!origin?.reportId && !origin?.archetypeLabel && !origin?.axisLabel) {
+    return undefined
+  }
+
+  const facts = [
+    origin.reportId ? `Origin report: ${origin.reportId}` : 'Origin report: direct private demo entry',
+    origin.archetypeLabel ? `Public archetype: ${origin.archetypeLabel}` : 'Public archetype: not provided',
+    origin.axisLabel ? `Predicted axis: ${origin.axisLabel}` : 'Predicted axis: not provided',
+  ]
+
+  return {
+    title: origin.source === 'free_report' ? 'Carried in from the public report' : 'Private demo origin',
+    body: 'This packet connects the public recognition moment to the private workspace demo. It is context for the walkthrough, not proof that the sample account belongs to the visitor.',
+    facts,
   }
 }

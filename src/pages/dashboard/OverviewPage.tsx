@@ -25,6 +25,7 @@ import { buildReportArtifact, downloadReportArtifact } from '../../lib/reportArt
 import { buildExecutionProtocol } from '../../lib/executionProtocol'
 import { buildPerformanceStory } from '../../lib/performanceStory'
 import { getStoredSessionMeta, hasPremiumAccess, isResetProSamplePreview, isSampleMode } from '../../lib/runtime'
+import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
 import type { DashboardOverview, EdgeItem, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
 import { Link } from 'react-router-dom'
@@ -179,6 +180,16 @@ export function DashboardOverviewPage() {
   const market = sessionMeta?.market ?? 'india'
   const sampleActive = isSampleMode()
   const resetProPreview = sampleActive && isResetProSamplePreview(sessionMeta)
+  const resetProDemoOrigin = resetProPreview && sessionMeta?.demoSource
+    ? {
+        source: sessionMeta.demoSource,
+        reportId: sessionMeta.demoReportId,
+        archetypeLabel: sessionMeta.demoArchetypeId
+          ? `${getTraderArchetype(sessionMeta.demoArchetypeId).name}: ${getTraderArchetype(sessionMeta.demoArchetypeId).title}`
+          : undefined,
+        axisLabel: sessionMeta.demoAxisId ? getFingerprintAxis(sessionMeta.demoAxisId).label : undefined,
+      }
+    : undefined
   const premiumVisible = premiumAccess || resetProPreview
   const accessTierLabel =
     sampleActive
@@ -386,7 +397,7 @@ export function DashboardOverviewPage() {
       )}
       <JourneyProgressCard state={journeyState} />
       {resetProPreview ? (
-        <ResetProDemoCommandCenter market={market} overview={data} />
+        <ResetProDemoCommandCenter market={market} overview={data} origin={resetProDemoOrigin} />
       ) : null}
       {data.market_context_status === 'estimated' ? (
         <div

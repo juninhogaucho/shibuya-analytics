@@ -19,4 +19,27 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByRole('link', { name: /Show propOS angle/i })).toHaveAttribute('href', '/dashboard/shadow-boxing')
     expect(screen.getByText(/Live Reset Pro requires payment, activation, first meaningful upload/i)).toBeInTheDocument()
   })
+
+  test('renders carried report context when the private demo came from a free report', () => {
+    render(
+      <MemoryRouter>
+        <ResetProDemoCommandCenter
+          market="india"
+          overview={getSampleWorkspaceOverview('reset_pro')}
+          origin={{
+            source: 'free_report',
+            reportId: 'free-report-123',
+            archetypeLabel: 'Priya: Prop evaluation survivor',
+            axisLabel: 'Drawdown Pressure',
+          }}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
+    expect(screen.getByText('Origin report: free-report-123')).toBeInTheDocument()
+    expect(screen.getByText('Public archetype: Priya: Prop evaluation survivor')).toBeInTheDocument()
+    expect(screen.getByText('Predicted axis: Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText(/not proof that the sample account belongs to the visitor/i)).toBeInTheDocument()
+  })
 })

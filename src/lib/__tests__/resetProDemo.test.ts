@@ -34,4 +34,19 @@ describe('Reset Pro demo script', () => {
     )
     expect(script.pressureMetrics.find((metric) => metric.label === 'Review status')?.detail).toContain('private preview')
   })
+
+  test('carries public report origin into the private demo script without treating it as proof', () => {
+    const script = buildResetProDemoScript(getSampleWorkspaceOverview('reset_pro'), {
+      source: 'free_report',
+      reportId: 'free-report-123',
+      archetypeLabel: 'Priya: Prop evaluation survivor',
+      axisLabel: 'Drawdown Pressure',
+    })
+
+    expect(script.originCard?.title).toBe('Carried in from the public report')
+    expect(script.originCard?.facts).toContain('Origin report: free-report-123')
+    expect(script.originCard?.facts).toContain('Public archetype: Priya: Prop evaluation survivor')
+    expect(script.originCard?.facts).toContain('Predicted axis: Drawdown Pressure')
+    expect(script.originCard?.body).toContain('not proof')
+  })
 })
