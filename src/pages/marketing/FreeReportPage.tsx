@@ -89,6 +89,24 @@ export default function FreeReportPage() {
   )
   const guidedInsightSearch = appendDemoLauncherSamplePacketParam(guidedInsightQuery, shouldCarryDemoLauncherPacket).toString()
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
+  const reportToPrivateHandoffRows = [
+    {
+      label: 'Carries forward',
+      value: `${report.archetype.name} / ${report.dominantAxis.label}`,
+      body: 'The locked insight receives the report id, market, archetype, dominant axis, story handoff, and public signal markers.',
+    },
+    {
+      label: 'Private question carried',
+      value: guidedLockedSection.title,
+      body: report.resetProBridge.decisionQuestion,
+    },
+    {
+      label: 'Proof remains locked',
+      value: reportSession?.evidenceLabel ?? 'URL context only',
+      body: 'The next page may preserve context and show the proof contract, but it cannot answer the private question without live evidence.',
+    },
+  ] as const
+
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
       <div className="mx-0 w-full max-w-[22.25rem] min-w-0 sm:mx-auto sm:max-w-7xl">
@@ -186,6 +204,36 @@ export default function FreeReportPage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-violet-300/20 bg-violet-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-200">
+                Report-to-private handoff receipt
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">
+                The report can carry context. It cannot carry the answer.
+              </h2>
+            </div>
+            <p className="text-sm leading-7 text-violet-50/75">
+              This receipt is the bridge between public report and locked insight. It makes the next private click explicit
+              without pretending the free report has already proven trader-specific truth.
+            </p>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-3">
+            {reportToPrivateHandoffRows.map((row) => (
+              <article key={row.label} className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-violet-100">{row.label}</p>
+                <h3 className="mt-2 text-base font-semibold text-white">{row.value}</h3>
+                <p className="mt-3 text-sm leading-6 text-violet-50/70">{row.body}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-violet-50/60">
+            Handoff receipt rule: the locked insight inherits the question and evidence status only; live activation,
+            normalized upload, generated artifacts, and append history must still produce the answer.
+          </p>
         </section>
 
         <section className="mb-8 min-w-0 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">

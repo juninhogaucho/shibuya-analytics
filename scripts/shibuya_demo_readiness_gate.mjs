@@ -40,7 +40,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked free report',
     file: 'src/pages/marketing/FreeReportPage.tsx',
-    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
+    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
   },
   {
     label: 'story handoff model',
