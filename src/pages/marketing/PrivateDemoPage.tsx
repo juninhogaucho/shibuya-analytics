@@ -90,7 +90,6 @@ export default function PrivateDemoPage() {
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const hasLockedInsightHandoff = handoffSource === 'locked_insight' && Boolean(handoffReportId) && Boolean(handoffSectionId)
-  const routeIntegrityReady = hasLockedInsightHandoff
   const storedReportSession = getPublicReportSession(handoffReportId)
   const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
@@ -133,6 +132,8 @@ export default function PrivateDemoPage() {
   const privateGateEngagement = getPublicReportEngagement(handoffReport.reportId)
   const privateGateEngagementRows = buildPublicReportEngagementRows(privateGateEngagement, handoffSectionId)
   const privateGateEngagementSummary = buildPublicReportEngagementSummary(privateGateEngagement, handoffSectionId)
+  const hasLockedSectionIntentProof = privateGateEngagementSummary.currentSectionClickCount > 0
+  const routeIntegrityReady = hasLockedInsightHandoff && (hasLockedSectionIntentProof || shouldCarryDemoLauncherPacket)
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
   const resetProBridge = handoffReport.resetProBridge
@@ -152,23 +153,25 @@ export default function PrivateDemoPage() {
     {
       label: 'Route integrity',
       value: routeIntegrityReady
-        ? 'Locked insight handoff attached'
+        ? 'Locked insight intent verified'
         : hasReportHandoff
           ? 'Blocked: open locked insight first'
           : 'Blocked: start from story/report',
       body: routeIntegrityReady
-        ? 'The founder gate can open because this URL carries a report, locked private insight, and selected private module.'
+        ? 'The founder gate can open because this browser has a locked-section intent receipt or a controlled launcher packet.'
         : hasReportHandoff
-          ? 'Report-only private demo unlocks are disabled. Open a locked private insight first so Reset Pro receives the exact question it is allowed to preview.'
+          ? 'Private demo unlocks require a local locked-section intent receipt or an explicit controlled launcher packet. A URL alone is not enough.'
           : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
     },
     {
       label: 'Locked question',
       value: lockedSection?.title ?? handoffSectionId ?? 'No locked module attached',
-      body: hasLockedInsightHandoff
+      body: routeIntegrityReady
         ? resetProBridge.decisionQuestion
-        : hasReportHandoff
-          ? 'A report is attached, but the private demo stays blocked until a locked insight module carries the question.'
+        : hasLockedInsightHandoff
+          ? 'A locked insight URL is attached, but the private demo stays blocked until this browser records the locked-section intent or carries a controlled launcher packet.'
+          : hasReportHandoff
+            ? 'A report is attached, but the private demo stays blocked until a locked insight module carries the question.'
           : 'No public report question is attached, so the operator must frame this as a generic sample preview.',
     },
     {
@@ -218,10 +221,10 @@ export default function PrivateDemoPage() {
       label: 'Stored after unlock',
       value: routeIntegrityReady
         ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum'
-        : 'nothing; report-only and cold private-demo unlocks are blocked',
+        : 'nothing; URL-only, report-only, and cold private-demo unlocks are blocked',
       body: routeIntegrityReady
         ? 'These values seed the Reset Pro preview so the command center can open with the right context.'
-        : 'The private workspace should not open without locked private-insight context because there is no selected private question to test.',
+        : 'The private workspace should not open without a locked-section intent receipt or controlled launcher packet because there is no verified private question to test.',
     },
     {
       label: 'Not stored or proven',
@@ -271,7 +274,7 @@ export default function PrivateDemoPage() {
     event.preventDefault()
 
     if (!routeIntegrityReady) {
-      setError('Open a locked private insight before the private demo so Reset Pro receives a selected private question.')
+      setError('Open a locked private insight from the report before the private demo so Reset Pro receives a verified private question.')
       return
     }
 
@@ -564,7 +567,7 @@ export default function PrivateDemoPage() {
               ))}
             </div>
             <p className="mt-4 text-xs leading-5 text-cyan-50/60">
-              Unlock manifest rule: a successful code changes access state only after locked insight context exists. It does not convert demo context into live proof.
+              Unlock manifest rule: a successful code changes access state only after locked insight intent is verified. It does not convert demo context into live proof.
             </p>
           </div>
 

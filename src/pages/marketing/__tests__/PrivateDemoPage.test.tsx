@@ -67,13 +67,13 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
     expect(screen.getAllByText('Mission HQ first').length).toBeGreaterThan(0)
     expect(screen.getByText('Stored after unlock')).toBeInTheDocument()
-    expect(screen.getByText('nothing; report-only and cold private-demo unlocks are blocked')).toBeInTheDocument()
-    expect(screen.getByText(/The private workspace should not open without locked private-insight context/i)).toBeInTheDocument()
+    expect(screen.getByText('nothing; URL-only, report-only, and cold private-demo unlocks are blocked')).toBeInTheDocument()
+    expect(screen.getByText(/The private workspace should not open without a locked-section intent receipt/i)).toBeInTheDocument()
     expect(screen.getByText('Not stored or proven')).toBeInTheDocument()
     expect(screen.getByText('raw visitor trades, payment proof, live backend artifacts, account-specific conclusions')).toBeInTheDocument()
     expect(screen.getByText('First screen after unlock')).toBeInTheDocument()
     expect(screen.getByText('Mission HQ with the Reset Pro operator strip')).toBeInTheDocument()
-    expect(screen.getByText(/a successful code changes access state only after locked insight context exists/i)).toBeInTheDocument()
+    expect(screen.getByText(/a successful code changes access state only after locked insight intent is verified/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
     expect(screen.getByText('The workspace will store this receipt, not the private code.')).toBeInTheDocument()
     expect(screen.getByText('Receipt id')).toBeInTheDocument()
@@ -84,7 +84,7 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open a locked private insight from the report before the private demo/i)).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
   })
@@ -102,7 +102,7 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open a locked private insight from the report before the private demo/i)).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
@@ -132,7 +132,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Do not claim live activation, backend normalization, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(1)
     expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
-    expect(screen.getByText('Locked insight handoff attached')).toBeInTheDocument()
+    expect(screen.getByText('Locked insight intent verified')).toBeInTheDocument()
     expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
@@ -208,6 +208,7 @@ describe('PrivateDemoPage', () => {
   test('requires presenter acknowledgement before unlocking with a valid private code', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+    recordLockedSectionIntent('free-report-123', 'edge-decay-map')
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
 
@@ -230,6 +231,7 @@ describe('PrivateDemoPage', () => {
   test('gates append-proof shortcut before redirecting to the close screen', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+    recordLockedSectionIntent('free-report-123', 'edge-decay-map')
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&destination=append_proof&market=global')
 
@@ -262,7 +264,7 @@ describe('PrivateDemoPage', () => {
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=6&pain_axes=drawdown_pressure&market=global')
 
     expect(screen.getByText('Blocked: open locked insight first')).toBeInTheDocument()
-    expect(screen.getByText(/Report-only private demo unlocks are disabled/i)).toBeInTheDocument()
+    expect(screen.getByText(/Private demo unlocks require a local locked-section intent receipt/i)).toBeInTheDocument()
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText('URL context only')).toBeInTheDocument()
@@ -272,20 +274,39 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
-    expect(screen.getByText('nothing; report-only and cold private-demo unlocks are blocked')).toBeInTheDocument()
+    expect(screen.getByText('nothing; URL-only, report-only, and cold private-demo unlocks are blocked')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open a locked private insight from the report before the private demo/i)).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+  })
+
+  test('blocks locked-insight private-demo URLs without local locked-section intent', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
+
+    expect(screen.getByText('Blocked: open locked insight first')).toBeInTheDocument()
+    expect(screen.getByText(/A locked insight URL is attached, but the private demo stays blocked/i)).toBeInTheDocument()
+    expect(screen.getByText('No locked click yet')).toBeInTheDocument()
+
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByText(/Open a locked private insight from the report before the private demo/i)).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
 
   test('carries URL-only story context into sample metadata without upload evidence', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+    recordLockedSectionIntent('free-report-123', 'edge-decay-map')
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&market=global')
 
@@ -333,6 +354,7 @@ describe('PrivateDemoPage', () => {
   test('carries locked insight intent into the Reset Pro sample metadata', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+    recordLockedSectionIntent('free-report-123', 'edge-decay-map')
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
 
