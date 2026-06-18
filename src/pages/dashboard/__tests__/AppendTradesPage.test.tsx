@@ -145,12 +145,38 @@ describe('AppendTradesPage', () => {
       caseStatus: 'awaiting_upload',
       market: 'india',
       offerKind: 'psych_audit',
+      activationSource: 'locked_insight',
+      activationReportId: 'sample-behavioral-leak-report',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationLockedSectionTitle: 'Edge Decay Map',
+      activationBridgeHeadline: 'Stop defending dead edge.',
+      activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      activationBridgeWhyNow: 'The public story recognized edge decay; the live workspace must prove it from real history.',
+      activationBridgeLiveProof: ['Upload baseline history', 'Append the next session'],
     })
     submitParsedTradesMock.mockResolvedValue({ status: 'ok', trades_uploaded: 2 })
     const user = userEvent.setup()
 
     renderPage()
 
+    expect(screen.getByText('LIVE ACTIVATION PROOF TARGET')).toBeInTheDocument()
+    expect(screen.getByText('First meaningful upload turns this from carried context into account evidence.')).toBeInTheDocument()
+    expect(screen.getByText('Activated from locked report module')).toBeInTheDocument()
+    expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
+    expect(screen.getByText('Edge Decay Map')).toBeInTheDocument()
+    expect(screen.getByText('Marco: Profitable refiner - Edge Decay')).toBeInTheDocument()
+    expect(screen.getByText('guided; scenes 6; axes Edge Decay')).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO LIVE QUESTION')).toBeInTheDocument()
+    expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
+    expect(screen.queryByText('This is the demo endpoint, not live evidence.')).not.toBeInTheDocument()
+    expect(screen.queryByText('RESET PRO SAMPLE APPEND PACKET')).not.toBeInTheDocument()
     expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
     expect(screen.getByText('This is where the live proof loop starts.')).toBeInTheDocument()
     expect(screen.getByText('Live write')).toBeInTheDocument()

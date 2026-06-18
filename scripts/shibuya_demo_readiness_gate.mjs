@@ -105,7 +105,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'append-proof exit',
     file: 'src/pages/dashboard/AppendTradesPage.tsx',
-    markers: ['RESET PRO PROOF EXIT', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT'],
+    markers: ['LIVE ACTIVATION PROOF TARGET', 'First meaningful upload turns this from carried context into account evidence.', 'RESET PRO PROOF EXIT', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads', 'RESET PRO SAMPLE APPEND PACKET', 'Load Reset Pro Sample Trades', 'RESET PRO APPEND PROOF RECEIPT'],
   },
   {
     label: 'partner economics',

@@ -18,6 +18,8 @@ import { addMarketToPath } from '../../lib/market'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
+import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
+import type { ShibuyaSessionMeta } from '../../lib/runtime'
 import type { TradePasteMemoryResponse, TraderProfileContext } from '../../lib/types'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 
@@ -83,6 +85,41 @@ function buildSampleNotes(tradesUploaded: number): string[] {
   ]
 }
 
+function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) {
+  if (!sessionMeta?.activationSource) {
+    return null
+  }
+
+  const archetype = sessionMeta.activationArchetypeId ? getTraderArchetype(sessionMeta.activationArchetypeId) : null
+  const selectedPainAxisLabels = sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label) ?? []
+  const signalMarkerLabels = getPublicStorySignalMarkers(sessionMeta.activationSignalMarkerIds).map((marker) => marker.label)
+  const storySource = sessionMeta.activationStorySource
+  const visitedSceneCount = sessionMeta.activationVisitedSceneCount ?? 0
+  const activationTitle = sessionMeta.activationSource === 'locked_insight'
+    ? 'Activated from locked report module'
+    : sessionMeta.activationSource === 'free_report'
+      ? 'Activated from public report'
+      : 'Activated from public journey'
+
+  return {
+    activationTitle,
+    reportId: sessionMeta.activationReportId ?? 'Direct activation',
+    lockedSection: sessionMeta.activationLockedSectionTitle ?? sessionMeta.activationLockedSectionId ?? 'Not provided',
+    fingerprint: [
+      archetype ? `${archetype.name}: ${archetype.title}` : null,
+      sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : null,
+    ].filter(Boolean).join(' - ') || 'Not provided',
+    storyHandoff: storySource
+      ? `${storySource}; scenes ${visitedSceneCount}; axes ${selectedPainAxisLabels.join(', ') || 'none captured'}`
+      : 'No guided story packet attached.',
+    signalMarkers: signalMarkerLabels.length ? signalMarkerLabels.join(', ') : 'No public markers attached.',
+    bridgeHeadline: sessionMeta.activationBridgeHeadline,
+    bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion,
+    bridgeWhyNow: sessionMeta.activationBridgeWhyNow,
+    bridgeLiveProof: sessionMeta.activationBridgeLiveProof ?? [],
+  }
+}
+
 export function AppendTradesPage() {
   const [paste, setPaste] = useState('')
   const [notes, setNotes] = useState<string[]>([])
@@ -103,6 +140,7 @@ export function AppendTradesPage() {
   const journeyState = buildJourneyState({ overview: null, profile: null, sessionMeta, market })
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
   const traderMode = profileContext?.trader_mode ?? sessionMeta?.traderMode
+  const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(sessionMeta)
   const resetProProofReceiptRows = [
     {
       label: 'Sample parse demonstrated',
@@ -386,6 +424,72 @@ export function AppendTradesPage() {
           </p>
         )}
       </section>
+
+      {liveActivationProofTarget ? (
+        <section
+          className="glass-panel"
+          style={{
+            marginBottom: '1.5rem',
+            borderColor: 'rgba(16,185,129,0.24)',
+            background: 'linear-gradient(135deg, rgba(16,185,129,0.09), rgba(14,165,233,0.05))',
+          }}
+        >
+          <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+            <div>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE ACTIVATION PROOF TARGET</p>
+              <h3 style={{ marginBottom: '0.5rem' }}>First meaningful upload turns this from carried context into account evidence.</h3>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                Payment and activation preserved the public story, report, and locked question. This page is the evidence checkpoint:
+                upload real history, generate backend artifacts, then use append history to prove whether behavior changed.
+              </p>
+            </div>
+          </div>
+          <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+            {[
+              ['Origin', liveActivationProofTarget.activationTitle],
+              ['Report', liveActivationProofTarget.reportId],
+              ['Locked module', liveActivationProofTarget.lockedSection],
+              ['Public fingerprint', liveActivationProofTarget.fingerprint],
+              ['Story handoff', liveActivationProofTarget.storyHandoff],
+              ['Public signal markers', liveActivationProofTarget.signalMarkers],
+            ].map(([label, value]) => (
+              <article key={label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>{label}</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>{value}</p>
+              </article>
+            ))}
+          </div>
+          {liveActivationProofTarget.bridgeDecisionQuestion ? (
+            <article
+              className="glass-panel"
+              style={{
+                marginTop: '1rem',
+                background: 'rgba(16,185,129,0.08)',
+                borderColor: 'rgba(16,185,129,0.22)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO LIVE QUESTION</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>
+                {liveActivationProofTarget.bridgeHeadline ?? 'The private question survived activation.'}
+              </h4>
+              <p style={{ marginBottom: '0.75rem', fontWeight: 700 }}>{liveActivationProofTarget.bridgeDecisionQuestion}</p>
+              {liveActivationProofTarget.bridgeWhyNow ? (
+                <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{liveActivationProofTarget.bridgeWhyNow}</p>
+              ) : null}
+              <p className="text-muted" style={{ marginBottom: liveActivationProofTarget.bridgeLiveProof.length ? '0.75rem' : 0 }}>
+                The answer remains locked until this account supplies normalized history, generated artifacts, and repeat append evidence.
+              </p>
+              {liveActivationProofTarget.bridgeLiveProof.length ? (
+                <ul className="notes-list" style={{ marginBottom: 0 }}>
+                  {liveActivationProofTarget.bridgeLiveProof.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </article>
+          ) : null}
+        </section>
+      ) : null}
 
       <section
         className="glass-panel"
