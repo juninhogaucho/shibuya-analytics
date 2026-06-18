@@ -288,6 +288,29 @@ Verification:
 - `tsc -b`: passed.
 - `vite build`: passed, 2,836 modules transformed.
 
+## Eleventh Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/api.ts`
+- `src/lib/api/checkout.ts`
+- `src/lib/api/__tests__/checkout.test.ts`
+- `src/pages/checkout/CheckoutPage.tsx`
+
+Behavior now verified:
+
+- Promo-code validation now lives in `src/lib/api/checkout.ts`.
+- `CheckoutPage` no longer performs raw `fetch` against `API_BASE_URL` for promo validation.
+- Backend promo rejection is normalized into a user-safe invalid promo result.
+- Network failure still lets the checkout page record the promo code for post-checkout verification, preserving the previous customer-flow fallback.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/checkout.test.ts`: 1 file / 3 tests passed.
+- `vitest run`: 34 files / 88 tests passed.
+- `tsc -b`: passed.
+- `vite build`: passed, 2,836 modules transformed.
+
 Success condition:
 
 - `api.ts` becomes either a temporary compatibility barrel or disappears. It is now a compatibility barrel.

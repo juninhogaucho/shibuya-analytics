@@ -1,6 +1,6 @@
 import { readAffiliateAttribution } from '../affiliateAttribution'
 import { isSampleMode } from '../runtime'
-import { http } from './httpClient'
+import { ApiError, http } from './httpClient'
 
 export interface CheckoutSessionRequest {
   plan_id: string
@@ -22,6 +22,14 @@ export interface CheckoutSessionResponse {
   order_id: string
 }
 
+export interface PromoValidationResponse {
+  valid: boolean
+  code?: string
+  code_type?: string
+  dashboard_months_bonus: number
+  message: string
+}
+
 export async function createCheckoutSession(payload: CheckoutSessionRequest): Promise<CheckoutSessionResponse> {
   const attribution = readAffiliateAttribution()
   const mergedPayload = {
@@ -34,6 +42,26 @@ export async function createCheckoutSession(payload: CheckoutSessionRequest): Pr
   }
   const { data } = await http.post<CheckoutSessionResponse>('/v1/checkout/create-session', mergedPayload)
   return data
+}
+
+export async function validatePromoCode(code: string): Promise<PromoValidationResponse> {
+  try {
+    const normalizedCode = code.trim()
+    const { data } = await http.post<PromoValidationResponse>('/v1/promo/validate', {
+      code: normalizedCode,
+    })
+    return data
+  } catch (error) {
+    if (error instanceof ApiError && error.status > 0) {
+      return {
+        valid: false,
+        dashboard_months_bonus: 0,
+        message: 'Could not validate code',
+      }
+    }
+
+    throw error
+  }
 }
 
 export async function trackAffiliateClick(code: string): Promise<void> {
@@ -58,4 +86,3 @@ export async function getCheckoutSession(sessionId: string): Promise<CheckoutSes
   const { data } = await http.get<CheckoutSessionStatus>(`/v1/checkout/session/${sessionId}`)
   return data
 }
-

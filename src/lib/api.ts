@@ -39,11 +39,13 @@ export {
   createCheckoutSession,
   getCheckoutSession,
   trackAffiliateClick,
+  validatePromoCode,
 } from './api/checkout'
 export type {
   CheckoutSessionRequest,
   CheckoutSessionResponse,
   CheckoutSessionStatus,
+  PromoValidationResponse,
 } from './api/checkout'
 export {
   getTraderProfileContext,

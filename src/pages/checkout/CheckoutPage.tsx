@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, User, MessageSquare, CreditCard, Gift, Check, AlertCircle, Upload, ArrowRight } from 'lucide-react'
-import { API_BASE_URL } from '../../lib/constants'
-import { createCheckoutSession, trackAffiliateClick } from '../../lib/api/checkout'
+import { createCheckoutSession, trackAffiliateClick, validatePromoCode } from '../../lib/api/checkout'
+import type { PromoValidationResponse } from '../../lib/api/checkout'
 import {
   captureAffiliateAttributionFromLocation,
   getPreferredAffiliateCode,
@@ -19,14 +19,6 @@ interface CheckoutForm {
   email: string
   discord: string
   referral: string
-}
-
-interface PromoValidation {
-  valid: boolean
-  code?: string
-  code_type?: string
-  dashboard_months_bonus: number
-  message: string
 }
 
 const CheckoutPage: React.FC = () => {
@@ -51,7 +43,7 @@ const CheckoutPage: React.FC = () => {
     }
   })
   const [promoValidating, setPromoValidating] = useState(false)
-  const [promoResult, setPromoResult] = useState<PromoValidation | null>(null)
+  const [promoResult, setPromoResult] = useState<PromoValidationResponse | null>(null)
 
   useEffect(() => {
     persistMarket(market)
@@ -70,7 +62,7 @@ const CheckoutPage: React.FC = () => {
       .catch(() => undefined)
   }, [location.pathname, location.search, market])
 
-  const validatePromoCode = async (code: string) => {
+  const handleValidatePromoCode = async (code: string) => {
     if (!code.trim()) {
       setPromoResult(null)
       return
@@ -78,18 +70,8 @@ const CheckoutPage: React.FC = () => {
 
     setPromoValidating(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/v1/promo/validate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.trim() }),
-      })
-
-      if (response.ok) {
-        const result: PromoValidation = await response.json()
-        setPromoResult(result)
-      } else {
-        setPromoResult({ valid: false, dashboard_months_bonus: 0, message: 'Could not validate code' })
-      }
+      const result = await validatePromoCode(code)
+      setPromoResult(result)
     } catch {
       setPromoResult({
         valid: true,
@@ -271,7 +253,7 @@ const CheckoutPage: React.FC = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => validatePromoCode(form.referral)}
+                    onClick={() => handleValidatePromoCode(form.referral)}
                     disabled={promoValidating || !form.referral.trim()}
                     className="rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500"
                   >
