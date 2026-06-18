@@ -208,6 +208,31 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </article>
 
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
+          background: 'rgba(245,158,11,0.07)',
+          borderColor: 'rgba(245,158,11,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO CLOSE CONTRACT</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>{script.closeContract.headline}</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>{script.closeContract.body}</p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+          {script.closeContract.rows.map((row) => (
+            <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>{row.label}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+            </article>
+          ))}
+        </div>
+      </article>
+
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>

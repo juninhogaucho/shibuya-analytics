@@ -103,6 +103,17 @@ export interface ResetProDemoObjectionResponse {
   boundary: string
 }
 
+export interface ResetProDemoCloseContractItem {
+  label: string
+  body: string
+}
+
+export interface ResetProDemoCloseContract {
+  headline: string
+  body: string
+  rows: ResetProDemoCloseContractItem[]
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
@@ -113,6 +124,7 @@ export interface ResetProDemoScript {
   decisionPacket: ResetProDemoDecisionPacket
   proofLadder: ResetProDemoProofStage[]
   objectionResponses: ResetProDemoObjectionResponse[]
+  closeContract: ResetProDemoCloseContract
   readinessChecklist: ResetProDemoChecklistItem[]
   claimLedger: ResetProDemoClaimLedger
   pressureMetrics: ResetProDemoMetric[]
@@ -192,6 +204,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     decisionPacket,
     proofLadder,
     objectionResponses: buildObjectionResponses(origin, Boolean(originCard), Boolean(bridgeCard)),
+    closeContract: buildCloseContract(origin, Boolean(originCard), Boolean(bridgeCard)),
     claimLedger: {
       allowed: [
         'This is a controlled sample workspace showing the Reset Pro operating loop.',
@@ -267,6 +280,37 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     originCard,
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildCloseContract(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoCloseContract {
+  const carriedQuestion = origin?.bridgeDecisionQuestion ?? origin?.lockedSectionTitle
+
+  return {
+    headline: 'Close on append proof without converting the demo into a live claim.',
+    body: 'RESET PRO CLOSE CONTRACT: the last workspace move must send the viewer to the append path and keep the evidence boundary explicit.',
+    rows: [
+      {
+        label: 'What this close proves',
+        body: hasOriginCard
+          ? 'The public report context can travel into a controlled Reset Pro sample workflow and end at the upload/append proof path.'
+          : 'The direct sample workspace can demonstrate the Reset Pro operating loop and end at the upload/append proof path.',
+      },
+      {
+        label: 'What remains unproven',
+        body: 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.',
+      },
+      {
+        label: 'Required next evidence',
+        body: hasBridgeCard && carriedQuestion
+          ? `A live activated account must append real history before answering: ${carriedQuestion}`
+          : 'A live activated account must complete first meaningful upload, generated artifact review, and repeat append history.',
+      },
+    ],
   }
 }
 
