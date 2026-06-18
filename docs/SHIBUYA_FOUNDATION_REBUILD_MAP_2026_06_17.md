@@ -167,7 +167,7 @@ Verification:
 
 ## Remaining Foundation Slices
 
-Continue splitting `src/lib/api.ts` into capability-specific API modules. Support/appointments, ops, and site-contact code still share the broad facade. Profile, lifecycle, and daily-practice persistence now live behind the trader API boundary.
+Continue splitting `src/lib/api.ts` into capability-specific API modules. Ops and site-contact code still share the broad facade. Profile/lifecycle/daily-practice and support/appointments now live behind dedicated API boundaries.
 
 ## Sixth Foundation Slice Completed
 
@@ -217,11 +217,36 @@ Verification:
 - `tsc -b`: passed.
 - `vite build`: passed, 2,834 modules transformed.
 
+## Eighth Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/api.ts`
+- `src/lib/api/support.ts`
+- `src/lib/api/__tests__/support.test.ts`
+- `src/pages/dashboard/AccessPage.tsx`
+
+Behavior now verified:
+
+- Appointment slots, appointment booking/history/cancel, support ticket list/detail/create/reply calls now live in `src/lib/api/support.ts`.
+- `AccessPage` imports support and appointment capabilities directly from `api/support`.
+- `AccessPage` imports password change directly from `api/auth`.
+- `src/lib/api.ts` keeps compatibility re-exports but no longer owns support or appointment implementation.
+- Sample support and appointment paths remain explicitly sample-shaped and local.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/support.test.ts`: 1 file / 2 tests passed.
+- `vitest run`: 31 files / 81 tests passed.
+- `tsc -b`: passed.
+- `vite build`: passed, 2,835 modules transformed.
+
 Success condition:
 
 - `api.ts` becomes either a temporary compatibility barrel or disappears.
 - Dashboard pages import dashboard functions from a dashboard API module. Done for current dashboard data/upload consumers.
 - Trader pages import profile/lifecycle/daily-practice functions from a trader API module. Done for current trader-loop consumers.
+- Support/access page imports appointment and ticket functions from a support API module. Done for current access-center consumers.
 - Ops pages import ops functions from an ops API module.
 - Auth and checkout pages migrate from compatibility imports to their capability modules once the facade is thin enough.
 - Live dashboard functions fail loudly on missing backend/session instead of silently looking usable.

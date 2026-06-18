@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { changePassword } from '../../lib/api/auth'
 import {
   bookMyAppointment,
   cancelMyAppointment,
-  changePassword,
   createSupportTicket,
   getAppointmentSlots,
   getMyAppointments,
   getSupportTicket,
   getSupportTickets,
   replyToSupportTicket,
-} from '../../lib/api'
+} from '../../lib/api/support'
 import { getDashboardOverview } from '../../lib/api/dashboard'
 import { getTraderProfileContext } from '../../lib/api/trader'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
