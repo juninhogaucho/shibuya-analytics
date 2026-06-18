@@ -112,6 +112,11 @@ describe('DashboardOverviewPage', () => {
     expect(await screen.findByText('PRIVATE RESET PRO DEMO')).toBeInTheDocument()
     expect(screen.getByText('3-MINUTE PATH')).toBeInTheDocument()
     expect(screen.getByText('DEMO DATA ONLY')).toBeInTheDocument()
+    expect(screen.getByText(/First screen after unlock is the Reset Pro command center/i)).toBeInTheDocument()
+    expect(
+      screen.getByText('PRIVATE RESET PRO DEMO').compareDocumentPosition(screen.getByText('Journey progress'))
+      & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
     expect(screen.getByText('Founder thesis')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO UNLOCK RECEIPT')).toBeInTheDocument()
     expect(screen.getByText('UNLOCK RECEIPT')).toBeInTheDocument()

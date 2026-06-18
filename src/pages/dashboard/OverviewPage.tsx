@@ -502,7 +502,7 @@ export function DashboardOverviewPage() {
               {resetProPreview ? 'Reset Pro preview.' : 'Sample workspace.'}
             </strong>{' '}
             {resetProPreview
-              ? 'You are viewing the highest-tier journey with demo data. It unlocks the review path for demo purposes only; live persistence still requires activation.'
+              ? 'You are viewing the highest-tier journey with demo data. First screen after unlock is the Reset Pro command center; journey progress stays below as support. Live persistence still requires activation.'
               : 'You are viewing demo data. Activate a live account before uploading real trades or treating the board as account-specific analysis.'}
           </p>
           <Link
@@ -513,10 +513,10 @@ export function DashboardOverviewPage() {
           </Link>
         </div>
       )}
-      <JourneyProgressCard state={journeyState} />
       {resetProPreview ? (
         <ResetProDemoCommandCenter market={market} overview={data} origin={resetProDemoOrigin} />
       ) : null}
+      <JourneyProgressCard state={journeyState} />
       {liveActivationOrigin ? (
         <section
           className="glass-panel"
