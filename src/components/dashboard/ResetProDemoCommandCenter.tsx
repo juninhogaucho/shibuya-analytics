@@ -52,6 +52,19 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
       body: 'Close the workspace by showing upload/append. Live proof starts with activation, real history, generated artifacts, and repeat append packets.',
     },
   ]
+  const privateGateContinuityRows = [
+    {
+      label: 'Checksum status',
+      value: origin?.privateGateChecksum ? 'Attached after founder unlock' : 'Not attached',
+      body: origin?.privateGateChecksum
+        ?? 'No locked-insight checksum was stored. Treat this as a direct sample workspace, not a completed public-to-private route.',
+    },
+    {
+      label: 'Allowed use',
+      value: 'Continuity check only',
+      body: 'The checksum may prove the same public question reached Reset Pro. It may not prove a live answer, payment, backend upload, or trader-specific conclusion.',
+    },
+  ]
 
   return (
     <section
@@ -108,6 +121,34 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
         <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
           {workspaceStatusRows.map((row) => (
+            <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{row.label}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{row.value}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+            </article>
+          ))}
+        </div>
+      </article>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
+          background: 'rgba(217,70,239,0.07)',
+          borderColor: 'rgba(217,70,239,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO PRIVATE GATE CHECKSUM</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>The workspace must match the locked-insight route it received.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              This is the first post-unlock continuity proof. It confirms route identity and claim boundary only.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+          {privateGateContinuityRows.map((row) => (
             <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
               <p className="badge" style={{ marginBottom: '0.5rem' }}>{row.label}</p>
               <h4 style={{ marginBottom: '0.5rem' }}>{row.value}</h4>

@@ -178,11 +178,21 @@ export default function PrivateDemoPage() {
     ['Locked module', lockedSection?.title ?? handoffSectionId ?? 'not attached'],
     ['Bridge question', hasReportHandoff ? resetProBridge.decisionQuestion : 'not attached'],
   ]
+  const storyContextChecksum = effectiveStorySource
+    ? `story=${effectiveStorySource}; scene_count=${effectiveVisitedSceneCount ?? 0}; pain_axes=${effectiveSelectedPainAxisIds?.join(',') || 'none'}; signals=${effectiveSignalMarkerIds?.join(',') || 'none'}`
+    : 'story context not attached'
+  const privateGateChecksum = hasReportHandoff
+    ? `source=${handoffSource ?? 'report_link'}; report=${handoffReport.reportId}; section=${lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId ?? 'no-locked-module'} | archetype=${handoffArchetype.id}; axis=${handoffAxis.id} | ${storyContextChecksum} | sample route, not live answer`
+    : 'source=direct_private_demo; report=no-report; section=no-locked-module | archetype=none; axis=none | story context not attached | sample route, not live answer'
+  const workspaceHandoffFactsWithChecksum = [
+    ...workspaceHandoffFacts,
+    ['Private gate checksum', privateGateChecksum],
+  ]
   const unlockManifestRows = [
     {
       label: 'Stored after unlock',
       value: hasReportHandoff
-        ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers'
+        ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum'
         : 'sample mode, market, and direct demo boundary only',
       body: 'These values seed the Reset Pro preview so the command center can open with the right context.',
     },
@@ -220,6 +230,7 @@ export default function PrivateDemoPage() {
     bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
     bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
     bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
+    privateGateChecksum,
     demoEntryMode: postUnlockDestination === 'append_proof' ? 'append_proof_shortcut' : 'mission_hq',
   }
   const unlockReceiptId = buildPrivateDemoUnlockReceiptId(market, privateDemoHandoff)
@@ -430,7 +441,7 @@ export default function PrivateDemoPage() {
                   What Reset Pro preview receives after unlock.
                 </h3>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {workspaceHandoffFacts.map(([label, value]) => (
+                  {workspaceHandoffFactsWithChecksum.map(([label, value]) => (
                     <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
                       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-100">{label}</p>
                       <p className="mt-1 text-sm font-semibold text-white">{value}</p>

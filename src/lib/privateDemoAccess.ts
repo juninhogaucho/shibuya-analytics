@@ -42,6 +42,7 @@ export interface PrivateResetProDemoHandoff {
   bridgeWhyNow?: string
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
+  privateGateChecksum?: string
   demoEntryMode?: ShibuyaDemoEntryMode
 }
 
@@ -113,6 +114,7 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoBridgeWhyNow: handoff.bridgeWhyNow,
     demoBridgeLiveProof: handoff.bridgeLiveProof,
     demoBridgePreviewShows: handoff.bridgePreviewShows,
+    demoPrivateGateChecksum: handoff.privateGateChecksum,
     demoUnlockReceiptId,
     demoUnlockBoundary: PRIVATE_DEMO_UNLOCK_BOUNDARY,
     demoEntryMode: handoff.demoEntryMode,

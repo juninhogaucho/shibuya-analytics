@@ -67,6 +67,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
       demoEntryMode: 'append_proof_shortcut',
     })
 
@@ -89,6 +90,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
       demoEntryMode: 'append_proof_shortcut',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
@@ -137,6 +139,7 @@ describe('shibuya runtime', () => {
       demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
+      demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
       demoEntryMode: 'append_proof_shortcut',
     })
     setLiveApiKey('live_123')
@@ -161,6 +164,7 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoSignalMarkerIds).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoPrivateGateChecksum).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEntryMode).toBeUndefined()
   })
 

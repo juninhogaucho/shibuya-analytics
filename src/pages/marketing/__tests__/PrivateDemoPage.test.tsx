@@ -125,10 +125,12 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('guided; scenes 4')).toBeInTheDocument()
     expect(screen.getByText('Evidence packet')).toBeInTheDocument()
     expect(screen.getByText('Bridge question')).toBeInTheDocument()
+    expect(screen.getByText('Private gate checksum')).toBeInTheDocument()
+    expect(screen.getByText('source=free_report; report=free-report-123; section=no-locked-module | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer')).toBeInTheDocument()
     expect(screen.getAllByText(/Does the trader become a different operator near the drawdown line/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo routing context/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Private demo unlock manifest')).toBeInTheDocument()
-    expect(screen.getByText('sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers')).toBeInTheDocument()
+    expect(screen.getByText('sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum')).toBeInTheDocument()
     expect(screen.getByText('The private demo stays a controlled sample workspace even when the URL carries report context.')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
     expect(screen.getByText('reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module')).toBeInTheDocument()
@@ -154,6 +156,7 @@ describe('PrivateDemoPage', () => {
       demoVisitedSceneCount: 4,
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=no-locked-module | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer',
       demoUnlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
       demoEntryMode: 'mission_hq',
@@ -246,6 +249,7 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionId: 'edge-decay-map',
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoPrivateGateChecksum: 'source=locked_insight; report=free-report-123; section=edge-decay-map | archetype=marco; axis=edge_decay | story=guided; scene_count=6; pain_axes=edge_decay; signals=none | sample route, not live answer',
       demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
       demoEntryMode: 'mission_hq',
     })
@@ -300,6 +304,7 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionTitle: 'Edge decay map',
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoPrivateGateChecksum: 'source=locked_insight; report=free-report-123; section=edge-decay-map | archetype=marco; axis=edge_decay | story context not attached | sample route, not live answer',
       demoEntryMode: 'mission_hq',
     })
   })

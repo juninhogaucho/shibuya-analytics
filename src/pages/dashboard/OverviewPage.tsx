@@ -111,6 +111,7 @@ export function DashboardOverviewPage() {
         bridgeWhyNow: sessionMeta.demoBridgeWhyNow,
         bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
         bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
+        privateGateChecksum: sessionMeta.demoPrivateGateChecksum,
         unlockReceiptId: sessionMeta.demoUnlockReceiptId,
         unlockBoundary: sessionMeta.demoUnlockBoundary,
       }

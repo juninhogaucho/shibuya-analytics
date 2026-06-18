@@ -47,6 +47,7 @@ export interface ResetProDemoOrigin {
   bridgeWhyNow?: string
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
+  privateGateChecksum?: string
   unlockReceiptId?: string
   unlockBoundary?: string
 }
@@ -406,6 +407,9 @@ function buildUnlockReceipt(
     origin?.signalMarkerLabels?.length
       ? `Public markers: ${origin.signalMarkerLabels.join(', ')}`
       : 'Public markers: not attached',
+    origin?.privateGateChecksum
+      ? `Private gate checksum: ${origin.privateGateChecksum}`
+      : 'Private gate checksum: not attached',
   ]
 
   return {
@@ -593,6 +597,9 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.signalMarkerLabels?.length
       ? `Public signal markers: ${origin.signalMarkerLabels.join(', ')}`
       : 'Public signal markers: not available',
+    origin.privateGateChecksum
+      ? `Private gate checksum: ${origin.privateGateChecksum}`
+      : 'Private gate checksum: not available',
     origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
     origin.bridgeDecisionQuestion ? `Bridge question: ${origin.bridgeDecisionQuestion}` : 'Bridge question: not provided',
   ]

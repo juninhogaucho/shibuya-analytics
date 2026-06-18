@@ -53,6 +53,7 @@ export interface ShibuyaSessionMeta {
   demoBridgeWhyNow?: string
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
+  demoPrivateGateChecksum?: string
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
   demoEntryMode?: ShibuyaDemoEntryMode
@@ -93,6 +94,7 @@ export interface EnterSampleModeOptions {
   demoBridgeWhyNow?: string
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
+  demoPrivateGateChecksum?: string
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
   demoEntryMode?: ShibuyaDemoEntryMode
@@ -257,6 +259,7 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoBridgeWhyNow: options.demoBridgeWhyNow,
       demoBridgeLiveProof: options.demoBridgeLiveProof,
       demoBridgePreviewShows: options.demoBridgePreviewShows,
+      demoPrivateGateChecksum: options.demoPrivateGateChecksum,
       demoUnlockReceiptId: options.demoUnlockReceiptId,
       demoUnlockBoundary: options.demoUnlockBoundary,
       demoEntryMode: options.demoEntryMode,
@@ -301,6 +304,7 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoBridgeWhyNow
   delete nextMeta.demoBridgeLiveProof
   delete nextMeta.demoBridgePreviewShows
+  delete nextMeta.demoPrivateGateChecksum
   delete nextMeta.demoUnlockReceiptId
   delete nextMeta.demoUnlockBoundary
   delete nextMeta.demoEntryMode

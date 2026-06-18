@@ -19,6 +19,10 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText(/Shibuya does not tell the trader what to buy or sell/i)).toBeInTheDocument()
     expect(screen.getByText('RESET PRO WORKSPACE STATUS SNAPSHOT')).toBeInTheDocument()
     expect(screen.getByText('Know what is live, what is carried, and what must be proven next.')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
+    expect(screen.getByText('The workspace must match the locked-insight route it received.')).toBeInTheDocument()
+    expect(screen.getByText('Not attached')).toBeInTheDocument()
+    expect(screen.getByText(/No locked-insight checksum was stored/i)).toBeInTheDocument()
     expect(screen.getByText('Mode: sample-only')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro preview workspace')).toBeInTheDocument()
     expect(screen.getByText('Context carried')).toBeInTheDocument()
@@ -130,6 +134,7 @@ describe('ResetProDemoCommandCenter', () => {
               'Sample mandate and pressure map.',
               'How a prop-style drawdown warning becomes a pre-session operating constraint.',
             ],
+            privateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
             unlockReceiptId: 'reset-pro-demo:india:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state',
             unlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
           }}
@@ -139,6 +144,11 @@ describe('ResetProDemoCommandCenter', () => {
 
     expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO WORKSPACE STATUS SNAPSHOT')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
+    expect(screen.getByText('Attached after founder unlock')).toBeInTheDocument()
+    expect(screen.getAllByText(/source=free_report; report=free-report-123; section=highest-cost-state/i).length).toBeGreaterThan(0)
+    expect(screen.getByText('Continuity check only')).toBeInTheDocument()
+    expect(screen.getByText(/It may not prove a live answer, payment, backend upload/i)).toBeInTheDocument()
     expect(screen.getByText('Context carried')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText(/Private question attached: Does the trader become a different operator near the drawdown line/i)).toBeInTheDocument()
@@ -168,6 +178,7 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Story handoff: guided')).toBeInTheDocument()
     expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
     expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getAllByText('Private gate checksum: source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer').length).toBeGreaterThan(0)
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO BRIDGE RECEIVED')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro should decide whether pressure changes the account before the breach.')).toBeInTheDocument()
