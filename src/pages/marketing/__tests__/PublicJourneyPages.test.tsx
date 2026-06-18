@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
+import { getPublicReportEngagement } from '../../../lib/publicReportEngagement'
 import { getPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { DemoLauncherPage } from '../DemoLauncherPage'
@@ -102,6 +103,13 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Private question carried')).toBeInTheDocument()
     expect(screen.getByText('Proof remains locked')).toBeInTheDocument()
     expect(screen.getByText(/the locked insight inherits the question and evidence status only/i)).toBeInTheDocument()
+    expect(screen.getByText('Report engagement ledger')).toBeInTheDocument()
+    expect(screen.getByText('Conversion intent is tracked locally. It is not trader evidence.')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('1 time')).toBeInTheDocument()
+    })
+    expect(screen.getByText('No locked click yet')).toBeInTheDocument()
+    expect(screen.getByText(/report views, locked-section clicks, and private-demo intent are stored as local routing metadata only/i)).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText('What survived from the public story?')).toBeInTheDocument()
     expect(screen.getByText(/Guided StoryExperience signal: 1 scene viewed; public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
@@ -125,6 +133,12 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('link', { name: /Continue Guided Storyline/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/breach-sequence')
+    expect(getPublicReportEngagement('sample-behavioral-leak-report')).toMatchObject({
+      viewCount: 1,
+      lockedSectionClicks: [
+        expect.objectContaining({ sectionId: 'breach-sequence' }),
+      ],
+    })
     expect(screen.getByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
     expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
     expect(screen.getByText('Locked insight presenter guardrail')).toBeInTheDocument()
@@ -149,9 +163,16 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Claim boundary')).toBeInTheDocument()
     expect(screen.getByText('sample route, not live answer')).toBeInTheDocument()
     expect(screen.getByText(/the founder gate may preserve route identity/i)).toBeInTheDocument()
+    expect(screen.getByText('Locked insight engagement ledger')).toBeInTheDocument()
+    expect(screen.getByText('The click proves intent. It does not prove the answer.')).toBeInTheDocument()
+    expect(screen.getByText('1 click')).toBeInTheDocument()
+    expect(screen.getByText(/route evidence only, never trading evidence/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Continue To Private Demo Gate/i }))
 
+    expect(getPublicReportEngagement('sample-behavioral-leak-report')).toMatchObject({
+      privateDemoIntentCount: 1,
+    })
     expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')

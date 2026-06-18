@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, Lock, ShieldCheck, UnlockKeyhole } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
@@ -13,6 +13,12 @@ import {
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
+import {
+  buildPublicReportEngagementRows,
+  getPublicReportEngagement,
+  recordLockedSectionIntent,
+  recordPublicReportView,
+} from '../../lib/publicReportEngagement'
 import {
   buildFreeReportPreview,
   getFingerprintAxis,
@@ -66,6 +72,7 @@ export default function FreeReportPage() {
     visitedSceneCount: effectiveVisitedSceneCount,
     signalMarkerIds: effectiveSignalMarkerIds,
   })
+  const [reportEngagement, setReportEngagement] = useState(() => getPublicReportEngagement(report.reportId))
   const selectedPainAxes = report.storyHandoff.selectedPainAxes
   const guidedLockedSection = getGuidedLockedSectionForAxis(report)
   const guidedLockedSectionSlug = toReportSectionSlug(guidedLockedSection.title)
@@ -89,6 +96,20 @@ export default function FreeReportPage() {
   )
   const guidedInsightSearch = appendDemoLauncherSamplePacketParam(guidedInsightQuery, shouldCarryDemoLauncherPacket).toString()
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
+  const reportEngagementRows = buildPublicReportEngagementRows(reportEngagement)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setReportEngagement(recordPublicReportView(report.reportId))
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [report.reportId])
+
+  const markLockedSectionIntent = (sectionId: string) => {
+    setReportEngagement(recordLockedSectionIntent(report.reportId, sectionId))
+  }
+
   const reportToPrivateHandoffRows = [
     {
       label: 'Carries forward',
@@ -197,6 +218,7 @@ export default function FreeReportPage() {
               </div>
               <Link
                 to={guidedInsightPath}
+                onClick={() => markLockedSectionIntent(guidedLockedSectionSlug)}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
               >
                 Continue Guided Storyline
@@ -233,6 +255,36 @@ export default function FreeReportPage() {
           <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-violet-50/60">
             Handoff receipt rule: the locked insight inherits the question and evidence status only; live activation,
             normalized upload, generated artifacts, and append history must still produce the answer.
+          </p>
+        </section>
+
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">
+                Report engagement ledger
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">
+                Conversion intent is tracked locally. It is not trader evidence.
+              </h2>
+            </div>
+            <p className="text-sm leading-7 text-cyan-50/75">
+              The free report can notice attention signals like a reopen or locked-module click. Those signals help route
+              the journey; they cannot upgrade a public preview into account-specific truth.
+            </p>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-3">
+            {reportEngagementRows.map((row) => (
+              <article key={row.label} className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100">{row.label}</p>
+                <h3 className="mt-2 text-base font-semibold text-white">{row.value}</h3>
+                <p className="mt-3 text-sm leading-6 text-cyan-50/70">{row.body}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-cyan-50/60">
+            Engagement ledger rule: report views, locked-section clicks, and private-demo intent are stored as local routing
+            metadata only. No raw trade rows, payment proof, backend artifacts, or private conclusion are stored here.
           </p>
         </section>
 
@@ -395,6 +447,7 @@ export default function FreeReportPage() {
                       ).toString()}`,
                       market,
                     )}
+                    onClick={() => markLockedSectionIntent(toReportSectionSlug(item.title))}
                     className="group flex gap-4 rounded-3xl border border-white/8 bg-black/25 p-5 transition hover:border-indigo-300/40 hover:bg-indigo-300/[0.06]"
                     aria-label={`Unlock ${item.title}`}
                   >
@@ -455,6 +508,7 @@ export default function FreeReportPage() {
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <Link
                     to={guidedInsightPath}
+                    onClick={() => markLockedSectionIntent(guidedLockedSectionSlug)}
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                   >
                     Open Locked Insight First
@@ -462,6 +516,7 @@ export default function FreeReportPage() {
                   </Link>
                   <Link
                     to={guidedInsightPath}
+                    onClick={() => markLockedSectionIntent(guidedLockedSectionSlug)}
                     className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.08]"
                   >
                     Continue Via Locked Insight
@@ -473,6 +528,7 @@ export default function FreeReportPage() {
             <section className="grid gap-3 md:grid-cols-3">
               <Link
                 to={guidedInsightPath}
+                onClick={() => markLockedSectionIntent(guidedLockedSectionSlug)}
                 className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
               >
                 Open {guidedLockedSection.title}
@@ -485,6 +541,7 @@ export default function FreeReportPage() {
               </Link>
               <Link
                 to={guidedInsightPath}
+                onClick={() => markLockedSectionIntent(guidedLockedSectionSlug)}
                 className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50"
               >
                 Private Insight Gate

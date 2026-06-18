@@ -40,7 +40,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked free report',
     file: 'src/pages/marketing/FreeReportPage.tsx',
-    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
+    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Report engagement ledger', 'Conversion intent is tracked locally. It is not trader evidence.', 'Engagement ledger rule: report views, locked-section clicks, and private-demo intent', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
+  },
+  {
+    label: 'report engagement model',
+    file: 'src/lib/publicReportEngagement.ts',
+    markers: ['PUBLIC_REPORT_ENGAGEMENT_STORAGE_KEY', 'recordPublicReportView', 'recordLockedSectionIntent', 'recordPrivateDemoIntent', 'buildPublicReportEngagementRows', 'No raw trade rows'],
   },
   {
     label: 'story handoff model',
@@ -50,7 +55,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked private insight',
     file: 'src/pages/marketing/LockedInsightPage.tsx',
-    markers: ['Locked Private Insight', 'Private module preview', 'This is where recognition becomes evidence.', 'Locked insight presenter guardrail', 'Presenter guardrail rule: the locked insight is a proof contract, not a private conclusion.', 'Private gate handoff checksum', 'Verify the route before opening Reset Pro.', 'Checksum rule: the founder gate may preserve route identity', 'sample route, not live answer', 'Reset Pro decision-room handoff', 'Turn the locked question into a demo route, not a claim.', 'Decision-room rule: the private demo can show workflow relevance', 'Claims this page refuses'],
+    markers: ['Locked Private Insight', 'Private module preview', 'This is where recognition becomes evidence.', 'Locked insight presenter guardrail', 'Presenter guardrail rule: the locked insight is a proof contract, not a private conclusion.', 'Locked insight engagement ledger', 'The click proves intent. It does not prove the answer.', 'route evidence only, never trading evidence', 'Private gate handoff checksum', 'Verify the route before opening Reset Pro.', 'Checksum rule: the founder gate may preserve route identity', 'sample route, not live answer', 'Reset Pro decision-room handoff', 'Turn the locked question into a demo route, not a claim.', 'Decision-room rule: the private demo can show workflow relevance', 'Claims this page refuses'],
   },
   {
     label: 'private demo gate',

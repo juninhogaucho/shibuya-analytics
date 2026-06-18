@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, Lock, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
@@ -12,6 +12,11 @@ import {
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
+import {
+  buildPublicReportEngagementRows,
+  getPublicReportEngagement,
+  recordPrivateDemoIntent,
+} from '../../lib/publicReportEngagement'
 import {
   buildFreeReportPreview,
   buildLockedInsightPreview,
@@ -101,6 +106,8 @@ export default function LockedInsightPage() {
   const lockedSection = requestedSection ?? report.locked[0]
   const sectionSlug = toReportSectionSlug(lockedSection.title)
   const lockedInsightPreview = buildLockedInsightPreview(report, sectionSlug)
+  const [reportEngagement, setReportEngagement] = useState(() => getPublicReportEngagement(report.reportId))
+  const engagementRows = buildPublicReportEngagementRows(reportEngagement, sectionSlug)
   const publicStoryHandoffForLinks = reportSession || urlStoryHandoff
     ? {
         storySource: report.storyHandoff.source,
@@ -144,6 +151,9 @@ export default function LockedInsightPage() {
     ).toString()}`,
     market,
   )
+  const markPrivateDemoIntent = () => {
+    setReportEngagement(recordPrivateDemoIntent(report.reportId))
+  }
   const reportPath = addMarketToPath(
     `/report/${encodeURIComponent(report.reportId)}?${appendDemoLauncherSamplePacketParam(
       appendPublicStoryHandoffParams(
@@ -369,6 +379,36 @@ export default function LockedInsightPage() {
             </p>
           </article>
 
+          <article className="rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">
+                  Locked insight engagement ledger
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                  The click proves intent. It does not prove the answer.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-cyan-50/75">
+                  This ledger reads local report engagement so the private interstitial can explain why the visitor is
+                  here. It is route evidence only, never trading evidence.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {engagementRows.map((row) => (
+                  <div key={row.label} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100">{row.label}</p>
+                    <p className="mt-2 text-sm font-semibold text-white">{row.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-cyan-50/70">{row.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-cyan-50/60">
+              Engagement ledger rule: report attention can justify a sharper private question, but activation, normalized
+              upload, generated artifacts, and append history must still prove any account-specific conclusion.
+            </p>
+          </article>
+
           <article className="rounded-[2rem] border border-fuchsia-300/20 bg-fuchsia-300/[0.055] p-5 md:p-8">
             <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
               <div>
@@ -432,6 +472,7 @@ export default function LockedInsightPage() {
                 </div>
                 <Link
                   to={privateDemoPath}
+                  onClick={markPrivateDemoIntent}
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                 >
                   Continue To Private Demo Gate
@@ -507,6 +548,7 @@ export default function LockedInsightPage() {
               </Link>
               <Link
                 to={privateDemoPath}
+                onClick={markPrivateDemoIntent}
                 className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.08]"
               >
                 Open Private Demo Gate
