@@ -5,7 +5,7 @@ import {
   getShibuyaOpsCases,
   sendShibuyaOpsReminder,
   updateShibuyaOpsCase,
-} from '../../lib/api'
+} from '../../lib/api/ops'
 import type { ShibuyaAffiliateRow, ShibuyaOpsCaseDetail, ShibuyaOpsCaseSummary } from '../../lib/types'
 
 const CASE_STATUS_OPTIONS = [

@@ -167,7 +167,7 @@ Verification:
 
 ## Remaining Foundation Slices
 
-Continue splitting `src/lib/api.ts` into capability-specific API modules. Ops and site-contact code still share the broad facade. Profile/lifecycle/daily-practice and support/appointments now live behind dedicated API boundaries.
+Continue splitting `src/lib/api.ts` into capability-specific API modules. Site-contact code is the only implementation still living in the broad facade. Profile/lifecycle/daily-practice, support/appointments, and ops/admin now live behind dedicated API boundaries.
 
 ## Sixth Foundation Slice Completed
 
@@ -241,13 +241,36 @@ Verification:
 - `tsc -b`: passed.
 - `vite build`: passed, 2,835 modules transformed.
 
+## Ninth Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/api.ts`
+- `src/lib/api/ops.ts`
+- `src/lib/api/__tests__/ops.test.ts`
+- `src/pages/dashboard/OpsPage.tsx`
+
+Behavior now verified:
+
+- Shibuya ops case list/detail/update, reminder sends, and affiliate report calls now live in `src/lib/api/ops.ts`.
+- `OpsPage` imports internal/admin capabilities directly from `api/ops`.
+- `src/lib/api.ts` keeps compatibility re-exports but no longer owns ops/admin implementation.
+- Ops tests verify the exact Medallion admin endpoints without requiring a backend.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/ops.test.ts`: 1 file / 2 tests passed.
+- `vitest run`: 32 files / 83 tests passed.
+- `tsc -b`: passed.
+- `vite build`: passed, 2,835 modules transformed.
+
 Success condition:
 
 - `api.ts` becomes either a temporary compatibility barrel or disappears.
 - Dashboard pages import dashboard functions from a dashboard API module. Done for current dashboard data/upload consumers.
 - Trader pages import profile/lifecycle/daily-practice functions from a trader API module. Done for current trader-loop consumers.
 - Support/access page imports appointment and ticket functions from a support API module. Done for current access-center consumers.
-- Ops pages import ops functions from an ops API module.
+- Ops pages import ops functions from an ops API module. Done for current ops consumers.
 - Auth and checkout pages migrate from compatibility imports to their capability modules once the facade is thin enough.
 - Live dashboard functions fail loudly on missing backend/session instead of silently looking usable.
 - Dashboard pages render a visible proof boundary whenever data source is sample or estimated.
