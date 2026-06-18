@@ -3,6 +3,8 @@ import { enterSampleMode } from './runtime'
 
 export const PRIVATE_DEMO_CODE_ENV_KEY = 'VITE_PRIVATE_DEMO_ACCESS_CODE'
 export const PRIVATE_DEMO_MIN_CODE_LENGTH = 8
+export const PRIVATE_DEMO_UNLOCK_BOUNDARY =
+  'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.'
 
 const DISALLOWED_PRIVATE_DEMO_CODES = new Set([
   'changeme',
@@ -42,6 +44,22 @@ export interface PrivateResetProDemoHandoff {
   bridgePreviewShows?: string[]
 }
 
+function normalizeReceiptPart(value?: string): string {
+  return (value?.trim().toLowerCase() || 'none').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'none'
+}
+
+export function buildPrivateDemoUnlockReceiptId(market: Market, handoff: PrivateResetProDemoHandoff = {}): string {
+  return [
+    'reset-pro-demo',
+    market,
+    handoff.source ?? (handoff.reportId ? 'free_report' : 'direct'),
+    handoff.reportId ?? 'no-report',
+    handoff.archetypeId ?? 'no-archetype',
+    handoff.axisId ?? 'no-axis',
+    handoff.lockedSectionId ?? 'no-locked-module',
+  ].map(normalizeReceiptPart).join(':')
+}
+
 export function getConfiguredPrivateDemoCode(): string {
   return (import.meta.env.VITE_PRIVATE_DEMO_ACCESS_CODE ?? '').trim()
 }
@@ -71,6 +89,8 @@ export function verifyPrivateDemoCode(input: string): PrivateDemoAccessResult {
 }
 
 export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetProDemoHandoff = {}): void {
+  const demoUnlockReceiptId = buildPrivateDemoUnlockReceiptId(market, handoff)
+
   enterSampleMode({
     market,
     preview: 'reset_pro',
@@ -92,5 +112,7 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoBridgeWhyNow: handoff.bridgeWhyNow,
     demoBridgeLiveProof: handoff.bridgeLiveProof,
     demoBridgePreviewShows: handoff.bridgePreviewShows,
+    demoUnlockReceiptId,
+    demoUnlockBoundary: PRIVATE_DEMO_UNLOCK_BOUNDARY,
   })
 }

@@ -111,6 +111,8 @@ export function DashboardOverviewPage() {
         bridgeWhyNow: sessionMeta.demoBridgeWhyNow,
         bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
         bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
+        unlockReceiptId: sessionMeta.demoUnlockReceiptId,
+        unlockBoundary: sessionMeta.demoUnlockBoundary,
       }
     : undefined
   const liveActivationOrigin = !sampleActive && sessionMeta?.activationSource

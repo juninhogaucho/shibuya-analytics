@@ -55,7 +55,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
+    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the private code.', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview'],
   },
   {
     label: 'checkout evidence boundary',
@@ -95,7 +95,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'Reset Pro command center',
     file: 'src/lib/resetProDemo.ts',
-    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'UNLOCK RECEIPT', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
+    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
   },
   {
     label: 'Reset Pro operator strip',

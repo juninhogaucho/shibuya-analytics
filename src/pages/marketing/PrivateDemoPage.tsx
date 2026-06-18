@@ -7,6 +7,8 @@ import { addMarketToPath, resolveMarket } from '../../lib/market'
 import { readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   PRIVATE_DEMO_CODE_ENV_KEY,
+  PRIVATE_DEMO_UNLOCK_BOUNDARY,
+  buildPrivateDemoUnlockReceiptId,
   enterPrivateResetProDemo,
   hasPrivateDemoGateConfigured,
   verifyPrivateDemoCode,
@@ -164,6 +166,27 @@ export default function PrivateDemoPage() {
       body: 'Start there, show one intervention surface, then close on append proof.',
     },
   ]
+  const privateDemoHandoff = {
+    source: hasReportHandoff ? handoffSource : undefined,
+    reportId: handoffReportId,
+    archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
+    axisId: hasReportHandoff ? handoffAxis.id : undefined,
+    reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
+    evidenceLabel: reportSession?.evidenceLabel,
+    validationSummary: reportSession?.validationSummary,
+    storySource: effectiveStorySource,
+    selectedPainAxisIds: effectiveSelectedPainAxisIds,
+    visitedSceneCount: effectiveVisitedSceneCount,
+    signalMarkerIds: handoffReport.storyHandoff.signalMarkers.map((marker) => marker.id),
+    lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
+    lockedSectionTitle: lockedSection?.title,
+    bridgeHeadline: hasReportHandoff ? resetProBridge.headline : undefined,
+    bridgeDecisionQuestion: hasReportHandoff ? resetProBridge.decisionQuestion : undefined,
+    bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
+    bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
+    bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
+  }
+  const unlockReceiptId = buildPrivateDemoUnlockReceiptId(market, privateDemoHandoff)
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -183,26 +206,7 @@ export default function PrivateDemoPage() {
       return
     }
 
-    enterPrivateResetProDemo(market, {
-      source: hasReportHandoff ? handoffSource : undefined,
-      reportId: handoffReportId,
-      archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
-      axisId: hasReportHandoff ? handoffAxis.id : undefined,
-      reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
-      evidenceLabel: reportSession?.evidenceLabel,
-      validationSummary: reportSession?.validationSummary,
-      storySource: effectiveStorySource,
-      selectedPainAxisIds: effectiveSelectedPainAxisIds,
-      visitedSceneCount: effectiveVisitedSceneCount,
-      signalMarkerIds: handoffReport.storyHandoff.signalMarkers.map((marker) => marker.id),
-      lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
-      lockedSectionTitle: lockedSection?.title,
-      bridgeHeadline: hasReportHandoff ? resetProBridge.headline : undefined,
-      bridgeDecisionQuestion: hasReportHandoff ? resetProBridge.decisionQuestion : undefined,
-      bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
-      bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
-      bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
-    })
+    enterPrivateResetProDemo(market, privateDemoHandoff)
     navigate(addMarketToPath('/dashboard', market), { replace: true })
   }
 
@@ -398,6 +402,25 @@ export default function PrivateDemoPage() {
             <p className="mt-4 text-xs leading-5 text-cyan-50/60">
               Unlock manifest rule: a successful code changes access state only. It does not convert demo context into live proof.
             </p>
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-sky-200">
+              Reset Pro unlock receipt preview
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              The workspace will store this receipt, not the private code.
+            </h2>
+            <div className="mt-4 grid gap-3">
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-sky-100">Receipt id</p>
+                <p className="mt-1 break-words text-sm font-semibold text-white">{unlockReceiptId}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-sky-100">Receipt boundary</p>
+                <p className="mt-1 text-sm leading-6 text-sky-50/75">{PRIVATE_DEMO_UNLOCK_BOUNDARY}</p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

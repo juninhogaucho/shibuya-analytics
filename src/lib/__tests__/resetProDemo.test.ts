@@ -148,6 +148,8 @@ describe('Reset Pro demo script', () => {
       lockedSectionId: 'highest-cost-state',
       lockedSectionTitle: 'Highest-cost state',
       bridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      unlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state',
+      unlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
     })
 
     expect(script.originCard?.title).toBe('Carried in from the public report')
@@ -163,10 +165,12 @@ describe('Reset Pro demo script', () => {
     expect(script.unlockReceipt.statusLabel).toBe('UNLOCK RECEIPT')
     expect(script.unlockReceipt.headline).toBe('Reset Pro received the public question; the sample workspace can only show the operating loop.')
     expect(script.unlockReceipt.facts).toContain('Report carried: free-report-123')
+    expect(script.unlockReceipt.facts).toContain('Receipt id: reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state')
     expect(script.unlockReceipt.facts).toContain('Locked question: Highest-cost state')
     expect(script.unlockReceipt.facts).toContain('Story route: guided; scenes 4')
     expect(script.unlockReceipt.facts).toContain('Evidence packet: Sample history packet')
     expect(script.unlockReceipt.facts).toContain('Public markers: Mirror selected, Pain axis tapped, Evidence intent')
+    expect(script.unlockReceipt.boundary).toBe('Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.')
     expect(script.decisionPacket).toMatchObject({
       statusLabel: 'GO: CONTEXT CARRIED',
       headline: 'Open with the carried private question, then show only the sample operating loop.',

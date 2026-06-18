@@ -52,6 +52,8 @@ export interface ShibuyaSessionMeta {
   demoBridgeWhyNow?: string
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
+  demoUnlockReceiptId?: string
+  demoUnlockBoundary?: string
   activationSource?: string
   activationReportId?: string
   activationArchetypeId?: string
@@ -89,6 +91,8 @@ export interface EnterSampleModeOptions {
   demoBridgeWhyNow?: string
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
+  demoUnlockReceiptId?: string
+  demoUnlockBoundary?: string
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -250,6 +254,8 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoBridgeWhyNow: options.demoBridgeWhyNow,
       demoBridgeLiveProof: options.demoBridgeLiveProof,
       demoBridgePreviewShows: options.demoBridgePreviewShows,
+      demoUnlockReceiptId: options.demoUnlockReceiptId,
+      demoUnlockBoundary: options.demoUnlockBoundary,
     }),
   )
 }
@@ -291,6 +297,8 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoBridgeWhyNow
   delete nextMeta.demoBridgeLiveProof
   delete nextMeta.demoBridgePreviewShows
+  delete nextMeta.demoUnlockReceiptId
+  delete nextMeta.demoUnlockBoundary
 
   if (Object.keys(nextMeta).length > 0) {
     localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))

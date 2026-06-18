@@ -47,6 +47,8 @@ export interface ResetProDemoOrigin {
   bridgeWhyNow?: string
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
+  unlockReceiptId?: string
+  unlockBoundary?: string
 }
 
 export interface ResetProDemoOriginCard {
@@ -390,6 +392,7 @@ function buildUnlockReceipt(
   hasBridgeCard: boolean,
 ): ResetProDemoUnlockReceipt {
   const facts = [
+    origin?.unlockReceiptId ? `Receipt id: ${origin.unlockReceiptId}` : 'Receipt id: not stored',
     origin?.reportId ? `Report carried: ${origin.reportId}` : 'Report carried: none',
     origin?.lockedSectionTitle ? `Locked question: ${origin.lockedSectionTitle}` : 'Locked question: not attached',
     origin?.storySource
@@ -414,7 +417,8 @@ function buildUnlockReceipt(
         : 'Reset Pro opened without public context; frame this as a cold sample workspace.',
     facts,
     nextAction: 'Run Mission HQ first, inspect one intervention surface, then close on append proof.',
-    boundary: 'This receipt proves the founder gate carried context into the sample workspace. It does not prove live activation, live upload, generated artifacts, or account-specific conclusions.',
+    boundary: origin?.unlockBoundary
+      ?? 'This receipt proves the founder gate carried context into the sample workspace. It does not prove live activation, live upload, generated artifacts, or account-specific conclusions.',
   }
 }
 

@@ -121,6 +121,8 @@ describe('ResetProDemoCommandCenter', () => {
               'Sample mandate and pressure map.',
               'How a prop-style drawdown warning becomes a pre-session operating constraint.',
             ],
+            unlockReceiptId: 'reset-pro-demo:india:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state',
+            unlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
           }}
         />
       </MemoryRouter>,
@@ -142,6 +144,8 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Connect the public pain to the private module')).toBeInTheDocument()
     expect(screen.getAllByText(/The report handed us one question/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Origin report: free-report-123')).toBeInTheDocument()
+    expect(screen.getByText('Receipt id: reset-pro-demo:india:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state')).toBeInTheDocument()
+    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
     expect(screen.getByText('Public archetype: Priya: Prop evaluation survivor')).toBeInTheDocument()
     expect(screen.getByText('Predicted axis: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getByText('Public packet source: sample')).toBeInTheDocument()

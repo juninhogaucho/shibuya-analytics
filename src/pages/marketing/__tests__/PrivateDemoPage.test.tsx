@@ -57,6 +57,12 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('First screen after unlock')).toBeInTheDocument()
     expect(screen.getByText('Mission HQ with the Reset Pro operator strip')).toBeInTheDocument()
     expect(screen.getByText(/a successful code changes access state only/i)).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
+    expect(screen.getByText('The workspace will store this receipt, not the private code.')).toBeInTheDocument()
+    expect(screen.getByText('Receipt id')).toBeInTheDocument()
+    expect(screen.getByText('reset-pro-demo:global:direct:no-report:no-archetype:no-axis:no-locked-module')).toBeInTheDocument()
+    expect(screen.getByText('Receipt boundary')).toBeInTheDocument()
+    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -114,6 +120,8 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Private demo unlock manifest')).toBeInTheDocument()
     expect(screen.getByText('sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers')).toBeInTheDocument()
     expect(screen.getByText('The private demo stays a controlled sample workspace even when the URL carries report context.')).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
+    expect(screen.getByText('reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module')).toBeInTheDocument()
     await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -136,6 +144,8 @@ describe('PrivateDemoPage', () => {
       demoVisitedSceneCount: 4,
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      demoUnlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module',
+      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
     })
   })
 
@@ -197,6 +207,7 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionId: 'edge-decay-map',
       demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
     })
   })
 
