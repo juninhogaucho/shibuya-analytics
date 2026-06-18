@@ -12,6 +12,7 @@ All items below must be true on the same commit and same environment.
 - Sample workspace and live trader account are the only supported trader runtime states.
 - Sample workspace never implies persistence, live account state, or fabricated account history.
 - Activation flow clearly distinguishes exploration from live account access.
+- Private Reset Pro demo access is either disabled or gated by a non-placeholder `VITE_PRIVATE_DEMO_ACCESS_CODE`; this gate is for controlled demos only, not high-security authentication.
 - Upload, history, overview, alerts, slump prescription, edge portfolio, and shadow boxing use real backend contracts in live mode or fail honestly.
 
 ### Trader Loop

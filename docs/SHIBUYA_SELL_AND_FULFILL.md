@@ -84,7 +84,11 @@ Backend touched files:
    - `STRIPE_PRICE_SHIBUYA_INDIA_AUDIT_MONTHLY`
    - `STRIPE_PRICE_SHIBUYA_INDIA_RESET_PRO_MONTHLY`
 2. keep `/partners` as the Shibuya B2B distribution surface; do not redirect it to Decrypt unless the strategy changes again
-3. run one real paid canary:
+3. set `VITE_PRIVATE_DEMO_ACCESS_CODE` only when a controlled founder Reset Pro demo should be available:
+   - use at least 8 characters
+   - do not use a placeholder value
+   - do not reuse a sensitive password because the gate is client-side demo control, not high-security authentication
+4. run one real paid canary:
    - checkout
    - success
    - activation
@@ -92,7 +96,7 @@ Backend touched files:
    - onboarding context
    - login
    - upload
-4. decide whether India should enable extra payment methods such as UPI in Stripe
+5. decide whether India should enable extra payment methods such as UPI in Stripe
 
 ## Launch Claim Boundary
 
