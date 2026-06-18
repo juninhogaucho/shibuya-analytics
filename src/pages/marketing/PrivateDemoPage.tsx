@@ -72,6 +72,35 @@ export default function PrivateDemoPage() {
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
+  const preflightChecks = [
+    {
+      label: 'Public context',
+      value: reportSession?.evidenceLabel ?? (hasReportHandoff ? 'URL context only' : 'Direct private-demo entry'),
+      body: reportSession?.validationSummary
+        ?? (hasReportHandoff
+          ? 'The link carries story/report intent, but this browser has no local upload validation packet.'
+          : 'No public story or report handoff is attached. Use only if you are intentionally opening the workspace cold.'),
+    },
+    {
+      label: 'Locked question',
+      value: lockedSection?.title ?? handoffSectionId ?? 'No locked module attached',
+      body: hasReportHandoff
+        ? resetProBridge.decisionQuestion
+        : 'No public report question is attached, so the operator must frame this as a generic sample preview.',
+    },
+    {
+      label: 'Access gate',
+      value: configured ? 'Private demo code configured' : 'Private demo disabled in this build',
+      body: configured
+        ? 'The workspace can be unlocked with the founder-controlled code configured at build time.'
+        : `Configure ${PRIVATE_DEMO_CODE_ENV_KEY} before sharing this demo path.`,
+    },
+    {
+      label: 'Live proof',
+      value: 'Still missing by design',
+      body: 'This demo does not prove live activation, live upload, generated artifacts, durable append history, or account-specific conclusions.',
+    },
+  ]
   const workspaceHandoffFacts = [
     ['Source', hasReportHandoff ? handoffSource ?? 'report_link' : 'direct_private_demo'],
     ['Market', market],
@@ -180,6 +209,31 @@ export default function PrivateDemoPage() {
             <p className="mt-4 text-xs leading-5 text-emerald-50/60">
               This runbook is presentation discipline. The sample workspace can teach structure; only live activation,
               normalized upload, generated artifacts, and append history can prove trader-specific outcomes.
+            </p>
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">
+              Private demo preflight
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-white">
+              Check the handoff before unlocking the workspace.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-cyan-50/70">
+              Presenter rule: the public story can create recognition, the private demo can show the operating loop,
+              and only live activation plus uploaded history can create proof.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {preflightChecks.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-100">{item.label}</p>
+                  <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
+                  <p className="mt-2 text-xs leading-5 text-cyan-50/65">{item.body}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-cyan-50/55">
+              Preflight approval does not create live proof. It only prevents the presenter from overstating what this sample route proves.
             </p>
           </div>
 

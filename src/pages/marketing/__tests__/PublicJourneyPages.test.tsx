@@ -112,7 +112,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Breach sequence').length).toBeGreaterThan(0)
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
-    expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Demo packet accepted/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('What Reset Pro preview receives after unlock.')).toBeInTheDocument()
