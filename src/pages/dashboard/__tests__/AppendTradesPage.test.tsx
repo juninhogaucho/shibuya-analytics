@@ -53,7 +53,13 @@ describe('AppendTradesPage', () => {
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
     logTraderLifecycleEventMock.mockResolvedValue(undefined)
-    getStoredSessionMetaMock.mockReturnValue(null)
+    getStoredSessionMetaMock.mockReturnValue({
+      tier: 'sample',
+      market: 'india',
+      offerKind: 'sample',
+      caseStatus: 'sample_preview',
+      samplePreview: 'reset_pro',
+    })
     isReadOnlySessionMock.mockReturnValue(false)
     updateSessionMetaMock.mockReset()
     getShibuyaRuntimeContractMock.mockReturnValue({
@@ -85,6 +91,11 @@ describe('AppendTradesPage', () => {
     const user = userEvent.setup()
 
     renderPage()
+
+    expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
+    expect(screen.getByText('This is the demo endpoint, not live evidence.')).toBeInTheDocument()
+    expect(screen.getByText('Sample only')).toBeInTheDocument()
+    expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Trades'), {
       target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
@@ -120,6 +131,11 @@ describe('AppendTradesPage', () => {
     const user = userEvent.setup()
 
     renderPage()
+
+    expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
+    expect(screen.getByText('This is where the live proof loop starts.')).toBeInTheDocument()
+    expect(screen.getByText('Live write')).toBeInTheDocument()
+    expect(screen.getByText(/Confirmed uploads write to the live account/i)).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Trades'), {
       target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },

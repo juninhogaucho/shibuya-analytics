@@ -95,6 +95,7 @@ export function AppendTradesPage() {
   const sampleMode = runtimeContract.mode === 'sample'
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
+  const resetProPreview = sampleMode && sessionMeta?.samplePreview === 'reset_pro'
   const readOnlyAccess = isReadOnlySession(sessionMeta)
   const premiumAccess = sessionMeta?.tier === 'reset_pro'
   const journeyState = useMemo(
@@ -356,6 +357,58 @@ export function AppendTradesPage() {
             Current mode: {humanizeTraderMode(traderMode)}. Upload the block that best exposes the leak you actually need fixed, not the prettiest export you can find.
           </p>
         )}
+      </section>
+
+      <section
+        className="glass-panel"
+        style={{
+          marginBottom: '1.5rem',
+          borderColor: resetProPreview ? 'rgba(129, 140, 248, 0.28)' : 'rgba(255,255,255,0.08)',
+          background: resetProPreview ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.02)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO PROOF EXIT</p>
+            <h3 style={{ marginBottom: '0.5rem' }}>
+              {sampleMode ? 'This is the demo endpoint, not live evidence.' : 'This is where the live proof loop starts.'}
+            </h3>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              The private demo ends here on purpose: parsing a sample proves the workflow, while live upload is what creates persistent history, deltas, and report artifacts.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {[
+            {
+              label: 'Parser preview',
+              status: 'Ready now',
+              detail: sampleMode
+                ? 'Paste a sample block to show how Shibuya reads trade history without writing account data.'
+                : 'Paste or upload a real session to preview what will be appended before committing it.',
+            },
+            {
+              label: 'Persistence',
+              status: sampleMode ? 'Sample only' : 'Live write',
+              detail: sampleMode
+                ? 'Sample mode does not persist uploads, change account history, or prove trader-specific improvement.'
+                : 'Confirmed uploads write to the live account and move the workspace toward baseline_ready.',
+            },
+            {
+              label: 'Reset Pro review',
+              status: sampleMode ? 'Still locked for proof' : 'Evidence path',
+              detail: sampleMode
+                ? 'Guided review language can be demonstrated, but the real checkpoint requires activation plus the first meaningful upload.'
+                : 'The first meaningful upload is the evidence trigger for deeper Reset Pro review surfaces.',
+            },
+          ].map((item) => (
+            <article key={item.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{item.status}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{item.label}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{item.detail}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {readOnlyAccess && (
