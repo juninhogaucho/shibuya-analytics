@@ -96,6 +96,11 @@ export function ActivationPage() {
       detail: 'The live workspace cannot make account-specific private claims until uploaded history is normalized into generated artifacts.',
     },
     {
+      label: 'Append proof close required',
+      status: 'locked',
+      detail: 'A paid activation still needs append history before Shibuya can confirm whether the public hypothesis survived real trading behavior.',
+    },
+    {
       label: 'Private conclusion still locked',
       status: 'locked',
       detail: activationReport?.resetProBridge.decisionQuestion
@@ -254,7 +259,10 @@ export function ActivationPage() {
                     <div>
                       <p>LIVE ACTIVATION PROOF LADDER</p>
                       <p className="terminal-muted">
-                        This ladder separates what payment can carry from what only the first live upload can prove.
+                        This ladder separates what payment can carry, what first upload can evidence, and what append history must still prove.
+                      </p>
+                      <p className="terminal-muted">
+                        APPEND PROOF CLOSE: activation is access control, not the conclusion; repeated account history must confirm or reject the carried question.
                       </p>
                       <div className="grid-responsive" style={{ marginTop: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
                         {activationProofLadder.map((item) => (

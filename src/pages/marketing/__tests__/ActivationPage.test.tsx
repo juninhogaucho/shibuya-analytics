@@ -78,13 +78,17 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
-    expect(screen.getByText(/what payment can carry from what only the first live upload can prove/i)).toBeInTheDocument()
+    expect(screen.getByText(/what payment can carry, what first upload can evidence, and what append history must still prove/i)).toBeInTheDocument()
     expect(screen.getByText('Payment context carried')).toBeInTheDocument()
     expect(screen.getByText('Activation pending')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
+    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
     expect(screen.getByText('Private conclusion still locked')).toBeInTheDocument()
+    expect(screen.getByText(/APPEND PROOF CLOSE:/i)).toBeInTheDocument()
+    expect(screen.getByText(/repeated account history must confirm or reject/i)).toBeInTheDocument()
     expect(screen.getByText(/Email plus order code must verify/i)).toBeInTheDocument()
     expect(screen.getByText(/uploaded history is normalized into generated artifacts/i)).toBeInTheDocument()
+    expect(screen.getByText(/paid activation still needs append history/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -163,6 +167,7 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Reset Pro bridge: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
+    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
     await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
@@ -205,6 +210,7 @@ describe('ActivationPage', () => {
     expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
     expect(screen.getByText('LIVE ACTIVATION PROOF LADDER')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
+    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')

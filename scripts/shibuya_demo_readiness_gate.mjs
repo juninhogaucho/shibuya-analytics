@@ -85,7 +85,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Private conclusion still locked'],
+    markers: ['CONTEXT DETECTED', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',

@@ -223,6 +223,8 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByText(/Report: sample-behavioral-leak-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
+    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
+    expect(screen.getByText(/activation is access control, not the conclusion/i)).toBeInTheDocument()
 
     await user.clear(screen.getByLabelText(/EMAIL_ADDRESS/i))
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
