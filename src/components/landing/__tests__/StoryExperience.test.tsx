@@ -22,6 +22,10 @@ describe('StoryExperience', () => {
 
     expect(screen.getAllByText('You do not have a strategy problem. You have a state problem.')).not.toHaveLength(0)
     expect(screen.getByText(/This is not your report\. It is a website-level prediction based on interaction/i)).toBeInTheDocument()
+    expect(screen.getByText('3-minute demo path')).toBeInTheDocument()
+    expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
+    expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
+    expect(screen.getByText('Private Reset Pro demo opens only behind the founder gate.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Priya/i }))
     await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))

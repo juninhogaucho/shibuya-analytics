@@ -259,6 +259,27 @@ export default function StoryExperience() {
                 <h4 className="mt-3 text-lg font-semibold text-indigo-100">{pressureBand.label}</h4>
                 <p className="mt-3 text-sm leading-relaxed text-neutral-400">{pressureBand.description}</p>
               </div>
+              <div className="rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">3-minute demo path</p>
+                <div className="mt-4 grid gap-3 text-sm leading-relaxed text-neutral-300">
+                  {[
+                    ['1', 'Public story predicts a provisional fingerprint.'],
+                    ['2', 'Upload or sample history creates the free report packet.'],
+                    ['3', 'Locked insight explains what live evidence must prove.'],
+                    ['4', 'Private Reset Pro demo opens only behind the founder gate.'],
+                  ].map(([step, body]) => (
+                    <div key={step} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 p-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-black text-black">
+                        {step}
+                      </span>
+                      <span>{body}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs leading-relaxed text-indigo-50/65">
+                  The public page earns the upload. The private demo shows structure with sample data only.
+                </p>
+              </div>
               <div className="space-y-3 rounded-3xl border border-white/10 bg-[#09090B] p-5">
                 <button
                   type="button"
