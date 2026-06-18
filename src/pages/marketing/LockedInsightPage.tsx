@@ -35,6 +35,21 @@ const LOCKED_INSIGHT_DECISION_CHECKS = [
   },
 ] as const
 
+const LOCKED_INSIGHT_PRESENTER_GUARDRAILS = [
+  {
+    label: 'Say',
+    body: 'This page carries the exact private question the public story earned.',
+  },
+  {
+    label: 'Do not say',
+    body: 'Do not say Shibuya has answered that question from URL context or sample data.',
+  },
+  {
+    label: 'Next click',
+    body: 'Open the private demo gate only after naming the proof still missing.',
+  },
+] as const
+
 export default function LockedInsightPage() {
   const { section } = useParams()
   const location = useLocation()
@@ -190,6 +205,34 @@ export default function LockedInsightPage() {
                 </div>
               ))}
             </div>
+          </article>
+
+          <article className="rounded-[2rem] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">
+                  Locked insight presenter guardrail
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                  Keep the story sharp without pretending the answer is live.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-cyan-50/75">
+                  This is the last public surface before checkout or the founder-gated sample workspace. The operator
+                  should name the carried question, show the missing proof, then continue to Reset Pro.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {LOCKED_INSIGHT_PRESENTER_GUARDRAILS.map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100">{item.label}</p>
+                    <p className="mt-2 text-sm leading-6 text-cyan-50/75">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-cyan-50/60">
+              Presenter guardrail rule: the locked insight is a proof contract, not a private conclusion.
+            </p>
           </article>
 
           <article className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
