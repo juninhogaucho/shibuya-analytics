@@ -7,28 +7,12 @@ vi.mock('../../components/AuthGuard', () => ({
   AuthGuard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
-vi.mock('../../pages/marketing/HomePage', () => ({
-  default: () => <div>Home route</div>,
-}))
-
 vi.mock('../../pages/marketing/LaunchSignalPage', () => ({
   default: () => <div>Launch signal route</div>,
 }))
 
 vi.mock('../../pages/marketing/PricingPage', () => ({
   default: () => <div>Pricing route</div>,
-}))
-
-vi.mock('../../pages/marketing/PublicUploadPage', () => ({
-  default: () => <div>Public upload route</div>,
-}))
-
-vi.mock('../../pages/marketing/FreeReportPage', () => ({
-  default: () => <div>Free report route</div>,
-}))
-
-vi.mock('../../pages/marketing/LockedInsightPage', () => ({
-  default: () => <div>Locked insight route</div>,
 }))
 
 vi.mock('../../pages/marketing/PartnersPage', () => ({
@@ -53,7 +37,9 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Home route')).toBeInTheDocument()
+    expect(
+      (await screen.findAllByRole('heading', { name: /You do not have a strategy problem/i })).length,
+    ).toBeGreaterThan(0)
   })
 
   test('/story serves the guided direct-trader homepage', async () => {
@@ -63,7 +49,9 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Home route')).toBeInTheDocument()
+    expect(
+      (await screen.findAllByRole('heading', { name: /You do not have a strategy problem/i })).length,
+    ).toBeGreaterThan(0)
   })
 
   test('/checkout redirects to pricing instead of falling through', async () => {
@@ -83,7 +71,7 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Public upload route')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /Upload your trade history/i })).toBeInTheDocument()
   })
 
   test('/report/:id serves the free report preview after upload', async () => {
@@ -93,7 +81,7 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Free report route')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
   })
 
   test('/insight/:section serves the locked private insight interstitial', async () => {
@@ -103,7 +91,9 @@ describe('public route contract', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Locked insight route')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: /This is where recognition becomes evidence/i }),
+    ).toBeInTheDocument()
   })
 
   test('/private-demo serves the gated Reset Pro demo entry', async () => {
