@@ -23,6 +23,39 @@ import {
 import { BehavioralFingerprint } from './BehavioralFingerprint'
 import { PublicJourneySpine } from './PublicJourneySpine'
 
+const ENGINE_PIPELINE_STAGES = [
+  {
+    step: '01',
+    label: 'Normalize',
+    body: 'Parse broker history into a comparable decision sequence before analysis.',
+  },
+  {
+    step: '02',
+    label: 'BQL state detection',
+    body: 'Detect behavioral states around entries, exits, holds, adds, and re-entries.',
+  },
+  {
+    step: '03',
+    label: 'Discipline tax',
+    body: 'Estimate repeated behavioral cost without turning it into a trade signal.',
+  },
+  {
+    step: '04',
+    label: 'Edge drift',
+    body: 'Separate setup health from ordinary variance before calling anything decayed.',
+  },
+  {
+    step: '05',
+    label: 'Breach pressure',
+    body: 'Model rulebook pressure and state change before prop-style account damage.',
+  },
+  {
+    step: '06',
+    label: 'Report artifact',
+    body: 'Explain the detected state in trader language after the math has run.',
+  },
+] as const
+
 export default function StoryExperience() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -422,6 +455,30 @@ export default function StoryExperience() {
                     </div>
                   ))}
                 </div>
+              </div>
+              <div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.055] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">Target engine path</p>
+                <h4 className="mt-2 text-lg font-semibold text-white">The model calculates. The language explains.</h4>
+                <p className="mt-3 text-sm leading-relaxed text-cyan-50/75">
+                  This is the production proof path the website is promising, not a claim that the public page has already
+                  analyzed the account.
+                </p>
+                <div className="mt-4 grid gap-2">
+                  {ENGINE_PIPELINE_STAGES.map((stage) => (
+                    <div key={stage.step} className="grid grid-cols-[auto_1fr] gap-3 rounded-2xl border border-white/8 bg-black/20 p-3">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full border border-cyan-200/30 font-mono text-[10px] text-cyan-100">
+                        {stage.step}
+                      </span>
+                      <span>
+                        <span className="block text-sm font-semibold text-white">{stage.label}</span>
+                        <span className="mt-1 block text-xs leading-relaxed text-neutral-300">{stage.body}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-xs leading-relaxed text-cyan-50/65">
+                  No public accuracy percentage, no buy/sell recommendation, and no account-specific diagnosis before normalized upload proof.
+                </p>
               </div>
               <div className="rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">3-minute demo path</p>
