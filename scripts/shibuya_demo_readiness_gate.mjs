@@ -28,6 +28,11 @@ const REQUIRED_SURFACES = [
     markers: ['IFX Demo Launcher', 'DEMO LAUNCH PACKET', 'IFX operator run sheet', 'Three minutes. Five beats. One proof boundary.', 'Operator run sheet rule', 'PRIMARY IFX ROUTE', 'Story first. Shortcuts are fallback only.', 'Close Demo', 'Open Append', 'Fallback rule: direct report, direct insight, and activation links are recovery routes.', 'Append close is founder-gated even when opened from this launcher.', 'One controlled path from story to append-proof close.', 'The launcher is not live proof.', 'Secret values are never printed', 'IFX_DEMO_OPERATOR_RUNBOOK', 'buildIfxDemoJourneyPaths'],
   },
   {
+    label: 'IFX public signal entry',
+    file: 'src/pages/marketing/LaunchSignalPage.tsx',
+    markers: ['IFX demo launcher', 'Start 3-Minute Story', 'Founder Demo Gate', 'Operator Launcher', 'This IFX link is a truthful demo path', 'buildIfxDemoJourneyPaths', 'privateDemoPath', 'demoLauncherPath'],
+  },
+  {
     label: 'public upload',
     file: 'src/pages/marketing/PublicUploadPage.tsx',
     markers: ['Use Sample History', 'Generate Free Report', 'Prediction survival test', 'What is allowed to survive from story to report.', 'Survival rule: if a claim requires account-specific proof', 'Sample handoff receipt', 'Report unlock path', 'No raw rows, no production normalization, no account-specific conclusion.'],

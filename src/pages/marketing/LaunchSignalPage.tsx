@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, Eye, LockKeyhole, RadioTower, Sparkles } from 'lucide-react'
+import { buildIfxDemoJourneyPaths } from '../../lib/ifxDemoJourney'
+import { addMarketToPath, resolveMarket } from '../../lib/market'
 
 const ecosystemLanes = [
   {
@@ -26,6 +28,14 @@ const launchPhases = [
 ]
 
 export default function LaunchSignalPage() {
+  const location = useLocation()
+  const market = resolveMarket(location.pathname, location.search)
+  const {
+    storyPath,
+    privateDemoPath,
+  } = buildIfxDemoJourneyPaths(market)
+  const demoLauncherPath = addMarketToPath('/demo', market)
+
   return (
     <main className="shibuya-ifx-page relative min-h-screen overflow-hidden bg-[#020204] text-white selection:bg-white selection:text-black">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.18),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(249,115,22,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_38%)]" />
@@ -41,7 +51,8 @@ export default function LaunchSignalPage() {
           </Link>
 
           <nav className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.2em] text-neutral-400 md:flex">
-            <Link className="transition hover:text-white" to="/story">Story</Link>
+            <Link className="transition hover:text-white" to={storyPath}>Story</Link>
+            <Link className="transition hover:text-white" to={demoLauncherPath}>Demo path</Link>
             <Link className="transition hover:text-white" to="/solutions">System</Link>
             <Link className="transition hover:text-white" to="/login">Invited Access</Link>
           </nav>
@@ -66,17 +77,23 @@ export default function LaunchSignalPage() {
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Link
-                to="/story?demo=instant"
+                to={storyPath}
                 className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-white px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-neutral-200 sm:w-auto sm:px-6 sm:tracking-[0.18em]"
               >
                 Start 3-Minute Story
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <Link
-                to="/private-demo?source=ifx&market=global"
+                to={privateDemoPath}
                 className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/15 bg-white/[0.03] px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:border-white/30 hover:bg-white/[0.06] sm:w-auto sm:px-6 sm:tracking-[0.18em]"
               >
                 Founder Demo Gate
+              </Link>
+              <Link
+                to={demoLauncherPath}
+                className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-indigo-300/25 bg-indigo-300/[0.08] px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/40 hover:bg-indigo-300/[0.12] sm:w-auto sm:px-6 sm:tracking-[0.18em]"
+              >
+                Operator Launcher
               </Link>
             </div>
 
