@@ -31,6 +31,9 @@ export default function PrivateDemoPage() {
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const reportSession = getPublicReportSession(handoffReportId)
+  const selectedPainAxes = (reportSession?.selectedPainAxisIds ?? [])
+    .map((axisId) => getFingerprintAxis(axisId))
+    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
   const handoffReport = buildFreeReportPreview({
     reportId: handoffReportId,
     archetypeId: params.get('archetype'),
@@ -159,6 +162,11 @@ export default function PrivateDemoPage() {
                 {reportSession?.storySource ? (
                   <p className="mt-3 text-xs leading-5 text-indigo-50/55">
                     Story handoff: {reportSession.storySource}. Scenes before upload: {reportSession.visitedSceneCount}.
+                  </p>
+                ) : null}
+                {selectedPainAxes.length ? (
+                  <p className="mt-3 text-xs leading-5 text-indigo-50/55">
+                    Public pain axes: {selectedPainAxes.map((axis) => axis.label).join(', ')}.
                   </p>
                 ) : null}
               </div>

@@ -68,6 +68,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
