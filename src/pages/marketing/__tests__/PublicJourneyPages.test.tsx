@@ -248,18 +248,20 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/insight/edge-decay-map?source=guided_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
-    expect(screen.getByRole('link', { name: /^Unlock Free Report First$/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^Open Locked Insight First$/i })).toHaveAttribute(
       'href',
-      '/checkout/reset-pro-live?source=private_insight_gate&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
-    expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^Open Edge decay map$/i })).toHaveAttribute(
       'href',
-      '/checkout/reset-pro-live?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
-    expect(screen.getByRole('link', { name: /^Start Psych Audit$/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^View Paid Ladder$/i })).toHaveAttribute(
       'href',
-      '/checkout/psych-audit-live?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+      '/pricing?market=global',
     )
+    expect(screen.queryByRole('link', { name: /^Start Reset Pro$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Start Psych Audit$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Preview Reset Pro/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Private Insight Gate/i })).toHaveAttribute(
       'href',

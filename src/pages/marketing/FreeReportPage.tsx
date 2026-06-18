@@ -32,7 +32,6 @@ export default function FreeReportPage() {
   const guidedLockedSection = getGuidedLockedSectionForAxis(report)
   const guidedLockedSectionSlug = toReportSectionSlug(guidedLockedSection.title)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
-  const auditPlan = getPlanForMarket(market, 'audit_monthly')
   const publicStoryHandoffForLinks = reportSession || urlStoryHandoff
     ? {
         storySource: report.storyHandoff.source,
@@ -41,24 +40,6 @@ export default function FreeReportPage() {
         signalMarkerIds: report.storyHandoff.signalMarkers.map((marker) => marker.id),
       }
     : null
-  const reportCheckoutQuery = appendPublicStoryHandoffParams(
-    new URLSearchParams({
-      source: 'free_report',
-      report: report.reportId,
-      archetype: report.archetype.id,
-      axis: report.dominantAxis.id,
-    }),
-    publicStoryHandoffForLinks,
-  ).toString()
-  const privateInsightGateQuery = appendPublicStoryHandoffParams(
-    new URLSearchParams({
-      source: 'private_insight_gate',
-      report: report.reportId,
-      archetype: report.archetype.id,
-      axis: report.dominantAxis.id,
-    }),
-    publicStoryHandoffForLinks,
-  ).toString()
   const guidedInsightQuery = appendPublicStoryHandoffParams(
     new URLSearchParams({
       source: 'guided_report',
@@ -383,10 +364,10 @@ export default function FreeReportPage() {
                 <p className="text-sm leading-7 text-neutral-300">{report.privateInsightGate.demoPromise}</p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <Link
-                    to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?${privateInsightGateQuery}`, market)}
+                    to={guidedInsightPath}
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                   >
-                    Unlock {report.privateInsightGate.primaryUnlock}
+                    Open Locked Insight First
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
@@ -401,16 +382,16 @@ export default function FreeReportPage() {
 
             <section className="grid gap-3 md:grid-cols-3">
               <Link
-                to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?${reportCheckoutQuery}`, market)}
+                to={guidedInsightPath}
                 className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
               >
-                {resetPlan.ctaLabel}
+                Open {guidedLockedSection.title}
               </Link>
               <Link
-                to={addMarketToPath(`/checkout/${auditPlan.checkoutSlug}?${reportCheckoutQuery}`, market)}
+                to={addMarketToPath('/pricing', market)}
                 className="inline-flex items-center justify-center rounded-xl border border-white/10 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
               >
-                {auditPlan.ctaLabel}
+                View Paid Ladder
               </Link>
               <Link
                 to={guidedInsightPath}
