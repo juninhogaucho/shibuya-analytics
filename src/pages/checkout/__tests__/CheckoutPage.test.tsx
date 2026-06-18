@@ -50,8 +50,8 @@ describe('CheckoutPage', () => {
     )
 
     expect(screen.getByText('Checkout route integrity')).toBeInTheDocument()
-    expect(screen.getByText('Cold checkout is blocked before payment.')).toBeInTheDocument()
-    expect(screen.getByText(/should not start from a naked plan URL/i)).toBeInTheDocument()
+    expect(screen.getByText('Locked insight intent required before payment.')).toBeInTheDocument()
+    expect(screen.getByText(/URL alone cannot start payment/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Generate Free Report First/i })).toHaveAttribute('href', '/upload?market=global')
     expect(screen.getByRole('link', { name: /Return To Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
     expect(screen.getByRole('link', { name: /Back to Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
@@ -96,8 +96,8 @@ describe('CheckoutPage', () => {
 
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
     expect(screen.getByText('Checkout route integrity')).toBeInTheDocument()
-    expect(screen.getByText('Checkout can carry the locked private question.')).toBeInTheDocument()
-    expect(screen.getByText(/includes report, locked module, archetype, axis/i)).toBeInTheDocument()
+    expect(screen.getByText('Locked insight intent verified.')).toBeInTheDocument()
+    expect(screen.getByText(/local locked-section intent receipt/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Back to Pricing/i })).toHaveAttribute(
       'href',
       '/pricing?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
@@ -185,7 +185,7 @@ describe('CheckoutPage', () => {
     })
   })
 
-  test('labels checkout intent as URL-only when no local report packet exists', () => {
+  test('blocks URL-only locked insight checkout without a local intent receipt', async () => {
     const user = userEvent.setup()
     render(
       <MemoryRouter
@@ -200,6 +200,8 @@ describe('CheckoutPage', () => {
     )
 
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
+    expect(screen.getByText('Locked insight intent required before payment.')).toBeInTheDocument()
+    expect(screen.getByText(/URL alone cannot start payment/i)).toBeInTheDocument()
     expect(screen.getByText('URL context only')).toBeInTheDocument()
     expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
     expect(screen.getByText('Story: guided')).toBeInTheDocument()
@@ -207,30 +209,14 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
     expect(screen.getByText('Checkout handoff contract')).toBeInTheDocument()
     expect(screen.getByText(/Payment cannot prove/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
 
-    return user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
-      .then(() => user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test'))
-      .then(() => user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i })))
-      .then(() => waitFor(() => {
-        expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledWith(
-          expect.objectContaining({
-            public_context_source: 'locked_insight',
-            public_context_report_id: 'missing-report',
-            public_context_section_id: 'highest-cost-state',
-            public_context_archetype_id: 'marco',
-            public_context_axis_id: 'edge_decay',
-            public_context_packet_source: undefined,
-            public_context_story_source: 'guided',
-            public_context_story_scene_count: '6',
-            public_context_pain_axes: 'edge_decay',
-            public_context_signal_markers: undefined,
-            public_context_report_views: '0',
-            public_context_locked_clicks: '0',
-            public_context_current_section_clicks: '0',
-            public_context_private_gate_attempts: '0',
-          }),
-        )
-      }))
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    expect(checkoutMocks.createCheckoutSession).not.toHaveBeenCalled()
+    expect(checkoutMocks.redirectBrowser).not.toHaveBeenCalled()
   })
 
   test('preserves explicit demo launcher sample flag in checkout return URLs', async () => {
@@ -257,6 +243,9 @@ describe('CheckoutPage', () => {
         </Routes>
       </MemoryRouter>,
     )
+
+    expect(screen.getByText('Locked insight intent verified.')).toBeInTheDocument()
+    expect(screen.getByText(/controlled launcher packet/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
     await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')

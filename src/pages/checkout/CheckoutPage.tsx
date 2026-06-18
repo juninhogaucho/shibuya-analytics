@@ -50,9 +50,13 @@ const CheckoutPage: React.FC = () => {
     getPublicReportEngagement(enrichedCheckoutIntent?.reportId),
     enrichedCheckoutIntent?.lockedSectionId,
   )
-  const checkoutRouteReady =
+  const hasLockedInsightCheckoutIntent =
     enrichedCheckoutIntent?.source === 'locked_insight' &&
     Boolean(enrichedCheckoutIntent.reportId && enrichedCheckoutIntent.lockedSectionId)
+  const hasLockedSectionIntentProof = checkoutEngagementSummary.currentSectionClickCount > 0
+  const checkoutRouteReady =
+    hasLockedInsightCheckoutIntent &&
+    (hasLockedSectionIntentProof || shouldCarryDemoLauncherPacket)
   const pricingBackPath = addMarketToPath(appendCheckoutIntentToPath('/pricing', enrichedCheckoutIntent), market)
   const reportFirstPath = addMarketToPath('/upload', market)
   const isSubscription = currentPlan.type === 'subscription'
@@ -138,7 +142,7 @@ const CheckoutPage: React.FC = () => {
     event.preventDefault()
 
     if (!checkoutRouteReady) {
-      setCheckoutError('Start checkout from a locked private insight so payment carries a report, section, archetype, axis, and proof boundary.')
+      setCheckoutError('Open a locked private insight from the report before checkout so payment carries a verified local intent receipt.')
       return
     }
 
@@ -251,13 +255,13 @@ const CheckoutPage: React.FC = () => {
           </p>
           <h2 className="mt-2 text-lg font-semibold text-white">
             {checkoutRouteReady
-              ? 'Checkout can carry the locked private question.'
-              : 'Cold checkout is blocked before payment.'}
+              ? 'Locked insight intent verified.'
+              : 'Locked insight intent required before payment.'}
           </h2>
           <p className={`mt-2 text-sm leading-6 ${checkoutRouteReady ? 'text-sky-50/75' : 'text-rose-50/75'}`}>
             {checkoutRouteReady
-              ? 'This payment path includes report, locked module, archetype, axis, and public-story handoff context.'
-              : 'The live workspace should not start from a naked plan URL. Generate a report and open a locked private insight before checkout so activation receives a real question.'}
+              ? 'This payment path includes report, locked module, archetype, axis, public-story handoff context, and a local locked-section intent receipt or controlled launcher packet.'
+              : 'Checkout requires a local locked-section intent receipt or controlled launcher packet. A URL alone cannot start payment. Generate a report and open a locked private insight before checkout so activation receives a real question.'}
           </p>
           {!checkoutRouteReady ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">

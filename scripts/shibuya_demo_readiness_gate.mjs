@@ -75,7 +75,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'Checkout route integrity', 'Cold checkout is blocked before payment.', 'Checkout can carry the locked private question.', 'Start checkout from a locked private insight', 'Generate Free Report First', 'Return To Pricing', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'enrichedCheckoutIntent', 'checkoutRouteReady'],
+    markers: ['Checkout intent', 'Checkout route integrity', 'Locked insight intent verified.', 'Locked insight intent required before payment.', 'Checkout requires a local locked-section intent receipt or controlled launcher packet.', 'A URL alone cannot start payment.', 'Open a locked private insight from the report before checkout', 'Generate Free Report First', 'Return To Pricing', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'hasLockedSectionIntentProof', 'shouldCarryDemoLauncherPacket', 'enrichedCheckoutIntent', 'checkoutRouteReady'],
   },
   {
     label: 'pricing context ladder',
