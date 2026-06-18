@@ -21,6 +21,7 @@ import {
   createInitialStorySignal,
   getBehavioralPressureBand,
   getDominantFingerprintAxis,
+  getPublicStorySignalMarkers,
   recordPricingInterest,
   recordSceneView,
   recordUploadIntent,
@@ -130,6 +131,8 @@ export default function StoryExperience() {
     .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
     .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
     .map((axis) => axis.label)
+  const currentSignalMarkerIds = buildPublicStorySignalMarkerIds(signal)
+  const currentSignalMarkers = getPublicStorySignalMarkers(currentSignalMarkerIds)
   const evidenceContractRows = [
     {
       label: 'Public signal only',
@@ -142,6 +145,32 @@ export default function StoryExperience() {
     {
       label: 'Private demo boundary',
       body: 'Reset Pro preview can show the operating loop with sample data only. Live persistence requires activation, upload, and generated artifacts.',
+    },
+  ]
+  const publicHandoffRows = [
+    {
+      label: 'Secret-free routing context',
+      value: selectedArchetype
+        ? `archetype=${selectedArchetype.id}; axis=${dominantAxis.id}`
+        : `archetype=unselected; axis=${dominantAxis.id}`,
+      body: 'The public story may carry market, archetype, dominant axis, visited scene count, public pain axes, and signal marker ids.',
+    },
+    {
+      label: 'Stored at next click',
+      value: `story=guided; scene_count=${signal.visitedSceneIds.length}; pain_axes=${signal.selectedPainAxes.join(',') || 'none'}`,
+      body: 'Upload/report/private insight can preserve this as context so the next page knows what question the visitor is trying to test.',
+    },
+    {
+      label: 'Public markers',
+      value: currentSignalMarkers.length ? currentSignalMarkers.map((marker) => marker.label).join(', ') : 'No route markers yet',
+      body: currentSignalMarkerIds.length
+        ? `Marker ids: ${currentSignalMarkerIds.join(', ')}. These explain routing intent only.`
+        : 'No marker should be interpreted as account behavior until upload evidence exists.',
+    },
+    {
+      label: 'Claim boundary',
+      value: 'No private conclusion',
+      body: 'No raw trade rows, account id, brokerage login, P&L, or private conclusion is stored or proven by this public packet.',
     },
   ]
 
@@ -820,6 +849,26 @@ export default function StoryExperience() {
                     </div>
                   ))}
                 </div>
+              </div>
+              <div className="rounded-3xl border border-sky-300/20 bg-sky-300/[0.055] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-sky-200">Public handoff packet</p>
+                <h4 className="mt-2 text-lg font-semibold text-white">What survives from story into upload.</h4>
+                <p className="mt-3 text-sm leading-relaxed text-sky-50/75">
+                  This packet is the bridge from recognition to evidence. It is useful because it is explicit,
+                  secret-free, and narrow enough not to become a fake diagnosis.
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {publicHandoffRows.map((row) => (
+                    <div key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-sky-100">{row.label}</p>
+                      <p className="mt-2 break-words text-xs font-semibold text-white">{row.value}</p>
+                      <p className="mt-2 text-xs leading-relaxed text-neutral-300">{row.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-xs leading-relaxed text-sky-50/65">
+                  Handoff rule: the packet can route the next page and preserve the question; it cannot answer the question.
+                </p>
               </div>
               <div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.055] p-5">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">Target engine path</p>
