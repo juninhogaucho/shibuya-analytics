@@ -100,7 +100,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'Reset Pro operator strip',
     file: 'src/components/dashboard/ResetProDemoCommandCenter.tsx',
-    markers: ['RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
+    markers: ['RESET PRO WORKSPACE STATUS SNAPSHOT', 'Mode: sample-only', 'Context carried', 'Next proof required', 'Know what is live, what is carried, and what must be proven next.', 'RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
   },
   {
     label: 'append-proof exit',

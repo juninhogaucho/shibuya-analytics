@@ -31,6 +31,27 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
   const primaryRoute = script.presenterRoute[0]
   const closeRoute = script.presenterRoute[script.presenterRoute.length - 1]
   const nextShowRoute = script.presenterRoute.find((step) => step.phase === 'show') ?? closeRoute
+  const workspaceStatusRows = [
+    {
+      label: 'Mode: sample-only',
+      value: 'Reset Pro preview workspace',
+      body: 'Demo data is loaded for structure and talk track only; no live backend artifact or account-specific claim is proven.',
+    },
+    {
+      label: 'Context carried',
+      value: origin?.evidenceLabel ?? (origin?.reportId ? 'URL context only' : 'Direct demo entry'),
+      body: origin?.bridgeDecisionQuestion
+        ? `Private question attached: ${origin.bridgeDecisionQuestion}`
+        : origin?.lockedSectionTitle
+          ? `Locked module attached: ${origin.lockedSectionTitle}`
+          : 'No public report or locked question is attached; frame this as a cold sample workspace.',
+    },
+    {
+      label: 'Next proof required',
+      value: 'Append-proof exit',
+      body: 'Close the workspace by showing upload/append. Live proof starts with activation, real history, generated artifacts, and repeat append packets.',
+    },
+  ]
 
   return (
     <section
@@ -67,6 +88,34 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
           </div>
         </div>
       </div>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
+          background: 'rgba(129,140,248,0.07)',
+          borderColor: 'rgba(129,140,248,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO WORKSPACE STATUS SNAPSHOT</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Know what is live, what is carried, and what must be proven next.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              Read this before showing metrics. It keeps the private workspace demo aligned with the public story and locked-report proof boundary.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+          {workspaceStatusRows.map((row) => (
+            <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{row.label}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{row.value}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+            </article>
+          ))}
+        </div>
+      </article>
 
       <article
         className="glass-panel"
