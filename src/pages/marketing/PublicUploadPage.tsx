@@ -2,6 +2,7 @@ import { type FormEvent, useMemo, useState } from 'react'
 import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
+import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   buildPublicReportSession,
   persistPublicReportSession,
@@ -26,6 +27,7 @@ export default function PublicUploadPage() {
   const storySource = params.get('story')
   const selectedPainAxisIds = (params.get('pain_axes') ?? '').split(',').filter(Boolean)
   const visitedSceneCount = Number(params.get('scene_count') ?? 0)
+  const publicStoryHandoff = readPublicStoryHandoff(location.search)
   const [archetypeId, setArchetypeId] = useState<StoryArchetypeId>(initialArchetype.id)
   const [axisId, setAxisId] = useState<FingerprintAxisId>(initialAxis.id)
   const [fileName, setFileName] = useState('')
@@ -42,7 +44,15 @@ export default function PublicUploadPage() {
   )
   const hasStoryHandoff = storySource === 'guided' || visitedSceneCount > 0 || selectedPainAxes.length > 0
 
-  const reportSearch = `?market=${market}&archetype=${archetype.id}&axis=${axis.id}`
+  const reportSearchParams = appendPublicStoryHandoffParams(
+    new URLSearchParams({
+      market,
+      archetype: archetype.id,
+      axis: axis.id,
+    }),
+    publicStoryHandoff,
+  )
+  const reportSearch = `?${reportSearchParams.toString()}`
 
   const generateReport = (source: 'upload' | 'sample') => {
     const reportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`

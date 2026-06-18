@@ -1,6 +1,7 @@
 import { ArrowRight, Lock, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
+import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { buildFreeReportPreview, buildLockedInsightPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
@@ -11,13 +12,17 @@ export default function LockedInsightPage() {
   const params = new URLSearchParams(location.search)
   const reportId = params.get('report') || 'direct-locked-insight'
   const reportSession = getPublicReportSession(reportId)
+  const urlStoryHandoff = readPublicStoryHandoff(location.search)
+  const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
+  const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
+  const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
   const report = buildFreeReportPreview({
     reportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
-    storySource: reportSession?.storySource,
-    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
-    visitedSceneCount: reportSession?.visitedSceneCount,
+    storySource: effectiveStorySource,
+    selectedPainAxisIds: effectiveSelectedPainAxisIds,
+    visitedSceneCount: effectiveVisitedSceneCount,
   })
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
@@ -25,13 +30,23 @@ export default function LockedInsightPage() {
   const lockedSection = requestedSection ?? report.locked[0]
   const sectionSlug = toReportSectionSlug(lockedSection.title)
   const lockedInsightPreview = buildLockedInsightPreview(report, sectionSlug)
-  const lockedCheckoutQuery = new URLSearchParams({
-    source: 'locked_insight',
-    section: sectionSlug,
-    report: report.reportId,
-    archetype: report.archetype.id,
-    axis: report.dominantAxis.id,
-  }).toString()
+  const publicStoryHandoffForLinks = reportSession || urlStoryHandoff
+    ? {
+        storySource: report.storyHandoff.source,
+        selectedPainAxisIds: report.storyHandoff.selectedPainAxes.map((axis) => axis.id),
+        visitedSceneCount: report.storyHandoff.visitedSceneCount,
+      }
+    : null
+  const lockedCheckoutQuery = appendPublicStoryHandoffParams(
+    new URLSearchParams({
+      source: 'locked_insight',
+      section: sectionSlug,
+      report: report.reportId,
+      archetype: report.archetype.id,
+      axis: report.dominantAxis.id,
+    }),
+    publicStoryHandoffForLinks,
+  ).toString()
   const checkoutPath = addMarketToPath(
     `/checkout/${resetPlan.checkoutSlug}?${lockedCheckoutQuery}`,
     market,
@@ -41,11 +56,26 @@ export default function LockedInsightPage() {
     market,
   )
   const privateDemoPath = addMarketToPath(
-    `/private-demo?source=locked_insight&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}&section=${sectionSlug}`,
+    `/private-demo?${appendPublicStoryHandoffParams(
+      new URLSearchParams({
+        source: 'locked_insight',
+        report: report.reportId,
+        archetype: report.archetype.id,
+        axis: report.dominantAxis.id,
+        section: sectionSlug,
+      }),
+      publicStoryHandoffForLinks,
+    ).toString()}`,
     market,
   )
   const reportPath = addMarketToPath(
-    `/report/${encodeURIComponent(report.reportId)}?archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
+    `/report/${encodeURIComponent(report.reportId)}?${appendPublicStoryHandoffParams(
+      new URLSearchParams({
+        archetype: report.archetype.id,
+        axis: report.dominantAxis.id,
+      }),
+      publicStoryHandoffForLinks,
+    ).toString()}`,
     market,
   )
 
@@ -148,9 +178,14 @@ export default function LockedInsightPage() {
                 <h2 className="mt-2 text-xl font-semibold text-white">
                   {reportSession?.evidenceLabel ?? 'Direct-link fallback only'}
                 </h2>
-                <p className="mt-3 text-sm leading-7 text-emerald-50/75">
-                  {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'}
+              <p className="mt-3 text-sm leading-7 text-emerald-50/75">
+                {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'}
+              </p>
+              {!reportSession && urlStoryHandoff ? (
+                <p className="mt-3 text-xs leading-5 text-amber-100/75">
+                  URL story context only: {urlStoryHandoff.storySource}; scenes {urlStoryHandoff.visitedSceneCount}; axes {urlStoryHandoff.selectedPainAxisIds.length}.
                 </p>
+              ) : null}
               </div>
             </div>
             <p className="rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-emerald-50/65">

@@ -2,6 +2,7 @@ import { ArrowRight, Lock, ShieldCheck, UnlockKeyhole } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
+import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { buildFreeReportPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
@@ -12,31 +13,56 @@ export default function FreeReportPage() {
   const params = new URLSearchParams(location.search)
   const reportId = id ?? 'sample-free-report'
   const reportSession = getPublicReportSession(reportId)
+  const urlStoryHandoff = readPublicStoryHandoff(location.search)
+  const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
+  const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
+  const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
   const report = buildFreeReportPreview({
     reportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
-    storySource: reportSession?.storySource,
-    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
-    visitedSceneCount: reportSession?.visitedSceneCount,
+    storySource: effectiveStorySource,
+    selectedPainAxisIds: effectiveSelectedPainAxisIds,
+    visitedSceneCount: effectiveVisitedSceneCount,
   })
   const selectedPainAxes = report.storyHandoff.selectedPainAxes
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
-  const reportCheckoutQuery = new URLSearchParams({
-    source: 'free_report',
-    report: report.reportId,
-    archetype: report.archetype.id,
-    axis: report.dominantAxis.id,
-  }).toString()
-  const privateInsightGateQuery = new URLSearchParams({
-    source: 'private_insight_gate',
-    report: report.reportId,
-    archetype: report.archetype.id,
-    axis: report.dominantAxis.id,
-  }).toString()
+  const publicStoryHandoffForLinks = reportSession || urlStoryHandoff
+    ? {
+        storySource: report.storyHandoff.source,
+        selectedPainAxisIds: report.storyHandoff.selectedPainAxes.map((axis) => axis.id),
+        visitedSceneCount: report.storyHandoff.visitedSceneCount,
+      }
+    : null
+  const reportCheckoutQuery = appendPublicStoryHandoffParams(
+    new URLSearchParams({
+      source: 'free_report',
+      report: report.reportId,
+      archetype: report.archetype.id,
+      axis: report.dominantAxis.id,
+    }),
+    publicStoryHandoffForLinks,
+  ).toString()
+  const privateInsightGateQuery = appendPublicStoryHandoffParams(
+    new URLSearchParams({
+      source: 'private_insight_gate',
+      report: report.reportId,
+      archetype: report.archetype.id,
+      axis: report.dominantAxis.id,
+    }),
+    publicStoryHandoffForLinks,
+  ).toString()
   const privateDemoPath = addMarketToPath(
-    `/private-demo?source=free_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
+    `/private-demo?${appendPublicStoryHandoffParams(
+      new URLSearchParams({
+        source: 'free_report',
+        report: report.reportId,
+        archetype: report.archetype.id,
+        axis: report.dominantAxis.id,
+      }),
+      publicStoryHandoffForLinks,
+    ).toString()}`,
     market,
   )
 
@@ -110,10 +136,15 @@ export default function FreeReportPage() {
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Public prediction</p>
               <h3 className="mt-2 text-lg font-semibold text-white">{report.archetype.name} / {report.dominantAxis.label}</h3>
               <p className="mt-3 text-sm leading-6 text-neutral-300">
-                {report.storyHandoff.source === 'guided'
+                  {report.storyHandoff.source === 'guided'
                   ? report.storyHandoff.summary
                   : 'Direct report route. No guided StoryExperience packet was attached in this browser.'}
               </p>
+              {!reportSession && urlStoryHandoff ? (
+                <p className="mt-3 text-xs leading-5 text-amber-100/70">
+                  URL story context only. This preserves the public journey signal, but it is weaker than a local upload packet.
+                </p>
+              ) : null}
               <p className="mt-3 text-xs leading-5 text-indigo-50/60">
                 Public pain axes: {selectedPainAxes.length ? selectedPainAxes.map((axis) => axis.label).join(', ') : 'none captured'}.
               </p>
@@ -173,7 +204,15 @@ export default function FreeReportPage() {
                   <Link
                     key={item.title}
                     to={addMarketToPath(
-                      `/insight/${toReportSectionSlug(item.title)}?source=locked_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
+                      `/insight/${toReportSectionSlug(item.title)}?${appendPublicStoryHandoffParams(
+                        new URLSearchParams({
+                          source: 'locked_report',
+                          report: report.reportId,
+                          archetype: report.archetype.id,
+                          axis: report.dominantAxis.id,
+                        }),
+                        publicStoryHandoffForLinks,
+                      ).toString()}`,
                       market,
                     )}
                     className="group flex gap-4 rounded-3xl border border-white/8 bg-black/25 p-5 transition hover:border-indigo-300/40 hover:bg-indigo-300/[0.06]"

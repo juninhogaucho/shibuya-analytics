@@ -56,6 +56,9 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
     expect(screen.getByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=1')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
     expect(screen.getByText('Selected public pain axes: Drawdown Pressure.')).toBeInTheDocument()
@@ -165,6 +168,28 @@ describe('public Shibuya journey pages', () => {
     )
   })
 
+  test('free report preserves URL story context when local upload packet is missing', () => {
+    render(
+      <MemoryRouter initialEntries={['/report/shareable-report?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('No local upload packet found')).toBeInTheDocument()
+    expect(screen.getByText(/Guided StoryExperience signal: 6 scenes viewed; public pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/URL story context only/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=free_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Unlock Highest-cost state/i })).toHaveAttribute(
+      'href',
+      '/insight/highest-cost-state?source=locked_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
+  })
+
   test('locked report section opens the private insight interstitial before checkout', async () => {
     const user = userEvent.setup()
 
@@ -201,6 +226,28 @@ describe('public Shibuya journey pages', () => {
     )
   })
 
+  test('locked insight preserves URL story context without claiming upload evidence', () => {
+    render(
+      <MemoryRouter initialEntries={['/insight/highest-cost-state?market=global&source=locked_report&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay']}>
+        <Routes>
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
+    expect(screen.getByText(/URL story context only: guided; scenes 6; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/No local upload-step validation packet was found/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
+  })
+
   test('locked insight page preserves upload-step evidence when report session exists', async () => {
     const user = userEvent.setup()
 
@@ -225,7 +272,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Back to Free Report/i })).toHaveAttribute(
       'href',
-      '/report/sample-behavioral-leak-report?archetype=priya&axis=drawdown_pressure&market=india',
+      '/report/sample-behavioral-leak-report?archetype=priya&axis=drawdown_pressure&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
     )
   })
 

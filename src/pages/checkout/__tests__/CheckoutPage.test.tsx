@@ -130,7 +130,7 @@ describe('CheckoutPage', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=missing-report&archetype=marco&axis=edge_decay&market=global',
+          '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=missing-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
         ]}
       >
         <Routes>
@@ -142,6 +142,9 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
     expect(screen.getByText('URL context only')).toBeInTheDocument()
     expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
+    expect(screen.getByText('Story: guided')).toBeInTheDocument()
+    expect(screen.getByText('Scenes: 6')).toBeInTheDocument()
+    expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
 
     return user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
       .then(() => user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test'))
@@ -155,9 +158,9 @@ describe('CheckoutPage', () => {
             public_context_archetype_id: 'marco',
             public_context_axis_id: 'edge_decay',
             public_context_packet_source: undefined,
-            public_context_story_source: undefined,
-            public_context_story_scene_count: undefined,
-            public_context_pain_axes: undefined,
+            public_context_story_source: 'guided',
+            public_context_story_scene_count: '6',
+            public_context_pain_axes: 'edge_decay',
           }),
         )
       }))

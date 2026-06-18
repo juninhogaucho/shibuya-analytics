@@ -94,12 +94,33 @@ describe('PrivateDemoPage', () => {
   test('keeps direct private-demo report links visibly weaker than upload handoffs', () => {
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
-    renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
+    renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=6&pain_axes=drawdown_pressure&market=global')
 
     expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
-    expect(screen.getByText(/URL context only/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/URL context only/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Use the public upload page/i)).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided/i)).toHaveTextContent('URL context only')
+  })
+
+  test('carries URL-only story context into sample metadata without upload evidence', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&story=guided&scene_count=6&pain_axes=edge_decay&market=global')
+
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      demoSource: 'locked_insight',
+      demoReportId: 'free-report-123',
+      demoReportSource: 'direct_link',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['edge_decay'],
+      demoVisitedSceneCount: 6,
+      demoLockedSectionId: 'edge-decay-map',
+    })
   })
 
   test('carries locked insight intent into the Reset Pro sample metadata', async () => {

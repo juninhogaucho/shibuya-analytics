@@ -3,6 +3,7 @@ import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { appendCheckoutIntentToPath, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
+import { readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   PRIVATE_DEMO_CODE_ENV_KEY,
   enterPrivateResetProDemo,
@@ -31,13 +32,17 @@ export default function PrivateDemoPage() {
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const reportSession = getPublicReportSession(handoffReportId)
+  const urlStoryHandoff = readPublicStoryHandoff(location.search)
+  const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
+  const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
+  const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
   const handoffReport = buildFreeReportPreview({
     reportId: handoffReportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
-    storySource: reportSession?.storySource,
-    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
-    visitedSceneCount: reportSession?.visitedSceneCount,
+    storySource: effectiveStorySource,
+    selectedPainAxisIds: effectiveSelectedPainAxisIds,
+    visitedSceneCount: effectiveVisitedSceneCount,
   })
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
@@ -66,9 +71,9 @@ export default function PrivateDemoPage() {
       reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
       evidenceLabel: reportSession?.evidenceLabel,
       validationSummary: reportSession?.validationSummary,
-      storySource: reportSession?.storySource,
-      selectedPainAxisIds: reportSession?.selectedPainAxisIds,
-      visitedSceneCount: reportSession?.visitedSceneCount,
+      storySource: effectiveStorySource,
+      selectedPainAxisIds: effectiveSelectedPainAxisIds,
+      visitedSceneCount: effectiveVisitedSceneCount,
       lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
       lockedSectionTitle: lockedSection?.title,
     })
@@ -160,9 +165,10 @@ export default function PrivateDemoPage() {
                 <p className="mt-3 text-xs leading-5 text-indigo-50/55">
                   {reportSession?.boundary ?? 'Use the public upload page to create a stronger local evidence packet before demoing the report-to-workspace transition.'}
                 </p>
-                {reportSession?.storySource ? (
+                {effectiveStorySource ? (
                   <p className="mt-3 text-xs leading-5 text-indigo-50/55">
-                    Story handoff: {reportSession.storySource}. Scenes before upload: {reportSession.visitedSceneCount}.
+                    Story handoff: {effectiveStorySource}. Scenes before upload: {effectiveVisitedSceneCount ?? 0}.
+                    {!reportSession && urlStoryHandoff ? ' URL context only.' : ''}
                   </p>
                 ) : null}
                 {selectedPainAxes.length ? (
