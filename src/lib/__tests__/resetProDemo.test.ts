@@ -16,6 +16,22 @@ describe('Reset Pro demo script', () => {
     ])
     expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
     expect(script.showSequence[3].show).toContain('Append proof flow')
+    expect(script.readinessChecklist).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Public context carried',
+          status: 'warning',
+        }),
+        expect.objectContaining({
+          label: 'Sample boundary visible',
+          status: 'ready',
+        }),
+        expect.objectContaining({
+          label: 'Append-proof exit',
+          status: 'ready',
+        }),
+      ]),
+    )
     expect(script.steps.map((step) => step.route)).toEqual([
       '/dashboard',
       '/dashboard/slump',
@@ -68,6 +84,8 @@ describe('Reset Pro demo script', () => {
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
     expect(script.showSequence[0].say).toContain('Highest-cost state')
     expect(script.showSequence[0].boundary).toContain('not proof')
+    expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.status).toBe('ready')
+    expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.detail).toContain('Report, archetype, axis')
   })
 
   test('labels locked-insight origins distinctly from generic free-report origins', () => {

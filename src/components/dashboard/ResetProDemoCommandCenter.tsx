@@ -94,6 +94,36 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </article>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>DEMO READINESS CHECKLIST</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Before showing the workspace.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              Use this as the operator control surface: show only what is marked ready, and call out warnings before the viewer asks.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {script.readinessChecklist.map((item) => (
+            <div
+              key={item.label}
+              className="glass-panel"
+              style={{
+                background: item.status === 'ready' ? 'rgba(16,185,129,0.07)' : 'rgba(245,158,11,0.07)',
+                borderColor: item.status === 'ready' ? 'rgba(16,185,129,0.22)' : 'rgba(245,158,11,0.22)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>
+                {item.status === 'ready' ? 'READY' : 'CALL OUT'}
+              </p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{item.label}</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{item.detail}</p>
+            </div>
+          ))}
+        </div>
+      </article>
+
       <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
         {script.pressureMetrics.map((metric) => (
           <article key={metric.label} className="glass-panel" style={{ background: 'rgba(255,255,255,0.025)' }}>

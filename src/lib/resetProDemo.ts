@@ -43,12 +43,19 @@ export interface ResetProDemoOriginCard {
   facts: string[]
 }
 
+export interface ResetProDemoChecklistItem {
+  label: string
+  status: 'ready' | 'warning'
+  detail: string
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
   demoThesis: string
   founderTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
+  readinessChecklist: ResetProDemoChecklistItem[]
   pressureMetrics: ResetProDemoMetric[]
   steps: ResetProDemoStep[]
   proofArtifacts: string[]
@@ -109,6 +116,32 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
         say: nextSessionCommand,
         show: 'Append proof flow and Reset Pro review packet.',
         boundary: 'The demo ends at sample workflow proof. Live Reset Pro still needs account-specific evidence before private conclusions are presented as truth.',
+      },
+    ],
+    readinessChecklist: [
+      {
+        label: 'Public context carried',
+        status: originCard ? 'ready' : 'warning',
+        detail: originCard
+          ? 'Report, archetype, axis, evidence label, story handoff, and requested private insight are available for the walkthrough.'
+          : 'No public report handoff was found. Use this only as a direct private demo, not as proof of the public journey.',
+      },
+      {
+        label: 'Sample boundary visible',
+        status: 'ready',
+        detail: 'The workspace is explicitly marked demo data only and refuses live persistence or account-specific analytics claims.',
+      },
+      {
+        label: 'Premium path inspectable',
+        status: overview.review_eligibility ? 'ready' : 'warning',
+        detail: overview.review_eligibility
+          ? 'Reset Pro review state, intervention surfaces, and premium routes are visible in the controlled preview.'
+          : 'Guided review is not available in this overview, so do not pitch Reset Pro review proof from this sample.',
+      },
+      {
+        label: 'Append-proof exit',
+        status: 'ready',
+        detail: 'The walkthrough ends by sending the viewer to the upload/append path where live proof would have to be generated.',
       },
     ],
     pressureMetrics: [
