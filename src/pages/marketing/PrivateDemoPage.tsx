@@ -23,6 +23,10 @@ import {
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import {
+  buildPublicReportEngagementRows,
+  getPublicReportEngagement,
+} from '../../lib/publicReportEngagement'
+import {
   buildFreeReportPreview,
   findLockedReportSectionBySlug,
   getFingerprintAxis,
@@ -123,6 +127,10 @@ export default function PrivateDemoPage() {
     visitedSceneCount: effectiveVisitedSceneCount,
     signalMarkerIds: effectiveSignalMarkerIds,
   })
+  const privateGateEngagementRows = buildPublicReportEngagementRows(
+    getPublicReportEngagement(handoffReport.reportId),
+    handoffSectionId,
+  )
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
   const resetProBridge = handoffReport.resetProBridge
@@ -450,6 +458,31 @@ export default function PrivateDemoPage() {
                 </div>
                 <p className="mt-4 text-xs leading-5 text-emerald-50/60">
                   This packet is demo routing context. It does not become account-specific evidence until a live account activates and uploads production-normalized history.
+                </p>
+              </div>
+              <div className="mt-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.06] p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-200">
+                  Private gate engagement receipt
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">
+                  Intent survived into the founder gate. It still is not evidence.
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-cyan-50/75">
+                  The gate can read local report engagement so the operator knows why this private demo was opened.
+                  These values are route continuity only, never trader proof.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  {privateGateEngagementRows.map((row) => (
+                    <div key={row.label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-100">{row.label}</p>
+                      <p className="mt-1 text-sm font-semibold text-white">{row.value}</p>
+                      <p className="mt-2 text-xs leading-5 text-cyan-50/65">{row.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs leading-5 text-cyan-50/60">
+                  Private gate engagement rule: views, locked clicks, and gate attempts can explain routing intent only.
+                  They do not prove payment, backend normalization, raw trades, or account-specific improvement.
                 </p>
               </div>
             </div>
