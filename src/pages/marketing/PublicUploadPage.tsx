@@ -78,6 +78,30 @@ export default function PublicUploadPage() {
       body: 'The report can name the private question, but live activation, normalized trade history, generated artifacts, and append history must prove the answer.',
     },
   ]
+  const sampleHandoffRows = [
+    {
+      label: 'Packet source',
+      value: shouldUseDemoLauncherSamplePacket ? 'Controlled launcher sample' : 'Local sample history packet',
+      body: shouldUseDemoLauncherSamplePacket
+        ? 'The shared demo link explicitly marks this as a launcher sample, not visitor evidence.'
+        : 'The sample packet is created in this browser for demo continuity only.',
+    },
+    {
+      label: 'Carries forward',
+      value: `${market.toUpperCase()} / ${archetype.name} / ${axis.label}`,
+      body: `Story ${storySource === 'guided' ? 'guided' : 'direct'}; scenes ${Number.isFinite(visitedSceneCount) ? visitedSceneCount : 0}; pain ${selectedPainAxes.length ? selectedPainAxes.map((candidate) => candidate.label).join(', ') : axis.label}.`,
+    },
+    {
+      label: 'Report unlock path',
+      value: 'Free report -> locked insight -> private demo gate',
+      body: 'This is the public-to-private route the next page must preserve.',
+    },
+    {
+      label: 'Refuses to claim',
+      value: 'No account conclusion',
+      body: 'No raw rows, no production normalization, no account-specific conclusion.',
+    },
+  ]
 
   const buildReportSearch = (source: 'upload' | 'sample') => {
     const reportSearchParams = appendDemoLauncherSamplePacketParam(
@@ -246,6 +270,28 @@ export default function PublicUploadPage() {
                 </p>
               </div>
             ) : null}
+
+            <div className="mb-6 rounded-3xl border border-fuchsia-300/20 bg-fuchsia-300/[0.055] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fuchsia-200">Sample handoff receipt</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">Before the click, this is exactly what the sample report will carry.</h3>
+              <p className="mt-3 text-sm leading-6 text-fuchsia-50/75">
+                The expo shortcut is allowed to prove continuity through the funnel. It is not allowed to pretend sample
+                history produced trader-specific analytics.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {sampleHandoffRows.map((row) => (
+                  <article key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-fuchsia-100">{row.label}</span>
+                    <strong className="mt-2 block text-sm text-white">{row.value}</strong>
+                    <span className="mt-2 block text-xs leading-5 text-fuchsia-50/65">{row.body}</span>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-fuchsia-50/60">
+                Presenter rule: click sample only when you want to show the journey contract. Live proof still starts after
+                activation, normalized upload, generated artifacts, and append history.
+              </p>
+            </div>
 
             <div className="mb-6 rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.055] p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">Prediction survival test</p>

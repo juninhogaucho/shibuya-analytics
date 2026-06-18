@@ -30,7 +30,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public upload',
     file: 'src/pages/marketing/PublicUploadPage.tsx',
-    markers: ['Use Sample History', 'Generate Free Report', 'Prediction survival test', 'What is allowed to survive from story to report.', 'Survival rule: if a claim requires account-specific proof'],
+    markers: ['Use Sample History', 'Generate Free Report', 'Prediction survival test', 'What is allowed to survive from story to report.', 'Survival rule: if a claim requires account-specific proof', 'Sample handoff receipt', 'Report unlock path', 'No raw rows, no production normalization, no account-specific conclusion.'],
   },
   {
     label: 'demo launcher sample packet',
