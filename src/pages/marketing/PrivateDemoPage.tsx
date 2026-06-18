@@ -49,6 +49,16 @@ export default function PrivateDemoPage() {
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const configured = hasPrivateDemoGateConfigured()
+  const workspaceHandoffFacts = [
+    ['Source', hasReportHandoff ? handoffSource ?? 'report_link' : 'direct_private_demo'],
+    ['Market', market],
+    ['Report', handoffReportId ?? 'not attached'],
+    ['Archetype', hasReportHandoff ? `${handoffArchetype.name}: ${handoffArchetype.title}` : 'not attached'],
+    ['Dominant axis', hasReportHandoff ? handoffAxis.label : 'not attached'],
+    ['Story handoff', effectiveStorySource ? `${effectiveStorySource}; scenes ${effectiveVisitedSceneCount ?? 0}` : 'not attached'],
+    ['Evidence packet', reportSession?.evidenceLabel ?? (hasReportHandoff ? 'direct-link fallback only' : 'demo entry only')],
+    ['Locked module', lockedSection?.title ?? handoffSectionId ?? 'not attached'],
+  ]
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -177,6 +187,25 @@ export default function PrivateDemoPage() {
                     Public pain axes: {selectedPainAxes.map((axis) => axis.label).join(', ')}.
                   </p>
                 ) : null}
+              </div>
+              <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-200">
+                  Workspace handoff packet
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">
+                  What Reset Pro preview receives after unlock.
+                </h3>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {workspaceHandoffFacts.map(([label, value]) => (
+                    <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-100">{label}</p>
+                      <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs leading-5 text-emerald-50/60">
+                  This packet is demo routing context. It does not become account-specific evidence until a live account activates and uploads production-normalized history.
+                </p>
               </div>
             </div>
           ) : null}

@@ -79,9 +79,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
-    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
     expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
+    expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('What Reset Pro preview receives after unlock.')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -317,7 +319,8 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
     expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
-    expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
+    expect(screen.getAllByText('Highest-cost state').length).toBeGreaterThan(0)
+    expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
