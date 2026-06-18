@@ -24,6 +24,24 @@ export function PartnersPage() {
     'Verified add-on revenue tied to Shibuya reports, coaching, or workspace access.',
   ]
 
+  const dealModels = [
+    {
+      title: 'Base distribution',
+      eyebrow: 'Fastest path',
+      body: 'A clean account, challenge, funded-account, or trader-month fee. Best when the partner already has reach and wants Shibuya as a resellable intelligence layer.',
+    },
+    {
+      title: 'Partner-subsidized pilot',
+      eyebrow: 'Lower upfront',
+      body: 'Reduced setup economics only when the partner provides usable data, a defined cohort, decision-maker access, and a real distribution commitment.',
+    },
+    {
+      title: 'TVA success share',
+      eyebrow: 'Measured upside',
+      body: 'A 10-25% share of verified annualized value added can sit above the base deal, but only after the baseline, floor, attribution window, and exclusions are agreed.',
+    },
+  ]
+
   return (
     <div className="bg-[#050505] text-white">
       <section className="mx-auto grid min-h-[82vh] max-w-7xl items-center gap-12 px-6 py-28 md:grid-cols-[1.05fr_0.95fr] md:py-36">
@@ -102,6 +120,15 @@ export function PartnersPage() {
             </p>
           </div>
           <div className="grid gap-4">
+            <div className="grid gap-3 md:grid-cols-3">
+              {dealModels.map((model) => (
+                <article key={model.title} className="rounded-[1.25rem] border border-white/10 bg-[#0A0A0B] p-5">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-indigo-300">{model.eyebrow}</p>
+                  <h3 className="mt-3 text-base font-bold text-white">{model.title}</h3>
+                  <p className="mt-3 text-xs leading-relaxed text-neutral-400">{model.body}</p>
+                </article>
+              ))}
+            </div>
             <article className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
               <div className="mb-4 flex items-center gap-3">
                 <BarChart3 className="h-5 w-5 text-emerald-300" />
@@ -112,6 +139,10 @@ export function PartnersPage() {
                 or operating load removed. Shibuya should not claim TVA unless the firm agrees the baseline, eligible cohort,
                 attribution window, and exclusion rules first.
               </p>
+              <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-relaxed text-neutral-300">
+                <strong className="text-white">Contract rule:</strong> partner revenue share pays for distribution.
+                TVA share pays only for verified incremental value above an agreed floor.
+              </div>
             </article>
             <article className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
               <div className="mb-4 flex items-center gap-3">
