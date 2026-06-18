@@ -65,6 +65,14 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
       value: 'Continuity check only',
       body: 'The checksum may prove the same public question reached Reset Pro. It may not prove a live answer, payment, backend upload, or trader-specific conclusion.',
     },
+    {
+      label: 'Engagement receipt',
+      value: typeof origin?.engagementPrivateDemoIntentCount === 'number'
+        ? `${origin.engagementReportViewCount ?? 0} view(s), ${origin.engagementLockedSectionClickCount ?? 0} locked click(s), ${origin.engagementPrivateDemoIntentCount} gate attempt(s)`
+        : 'Not attached',
+      body: origin?.engagementBoundary
+        ?? 'No local engagement receipt was carried. Do not claim the public journey created private evidence.',
+    },
   ]
 
   return (
@@ -184,7 +192,7 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
             <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO PRIVATE GATE CHECKSUM</p>
             <h4 style={{ marginBottom: '0.35rem' }}>The workspace must match the locked-insight route it received.</h4>
             <p className="text-muted" style={{ marginBottom: 0 }}>
-              This is the first post-unlock continuity proof. It confirms route identity and claim boundary only.
+              This is the first post-unlock continuity proof. It confirms route identity, engagement receipt, and claim boundary only.
             </p>
           </div>
         </div>

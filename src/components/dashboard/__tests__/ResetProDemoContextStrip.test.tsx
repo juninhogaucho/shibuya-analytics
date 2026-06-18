@@ -20,6 +20,10 @@ describe('ResetProDemoContextStrip', () => {
             demoLockedSectionId: 'edge-decay-map',
             demoLockedSectionTitle: 'Edge decay map',
             demoPrivateGateChecksum: 'source=locked_insight; report=free-report-123; section=edge-decay-map | archetype=marco; axis=edge_decay | story=guided; scene_count=6; pain_axes=edge_decay; signals=mirror_selected,upload_intent | sample route, not live answer',
+            demoEngagementReportViewCount: 2,
+            demoEngagementLockedSectionClickCount: 1,
+            demoEngagementPrivateDemoIntentCount: 1,
+            demoEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
             demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
           }}
         />
@@ -36,6 +40,9 @@ describe('ResetProDemoContextStrip', () => {
     expect(screen.getByText('Story guided; scenes 6; markers Mirror selected, Evidence intent.')).toBeInTheDocument()
     expect(screen.getByText('Private gate checksum')).toBeInTheDocument()
     expect(screen.getByText(/source=locked_insight; report=free-report-123; section=edge-decay-map/i)).toBeInTheDocument()
+    expect(screen.getByText('Engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
+    expect(screen.getByText(/local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('Claim boundary')).toBeInTheDocument()
     expect(screen.getByText('sample route, not live answer')).toBeInTheDocument()
     expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
@@ -57,8 +64,9 @@ describe('ResetProDemoContextStrip', () => {
 
     expect(screen.getByText('direct_private_demo')).toBeInTheDocument()
     expect(screen.getByText('No report id is attached. Treat this as a cold sample workspace.')).toBeInTheDocument()
-    expect(screen.getByText('not attached')).toBeInTheDocument()
+    expect(screen.getAllByText('not attached').length).toBeGreaterThan(0)
     expect(screen.getByText('No checksum was stored; do not claim a completed locked-insight handoff.')).toBeInTheDocument()
+    expect(screen.getByText('No report engagement receipt was stored; do not claim the public journey created private evidence.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Mission HQ' })).toHaveAttribute('href', '/dashboard?market=india')
     expect(screen.getByRole('link', { name: 'Append Proof' })).toHaveAttribute('href', '/dashboard/upload?market=india')
   })

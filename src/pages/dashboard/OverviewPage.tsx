@@ -115,6 +115,11 @@ export function DashboardOverviewPage() {
         bridgeLiveProof: sessionMeta.demoBridgeLiveProof,
         bridgePreviewShows: sessionMeta.demoBridgePreviewShows,
         privateGateChecksum: sessionMeta.demoPrivateGateChecksum,
+        engagementReportViewCount: sessionMeta.demoEngagementReportViewCount,
+        engagementLockedSectionClickCount: sessionMeta.demoEngagementLockedSectionClickCount,
+        engagementCurrentSectionClickCount: sessionMeta.demoEngagementCurrentSectionClickCount,
+        engagementPrivateDemoIntentCount: sessionMeta.demoEngagementPrivateDemoIntentCount,
+        engagementBoundary: sessionMeta.demoEngagementBoundary,
         unlockReceiptId: sessionMeta.demoUnlockReceiptId,
         unlockBoundary: sessionMeta.demoUnlockBoundary,
       }

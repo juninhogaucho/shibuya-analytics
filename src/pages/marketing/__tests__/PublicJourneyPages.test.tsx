@@ -220,6 +220,10 @@ describe('public Shibuya journey pages', () => {
       demoLockedSectionTitle: 'Breach sequence',
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      demoEngagementReportViewCount: 1,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
     })
   })
 
@@ -713,6 +717,9 @@ describe('public Shibuya journey pages', () => {
       demoLockedSectionTitle: 'Highest-cost state',
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
     })
   })
 })

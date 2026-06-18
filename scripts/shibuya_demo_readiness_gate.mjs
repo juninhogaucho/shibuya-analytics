@@ -60,7 +60,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'private demo gate',
     file: 'src/pages/marketing/PrivateDemoPage.tsx',
-    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private gate engagement receipt', 'Intent survived into the founder gate. It still is not evidence.', 'route continuity only, never trader proof', 'Private gate engagement rule: views, locked clicks, and gate attempts can explain routing intent only.', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Post-unlock destination', 'Append proof close after unlock', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the private code.', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview', 'append_proof_shortcut'],
+    markers: ['Private demo preflight', 'Check the handoff before unlocking the workspace.', 'Public-to-private handoff', 'Locked insight intent', 'Evidence boundary', 'Private gate engagement receipt', 'Intent survived into the founder gate. It still is not evidence.', 'route continuity only, never trader proof', 'Private gate engagement rule: views, locked clicks, and gate attempts can explain routing intent only.', 'engagementReportViewCount', 'engagementPrivateDemoIntentCount', 'Private demo claim script', 'What to say before the code goes in.', 'Do not claim live activation, backend normalization, or account-specific improvement.', 'Claim script rule: unlock can demonstrate workflow readiness only; it cannot prove live outcomes.', 'Post-unlock destination', 'Append proof close after unlock', 'Private demo unlock manifest', 'Unlock manifest rule: a successful code changes access state only.', 'Reset Pro unlock receipt preview', 'The workspace will store this receipt, not the private code.', 'Receipt boundary', 'I acknowledge the private demo boundary.', 'Story handoff:', 'Unlock Reset Pro Preview', 'append_proof_shortcut'],
   },
   {
     label: 'checkout evidence boundary',
@@ -115,17 +115,17 @@ const REQUIRED_SURFACES = [
   {
     label: 'Reset Pro context strip',
     file: 'src/components/dashboard/ResetProDemoContextStrip.tsx',
-    markers: ['RESET PRO DEMO CONTEXT STRIP', 'Keep the public-to-private handoff visible across every workspace surface.', 'Private gate checksum', 'sample route, not live answer', 'Append Proof'],
+    markers: ['RESET PRO DEMO CONTEXT STRIP', 'Keep the public-to-private handoff visible across every workspace surface.', 'Private gate checksum', 'Engagement receipt', 'No report engagement receipt was stored', 'sample route, not live answer', 'Append Proof'],
   },
   {
     label: 'Reset Pro command center',
     file: 'src/lib/resetProDemo.ts',
-    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Private gate checksum:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO LIVING MIRROR', 'Story became the product', 'LiveSignal', 'Next Session Mandate', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
+    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Private gate checksum:', 'Engagement receipt:', 'Engagement boundary:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO LIVING MIRROR', 'Story became the product', 'LiveSignal', 'Next Session Mandate', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
   },
   {
     label: 'Reset Pro operator strip',
     file: 'src/components/dashboard/ResetProDemoCommandCenter.tsx',
-    markers: ['RESET PRO WORKSPACE STATUS SNAPSHOT', 'Mode: sample-only', 'Context carried', 'Next proof required', 'Know what is live, what is carried, and what must be proven next.', 'RESET PRO LIVING MIRROR', 'Public fingerprint:', 'RESET PRO PRIVATE GATE CHECKSUM', 'The workspace must match the locked-insight route it received.', 'Continuity check only', 'RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
+    markers: ['RESET PRO WORKSPACE STATUS SNAPSHOT', 'Mode: sample-only', 'Context carried', 'Next proof required', 'Know what is live, what is carried, and what must be proven next.', 'RESET PRO LIVING MIRROR', 'Public fingerprint:', 'RESET PRO PRIVATE GATE CHECKSUM', 'The workspace must match the locked-insight route it received.', 'engagement receipt', 'Continuity check only', 'RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
   },
   {
     label: 'append-proof exit',

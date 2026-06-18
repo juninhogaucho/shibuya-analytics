@@ -57,6 +57,11 @@ export interface ResetProDemoOrigin {
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
   privateGateChecksum?: string
+  engagementReportViewCount?: number
+  engagementLockedSectionClickCount?: number
+  engagementCurrentSectionClickCount?: number
+  engagementPrivateDemoIntentCount?: number
+  engagementBoundary?: string
   unlockReceiptId?: string
   unlockBoundary?: string
 }
@@ -524,6 +529,9 @@ function buildUnlockReceipt(
     origin?.privateGateChecksum
       ? `Private gate checksum: ${origin.privateGateChecksum}`
       : 'Private gate checksum: not attached',
+    typeof origin?.engagementPrivateDemoIntentCount === 'number'
+      ? `Engagement receipt: ${origin.engagementReportViewCount ?? 0} report view(s), ${origin.engagementLockedSectionClickCount ?? 0} locked click(s), ${origin.engagementPrivateDemoIntentCount} gate attempt(s)`
+      : 'Engagement receipt: not attached',
   ]
 
   return {
@@ -714,6 +722,12 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.privateGateChecksum
       ? `Private gate checksum: ${origin.privateGateChecksum}`
       : 'Private gate checksum: not available',
+    typeof origin.engagementPrivateDemoIntentCount === 'number'
+      ? `Engagement receipt: ${origin.engagementReportViewCount ?? 0} report view(s), ${origin.engagementLockedSectionClickCount ?? 0} locked click(s), ${origin.engagementPrivateDemoIntentCount} gate attempt(s)`
+      : 'Engagement receipt: not available',
+    origin.engagementBoundary
+      ? `Engagement boundary: ${origin.engagementBoundary}`
+      : 'Engagement boundary: not available',
     origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
     origin.bridgeDecisionQuestion ? `Bridge question: ${origin.bridgeDecisionQuestion}` : 'Bridge question: not provided',
   ]

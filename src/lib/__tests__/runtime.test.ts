@@ -68,6 +68,11 @@ describe('shibuya runtime', () => {
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
       demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
+      demoEngagementReportViewCount: 2,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
+      demoEngagementBoundary: 'Report engagement is local route continuity only.',
       demoEntryMode: 'append_proof_shortcut',
     })
 
@@ -91,6 +96,11 @@ describe('shibuya runtime', () => {
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
       demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
+      demoEngagementReportViewCount: 2,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
+      demoEngagementBoundary: 'Report engagement is local route continuity only.',
       demoEntryMode: 'append_proof_shortcut',
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
@@ -140,6 +150,11 @@ describe('shibuya runtime', () => {
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
       demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
+      demoEngagementReportViewCount: 2,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
+      demoEngagementBoundary: 'Report engagement is local route continuity only.',
       demoEntryMode: 'append_proof_shortcut',
     })
     setLiveApiKey('live_123')
@@ -165,6 +180,11 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
     expect(getStoredSessionMeta()?.demoPrivateGateChecksum).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEngagementReportViewCount).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEngagementLockedSectionClickCount).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEngagementCurrentSectionClickCount).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEngagementPrivateDemoIntentCount).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoEngagementBoundary).toBeUndefined()
     expect(getStoredSessionMeta()?.demoEntryMode).toBeUndefined()
   })
 

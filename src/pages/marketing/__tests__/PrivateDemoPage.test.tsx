@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import PrivateDemoPage from '../PrivateDemoPage'
@@ -93,6 +94,9 @@ describe('PrivateDemoPage', () => {
       selectedPainAxisIds: ['drawdown_pressure'],
       visitedSceneCount: 4,
     }))
+    recordPublicReportView('free-report-123')
+    recordLockedSectionIntent('free-report-123', 'highest-cost-state')
+    recordPrivateDemoIntent('free-report-123')
 
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
 
@@ -111,6 +115,11 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/Story handoff: guided/i)).toBeInTheDocument()
     expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Private gate engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText('1 time')).toBeInTheDocument()
+    expect(screen.getByText('1 click')).toBeInTheDocument()
+    expect(screen.getByText('1 gate attempt')).toBeInTheDocument()
+    expect(screen.getByText(/views, locked clicks, and gate attempts can explain routing intent only/i)).toBeInTheDocument()
     expect(screen.getByText('What Reset Pro preview receives after unlock.')).toBeInTheDocument()
     expect(screen.getByText('Source')).toBeInTheDocument()
     expect(screen.getByText('free_report')).toBeInTheDocument()
@@ -157,6 +166,10 @@ describe('PrivateDemoPage', () => {
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
       demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=no-locked-module | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer',
+      demoEngagementReportViewCount: 1,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementCurrentSectionClickCount: 0,
+      demoEngagementPrivateDemoIntentCount: 1,
       demoUnlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
       demoEntryMode: 'mission_hq',

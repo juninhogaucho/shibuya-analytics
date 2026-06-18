@@ -24,6 +24,7 @@ import {
 } from '../../lib/publicReportSession'
 import {
   buildPublicReportEngagementRows,
+  buildPublicReportEngagementSummary,
   getPublicReportEngagement,
 } from '../../lib/publicReportEngagement'
 import {
@@ -127,10 +128,9 @@ export default function PrivateDemoPage() {
     visitedSceneCount: effectiveVisitedSceneCount,
     signalMarkerIds: effectiveSignalMarkerIds,
   })
-  const privateGateEngagementRows = buildPublicReportEngagementRows(
-    getPublicReportEngagement(handoffReport.reportId),
-    handoffSectionId,
-  )
+  const privateGateEngagement = getPublicReportEngagement(handoffReport.reportId)
+  const privateGateEngagementRows = buildPublicReportEngagementRows(privateGateEngagement, handoffSectionId)
+  const privateGateEngagementSummary = buildPublicReportEngagementSummary(privateGateEngagement, handoffSectionId)
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
   const resetProBridge = handoffReport.resetProBridge
@@ -239,6 +239,11 @@ export default function PrivateDemoPage() {
     bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
     bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
     privateGateChecksum,
+    engagementReportViewCount: privateGateEngagementSummary.reportViewCount,
+    engagementLockedSectionClickCount: privateGateEngagementSummary.lockedSectionClickCount,
+    engagementCurrentSectionClickCount: privateGateEngagementSummary.currentSectionClickCount,
+    engagementPrivateDemoIntentCount: privateGateEngagementSummary.privateDemoIntentCount,
+    engagementBoundary: privateGateEngagementSummary.boundary,
     demoEntryMode: postUnlockDestination === 'append_proof' ? 'append_proof_shortcut' : 'mission_hq',
   }
   const unlockReceiptId = buildPrivateDemoUnlockReceiptId(market, privateDemoHandoff)

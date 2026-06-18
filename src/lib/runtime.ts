@@ -54,6 +54,11 @@ export interface ShibuyaSessionMeta {
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
   demoPrivateGateChecksum?: string
+  demoEngagementReportViewCount?: number
+  demoEngagementLockedSectionClickCount?: number
+  demoEngagementCurrentSectionClickCount?: number
+  demoEngagementPrivateDemoIntentCount?: number
+  demoEngagementBoundary?: string
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
   demoEntryMode?: ShibuyaDemoEntryMode
@@ -95,6 +100,11 @@ export interface EnterSampleModeOptions {
   demoBridgeLiveProof?: string[]
   demoBridgePreviewShows?: string[]
   demoPrivateGateChecksum?: string
+  demoEngagementReportViewCount?: number
+  demoEngagementLockedSectionClickCount?: number
+  demoEngagementCurrentSectionClickCount?: number
+  demoEngagementPrivateDemoIntentCount?: number
+  demoEngagementBoundary?: string
   demoUnlockReceiptId?: string
   demoUnlockBoundary?: string
   demoEntryMode?: ShibuyaDemoEntryMode
@@ -260,6 +270,11 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoBridgeLiveProof: options.demoBridgeLiveProof,
       demoBridgePreviewShows: options.demoBridgePreviewShows,
       demoPrivateGateChecksum: options.demoPrivateGateChecksum,
+      demoEngagementReportViewCount: options.demoEngagementReportViewCount,
+      demoEngagementLockedSectionClickCount: options.demoEngagementLockedSectionClickCount,
+      demoEngagementCurrentSectionClickCount: options.demoEngagementCurrentSectionClickCount,
+      demoEngagementPrivateDemoIntentCount: options.demoEngagementPrivateDemoIntentCount,
+      demoEngagementBoundary: options.demoEngagementBoundary,
       demoUnlockReceiptId: options.demoUnlockReceiptId,
       demoUnlockBoundary: options.demoUnlockBoundary,
       demoEntryMode: options.demoEntryMode,
@@ -305,6 +320,11 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoBridgeLiveProof
   delete nextMeta.demoBridgePreviewShows
   delete nextMeta.demoPrivateGateChecksum
+  delete nextMeta.demoEngagementReportViewCount
+  delete nextMeta.demoEngagementLockedSectionClickCount
+  delete nextMeta.demoEngagementCurrentSectionClickCount
+  delete nextMeta.demoEngagementPrivateDemoIntentCount
+  delete nextMeta.demoEngagementBoundary
   delete nextMeta.demoUnlockReceiptId
   delete nextMeta.demoUnlockBoundary
   delete nextMeta.demoEntryMode

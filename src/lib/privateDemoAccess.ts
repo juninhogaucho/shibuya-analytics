@@ -43,6 +43,11 @@ export interface PrivateResetProDemoHandoff {
   bridgeLiveProof?: string[]
   bridgePreviewShows?: string[]
   privateGateChecksum?: string
+  engagementReportViewCount?: number
+  engagementLockedSectionClickCount?: number
+  engagementCurrentSectionClickCount?: number
+  engagementPrivateDemoIntentCount?: number
+  engagementBoundary?: string
   demoEntryMode?: ShibuyaDemoEntryMode
 }
 
@@ -115,6 +120,11 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoBridgeLiveProof: handoff.bridgeLiveProof,
     demoBridgePreviewShows: handoff.bridgePreviewShows,
     demoPrivateGateChecksum: handoff.privateGateChecksum,
+    demoEngagementReportViewCount: handoff.engagementReportViewCount,
+    demoEngagementLockedSectionClickCount: handoff.engagementLockedSectionClickCount,
+    demoEngagementCurrentSectionClickCount: handoff.engagementCurrentSectionClickCount,
+    demoEngagementPrivateDemoIntentCount: handoff.engagementPrivateDemoIntentCount,
+    demoEngagementBoundary: handoff.engagementBoundary,
     demoUnlockReceiptId,
     demoUnlockBoundary: PRIVATE_DEMO_UNLOCK_BOUNDARY,
     demoEntryMode: handoff.demoEntryMode,

@@ -37,6 +37,14 @@ export function ResetProDemoContextStrip({ sessionMeta }: ResetProDemoContextStr
         : 'No checksum was stored; do not claim a completed locked-insight handoff.',
     },
     {
+      label: 'Engagement receipt',
+      value: typeof sessionMeta.demoEngagementPrivateDemoIntentCount === 'number'
+        ? `${sessionMeta.demoEngagementReportViewCount ?? 0} view(s), ${sessionMeta.demoEngagementLockedSectionClickCount ?? 0} locked click(s), ${sessionMeta.demoEngagementPrivateDemoIntentCount} gate attempt(s)`
+        : 'not attached',
+      body: sessionMeta.demoEngagementBoundary
+        ?? 'No report engagement receipt was stored; do not claim the public journey created private evidence.',
+    },
+    {
       label: 'Claim boundary',
       value: 'sample route, not live answer',
       body: sessionMeta.demoUnlockBoundary

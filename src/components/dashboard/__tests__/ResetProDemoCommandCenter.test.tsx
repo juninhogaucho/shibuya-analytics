@@ -31,8 +31,10 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Know what is live, what is carried, and what must be proven next.')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
     expect(screen.getByText('The workspace must match the locked-insight route it received.')).toBeInTheDocument()
-    expect(screen.getByText('Not attached')).toBeInTheDocument()
+    expect(screen.getAllByText('Not attached').length).toBeGreaterThan(0)
     expect(screen.getByText(/No locked-insight checksum was stored/i)).toBeInTheDocument()
+    expect(screen.getByText('Engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText(/No local engagement receipt was carried/i)).toBeInTheDocument()
     expect(screen.getByText('Mode: sample-only')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro preview workspace')).toBeInTheDocument()
     expect(screen.getByText('Context carried')).toBeInTheDocument()
@@ -148,6 +150,11 @@ describe('ResetProDemoCommandCenter', () => {
               'How a prop-style drawdown warning becomes a pre-session operating constraint.',
             ],
             privateGateChecksum: 'source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer',
+            engagementReportViewCount: 2,
+            engagementLockedSectionClickCount: 1,
+            engagementCurrentSectionClickCount: 1,
+            engagementPrivateDemoIntentCount: 1,
+            engagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
             unlockReceiptId: 'reset-pro-demo:india:free-report:free-report-123:priya:drawdown-pressure:highest-cost-state',
             unlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
           }}
@@ -165,6 +172,8 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
     expect(screen.getByText('Attached after founder unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/source=free_report; report=free-report-123; section=highest-cost-state/i).length).toBeGreaterThan(0)
+    expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
+    expect(screen.getAllByText(/Report engagement is local route continuity only/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Continuity check only')).toBeInTheDocument()
     expect(screen.getByText(/It may not prove a live answer, payment, backend upload/i)).toBeInTheDocument()
     expect(screen.getByText('Context carried')).toBeInTheDocument()
@@ -197,6 +206,8 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('Story scenes before upload: 4')).toBeInTheDocument()
     expect(screen.getByText('Public pain axes: Drawdown Pressure')).toBeInTheDocument()
     expect(screen.getAllByText('Private gate checksum: source=free_report; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=mirror_selected,upload_intent | sample route, not live answer').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Engagement receipt: 2 report view(s), 1 locked click(s), 1 gate attempt(s)').length).toBeGreaterThan(0)
+    expect(screen.getByText('Engagement boundary: Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getByText('Requested private insight: Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO BRIDGE RECEIVED')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro should decide whether pressure changes the account before the breach.')).toBeInTheDocument()

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import {
   PUBLIC_REPORT_ENGAGEMENT_STORAGE_KEY,
   buildPublicReportEngagementRows,
+  buildPublicReportEngagementSummary,
   getPublicReportEngagement,
   recordLockedSectionIntent,
   recordPrivateDemoIntent,
@@ -52,6 +53,12 @@ describe('public report engagement', () => {
         }),
       ]),
     )
+    expect(buildPublicReportEngagementSummary(engagement, 'edge-decay-map')).toMatchObject({
+      reportViewCount: 1,
+      lockedSectionClickCount: 0,
+      currentSectionClickCount: 0,
+      privateDemoIntentCount: 1,
+      boundary: expect.stringContaining('local route continuity only'),
+    })
   })
 })
-

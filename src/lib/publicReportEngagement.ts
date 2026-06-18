@@ -23,6 +23,17 @@ export interface PublicReportEngagementRow {
   body: string
 }
 
+export interface PublicReportEngagementSummary {
+  reportViewCount: number
+  lockedSectionClickCount: number
+  currentSectionClickCount: number
+  privateDemoIntentCount: number
+  boundary: string
+}
+
+export const PUBLIC_REPORT_ENGAGEMENT_SUMMARY_BOUNDARY =
+  'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.'
+
 function nowIso(): string {
   return new Date().toISOString()
 }
@@ -155,4 +166,22 @@ export function buildPublicReportEngagementRows(
       body: 'Private demo intent can route the founder-gated sample workspace. It cannot prove payment, upload, generated artifacts, or account improvement. No raw trade rows are stored by this ledger.',
     },
   ]
+}
+
+export function buildPublicReportEngagementSummary(
+  engagement: PublicReportEngagement | null,
+  currentSectionId?: string | null,
+): PublicReportEngagementSummary {
+  const lockedClicks = engagement?.lockedSectionClicks ?? []
+  const currentSectionClicks = currentSectionId
+    ? lockedClicks.filter((click) => click.sectionId === currentSectionId)
+    : []
+
+  return {
+    reportViewCount: engagement?.viewCount ?? 0,
+    lockedSectionClickCount: lockedClicks.length,
+    currentSectionClickCount: currentSectionClicks.length,
+    privateDemoIntentCount: engagement?.privateDemoIntentCount ?? 0,
+    boundary: PUBLIC_REPORT_ENGAGEMENT_SUMMARY_BOUNDARY,
+  }
 }
