@@ -139,6 +139,24 @@ export function DashboardOverviewPage() {
         bridgeLiveProof: sessionMeta.activationBridgeLiveProof,
       }
     : undefined
+  const liveFirstUploadContractRows = liveActivationOrigin
+    ? [
+        {
+          label: 'Activation preserved',
+          body: liveActivationOrigin.bridgeDecisionQuestion
+            ? `The live workspace opens with: ${liveActivationOrigin.bridgeDecisionQuestion}`
+            : 'The live workspace opens with the public report and locked module context attached.',
+        },
+        {
+          label: 'First upload must create',
+          body: 'Normalized trade packet, generated workspace artifacts, and first account-specific mandate.',
+        },
+        {
+          label: 'Append must prove',
+          body: 'Repeat upload history must confirm improvement, relapse, or an unchanged private question before progress is claimed.',
+        },
+      ]
+    : []
 
   useEffect(() => {
     async function fetchData() {
@@ -241,6 +259,25 @@ export function DashboardOverviewPage() {
                 </p>
               </article>
             </div>
+            <article
+              className="glass-panel"
+              style={{
+                background: 'rgba(14,165,233,0.07)',
+                borderColor: 'rgba(14,165,233,0.2)',
+                marginTop: '1rem',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE FIRST UPLOAD CONTRACT</p>
+              <h4 style={{ marginBottom: '0.75rem' }}>Activation preserved the question. Upload must create the evidence.</h4>
+              <div className="grid-responsive three">
+                {liveFirstUploadContractRows.map((row) => (
+                  <div key={row.label}>
+                    <p style={{ marginBottom: '0.35rem', fontWeight: 700 }}>{row.label}</p>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
             {liveActivationOrigin.bridgeDecisionQuestion ? (
               <article
                 className="glass-panel"
@@ -568,6 +605,25 @@ export function DashboardOverviewPage() {
               </p>
             </article>
           </div>
+          <article
+            className="glass-panel"
+            style={{
+              background: 'rgba(14,165,233,0.07)',
+              borderColor: 'rgba(14,165,233,0.2)',
+              marginTop: '1rem',
+            }}
+          >
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE FIRST UPLOAD CONTRACT</p>
+            <h4 style={{ marginBottom: '0.75rem' }}>Activation preserved the question. Upload must create the evidence.</h4>
+            <div className="grid-responsive three">
+              {liveFirstUploadContractRows.map((row) => (
+                <div key={row.label}>
+                  <p style={{ marginBottom: '0.35rem', fontWeight: 700 }}>{row.label}</p>
+                  <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+                </div>
+              ))}
+            </div>
+          </article>
           {liveActivationOrigin.bridgeDecisionQuestion ? (
             <article
               className="glass-panel"

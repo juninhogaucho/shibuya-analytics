@@ -90,7 +90,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'live workspace activation origin',
     file: 'src/pages/dashboard/OverviewPage.tsx',
-    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'No local story packet attached', 'First screen after unlock is the Reset Pro command center'],
+    markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'No local story packet attached', 'LIVE FIRST UPLOAD CONTRACT', 'First upload must create', 'Append must prove', 'First screen after unlock is the Reset Pro command center'],
   },
   {
     label: 'Reset Pro command center',
