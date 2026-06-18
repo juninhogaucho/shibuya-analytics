@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { buildPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { ActivationPage } from '../ActivationPage'
 
@@ -44,6 +45,16 @@ describe('ActivationPage', () => {
       caseStatus: 'awaiting_upload',
       passwordRequired: false,
     })
+    persistPublicReportSession(buildPublicReportSession({
+      reportId: 'sample-free-report',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'sample',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 6,
+    }))
 
     render(
       <MemoryRouter
@@ -82,6 +93,9 @@ describe('ActivationPage', () => {
       activationReportId: 'sample-free-report',
       activationArchetypeId: 'marco',
       activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
     })
@@ -90,6 +104,8 @@ describe('ActivationPage', () => {
         metadata: expect.objectContaining({
           activationSource: 'locked_insight',
           activationReportId: 'sample-free-report',
+          activationStorySource: 'guided',
+          activationVisitedSceneCount: 6,
           activationLockedSectionId: 'highest-cost-state',
         }),
       }),

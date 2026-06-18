@@ -4,6 +4,7 @@ import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { verifyActivation } from '../../lib/api/auth'
 import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
+import { getPublicReportSession } from '../../lib/publicReportSession'
 import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 import { buildFreeReportPreview, findLockedReportSectionBySlug } from '../../lib/storyExperience'
@@ -19,6 +20,7 @@ export function ActivationPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const checkoutIntent = readCheckoutIntent(location.search)
+  const activationReportSession = getPublicReportSession(checkoutIntent?.reportId)
   const activationReport = checkoutIntent
     ? buildFreeReportPreview({
         reportId: checkoutIntent.reportId ?? 'activation-origin',
@@ -56,6 +58,9 @@ export function ActivationPage() {
           activationReportId: checkoutIntent?.reportId,
           activationArchetypeId: checkoutIntent?.archetypeId,
           activationAxisId: checkoutIntent?.axisId,
+          activationStorySource: activationReportSession?.storySource,
+          activationSelectedPainAxisIds: activationReportSession?.selectedPainAxisIds,
+          activationVisitedSceneCount: activationReportSession?.visitedSceneCount,
           activationLockedSectionId: checkoutIntent?.lockedSectionId,
           activationLockedSectionTitle: activationLockedSection?.title,
         })
@@ -69,6 +74,8 @@ export function ActivationPage() {
             passwordRequired: response.passwordRequired ?? false,
             activationSource: checkoutIntent?.source,
             activationReportId: checkoutIntent?.reportId,
+            activationStorySource: activationReportSession?.storySource,
+            activationVisitedSceneCount: activationReportSession?.visitedSceneCount,
             activationLockedSectionId: checkoutIntent?.lockedSectionId,
           },
         }).catch(() => undefined)

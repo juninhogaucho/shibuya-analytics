@@ -127,6 +127,9 @@ describe('DashboardOverviewPage', () => {
         activationReportId: 'sample-free-report',
         activationArchetypeId: 'marco',
         activationAxisId: 'edge_decay',
+        activationStorySource: 'guided',
+        activationSelectedPainAxisIds: ['edge_decay'],
+        activationVisitedSceneCount: 6,
         activationLockedSectionId: 'highest-cost-state',
         activationLockedSectionTitle: 'Highest-cost state',
       }),
@@ -144,6 +147,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Highest-cost state')).toBeInTheDocument()
     expect(screen.getByText('sample-free-report')).toBeInTheDocument()
     expect(screen.getByText(/Marco: Profitable refiner - Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText('Story handoff')).toBeInTheDocument()
+    expect(screen.getByText(/guided; scenes 6; axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 })

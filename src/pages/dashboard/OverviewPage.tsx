@@ -212,6 +212,9 @@ export function DashboardOverviewPage() {
           ? `${getTraderArchetype(sessionMeta.activationArchetypeId).name}: ${getTraderArchetype(sessionMeta.activationArchetypeId).title}`
           : undefined,
         axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
+        storySource: sessionMeta.activationStorySource,
+        selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
+        visitedSceneCount: sessionMeta.activationVisitedSceneCount,
         lockedSectionTitle: sessionMeta.activationLockedSectionTitle,
         lockedSectionId: sessionMeta.activationLockedSectionId,
       }
@@ -457,6 +460,14 @@ export function DashboardOverviewPage() {
               <h4 style={{ marginBottom: '0.5rem' }}>Public signal</h4>
               <p className="text-muted" style={{ marginBottom: 0 }}>
                 {[liveActivationOrigin.archetypeLabel, liveActivationOrigin.axisLabel].filter(Boolean).join(' - ') || 'Not provided'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Story handoff</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.storySource
+                  ? `${liveActivationOrigin.storySource}; scenes ${liveActivationOrigin.visitedSceneCount ?? 0}; axes ${liveActivationOrigin.selectedPainAxisLabels?.join(', ') || 'none captured'}`
+                  : 'No local story packet attached'}
               </p>
             </article>
           </div>
