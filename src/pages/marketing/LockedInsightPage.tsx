@@ -175,6 +175,31 @@ export default function LockedInsightPage() {
       body: 'End on append proof. The question stays unresolved until live activation, real upload, generated artifacts, and repeat append history exist.',
     },
   ]
+  const storyContextChecksum = publicStoryHandoffForLinks
+    ? `story=${publicStoryHandoffForLinks.storySource}; scene_count=${publicStoryHandoffForLinks.visitedSceneCount}; pain_axes=${publicStoryHandoffForLinks.selectedPainAxisIds.join(',') || 'none'}; signals=${publicStoryHandoffForLinks.signalMarkerIds.join(',') || 'none'}`
+    : 'story context not attached'
+  const privateGateChecksumRows = [
+    {
+      label: 'Route identity',
+      value: `source=locked_insight; report=${report.reportId}; section=${sectionSlug}`,
+      body: 'The private gate should open from this locked module, not from a generic dashboard shortcut.',
+    },
+    {
+      label: 'Trader question',
+      value: `archetype=${report.archetype.id}; axis=${report.dominantAxis.id}`,
+      body: report.resetProBridge.decisionQuestion,
+    },
+    {
+      label: 'Story evidence context',
+      value: storyContextChecksum,
+      body: reportSession?.validationSummary ?? 'URL context can preserve the question, but it is weaker than a local upload/sample packet.',
+    },
+    {
+      label: 'Claim boundary',
+      value: 'sample route, not live answer',
+      body: 'Founder-gated Reset Pro can carry this context into sample workflow only; live activation and upload proof must still answer the question.',
+    },
+  ] as const
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
@@ -341,6 +366,35 @@ export default function LockedInsightPage() {
             </div>
             <p className="rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-emerald-50/65">
               {reportSession?.boundary ?? 'Use the upload page to generate a stronger public report packet before presenting the report-to-private-insight transition.'}
+            </p>
+          </article>
+
+          <article className="rounded-[2rem] border border-fuchsia-300/20 bg-fuchsia-300/[0.055] p-5 md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-fuchsia-200">
+                  Private gate handoff checksum
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                  Verify the route before opening Reset Pro.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-fuchsia-50/75">
+                  This checksum is the last public proof that the same locked question is about to enter the founder gate.
+                  It lists context only; it does not upgrade the sample route into live proof.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {privateGateChecksumRows.map((row) => (
+                  <div key={row.label} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fuchsia-100">{row.label}</p>
+                    <p className="mt-2 break-words text-xs font-semibold text-white">{row.value}</p>
+                    <p className="mt-2 text-sm leading-6 text-fuchsia-50/70">{row.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-fuchsia-50/60">
+              Checksum rule: the founder gate may preserve route identity, story context, evidence status, and the private question; it may not preserve a private conclusion.
             </p>
           </article>
 

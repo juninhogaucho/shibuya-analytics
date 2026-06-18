@@ -146,7 +146,7 @@ describe('paid Shibuya journey contract', () => {
     await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Demo packet accepted/i).length).toBeGreaterThan(0)
 
     await user.click(screen.getByRole('link', { name: /Unlock with Reset Pro/i }))
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()

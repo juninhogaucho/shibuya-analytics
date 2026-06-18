@@ -138,6 +138,17 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/the locked insight is a proof contract, not a private conclusion/i)).toBeInTheDocument()
     expect(screen.getByText('Requested locked module')).toBeInTheDocument()
     expect(screen.getAllByText('Breach sequence').length).toBeGreaterThan(0)
+    expect(screen.getByText('Private gate handoff checksum')).toBeInTheDocument()
+    expect(screen.getByText('Verify the route before opening Reset Pro.')).toBeInTheDocument()
+    expect(screen.getByText('Route identity')).toBeInTheDocument()
+    expect(screen.getByText('source=locked_insight; report=sample-behavioral-leak-report; section=breach-sequence')).toBeInTheDocument()
+    expect(screen.getByText('Trader question')).toBeInTheDocument()
+    expect(screen.getByText('archetype=priya; axis=drawdown_pressure')).toBeInTheDocument()
+    expect(screen.getByText('Story evidence context')).toBeInTheDocument()
+    expect(screen.getByText('story=guided; scene_count=1; pain_axes=drawdown_pressure; signals=mirror_selected,pain_axis_selected,upload_intent')).toBeInTheDocument()
+    expect(screen.getByText('Claim boundary')).toBeInTheDocument()
+    expect(screen.getByText('sample route, not live answer')).toBeInTheDocument()
+    expect(screen.getByText(/the founder gate may preserve route identity/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Continue To Private Demo Gate/i }))
 
@@ -508,6 +519,12 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
     expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
     expect(screen.getByText('Carry this locked question into Reset Pro.')).toBeInTheDocument()
+    expect(screen.getByText('Private gate handoff checksum')).toBeInTheDocument()
+    expect(screen.getByText('Verify the route before opening Reset Pro.')).toBeInTheDocument()
+    expect(screen.getByText('source=locked_insight; report=sample-free-report; section=highest-cost-state')).toBeInTheDocument()
+    expect(screen.getByText('archetype=marco; axis=edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('story context not attached')).toBeInTheDocument()
+    expect(screen.getByText('sample route, not live answer')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet to carry/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro decision-room handoff')).toBeInTheDocument()
     expect(screen.getByText('Turn the locked question into a demo route, not a claim.')).toBeInTheDocument()
@@ -549,6 +566,8 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Reset Pro decision-room handoff')).toBeInTheDocument()
     expect(screen.getByText(/Turn the locked question into a demo route, not a claim/i)).toBeInTheDocument()
     expect(screen.getByText(/only live data can answer the carried private question/i)).toBeInTheDocument()
+    expect(screen.getByText('Private gate handoff checksum')).toBeInTheDocument()
+    expect(screen.getByText('story=guided; scene_count=6; pain_axes=edge_decay; signals=none')).toBeInTheDocument()
     expect(screen.getByText(/URL story context only: guided; scenes 6; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText(/No local upload-step validation packet was found/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
@@ -575,7 +594,7 @@ describe('public Shibuya journey pages', () => {
     )
 
     expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
-    expect(screen.getByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.')).toBeInTheDocument()
+    expect(screen.getAllByText('Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.').length).toBeGreaterThan(0)
     expect(screen.getByText(/sample demo artifact/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
       'href',
@@ -606,7 +625,7 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Demo packet accepted/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Origin report')).toBeInTheDocument()
     expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
     expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
