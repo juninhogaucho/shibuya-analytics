@@ -72,6 +72,11 @@ const REQUIRED_SURFACES = [
     file: 'src/lib/resetProDemo.ts',
     markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:'],
   },
+  {
+    label: 'append-proof exit',
+    file: 'src/pages/dashboard/AppendTradesPage.tsx',
+    markers: ['RESET PRO PROOF EXIT', 'This is the demo endpoint, not live evidence.', 'This is where the live proof loop starts.', 'Sample mode does not persist uploads'],
+  },
 ]
 
 function readEnvFile(fileName) {
@@ -164,7 +169,7 @@ if (!apiBase) {
 }
 
 console.log('Shibuya demo readiness gate')
-console.log('Mode: public story -> upload/report -> locked insight -> checkout/activation -> private Reset Pro sample demo')
+console.log('Mode: public story -> upload/report -> locked insight -> checkout/activation -> private Reset Pro sample demo -> append-proof exit')
 console.log('')
 
 for (const check of checks) {
