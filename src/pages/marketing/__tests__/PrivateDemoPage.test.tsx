@@ -67,13 +67,13 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
     expect(screen.getAllByText('Mission HQ first').length).toBeGreaterThan(0)
     expect(screen.getByText('Stored after unlock')).toBeInTheDocument()
-    expect(screen.getByText('nothing; cold private-demo unlock is blocked')).toBeInTheDocument()
-    expect(screen.getByText(/The private workspace should not open without public story\/report context/i)).toBeInTheDocument()
+    expect(screen.getByText('nothing; report-only and cold private-demo unlocks are blocked')).toBeInTheDocument()
+    expect(screen.getByText(/The private workspace should not open without locked private-insight context/i)).toBeInTheDocument()
     expect(screen.getByText('Not stored or proven')).toBeInTheDocument()
     expect(screen.getByText('raw visitor trades, payment proof, live backend artifacts, account-specific conclusions')).toBeInTheDocument()
     expect(screen.getByText('First screen after unlock')).toBeInTheDocument()
     expect(screen.getByText('Mission HQ with the Reset Pro operator strip')).toBeInTheDocument()
-    expect(screen.getByText(/a successful code changes access state only/i)).toBeInTheDocument()
+    expect(screen.getByText(/a successful code changes access state only after locked insight context exists/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
     expect(screen.getByText('The workspace will store this receipt, not the private code.')).toBeInTheDocument()
     expect(screen.getByText('Receipt id')).toBeInTheDocument()
@@ -84,7 +84,7 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Open the private demo from StoryExperience, upload\/report, locked insight, or the IFX demo launcher/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
   })
@@ -102,7 +102,7 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Open the private demo from StoryExperience, upload\/report, locked insight, or the IFX demo launcher/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
@@ -124,7 +124,7 @@ describe('PrivateDemoPage', () => {
     recordLockedSectionIntent('free-report-123', 'highest-cost-state')
     recordPrivateDemoIntent('free-report-123')
 
-    renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=priya&axis=drawdown_pressure&section=highest-cost-state&market=global')
 
     expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getByText('Private demo preflight')).toBeInTheDocument()
@@ -132,7 +132,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Do not claim live activation, backend normalization, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(1)
     expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
-    expect(screen.getByText('Public handoff attached')).toBeInTheDocument()
+    expect(screen.getByText('Locked insight handoff attached')).toBeInTheDocument()
     expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
@@ -149,7 +149,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText(/views, locked clicks, and gate attempts can explain routing intent only/i)).toBeInTheDocument()
     expect(screen.getByText('What Reset Pro preview receives after unlock.')).toBeInTheDocument()
     expect(screen.getByText('Source')).toBeInTheDocument()
-    expect(screen.getByText('free_report')).toBeInTheDocument()
+    expect(screen.getAllByText('locked_insight').length).toBeGreaterThan(0)
     expect(screen.getByText('Report')).toBeInTheDocument()
     expect(screen.getAllByText('free-report-123').length).toBeGreaterThan(0)
     expect(screen.getByText('Market')).toBeInTheDocument()
@@ -162,14 +162,14 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Evidence packet')).toBeInTheDocument()
     expect(screen.getByText('Bridge question')).toBeInTheDocument()
     expect(screen.getByText('Private gate checksum')).toBeInTheDocument()
-    expect(screen.getByText('source=free_report; report=free-report-123; section=no-locked-module | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer')).toBeInTheDocument()
+    expect(screen.getByText('source=locked_insight; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer')).toBeInTheDocument()
     expect(screen.getAllByText(/Does the trader become a different operator near the drawdown line/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo routing context/i).length).toBeGreaterThan(0)
     expect(screen.getByText('Private demo unlock manifest')).toBeInTheDocument()
     expect(screen.getByText('sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum')).toBeInTheDocument()
     expect(screen.getByText('The private demo stays a controlled sample workspace even when the URL carries report context.')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro unlock receipt preview')).toBeInTheDocument()
-    expect(screen.getByText('reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module')).toBeInTheDocument()
+    expect(screen.getByText('reset-pro-demo:global:locked-insight:free-report-123:priya:drawdown-pressure:highest-cost-state')).toBeInTheDocument()
     await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -180,7 +180,7 @@ describe('PrivateDemoPage', () => {
       market: 'global',
       samplePreview: 'reset_pro',
       caseStatus: 'sample_preview',
-      demoSource: 'free_report',
+      demoSource: 'locked_insight',
       demoReportId: 'free-report-123',
       demoArchetypeId: 'priya',
       demoAxisId: 'drawdown_pressure',
@@ -192,12 +192,14 @@ describe('PrivateDemoPage', () => {
       demoVisitedSceneCount: 4,
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
-      demoPrivateGateChecksum: 'source=free_report; report=free-report-123; section=no-locked-module | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer',
+      demoLockedSectionId: 'highest-cost-state',
+      demoLockedSectionTitle: 'Highest-cost state',
+      demoPrivateGateChecksum: 'source=locked_insight; report=free-report-123; section=highest-cost-state | archetype=priya; axis=drawdown_pressure | story=guided; scene_count=4; pain_axes=drawdown_pressure; signals=none | sample route, not live answer',
       demoEngagementReportViewCount: 1,
       demoEngagementLockedSectionClickCount: 1,
-      demoEngagementCurrentSectionClickCount: 0,
+      demoEngagementCurrentSectionClickCount: 1,
       demoEngagementPrivateDemoIntentCount: 1,
-      demoUnlockReceiptId: 'reset-pro-demo:global:free-report:free-report-123:priya:drawdown-pressure:no-locked-module',
+      demoUnlockReceiptId: 'reset-pro-demo:global:locked-insight:free-report-123:priya:drawdown-pressure:highest-cost-state',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
       demoEntryMode: 'mission_hq',
     })
@@ -253,11 +255,14 @@ describe('PrivateDemoPage', () => {
     })
   })
 
-  test('keeps direct private-demo report links visibly weaker than upload handoffs', () => {
+  test('blocks direct report-only private-demo links before sample unlock', async () => {
+    const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
 
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=6&pain_axes=drawdown_pressure&market=global')
 
+    expect(screen.getByText('Blocked: open locked insight first')).toBeInTheDocument()
+    expect(screen.getByText(/Report-only private demo unlocks are disabled/i)).toBeInTheDocument()
     expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText('URL context only')).toBeInTheDocument()
@@ -267,6 +272,15 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
+    expect(screen.getByText('nothing; report-only and cold private-demo unlocks are blocked')).toBeInTheDocument()
+
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByText(/Open a locked private insight before the private demo/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
 
   test('carries URL-only story context into sample metadata without upload evidence', async () => {

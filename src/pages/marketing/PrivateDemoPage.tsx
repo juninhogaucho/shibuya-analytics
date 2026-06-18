@@ -89,7 +89,8 @@ export default function PrivateDemoPage() {
   )
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
-  const routeIntegrityReady = hasReportHandoff
+  const hasLockedInsightHandoff = handoffSource === 'locked_insight' && Boolean(handoffReportId) && Boolean(handoffSectionId)
+  const routeIntegrityReady = hasLockedInsightHandoff
   const storedReportSession = getPublicReportSession(handoffReportId)
   const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
@@ -150,17 +151,25 @@ export default function PrivateDemoPage() {
     },
     {
       label: 'Route integrity',
-      value: routeIntegrityReady ? 'Public handoff attached' : 'Blocked: start from story/report',
+      value: routeIntegrityReady
+        ? 'Locked insight handoff attached'
+        : hasReportHandoff
+          ? 'Blocked: open locked insight first'
+          : 'Blocked: start from story/report',
       body: routeIntegrityReady
-        ? 'The founder gate can open because this URL carries report, locked insight, or launcher sample context.'
-        : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
+        ? 'The founder gate can open because this URL carries a report, locked private insight, and selected private module.'
+        : hasReportHandoff
+          ? 'Report-only private demo unlocks are disabled. Open a locked private insight first so Reset Pro receives the exact question it is allowed to preview.'
+          : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
     },
     {
       label: 'Locked question',
       value: lockedSection?.title ?? handoffSectionId ?? 'No locked module attached',
-      body: hasReportHandoff
+      body: hasLockedInsightHandoff
         ? resetProBridge.decisionQuestion
-        : 'No public report question is attached, so the operator must frame this as a generic sample preview.',
+        : hasReportHandoff
+          ? 'A report is attached, but the private demo stays blocked until a locked insight module carries the question.'
+          : 'No public report question is attached, so the operator must frame this as a generic sample preview.',
     },
     {
       label: 'Access gate',
@@ -207,12 +216,12 @@ export default function PrivateDemoPage() {
   const unlockManifestRows = [
     {
       label: 'Stored after unlock',
-      value: hasReportHandoff
+      value: routeIntegrityReady
         ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum'
-        : 'nothing; cold private-demo unlock is blocked',
-      body: hasReportHandoff
+        : 'nothing; report-only and cold private-demo unlocks are blocked',
+      body: routeIntegrityReady
         ? 'These values seed the Reset Pro preview so the command center can open with the right context.'
-        : 'The private workspace should not open without public story/report context because there is no carried question to test.',
+        : 'The private workspace should not open without locked private-insight context because there is no selected private question to test.',
     },
     {
       label: 'Not stored or proven',
@@ -230,24 +239,24 @@ export default function PrivateDemoPage() {
     },
   ]
   const privateDemoHandoff: PrivateResetProDemoHandoff = {
-    source: hasReportHandoff ? handoffSource : undefined,
-    reportId: handoffReportId,
-    archetypeId: hasReportHandoff ? handoffArchetype.id : undefined,
-    axisId: hasReportHandoff ? handoffAxis.id : undefined,
-    reportSource: reportSession?.source ?? (hasReportHandoff ? 'direct_link' : undefined),
-    evidenceLabel: reportSession?.evidenceLabel,
-    validationSummary: reportSession?.validationSummary,
-    storySource: effectiveStorySource,
-    selectedPainAxisIds: effectiveSelectedPainAxisIds,
-    visitedSceneCount: effectiveVisitedSceneCount,
-    signalMarkerIds: handoffReport.storyHandoff.signalMarkers.map((marker) => marker.id),
-    lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
-    lockedSectionTitle: lockedSection?.title,
-    bridgeHeadline: hasReportHandoff ? resetProBridge.headline : undefined,
-    bridgeDecisionQuestion: hasReportHandoff ? resetProBridge.decisionQuestion : undefined,
-    bridgeWhyNow: hasReportHandoff ? resetProBridge.whyNow : undefined,
-    bridgeLiveProof: hasReportHandoff ? resetProBridge.liveWorkspaceMustProve : undefined,
-    bridgePreviewShows: hasReportHandoff ? resetProBridge.privatePreviewShows : undefined,
+    source: routeIntegrityReady ? handoffSource : undefined,
+    reportId: routeIntegrityReady ? handoffReportId : undefined,
+    archetypeId: routeIntegrityReady ? handoffArchetype.id : undefined,
+    axisId: routeIntegrityReady ? handoffAxis.id : undefined,
+    reportSource: routeIntegrityReady ? reportSession?.source ?? 'direct_link' : undefined,
+    evidenceLabel: routeIntegrityReady ? reportSession?.evidenceLabel : undefined,
+    validationSummary: routeIntegrityReady ? reportSession?.validationSummary : undefined,
+    storySource: routeIntegrityReady ? effectiveStorySource : undefined,
+    selectedPainAxisIds: routeIntegrityReady ? effectiveSelectedPainAxisIds : undefined,
+    visitedSceneCount: routeIntegrityReady ? effectiveVisitedSceneCount : undefined,
+    signalMarkerIds: routeIntegrityReady ? handoffReport.storyHandoff.signalMarkers.map((marker) => marker.id) : undefined,
+    lockedSectionId: routeIntegrityReady ? lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId : undefined,
+    lockedSectionTitle: routeIntegrityReady ? lockedSection?.title : undefined,
+    bridgeHeadline: routeIntegrityReady ? resetProBridge.headline : undefined,
+    bridgeDecisionQuestion: routeIntegrityReady ? resetProBridge.decisionQuestion : undefined,
+    bridgeWhyNow: routeIntegrityReady ? resetProBridge.whyNow : undefined,
+    bridgeLiveProof: routeIntegrityReady ? resetProBridge.liveWorkspaceMustProve : undefined,
+    bridgePreviewShows: routeIntegrityReady ? resetProBridge.privatePreviewShows : undefined,
     privateGateChecksum,
     engagementReportViewCount: privateGateEngagementSummary.reportViewCount,
     engagementLockedSectionClickCount: privateGateEngagementSummary.lockedSectionClickCount,
@@ -262,7 +271,7 @@ export default function PrivateDemoPage() {
     event.preventDefault()
 
     if (!routeIntegrityReady) {
-      setError('Open the private demo from StoryExperience, upload/report, locked insight, or the IFX demo launcher so the workspace receives a carried question.')
+      setError('Open a locked private insight before the private demo so Reset Pro receives a selected private question.')
       return
     }
 
@@ -555,7 +564,7 @@ export default function PrivateDemoPage() {
               ))}
             </div>
             <p className="mt-4 text-xs leading-5 text-cyan-50/60">
-              Unlock manifest rule: a successful code changes access state only. It does not convert demo context into live proof.
+              Unlock manifest rule: a successful code changes access state only after locked insight context exists. It does not convert demo context into live proof.
             </p>
           </div>
 
