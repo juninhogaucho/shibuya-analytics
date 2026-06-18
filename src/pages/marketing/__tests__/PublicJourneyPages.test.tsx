@@ -46,6 +46,12 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('axis=drawdown_pressure')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
+    expect(screen.getByText('Story handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Guided StoryExperience route')).toBeInTheDocument()
+    expect(screen.getByText('Selected public pain')).toBeInTheDocument()
+    expect(screen.getAllByText('Drawdown Pressure').length).toBeGreaterThan(0)
+    expect(screen.getByText('Current upload hypothesis')).toBeInTheDocument()
+    expect(screen.getByText('Priya / Drawdown Pressure')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 

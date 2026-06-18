@@ -34,6 +34,13 @@ export default function PublicUploadPage() {
 
   const archetype = useMemo(() => getTraderArchetype(archetypeId), [archetypeId])
   const axis = useMemo(() => getFingerprintAxis(axisId), [axisId])
+  const selectedPainAxes = useMemo(
+    () => selectedPainAxisIds
+      .map((candidate) => getFingerprintAxis(candidate))
+      .filter((candidate, index, axes) => candidate.id === selectedPainAxisIds[index] && axes.findIndex((axisCandidate) => axisCandidate.id === candidate.id) === index),
+    [selectedPainAxisIds],
+  )
+  const hasStoryHandoff = storySource === 'guided' || visitedSceneCount > 0 || selectedPainAxes.length > 0
 
   const reportSearch = `?market=${market}&archetype=${archetype.id}&axis=${axis.id}`
 
@@ -111,6 +118,36 @@ export default function PublicUploadPage() {
                 <FileUp className="h-5 w-5" />
               </div>
             </div>
+
+            {hasStoryHandoff ? (
+              <div className="mb-6 rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Story handoff packet</p>
+                <h3 className="mt-2 text-lg font-semibold text-white">The public story context is attached before upload.</h3>
+                <p className="mt-3 text-sm leading-6 text-indigo-50/75">
+                  This packet explains why the upload form opened with a specific archetype and pain axis. It remains provisional until trade history confirms it.
+                </p>
+                <div className="mt-4 grid gap-3 text-sm text-neutral-300 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Source</span>
+                    <span className="mt-1 block text-white">{storySource === 'guided' ? 'Guided StoryExperience route' : 'Direct upload route'}</span>
+                  </div>
+                  <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Scenes before upload</span>
+                    <span className="mt-1 block text-white">{Number.isFinite(visitedSceneCount) ? visitedSceneCount : 0}</span>
+                  </div>
+                  <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Selected public pain</span>
+                    <span className="mt-1 block text-white">
+                      {selectedPainAxes.length ? selectedPainAxes.map((candidate) => candidate.label).join(', ') : 'None captured'}
+                    </span>
+                  </div>
+                  <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">Current upload hypothesis</span>
+                    <span className="mt-1 block text-white">{archetype.name} / {axis.label}</span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block">

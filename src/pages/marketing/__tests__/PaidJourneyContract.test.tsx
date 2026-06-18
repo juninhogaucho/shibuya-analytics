@@ -128,6 +128,12 @@ describe('paid Shibuya journey contract', () => {
       </MemoryRouter>,
     )
 
+    expect(screen.getByText('Story handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Guided StoryExperience route')).toBeInTheDocument()
+    expect(screen.getByText('Scenes before upload')).toBeInTheDocument()
+    expect(screen.getByText('6')).toBeInTheDocument()
+    expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
     expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
