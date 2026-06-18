@@ -26,17 +26,21 @@ export function ActivationPage() {
         reportId: checkoutIntent.reportId ?? 'activation-origin',
         archetypeId: checkoutIntent.archetypeId,
         axisId: checkoutIntent.axisId,
-        storySource: activationReportSession?.storySource,
-        selectedPainAxisIds: activationReportSession?.selectedPainAxisIds,
-        visitedSceneCount: activationReportSession?.visitedSceneCount,
+        storySource: activationReportSession?.storySource ?? checkoutIntent.storySource,
+        selectedPainAxisIds: activationReportSession?.selectedPainAxisIds ?? checkoutIntent.selectedPainAxisIds,
+        visitedSceneCount: activationReportSession?.visitedSceneCount ?? checkoutIntent.visitedSceneCount,
       })
     : null
   const activationLockedSection = activationReport
     ? findLockedReportSectionBySlug(activationReport, checkoutIntent?.lockedSectionId)
     : null
-  const activationPainAxisLabels = (activationReportSession?.selectedPainAxisIds ?? [])
+  const activationSelectedPainAxisIds = activationReportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
+  const activationSelectedPainAxisIdsForStorage = activationSelectedPainAxisIds.length ? activationSelectedPainAxisIds : undefined
+  const activationStorySource = activationReportSession?.storySource ?? checkoutIntent?.storySource
+  const activationVisitedSceneCount = activationReportSession?.visitedSceneCount ?? checkoutIntent?.visitedSceneCount
+  const activationPainAxisLabels = activationSelectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
-    .filter((axis, index, axes) => activationReportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
+    .filter((axis, index, axes) => activationSelectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
     .map((axis) => axis.label)
   const navigate = useNavigate()
 
@@ -65,9 +69,9 @@ export function ActivationPage() {
           activationReportId: checkoutIntent?.reportId,
           activationArchetypeId: checkoutIntent?.archetypeId,
           activationAxisId: checkoutIntent?.axisId,
-          activationStorySource: activationReportSession?.storySource,
-          activationSelectedPainAxisIds: activationReportSession?.selectedPainAxisIds,
-          activationVisitedSceneCount: activationReportSession?.visitedSceneCount,
+          activationStorySource,
+          activationSelectedPainAxisIds: activationSelectedPainAxisIdsForStorage,
+          activationVisitedSceneCount,
           activationLockedSectionId: checkoutIntent?.lockedSectionId,
           activationLockedSectionTitle: activationLockedSection?.title,
         })
@@ -81,8 +85,8 @@ export function ActivationPage() {
             passwordRequired: response.passwordRequired ?? false,
             activationSource: checkoutIntent?.source,
             activationReportId: checkoutIntent?.reportId,
-            activationStorySource: activationReportSession?.storySource,
-            activationVisitedSceneCount: activationReportSession?.visitedSceneCount,
+            activationStorySource,
+            activationVisitedSceneCount,
             activationLockedSectionId: checkoutIntent?.lockedSectionId,
           },
         }).catch(() => undefined)
@@ -163,7 +167,7 @@ export function ActivationPage() {
                     Report: {checkoutIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
                   </p>
                   <p className="terminal-muted">
-                    Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationReportSession?.storySource ?? 'not available'} | Scenes: {activationReportSession?.visitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
+                    Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationStorySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
                   </p>
                 </div>
               </div>

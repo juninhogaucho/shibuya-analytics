@@ -104,9 +104,10 @@ const CheckoutSuccessPage: React.FC = () => {
   const plan = getPlanByPlanId(order?.planId)
   const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
-  const selectedPainAxisLabels = (reportSession?.selectedPainAxisIds ?? [])
+  const selectedPainAxisIds = reportSession?.selectedPainAxisIds ?? checkoutIntent?.selectedPainAxisIds ?? []
+  const selectedPainAxisLabels = selectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
-    .filter((axis, index, axes) => reportSession?.selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
+    .filter((axis, index, axes) => selectedPainAxisIds[index] === axis.id && axes.findIndex((candidate) => candidate.id === axis.id) === index)
     .map((axis) => axis.label)
   const activationPath = addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)
 
@@ -228,9 +229,9 @@ const CheckoutSuccessPage: React.FC = () => {
             <p className="mt-1 text-neutral-400">
               {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}
             </p>
-            {reportSession?.storySource ? (
+            {(reportSession?.storySource ?? checkoutIntent.storySource) ? (
               <p className="mt-2 text-neutral-500">
-                Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; pain axes {selectedPainAxisLabels.length ? selectedPainAxisLabels.join(', ') : 'none captured'}.
+                Story handoff: {reportSession?.storySource ?? checkoutIntent.storySource}; scenes {reportSession?.visitedSceneCount ?? checkoutIntent.visitedSceneCount ?? 'not available'}; pain axes {selectedPainAxisLabels.length ? selectedPainAxisLabels.join(', ') : 'none captured'}.
               </p>
             ) : null}
             <p className="mt-2 text-neutral-500">

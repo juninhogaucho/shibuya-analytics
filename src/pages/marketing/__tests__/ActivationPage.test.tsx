@@ -113,4 +113,55 @@ describe('ActivationPage', () => {
       }),
     )
   })
+
+  test('uses URL-carried story context when no local report packet exists', async () => {
+    const user = userEvent.setup()
+    apiMocks.verifyActivation.mockResolvedValue({
+      status: 'ready',
+      activationToken: 'live-token-123',
+      customerId: 'customer-123',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      passwordRequired: false,
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(/Public packet: URL context only \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
+    await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
+    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    })
+
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      activationSource: 'locked_insight',
+      activationReportId: 'missing-report',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationLockedSectionId: 'highest-cost-state',
+      activationLockedSectionTitle: 'Highest-cost state',
+    })
+  })
 })

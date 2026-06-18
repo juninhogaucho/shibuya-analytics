@@ -6,6 +6,9 @@ export interface CheckoutIntent {
   lockedSectionId?: string
   archetypeId?: string
   axisId?: string
+  storySource?: 'guided' | 'direct'
+  visitedSceneCount?: number
+  selectedPainAxisIds?: string[]
 }
 
 const SOURCE_VALUES = new Set<CheckoutIntentSource>([
@@ -27,6 +30,30 @@ function readSource(params: URLSearchParams): CheckoutIntentSource | undefined {
   return source && SOURCE_VALUES.has(source) ? source : undefined
 }
 
+function readStorySource(params: URLSearchParams): CheckoutIntent['storySource'] {
+  const source = cleanToken(params.get('story'))
+  return source === 'guided' ? 'guided' : source === 'direct' ? 'direct' : undefined
+}
+
+function readVisitedSceneCount(params: URLSearchParams): number | undefined {
+  const rawValue = Number(params.get('scene_count'))
+  if (!Number.isFinite(rawValue) || rawValue <= 0) {
+    return undefined
+  }
+
+  return Math.max(1, Math.min(15, Math.floor(rawValue)))
+}
+
+function readSelectedPainAxisIds(params: URLSearchParams): string[] | undefined {
+  const axisIds = (params.get('pain_axes') ?? '')
+    .split(',')
+    .map((value) => cleanToken(value, 64))
+    .filter((value): value is string => Boolean(value))
+  const uniqueAxisIds = [...new Set(axisIds)]
+
+  return uniqueAxisIds.length ? uniqueAxisIds : undefined
+}
+
 export function readCheckoutIntent(search: string): CheckoutIntent | null {
   const params = new URLSearchParams(search)
   const source = readSource(params)
@@ -41,9 +68,32 @@ export function readCheckoutIntent(search: string): CheckoutIntent | null {
     lockedSectionId: cleanToken(params.get('section')),
     archetypeId: cleanToken(params.get('archetype')),
     axisId: cleanToken(params.get('axis')),
+    storySource: readStorySource(params),
+    visitedSceneCount: readVisitedSceneCount(params),
+    selectedPainAxisIds: readSelectedPainAxisIds(params),
   }
 
   return intent
+}
+
+export function enrichCheckoutIntent(
+  intent: CheckoutIntent | null,
+  context?: {
+    storySource?: 'guided' | 'direct'
+    visitedSceneCount?: number
+    selectedPainAxisIds?: string[]
+  } | null,
+): CheckoutIntent | null {
+  if (!intent) {
+    return null
+  }
+
+  return {
+    ...intent,
+    storySource: intent.storySource ?? context?.storySource,
+    visitedSceneCount: intent.visitedSceneCount ?? context?.visitedSceneCount,
+    selectedPainAxisIds: intent.selectedPainAxisIds?.length ? intent.selectedPainAxisIds : context?.selectedPainAxisIds,
+  }
 }
 
 export function appendCheckoutIntentToPath(path: string, intent: CheckoutIntent | null): string {
@@ -65,6 +115,15 @@ export function appendCheckoutIntentToPath(path: string, intent: CheckoutIntent 
   }
   if (intent.axisId) {
     params.set('axis', intent.axisId)
+  }
+  if (intent.storySource) {
+    params.set('story', intent.storySource)
+  }
+  if (typeof intent.visitedSceneCount === 'number') {
+    params.set('scene_count', String(intent.visitedSceneCount))
+  }
+  if (intent.selectedPainAxisIds?.length) {
+    params.set('pain_axes', intent.selectedPainAxisIds.join(','))
   }
 
   return `${path}${path.includes('?') ? '&' : '?'}${params.toString()}`

@@ -50,7 +50,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source'],
+    markers: ['Checkout intent', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'enrichedCheckoutIntent'],
+  },
+  {
+    label: 'checkout intent URL handoff',
+    file: 'src/lib/checkoutIntent.ts',
+    markers: ['storySource', 'scene_count', 'pain_axes', 'enrichCheckoutIntent'],
   },
   {
     label: 'checkout success activation handoff',

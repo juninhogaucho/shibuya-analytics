@@ -36,6 +36,9 @@ describe('CheckoutSuccessPage', () => {
           lockedSectionId: 'highest-cost-state',
           archetypeId: 'marco',
           axisId: 'edge_decay',
+          storySource: 'guided',
+          visitedSceneCount: 5,
+          selectedPainAxisIds: ['edge_decay'],
         },
         timestamp: new Date().toISOString(),
       }),
@@ -56,11 +59,11 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
-      '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',
+      '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
     )
   })
 
-  test('shows URL-only boundary when checkout success has no local report packet', () => {
+  test('shows URL-only boundary while preserving URL-carried story context', () => {
     window.localStorage.setItem(
       'shibuya_order',
       JSON.stringify({
@@ -77,6 +80,9 @@ describe('CheckoutSuccessPage', () => {
           lockedSectionId: 'highest-cost-state',
           archetypeId: 'marco',
           axisId: 'edge_decay',
+          storySource: 'guided',
+          visitedSceneCount: 5,
+          selectedPainAxisIds: ['edge_decay'],
         },
         timestamp: new Date().toISOString(),
       }),
@@ -90,5 +96,10 @@ describe('CheckoutSuccessPage', () => {
 
     expect(screen.getByText('URL context only')).toBeInTheDocument()
     expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
+    expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
+      'href',
+      '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
+    )
   })
 })

@@ -12,7 +12,7 @@ import {
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution'
 import { redirectBrowser } from '../../lib/browserNavigation'
-import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
+import { appendCheckoutIntentToPath, describeCheckoutIntent, enrichCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
@@ -32,6 +32,11 @@ const CheckoutPage: React.FC = () => {
   const currentPlan = getMarketPricing(market)[planKey]
   const checkoutIntent = readCheckoutIntent(location.search)
   const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const enrichedCheckoutIntent = enrichCheckoutIntent(checkoutIntent, {
+    storySource: reportSession?.storySource,
+    visitedSceneCount: reportSession?.visitedSceneCount,
+    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+  })
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
 
@@ -106,25 +111,25 @@ const CheckoutPage: React.FC = () => {
       const origin = window.location.origin
       const successPath = appendCheckoutIntentToPath(
         `/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`,
-        checkoutIntent,
+        enrichedCheckoutIntent,
       )
-      const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, checkoutIntent)
+      const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, enrichedCheckoutIntent)
       const successUrl = `${origin}${addMarketToPath(successPath, market)}`
       const cancelUrl = `${origin}${addMarketToPath(cancelPath, market)}`
-      const publicContextPayload = checkoutIntent
+      const publicContextPayload = enrichedCheckoutIntent
         ? {
-            public_context_source: checkoutIntent.source,
-            public_context_report_id: checkoutIntent.reportId,
-            public_context_section_id: checkoutIntent.lockedSectionId,
-            public_context_archetype_id: checkoutIntent.archetypeId,
-            public_context_axis_id: checkoutIntent.axisId,
+            public_context_source: enrichedCheckoutIntent.source,
+            public_context_report_id: enrichedCheckoutIntent.reportId,
+            public_context_section_id: enrichedCheckoutIntent.lockedSectionId,
+            public_context_archetype_id: enrichedCheckoutIntent.archetypeId,
+            public_context_axis_id: enrichedCheckoutIntent.axisId,
             public_context_packet_source: reportSession?.source,
-            public_context_story_source: reportSession?.storySource,
+            public_context_story_source: enrichedCheckoutIntent.storySource,
             public_context_story_scene_count:
-              typeof reportSession?.visitedSceneCount === 'number'
-                ? String(reportSession.visitedSceneCount)
+              typeof enrichedCheckoutIntent.visitedSceneCount === 'number'
+                ? String(enrichedCheckoutIntent.visitedSceneCount)
                 : undefined,
-            public_context_pain_axes: reportSession?.selectedPainAxisIds.join(',') || undefined,
+            public_context_pain_axes: enrichedCheckoutIntent.selectedPainAxisIds?.join(',') || undefined,
           }
         : {}
 
@@ -150,7 +155,7 @@ const CheckoutPage: React.FC = () => {
         currency: currentPlan.currency,
         orderId: session.order_id,
         sessionId: session.session_id,
-        checkoutIntent,
+        checkoutIntent: enrichedCheckoutIntent,
         timestamp: new Date().toISOString(),
       }))
 
@@ -205,7 +210,7 @@ const CheckoutPage: React.FC = () => {
           </div>
         </motion.div>
 
-        {checkoutIntent && (
+        {enrichedCheckoutIntent && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -213,15 +218,18 @@ const CheckoutPage: React.FC = () => {
             className="mb-8 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-5 text-left"
           >
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-200">Checkout intent</p>
-            <h3 className="mt-2 text-lg font-semibold text-white">{describeCheckoutIntent(checkoutIntent)}</h3>
+            <h3 className="mt-2 text-lg font-semibold text-white">{describeCheckoutIntent(enrichedCheckoutIntent)}</h3>
             <p className="mt-2 text-sm leading-relaxed text-neutral-300">
               We will carry this public-story context into activation so the private workspace starts from the module you tried to unlock.
             </p>
             <div className="mt-4 grid gap-2 text-xs text-neutral-400 md:grid-cols-2">
-              {checkoutIntent.lockedSectionId && <span>Module: {checkoutIntent.lockedSectionId}</span>}
-              {checkoutIntent.reportId && <span>Report: {checkoutIntent.reportId}</span>}
-              {checkoutIntent.archetypeId && <span>Archetype: {checkoutIntent.archetypeId}</span>}
-              {checkoutIntent.axisId && <span>Axis: {checkoutIntent.axisId}</span>}
+              {enrichedCheckoutIntent.lockedSectionId && <span>Module: {enrichedCheckoutIntent.lockedSectionId}</span>}
+              {enrichedCheckoutIntent.reportId && <span>Report: {enrichedCheckoutIntent.reportId}</span>}
+              {enrichedCheckoutIntent.archetypeId && <span>Archetype: {enrichedCheckoutIntent.archetypeId}</span>}
+              {enrichedCheckoutIntent.axisId && <span>Axis: {enrichedCheckoutIntent.axisId}</span>}
+              {enrichedCheckoutIntent.storySource && <span>Story: {enrichedCheckoutIntent.storySource}</span>}
+              {typeof enrichedCheckoutIntent.visitedSceneCount === 'number' && <span>Scenes: {enrichedCheckoutIntent.visitedSceneCount}</span>}
+              {enrichedCheckoutIntent.selectedPainAxisIds?.length ? <span>Pain axes: {enrichedCheckoutIntent.selectedPainAxisIds.join(', ')}</span> : null}
             </div>
             <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
               <p className="font-semibold text-amber-100">

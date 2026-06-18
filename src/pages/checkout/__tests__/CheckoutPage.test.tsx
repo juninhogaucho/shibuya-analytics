@@ -67,6 +67,9 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Archetype: marco')).toBeInTheDocument()
     expect(screen.getByText('Axis: edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('Story: guided')).toBeInTheDocument()
+    expect(screen.getByText('Scenes: 5')).toBeInTheDocument()
+    expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
 
@@ -84,9 +87,9 @@ describe('CheckoutPage', () => {
         email: 'founder@shibuya.test',
         name: 'Luis Shibuya',
         success_url:
-          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',
+          'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
         cancel_url:
-          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&market=global',
+          'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&market=global',
         public_context_source: 'locked_insight',
         public_context_report_id: 'sample-free-report',
         public_context_section_id: 'highest-cost-state',
@@ -115,6 +118,9 @@ describe('CheckoutPage', () => {
         lockedSectionId: 'highest-cost-state',
         archetypeId: 'marco',
         axisId: 'edge_decay',
+        storySource: 'guided',
+        visitedSceneCount: 5,
+        selectedPainAxisIds: ['edge_decay'],
       },
     })
   })

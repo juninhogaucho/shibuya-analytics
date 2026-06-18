@@ -184,6 +184,9 @@ describe('paid Shibuya journey contract', () => {
         lockedSectionId: 'highest-cost-state',
         archetypeId: 'marco',
         axisId: 'edge_decay',
+        storySource: 'guided',
+        visitedSceneCount: 6,
+        selectedPainAxisIds: ['edge_decay'],
       },
     })
 
