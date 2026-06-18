@@ -199,6 +199,46 @@ export default function LockedInsightPage() {
             </p>
           </article>
 
+          <article className="rounded-[2rem] border border-violet-300/20 bg-violet-300/[0.06] p-5 md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-200">
+                  Founder demo continuation
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                  Carry this locked question into Reset Pro.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-violet-50/75">
+                  The private demo gate receives the report, archetype, dominant axis, story handoff, and locked module.
+                  It can show the operating structure with sample data only; it still cannot answer this question as live truth.
+                </p>
+              </div>
+              <div className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-200">
+                  Demo packet to carry
+                </p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-neutral-300">
+                  {[
+                    `Locked module: ${lockedSection.title}.`,
+                    `Bridge question: ${report.resetProBridge.decisionQuestion}`,
+                    `Evidence status: ${reportSession?.evidenceLabel ?? 'direct-link fallback only'}.`,
+                  ].map((item) => (
+                    <div key={item} className="rounded-2xl border border-white/8 bg-black/25 p-3">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  to={privateDemoPath}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                >
+                  Continue To Private Demo Gate
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </article>
+
           <article className="rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.06] p-5 md:p-8">
             <h2 className="text-2xl font-semibold text-white">What unlocks here</h2>
             <div className="mt-5 grid gap-4 lg:grid-cols-2">

@@ -265,6 +265,13 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/The behavioral state carrying the largest estimated cost/i)).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
+    expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
+    expect(screen.getByText('Carry this locked question into Reset Pro.')).toBeInTheDocument()
+    expect(screen.getByText(/Demo packet to carry/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=sample-free-report&archetype=marco&axis=edge_decay&section=highest-cost-state&market=global',
+    )
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
       'href',
       '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
@@ -287,6 +294,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText(/URL story context only: guided; scenes 6; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText(/No local upload-step validation packet was found/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
+    )
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
       'href',
       '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
@@ -319,6 +330,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
     expect(screen.getByText('Origin report')).toBeInTheDocument()
     expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
+    expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?source=locked_insight&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&section=highest-cost-state&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
+    )
     expect(screen.getByRole('link', { name: /Back to Free Report/i })).toHaveAttribute(
       'href',
       '/report/sample-behavioral-leak-report?archetype=priya&axis=drawdown_pressure&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
@@ -344,7 +360,7 @@ describe('public Shibuya journey pages', () => {
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
     await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
-    await user.click(screen.getByRole('link', { name: /Open Private Demo Gate/i }))
+    await user.click(screen.getByRole('link', { name: /Continue To Private Demo Gate/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
     expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
