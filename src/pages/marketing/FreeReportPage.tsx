@@ -1,4 +1,4 @@
-import { Lock, UnlockKeyhole } from 'lucide-react'
+import { ArrowRight, Lock, ShieldCheck, UnlockKeyhole } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
@@ -132,6 +132,62 @@ export default function FreeReportPage() {
               <p className="mt-6 rounded-2xl border border-white/8 bg-white/[0.03] p-4 text-sm leading-7 text-neutral-300">
                 {report.conversionLine}
               </p>
+            </section>
+
+            <section className="rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.06] p-5 md:p-8">
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Private insight contract</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-white">{report.privateInsightGate.headline}</h2>
+                  <p className="mt-4 text-sm leading-7 text-indigo-50/75">{report.privateInsightGate.body}</p>
+                </div>
+                <ShieldCheck className="mt-1 h-6 w-6 shrink-0 text-emerald-300" />
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                  <h3 className="text-base font-semibold text-white">Evidence required before private claims</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-300">
+                    {report.privateInsightGate.evidenceRequired.map((item) => (
+                      <li key={item} className="flex gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                  <h3 className="text-base font-semibold text-white">Boundary the demo keeps visible</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-300">
+                    {report.privateInsightGate.refusesToClaim.map((item) => (
+                      <li key={item} className="flex gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-300" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                <p className="text-sm leading-7 text-neutral-300">{report.privateInsightGate.demoPromise}</p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <Link
+                    to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?source=private_insight_gate`, market)}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                  >
+                    Unlock {report.privateInsightGate.primaryUnlock}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    to={addMarketToPath('/private-demo', market)}
+                    className="inline-flex items-center justify-center rounded-xl border border-indigo-300/30 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.08]"
+                  >
+                    Open Private Demo Gate
+                  </Link>
+                </div>
+              </div>
             </section>
 
             <section className="grid gap-3 md:grid-cols-3">

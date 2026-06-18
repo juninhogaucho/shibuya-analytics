@@ -61,6 +61,15 @@ export interface RecommendedProductPath {
   cta: string
 }
 
+export interface PrivateInsightGate {
+  headline: string
+  body: string
+  primaryUnlock: string
+  demoPromise: string
+  evidenceRequired: string[]
+  refusesToClaim: string[]
+}
+
 export interface FreeReportPreview {
   reportId: string
   archetype: TraderArchetype
@@ -78,6 +87,7 @@ export interface FreeReportPreview {
     title: string
     body: string
   }>
+  privateInsightGate: PrivateInsightGate
   conversionLine: string
 }
 
@@ -530,8 +540,50 @@ export function buildFreeReportPreview(params: {
         body: 'How the fingerprint changes across repeated uploads instead of one isolated diagnosis.',
       },
     ],
+    privateInsightGate: buildPrivateInsightGate(archetype.id, dominantAxis.id, recommendedPath),
     conversionLine: `${recommendedPath.body} Unlock the live workspace when you want uploads, report artifacts, mandate history, and Reset Pro review state to persist.`,
   }
+}
+
+function buildPrivateInsightGate(
+  archetypeId: StoryArchetypeId,
+  axisId: FingerprintAxisId,
+  path: RecommendedProductPath,
+): PrivateInsightGate {
+  return {
+    headline: inferPrivateInsightHeadline(archetypeId, axisId),
+    body: `The private insight layer turns this public recognition into an operating record. ${path.body} The live workspace must prove the pattern from uploaded history before it presents it as trader-specific truth.`,
+    primaryUnlock: path.label,
+    demoPromise: 'Reset Pro demo access shows the private workspace structure with sample data only: mandate, pressure map, review packet, and append-proof loop.',
+    evidenceRequired: [
+      'A live activation or explicitly labeled private demo session.',
+      'A normalized upload packet or sample workspace boundary visible in the UI.',
+      'A next-session mandate linked to the detected state, not to a buy/sell recommendation.',
+      'A repeatable append path so the next session can confirm improvement or relapse.',
+    ],
+    refusesToClaim: [
+      'No guaranteed profit uplift.',
+      'No instrument-level trade recommendation.',
+      'No account-specific diagnosis from the public page alone.',
+      'No hidden persistence claim when the flow is still local/sample.',
+    ],
+  }
+}
+
+function inferPrivateInsightHeadline(archetypeId: StoryArchetypeId, axisId: FingerprintAxisId): string {
+  if (archetypeId === 'priya' || axisId === 'drawdown_pressure') {
+    return 'The private layer tests whether pressure changes the account before the breach.'
+  }
+
+  if (archetypeId === 'marco' || axisId === 'edge_decay') {
+    return 'The private layer separates real edge decay from ordinary variance.'
+  }
+
+  if (axisId === 'revenge_reentry' || axisId === 'size_escalation') {
+    return 'The private layer catches the moment one loss becomes a second decision.'
+  }
+
+  return 'The private layer turns recognition into a repeatable operating loop.'
 }
 
 function inferRecommendedProductPath(index: number, axisId: FingerprintAxisId): RecommendedProductPath {

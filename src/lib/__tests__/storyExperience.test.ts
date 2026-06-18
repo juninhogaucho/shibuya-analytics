@@ -68,6 +68,11 @@ describe('story experience signal model', () => {
     expect(report.recommendedPath.cta).toBeTruthy()
     expect(report.unlocked).toHaveLength(6)
     expect(report.locked.map((section) => section.title)).toContain('Next-session state warning')
+    expect(report.privateInsightGate.headline).toContain('edge decay')
+    expect(report.privateInsightGate.evidenceRequired).toContain(
+      'A next-session mandate linked to the detected state, not to a buy/sell recommendation.',
+    )
+    expect(report.privateInsightGate.refusesToClaim).toContain('No guaranteed profit uplift.')
     expect(report.conversionLine).toContain('live workspace')
   })
 })

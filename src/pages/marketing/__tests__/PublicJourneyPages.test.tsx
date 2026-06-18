@@ -47,6 +47,13 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
     expect(screen.getByText('Locked until live workspace')).toBeInTheDocument()
+    expect(screen.getByText('Private insight contract')).toBeInTheDocument()
+    expect(screen.getByText(/The private layer separates real edge decay from ordinary variance/i)).toBeInTheDocument()
+    expect(screen.getByText(/No guaranteed profit uplift/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
+      'href',
+      '/private-demo?market=global',
+    )
     expect(screen.queryByRole('button', { name: /Preview Reset Pro/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Private Demo Access/i })).toHaveAttribute(
       'href',
