@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { isSampleMode } from '../../lib/runtime'
+import { getStoredSessionMeta, isSampleMode } from '../../lib/runtime'
 
 interface Step {
   title: string
@@ -37,13 +37,12 @@ export function WelcomeModal() {
   const [currentStep, setCurrentStep] = useState(0)
 
   useEffect(() => {
-    // Check if user has seen onboarding
     const hasSeen = localStorage.getItem(STORAGE_KEY)
     const sampleMode = isSampleMode()
+    const sessionMeta = getStoredSessionMeta()
+    const privateResetProDemo = sampleMode && sessionMeta?.samplePreview === 'reset_pro' && Boolean(sessionMeta.demoSource)
     
-    // Show modal for sample workspace or new users
-    if (!hasSeen || sampleMode) {
-      // Small delay to let the page render first
+    if (!privateResetProDemo && (!hasSeen || sampleMode)) {
       const timer = setTimeout(() => setIsOpen(true), 500)
       return () => clearTimeout(timer)
     }
