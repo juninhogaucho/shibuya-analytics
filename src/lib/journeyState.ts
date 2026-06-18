@@ -94,11 +94,26 @@ export function buildJourneyState({
   const totalTrades = overview?.total_trades ?? 0
   const expiryDays = daysRemaining(overview?.access_expires_at ?? sessionMeta?.accessExpiresAt ?? null)
   const readOnly = caseStatus === 'read_only'
+  const sampleWorkspace = offerKind === 'sample' || overview?.access_tier === 'sample' || caseStatus === 'sample_preview'
   const oneTimeAccess = Boolean(offerKind && !offerKind.endsWith('_live') && offerKind !== 'sample')
   const nextActionLabel = overview?.next_action ?? sessionMeta?.nextAction ?? null
   const contextCompleted =
     Boolean(profile?.completed) ||
     ['awaiting_upload', 'baseline_ready', 'delivered', 'read_only'].includes(caseStatus ?? '')
+
+  if (sampleWorkspace) {
+    steps = updateStep(steps, 'activate', 'current')
+    return {
+      eyebrow: 'SAMPLE WORKSPACE',
+      title: 'Inspect the workflow before activating live access.',
+      summary: 'Sample mode can demonstrate the board, artifacts, and append loop, but it cannot persist trader history or prove account-specific analytics.',
+      steps,
+      nextAction: {
+        label: 'See live pricing',
+        to: `/pricing?market=${market}`,
+      },
+    }
+  }
 
   steps = updateStep(steps, 'activate', 'complete')
 

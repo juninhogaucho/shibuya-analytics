@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { forgotPassword } from '../../lib/api'
+import { forgotPassword } from '../../lib/api/auth'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 
 export default function ForgotPasswordPage() {

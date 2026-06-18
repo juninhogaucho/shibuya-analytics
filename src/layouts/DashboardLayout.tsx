@@ -4,7 +4,7 @@ import { WelcomeModal } from '../components/ui/WelcomeModal'
 import { getDashboardOverview } from '../lib/api'
 import { buildJourneyState } from '../lib/journeyState'
 import { addMarketToPath } from '../lib/market'
-import { clearShibuyaSession, getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isSampleMode } from '../lib/runtime'
+import { clearShibuyaSession, getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isResetProSamplePreview, isSampleMode } from '../lib/runtime'
 import { isSessionGateCompleteToday } from '../lib/sessionGate'
 import type { DashboardOverview } from '../lib/types'
 
@@ -82,6 +82,7 @@ export function DashboardLayout() {
   const [shellOverview, setShellOverview] = useState<DashboardOverview | null>(null)
   const sessionMeta = getStoredSessionMeta()
   const rawPremiumAccess = hasPremiumAccess()
+  const resetProPreview = sampleWorkspace && isResetProSamplePreview(sessionMeta)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -118,7 +119,7 @@ export function DashboardLayout() {
     }
   }, [location.pathname, sampleWorkspace])
 
-  const effectivePremiumAccess = shellOverview?.access_tier === 'reset_pro' || rawPremiumAccess
+  const effectivePremiumAccess = resetProPreview || shellOverview?.access_tier === 'reset_pro' || rawPremiumAccess
   const effectiveOfferKind = shellOverview?.offer_kind ?? sessionMeta?.offerKind
   const effectiveCaseStatus = shellOverview?.case_status ?? sessionMeta?.caseStatus
   const effectiveMarket = sessionMeta?.market ?? 'india'
@@ -136,11 +137,15 @@ export function DashboardLayout() {
   let statusCard: StatusCardConfig | null = null
   if (sampleWorkspace) {
     statusCard = {
-      label: 'SAMPLE MODE',
-      title: 'You are exploring the loop, not writing to a live account.',
-      body: 'Sample mode is for inspection. The live workspace is where uploads persist, artifacts stack, and the operating record becomes real.',
-      ctaLabel: 'See live pricing',
-      ctaTo: addMarketToPath('/pricing', effectiveMarket),
+      label: resetProPreview ? 'RESET PRO PREVIEW' : 'SAMPLE MODE',
+      title: resetProPreview
+        ? 'You are previewing the highest-tier journey, not writing to a live account.'
+        : 'You are exploring the loop, not writing to a live account.',
+      body: resetProPreview
+        ? 'This unlocks the guided-review surfaces for demo inspection only. Live Reset Pro still requires payment, activation, and real upload evidence.'
+        : 'Sample mode is for inspection. The live workspace is where uploads persist, artifacts stack, and the operating record becomes real.',
+      ctaLabel: resetProPreview ? 'Activate Reset Pro' : 'See live pricing',
+      ctaTo: addMarketToPath(resetProPreview ? '/pricing?upgrade=reset-pro' : '/pricing', effectiveMarket),
     }
   } else if (readOnlyAccess) {
     statusCard = {
@@ -232,7 +237,7 @@ export function DashboardLayout() {
   }
 
   const sidebarStatusLabel = sampleWorkspace
-    ? 'SAMPLE MODE'
+    ? resetProPreview ? 'RESET PRO PREVIEW' : 'SAMPLE MODE'
     : readOnlyAccess
       ? 'WINDOW CLOSED'
       : oneTimeAccess

@@ -8,62 +8,62 @@ import { resolveMarket } from '../../lib/market'
 const INDIA_STATS = [
   {
     icon: <Flame className="h-6 w-6 text-rose-500" />,
-    title: 'Revenge Trading',
-    value: '\u20b911,789',
-    metric: 'The "I will make it back"',
-    desc: 'One bad loss turns into eleven trades and a much worse day. Shibuya identifies when you force it, what it cost you, and when you should have stopped.',
+    title: 'Actual Edge',
+    value: '01',
+    metric: 'What still pays',
+    desc: 'Separate the setup that still deserves protection from the setup that only feels familiar because it used to work.',
   },
   {
     icon: <BarChart2 className="h-6 w-6 text-amber-500" />,
-    title: 'Risk Skew',
-    value: '3.2x',
-    metric: 'The overconfidence asymmetry',
-    desc: 'You size up when emotional and size down when clear. We show the exact asymmetry so you stop leaking on execution, not just on strategy.',
+    title: 'Repeat Leak',
+    value: '02',
+    metric: 'What keeps taxing the account',
+    desc: 'Name the recurring process mistake, estimate its damage from the available history, and turn it into a rule for the next session.',
   },
   {
     icon: <Crosshair className="h-6 w-6 text-emerald-500" />,
-    title: 'Setup Decay',
-    value: '3 stale patterns',
-    metric: 'Edge decay factor',
-    desc: 'A favorite setup can keep firing long after its edge is gone. Shibuya surfaces which patterns still pay and which ones are quietly bleeding the account.',
+    title: 'Current State',
+    value: '03',
+    metric: 'Press, reduce, or stop',
+    desc: 'Frame the trader state before size goes back on. The output is a guardrail, not a promise about the next trade.',
   },
   {
     icon: <Zap className="h-6 w-6 text-cyan-500" />,
-    title: 'Action Score',
-    value: '69%',
-    metric: 'Readiness indicator',
-    desc: 'A composite read on how trustworthy your current process is. Not destiny. A signal for whether to press, reduce risk, or stop.',
+    title: 'Append Proof',
+    value: '04',
+    metric: 'Did the process change',
+    desc: 'Append the next session and compare the mandate against what actually happened. Improvement has to show up in the record.',
   },
 ]
 
 const GLOBAL_STATS = [
   {
     icon: <Flame className="h-6 w-6 text-rose-500" />,
-    title: 'Revenge Trading',
-    value: 'EUR 847',
-    metric: 'The "I will make it back"',
-    desc: 'Good traders still torch consistency by trying to reverse one bad sequence immediately. Shibuya makes that leak explicit and expensive.',
+    title: 'Actual Edge',
+    value: '01',
+    metric: 'What still pays',
+    desc: 'Separate the setup that still deserves protection from the setup that only feels familiar because it used to work.',
   },
   {
     icon: <BarChart2 className="h-6 w-6 text-amber-500" />,
-    title: 'Risk Skew',
-    value: '3.2x',
-    metric: 'Execution asymmetry',
-    desc: 'You size up when emotional and size down when clear. The platform quantifies the skew so you can correct it instead of rationalizing it.',
+    title: 'Repeat Leak',
+    value: '02',
+    metric: 'What keeps taxing the account',
+    desc: 'Name the recurring process mistake, estimate its damage from the available history, and turn it into a rule for the next session.',
   },
   {
     icon: <Crosshair className="h-6 w-6 text-emerald-500" />,
-    title: 'Setup Decay',
-    value: '3 stale patterns',
-    metric: 'Edge decay factor',
-    desc: 'Some setups keep getting traded because they once paid well. Shibuya forces the distinction between current edge and nostalgia.',
+    title: 'Current State',
+    value: '03',
+    metric: 'Press, reduce, or stop',
+    desc: 'Frame the trader state before size goes back on. The output is a guardrail, not a promise about the next trade.',
   },
   {
     icon: <Zap className="h-6 w-6 text-cyan-500" />,
-    title: 'Action Score',
-    value: '69%',
-    metric: 'Readiness indicator',
-    desc: 'A composite read on whether your current process deserves more risk, less risk, or a full stop.',
+    title: 'Append Proof',
+    value: '04',
+    metric: 'Did the process change',
+    desc: 'Append the next session and compare the mandate against what actually happened. Improvement has to show up in the record.',
   },
 ]
 
@@ -71,11 +71,8 @@ const StatsGrid: React.FC = () => {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const stats = market === 'india' ? INDIA_STATS : GLOBAL_STATS
-  const headlineFigure = market === 'india' ? '\u20b914,000+' : 'EUR 3,418'
-  const headlineLabel =
-    market === 'india'
-      ? 'Illustrative annual avoidable loss from behavioral leakage'
-      : 'Illustrative monthly avoidable loss from behavioral leakage'
+  const headlineFigure = '6'
+  const headlineLabel = 'Operating questions every useful review must answer'
 
   return (
     <section className="relative overflow-hidden border-t border-white/5 bg-[#050505] py-24 md:py-32 lg:py-40">
@@ -92,7 +89,7 @@ const StatsGrid: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            The Leak
+            The Pattern
           </motion.span>
 
           <motion.h2
@@ -102,8 +99,8 @@ const StatsGrid: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {market === 'india' ? 'Why Good Market Reads Still' : 'Why Good Traders Still'}
-            <span className="text-neutral-600"> {market === 'india' ? 'Bleed The Account' : 'Blow Good Accounts'}</span>
+            {market === 'india' ? 'The Work Is Not More Signals.' : 'The Work Is Not More Signals.'}
+            <span className="text-neutral-600"> It Is Better Process.</span>
           </motion.h2>
 
           <motion.p
@@ -114,8 +111,8 @@ const StatsGrid: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             {market === 'india'
-              ? 'SEBI already proved the loss problem. Shibuya focuses on the behavioral leak that keeps repeating after the indicator, the finfluencer, and the new setup.'
-              : 'Most traders do not need another indicator. They need to know which repeat mistake is still taxing the account before it becomes a breach.'}
+              ? 'Indian F&O traders do not need another confident chart screenshot. They need a private loop that answers what is working, what is leaking, and what must change before the next session.'
+              : 'Most traders do not need another confident chart screenshot. They need a private loop that answers what is working, what is leaking, and what must change before the next session.'}
           </motion.p>
 
           <motion.div
@@ -126,16 +123,14 @@ const StatsGrid: React.FC = () => {
             transition={{ delay: 0.3, duration: 0.6 }}
           >
             <div className="text-6xl font-display font-bold leading-none text-white md:text-8xl lg:text-9xl">
-              {headlineFigure}
+              {headlineFigure} Questions
             </div>
             <div className="mt-4 flex items-center justify-center gap-3 text-red-400">
               <TrendingUp className="h-5 w-5" />
               <span className="font-mono text-sm uppercase tracking-wider">{headlineLabel}</span>
             </div>
             <p className="mx-auto mt-4 max-w-md text-sm font-sans text-neutral-500">
-              {market === 'india'
-                ? 'Not market loss. Process loss. The kind that keeps getting normalized while the trader says the next big day or next finfluencer setup will fix everything.'
-                : 'Not market loss. Process loss. The kind that keeps appearing in breached accounts and almost-there traders.'}
+              Actual edge. Repeat mistake. Current state. Next action. Immediate stop. Evidence of improvement.
             </p>
           </motion.div>
         </div>

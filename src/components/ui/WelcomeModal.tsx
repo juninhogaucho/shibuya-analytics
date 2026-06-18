@@ -15,7 +15,7 @@ const ONBOARDING_STEPS: Step[] = [
   },
   {
     title: 'Understand Your Edges',
-    description: 'The Edge Portfolio shows which of your setups are making money (PRIME), which are break-even (STABLE), and which are bleeding your account (DECAYED).',
+    description: 'The Edge Portfolio shows which of your setups are making money (PRIME), which are break-even (STABLE), and which are costing the account (DECAYED).',
     icon: '💎',
   },
   {

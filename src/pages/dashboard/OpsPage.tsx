@@ -93,7 +93,11 @@ export function OpsPage() {
   useEffect(() => {
     let active = true
     if (!selectedId) {
-      setDetail(null)
+      queueMicrotask(() => {
+        if (active) {
+          setDetail(null)
+        }
+      })
       return
     }
     const customerId = selectedId
@@ -393,8 +397,8 @@ export function OpsPage() {
                 <th>Visit {'->'} start</th>
                 <th>Start {'->'} paid</th>
                 <th>Active monthly</th>
-                <th>One-time done</th>
-                <th>Expired one-time</th>
+                <th>Legacy done</th>
+                <th>Expired legacy</th>
                 <th>Monthly at risk</th>
               </tr>
             </thead>

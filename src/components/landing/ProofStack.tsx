@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Bot, ClipboardCheck, Landmark, ShieldAlert } from 'lucide-react'
+import { Calculator, ClipboardCheck, KeyRound, ShieldAlert } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 
@@ -11,48 +11,48 @@ const ProofStack: React.FC = () => {
   const cards = market === 'india'
     ? [
         {
-          icon: <Landmark className="h-5 w-5 text-amber-300" />,
-          eyebrow: 'Regulator-grade reality',
-          title: 'SEBI already proved the loss problem.',
-          body:
-            'Most Indian retail F&O traders lose. Shibuya is built for the part nobody fixes well: the repeat leak between one decent read and the next stupid decision.',
-        },
-        {
           icon: <ClipboardCheck className="h-5 w-5 text-emerald-300" />,
-          eyebrow: 'What the product does',
-          title: 'It names the leak and gives you a mandate.',
+          eyebrow: 'Runtime truth',
+          title: 'Sample is a preview. Live is the record.',
           body:
-            'Not journaling. Not mood tracking. You upload history, see the leak in rupees, get a standards ledger, and leave with a next-session protocol.',
+            'The sample workspace teaches the loop with sample data. A live trader account starts only after checkout, order-code verification, and password setup.',
         },
         {
-          icon: <Bot className="h-5 w-5 text-indigo-300" />,
-          eyebrow: 'Why this over generic AI',
-          title: 'ChatGPT can comment. Shibuya can control the loop.',
+          icon: <KeyRound className="h-5 w-5 text-amber-300" />,
+          eyebrow: 'Fulfillment path',
+          title: 'Pay, activate, set context, upload, append.',
           body:
-            'It stores your baseline, compares later uploads, tracks your delivery state, and turns repeated mistakes into an operating system instead of a one-off conversation.',
+            'The paid path sends an order code, opens activation, captures trader context, turns broker exports into a mandate, then checks the next session against it.',
+        },
+        {
+          icon: <Calculator className="h-5 w-5 text-indigo-300" />,
+          eyebrow: 'Method boundary',
+          title: 'Calculation discipline over AI theater.',
+          body:
+            'Shibuya Direct is for traders. It should never imply magic detection; the story is defensible calculations, trader context, and repeated proof.',
         },
       ]
     : [
         {
-          icon: <Landmark className="h-5 w-5 text-amber-300" />,
-          eyebrow: 'Hard truth',
-          title: 'Most traders do not have an information problem.',
+          icon: <ClipboardCheck className="h-5 w-5 text-emerald-300" />,
+          eyebrow: 'Runtime truth',
+          title: 'Sample is a preview. Live is the record.',
           body:
-            'They have an execution problem that keeps showing up after losses, after fatigue, and near prop breach conditions.',
+            'The sample workspace teaches the workflow. A live trader account starts only after payment, order-code verification, and password setup.',
         },
         {
-          icon: <ClipboardCheck className="h-5 w-5 text-emerald-300" />,
-          eyebrow: 'What the product does',
-          title: 'It separates edge from sabotage.',
+          icon: <KeyRound className="h-5 w-5 text-amber-300" />,
+          eyebrow: 'Fulfillment path',
+          title: 'Activate, set context, upload, append.',
           body:
-            'You upload history, see the behavioral tax, get a standards ledger, and carry a next-session protocol instead of just another analysis page.',
+            'The live loop captures trader type, platform, capital reality, and trading history before it gives a mandate, then checks the next session against it.',
         },
         {
           icon: <ShieldAlert className="h-5 w-5 text-indigo-300" />,
-          eyebrow: 'Why it matters',
-          title: 'Good traders still lose command.',
+          eyebrow: 'Product boundary',
+          title: 'Direct trader OS, not brokerage plumbing.',
           body:
-            'Shibuya is built to catch the process failure before it becomes another breached account, reset spiral, or false confidence streak.',
+            'You can use Shibuya whether or not your firm uses PropOS. Partner and embedded paths belong on Decrypt/PropOS, not this direct-trader page.',
         },
       ]
 
@@ -62,10 +62,10 @@ const ProofStack: React.FC = () => {
         <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
             <p className="mb-3 font-mono text-xs uppercase tracking-[0.24em] text-indigo-300">
-              Why This Exists
+              What This Is
             </p>
             <h2 className="text-3xl font-display font-bold uppercase leading-[0.95] text-white md:text-5xl">
-              A harder standard for traders who are done lying to themselves.
+              From sample workspace to live account without hiding the state boundary.
             </h2>
           </div>
 

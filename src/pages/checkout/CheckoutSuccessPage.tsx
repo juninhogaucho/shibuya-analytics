@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle, Mail, Clock, ArrowRight, KeyRound, Loader2, AlertCircle } from 'lucide-react'
-import { getCheckoutSession } from '../../lib/api'
+import { getCheckoutSession } from '../../lib/api/checkout'
 import { addMarketToPath, getMarketHomePath, getPlanByPlanId, inferMarketFromPlanId, persistMarket, resolveMarket } from '../../lib/market'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 

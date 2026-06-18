@@ -28,7 +28,7 @@ const INCOME_OPTIONS: Array<{ value: TraderIncomeBand; label: string }> = [
 ]
 
 const FOCUS_OPTIONS: Array<{ value: TraderFocus; label: string; description: string }> = [
-  { value: 'retail_fo', label: 'Retail F&O survival', description: 'You want to stop bleeding in discretionary Indian F&O trading.' },
+  { value: 'retail_fo', label: 'Retail F&O survival', description: 'You want to stop giving back money in discretionary Indian F&O trading.' },
   { value: 'prop_eval', label: 'Prop evaluation', description: 'Your main objective is passing and protecting funded-account style rules.' },
   { value: 'mixed', label: 'Both', description: 'You trade your own book and also care about prop-style rule survival.' },
   { value: 'profitable_refinement', label: 'Already profitable', description: 'You are profitable but want to remove remaining behavioral leakage.' },

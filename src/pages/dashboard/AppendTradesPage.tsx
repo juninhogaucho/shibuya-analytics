@@ -10,7 +10,7 @@ import {
 } from '../../lib/api'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
-import { getStoredSessionMeta, isReadOnlySession, isSampleMode, updateSessionMeta } from '../../lib/runtime'
+import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
@@ -89,7 +89,8 @@ export function AppendTradesPage() {
   const [parsedPreview, setParsedPreview] = useState<ParsePreview | null>(null)
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const sampleMode = isSampleMode()
+  const runtimeContract = getShibuyaRuntimeContract()
+  const sampleMode = runtimeContract.mode === 'sample'
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
   const readOnlyAccess = isReadOnlySession(sessionMeta)
@@ -339,13 +340,13 @@ export function AppendTradesPage() {
       </header>
 
       <section className="glass-panel" style={{ marginBottom: '1.5rem' }}>
-        <p className="badge">{sampleMode ? 'Sample workspace' : 'Live trader account'}</p>
+        <p className="badge">{runtimeContract.label}</p>
         <h3 style={{ marginTop: '0.5rem' }}>
           {sampleMode ? 'Learn the workflow before you connect real data.' : 'Append trades and inspect the delta, not just the upload.'}
         </h3>
         <p className="text-muted" style={{ marginBottom: 0 }}>
           {sampleMode
-            ? 'Sample workspace lets you test paste and CSV parsing without writing to trade history. When you switch to a live account, uploads persist and feed your real dashboard, alerts, and prescriptions.'
+            ? runtimeContract.proofBoundary
             : 'Live mode writes to your account history. Each upload should leave you with a cleaner view of win rate, discipline tax, stress score, and the decisions you need to make next.'}
         </p>
         {!sampleMode && traderMode && (
@@ -359,7 +360,7 @@ export function AppendTradesPage() {
         <div className="glass-panel" style={{ marginBottom: '1.5rem', borderColor: 'rgba(245, 158, 11, 0.3)', background: 'rgba(245, 158, 11, 0.08)' }}>
           <p className="badge">Read only</p>
           <p className="text-muted" style={{ marginBottom: 0 }}>
-            This one-time reset window has expired. You can still review the board and trade history, but new uploads require a fresh package or a live monthly tier.
+            This legacy bounded reset window has expired. You can still review the board and trade history, but new uploads require a live monthly tier.
           </p>
         </div>
       )}

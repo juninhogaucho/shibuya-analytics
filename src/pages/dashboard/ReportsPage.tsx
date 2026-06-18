@@ -90,24 +90,20 @@ export function ReportsPage() {
       : 'unknown date'
     return `${reportName} is the newest artifact in your library, created ${createdAt}.`
   }, [latestReport])
+  const campaignMetrics = buildCampaignMetrics({
+    entries: readCampaignJournal(sessionMeta?.customerId),
+    comparison,
+    overview,
+  })
   const performanceStory = overview
     ? buildPerformanceStory({
         overview,
         profile,
         market,
         comparison,
-        metrics: buildCampaignMetrics({
-          entries: readCampaignJournal(sessionMeta?.customerId),
-          comparison,
-          overview,
-        }),
+        metrics: campaignMetrics,
       })
     : null
-  const campaignMetrics = useMemo(() => buildCampaignMetrics({
-    entries: readCampaignJournal(sessionMeta?.customerId),
-    comparison,
-    overview,
-  }), [comparison, overview, sessionMeta?.customerId])
   const tradingMandate = overview ? buildTradingMandate(overview) : null
   const actionBrief = overview && tradingMandate
     ? buildActionBrief({

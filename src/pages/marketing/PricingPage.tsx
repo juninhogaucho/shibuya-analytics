@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Check } from 'lucide-react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { trackAffiliateClick } from '../../lib/api'
+import { Link, useLocation } from 'react-router-dom'
+import { trackAffiliateClick } from '../../lib/api/checkout'
 import {
   captureAffiliateAttributionFromLocation,
   getPreferredAffiliateCode,
@@ -9,19 +9,18 @@ import {
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution'
 import { addMarketToPath, formatPrice, getPlansForType, persistMarket, resolveMarket, type PricingPlan } from '../../lib/market'
-import { enterSampleMode } from '../../lib/runtime'
 
 function getPlanFit(plan: PricingPlan): { bestFor: string; outcome: string } {
   switch (plan.id) {
     case 'audit_monthly':
       return {
         bestFor: 'Best for traders who need the software loop alive every month without guided founder intervention.',
-        outcome: 'Walk away with a live control system that keeps your leak, standards, and next-session mandate visible across sessions.',
+        outcome: 'Walk away with a live control system that keeps standards, uploads, reports, and next-session mandates visible across sessions.',
       }
     case 'reset_monthly':
       return {
-        bestFor: 'Best for traders who already know the damage is behavioral and want a harder monthly corrective loop with guided review.',
-        outcome: 'Walk away with continuity, deeper intervention, and a premium review path while the reset is happening, not after it failed.',
+        bestFor: 'Best for traders who already know the leak is process-driven and want the first real upload reviewed inside the monthly loop.',
+        outcome: 'Walk away with continuity, deeper corrective surfaces, append proof, and a guided checkpoint after evidence exists.',
       }
     case 'audit_once':
       return {
@@ -30,13 +29,13 @@ function getPlanFit(plan: PricingPlan): { bestFor: string; outcome: string } {
       }
     case 'reset_once':
       return {
-        bestFor: 'Best for traders who need a harder one-time intervention and want guided founder review inside the reset window.',
+        bestFor: 'Best for legacy reset customers who need a harder bounded intervention and guided founder review inside the reset window.',
         outcome: 'Walk away with the premium reset report, guided kickoff review, and up to three uploads to compare whether the process is actually tightening.',
       }
     default:
       return {
         bestFor: 'Best for traders who want a tighter operating process.',
-        outcome: 'Walk away with a clearer next-session mandate and a better read on what is leaking money.',
+        outcome: 'Walk away with a clearer next-session mandate and a better read on what is costing the account.',
       }
   }
 }
@@ -130,11 +129,9 @@ function PlanCard({
 }
 
 export default function PricingPage() {
-  const navigate = useNavigate()
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const monthlyPlans = getPlansForType(market, 'subscription')
-  const oneTimePlans = getPlansForType(market, 'payment')
 
   useEffect(() => {
     persistMarket(market)
@@ -151,12 +148,6 @@ export default function PricingPage() {
       })
       .catch(() => undefined)
   }, [location.pathname, location.search, market])
-
-  const handleSampleWorkspace = () => {
-    persistMarket(market)
-    enterSampleMode()
-    navigate('/dashboard')
-  }
 
   return (
     <section className="min-h-screen overflow-hidden bg-[#020203] pb-20 pt-32">
@@ -176,17 +167,17 @@ export default function PricingPage() {
           </span>
           <h1 className="mb-6 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">
             {market === 'india'
-              ? 'Start With A One-Time Reset Or Keep The Loop Live Monthly'
-              : 'Choose A Reset Window Or Continuous Live Access'}
+              ? 'Choose The Monthly Live Workspace'
+              : 'Choose Continuous Live Access'}
           </h1>
           <p className="font-serif text-xl italic text-neutral-400">
             {market === 'india'
-              ? 'Some traders need a one-time diagnosis and 30-day reset window. Others need the software live every month. Both paths unlock the same direct-trader product, just with different continuity.'
-              : 'Use the one-time offers when you want a hard reset window. Use the live monthly tiers when you want the loop running session by session.'}
+              ? 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'
+              : 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'}
           </p>
         </div>
 
-        <section className="mb-16">
+        <section className="mb-20">
           <div className="mb-8 flex items-end justify-between gap-6">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-emerald-300">Continuous Live Access</p>
@@ -210,45 +201,21 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="mb-20">
-          <div className="mb-8 flex items-end justify-between gap-6">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-amber-300">One-Time Reset Packages</p>
-              <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">
-                Buy the reset window without committing to continuity first.
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-neutral-400">
-                These offers open a 30-day live workspace window after activation. You still get the real product loop, but the commercial shape is one-time instead of recurring.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2">
-            {oneTimePlans.map((plan) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                ctaHref={addMarketToPath(`/checkout/${plan.checkoutSlug}`, market)}
-              />
-            ))}
-          </div>
-        </section>
-
         <section className="mx-auto mb-20 max-w-5xl rounded-3xl border border-amber-500/20 bg-gradient-to-br from-[#0f0d08]/90 to-[#0A0A0B]/90 p-8 shadow-2xl shadow-amber-900/10 backdrop-blur-md md:p-10">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
               <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                Workspace Modes
+                From Free Report To Live Workspace
               </span>
-              <h2 className="mt-4 text-2xl font-bold text-white">Sample to inspect. Live to fix it for real.</h2>
+              <h2 className="mt-4 text-2xl font-bold text-white">Free report to inspect. Live workspace to fix it for real.</h2>
               <p className="mt-4 text-sm leading-relaxed text-neutral-400">
-                The sample workspace shows the loop without pretending to persist live data. Paid access unlocks the live trader runtime where uploads, history, action boards, briefs, alerts, and prescriptions actually belong.
+                The free report shows the behavioral leak without pretending to persist live account state. Paid access unlocks the trader runtime where uploads, history, action boards, briefs, alerts, and prescriptions actually belong.
               </p>
               <div className="mt-6 space-y-3">
                 {[
-                  'Sample workspace lets you understand the workflow before you buy.',
-                  'One-time packages unlock a 30-day live window after activation.',
-                  'Monthly plans keep the same live loop running as long as continuity stays active.',
+                  'Free report lets you understand the leak before you buy.',
+                  'Psych Audit opens the monthly self-serve live loop after activation.',
+                  'Reset Pro adds the guided review checkpoint after the first meaningful upload.',
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm text-neutral-300">
                     <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-amber-500/15">
@@ -263,13 +230,18 @@ export default function PricingPage() {
             <div className="rounded-2xl border border-white/5 bg-black/30 p-6">
               <p className="mb-3 text-sm font-semibold text-white">Choose your mode right now</p>
               <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={handleSampleWorkspace}
+                <Link
+                  to={addMarketToPath('/upload', market)}
                   className="w-full rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black"
                 >
-                  Open Sample Workspace
-                </button>
+                  Generate Free Report
+                </Link>
+                <Link
+                  to={addMarketToPath('/private-demo', market)}
+                  className="w-full rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-sm font-semibold text-indigo-100 transition-colors hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
+                >
+                  Private Demo Access
+                </Link>
                 <Link
                   to={addMarketToPath('/activate', market)}
                   className="block w-full rounded-xl bg-amber-500 px-4 py-3 text-center text-sm font-semibold text-black transition-colors hover:bg-amber-400"
@@ -284,7 +256,7 @@ export default function PricingPage() {
                 </Link>
               </div>
               <p className="mt-4 text-xs leading-relaxed text-neutral-500">
-                If you already paid, activate. If you are still deciding, inspect the sample workspace first.
+                If you already paid, activate. If you are still deciding, generate the free report first.
               </p>
             </div>
           </div>
@@ -303,7 +275,7 @@ export default function PricingPage() {
               {
                 step: '1',
                 title: 'Choose',
-                body: 'Pick the one-time reset window or the monthly live tier that matches how much continuity you need.',
+                body: 'Pick Psych Audit for the self-serve monthly loop or Reset Pro for the monthly loop with first-cycle guided review.',
               },
               {
                 step: '2',
@@ -313,12 +285,12 @@ export default function PricingPage() {
               {
                 step: '3',
                 title: 'Upload',
-                body: 'Bring in your broker or platform export and let Shibuya show what is actually leaking money.',
+                body: 'Bring in your broker or platform export and let Shibuya show what is costing the account.',
               },
               {
                 step: '4',
                 title: 'Act',
-                body: 'Carry the next-session mandate, use the brief, and decide whether you need the deeper reset layer.',
+                body: 'Carry the next-session mandate, append the next session, and let Reset Pro review evidence instead of vibes.',
               },
             ].map((item) => (
               <article key={item.step} className="rounded-2xl border border-white/5 bg-[#080809] p-6">

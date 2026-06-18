@@ -3,7 +3,7 @@ import { useParams, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, User, MessageSquare, CreditCard, Gift, Check, AlertCircle, Upload, ArrowRight } from 'lucide-react'
 import { API_BASE_URL } from '../../lib/constants'
-import { createCheckoutSession, trackAffiliateClick } from '../../lib/api'
+import { createCheckoutSession, trackAffiliateClick } from '../../lib/api/checkout'
 import {
   captureAffiliateAttributionFromLocation,
   getPreferredAffiliateCode,
@@ -40,11 +40,15 @@ const CheckoutPage: React.FC = () => {
 
   const [loading, setLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
-  const [form, setForm] = useState<CheckoutForm>({
-    name: '',
-    email: '',
-    discord: '',
-    referral: '',
+  const [form, setForm] = useState<CheckoutForm>(() => {
+    const params = new URLSearchParams(location.search)
+    const storedAttribution = readAffiliateAttribution()
+    return {
+      name: '',
+      email: '',
+      discord: '',
+      referral: params.get('ref_code') || params.get('ref') || storedAttribution?.ref_code || storedAttribution?.affiliate_slug || '',
+    }
   })
   const [promoValidating, setPromoValidating] = useState(false)
   const [promoResult, setPromoResult] = useState<PromoValidation | null>(null)
@@ -55,13 +59,6 @@ const CheckoutPage: React.FC = () => {
     const attribution = captured ?? readAffiliateAttribution()
     const affiliateCode = getPreferredAffiliateCode(attribution)
 
-    if (attribution?.ref_code && !form.referral) {
-      setForm((current) => ({
-        ...current,
-        referral: current.referral || attribution.ref_code || '',
-      }))
-    }
-
     if (!affiliateCode || wasAffiliateClickTracked(affiliateCode)) {
       return
     }
@@ -71,7 +68,7 @@ const CheckoutPage: React.FC = () => {
         markAffiliateClickTracked(affiliateCode)
       })
       .catch(() => undefined)
-  }, [form.referral, location.pathname, location.search, market])
+  }, [location.pathname, location.search, market])
 
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
@@ -155,7 +152,7 @@ const CheckoutPage: React.FC = () => {
         planName: currentPlan.name,
       })
 
-      window.location.href = session.checkout_url
+      window.location.assign(session.checkout_url)
     } catch (error) {
       console.error('Checkout error:', error)
       setCheckoutError('Payment system unavailable. Please try again or contact support@shibuya-analytics.com')
@@ -305,23 +302,23 @@ const CheckoutPage: React.FC = () => {
             <p className="mb-6 text-sm text-neutral-400">
               {isSubscription
                 ? 'This does not buy a PDF. It starts a live trader workspace that stays active while continuity is healthy.'
-                : 'This does not buy a PDF. It opens a 30-day live reset window where you activate, upload, and work the loop for real.'}
+                : 'This does not buy a PDF. It opens a legacy bounded live reset window where you activate, upload, and work the loop for real.'}
             </p>
             <div className="grid gap-3 md:grid-cols-2">
               {[
                 'Activate the live workspace with your order code.',
                 'Upload your broker or platform export inside the workspace.',
                 market === 'india'
-                  ? 'See discipline tax, edge concentration, and behavior leaks in rupees.'
+                  ? 'See discipline tax, edge concentration, and process cost in rupees.'
                   : 'See discipline tax, edge concentration, and current trader state.',
                 'Carry a next-session mandate forward and update it after each session.',
                 isGuided
                   ? isSubscription
                     ? 'Your first billing cycle includes one guided review call so the reset does not stay theoretical.'
-                    : 'This package includes one guided kickoff review so the reset does not stay theoretical.'
+                    : 'This legacy package includes one guided kickoff review so the reset does not stay theoretical.'
                   : isSubscription
                     ? 'This tier is built to stay lightweight enough to keep live at volume.'
-                    : 'This package is built to give you a bounded reset window without forcing a recurring commitment first.',
+                    : 'This legacy package is built to give you a bounded reset window without forcing a recurring commitment first.',
               ].map((item) => (
                 <div key={item} className="rounded-xl border border-white/5 bg-black/20 p-4 text-sm leading-relaxed text-neutral-300">
                   {item}
@@ -336,7 +333,7 @@ const CheckoutPage: React.FC = () => {
               {[
                 isSubscription
                   ? 'Complete the recurring checkout through the live Shibuya payment flow.'
-                  : 'Complete the one-time checkout and secure the reset window.',
+                  : 'Complete checkout and secure the legacy bounded reset window.',
                 'Receive your order code by email and on the success screen.',
                 'Activate your live trader account.',
                 isSubscription

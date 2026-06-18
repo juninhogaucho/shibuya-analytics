@@ -11,30 +11,30 @@ const HowItWorks: React.FC = () => {
     market === 'india'
       ? [
           {
-            title: 'Import Your History',
-            desc: 'Export trades from Zerodha, Dhan, Angel One, Upstox, FYERS, MT5, or your prop portal. This is built for fast upload, not another journaling ritual.',
+            title: '1. Explore Sample',
+            desc: 'Open the sample workspace first. It shows the action board, upload surface, history, report artifacts, alerts, and mandates using sample data only.',
           },
           {
-            title: 'See The Leak In Rupees',
-            desc: 'Shibuya separates edge decay from behavioral leakage, quantifies discipline tax, and shows the exact pattern that keeps taxing the account.',
+            title: '2. Activate Live',
+            desc: 'Choose Psych Audit or Reset Pro, receive an order code, verify email plus code, and create the return password for the live trader account.',
           },
           {
-            title: 'Carry The Reset Forward',
-            desc: 'Use a 30-day reset window if you want a one-time intervention, or keep the same workspace live monthly if you want continuity.',
+            title: '3. Upload And Continue',
+            desc: 'Set trader context, upload broker history, open the action board, then append the next session to prove whether the reset is holding.',
           },
         ]
       : [
           {
-            title: 'Import Your History',
-            desc: 'Export trades from MT4, MT5, cTrader, TradingView, or your broker. No funds access required.',
+            title: '1. Explore Sample',
+            desc: 'Open the sample workspace first. It shows the action board, upload surface, history, report artifacts, alerts, and mandates using sample data only.',
           },
           {
-            title: 'Separate Edge From Sabotage',
-            desc: 'The system shows which losses came from weak setups, which came from behavioral leakage, and which state kept showing up before the damage.',
+            title: '2. Activate Live',
+            desc: 'Choose Psych Audit or Reset Pro, receive an order code, verify email plus code, and create the return password for the live trader account.',
           },
           {
-            title: 'Keep The Loop Live',
-            desc: 'Your workspace stays live after activation so alerts, history, and next-session mandates update with the process you are actually running.',
+            title: '3. Upload And Continue',
+            desc: 'Set trader context, upload platform history, open the action board, then append the next session to prove whether the reset is holding.',
           },
         ]
 
@@ -47,7 +47,7 @@ const HowItWorks: React.FC = () => {
           viewport={{ once: true }}
           className="mb-4 text-3xl font-display font-bold uppercase text-white md:text-5xl"
         >
-          Three steps from guesswork to a next-session mandate.
+          A walkthrough, not a cold checkout page.
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -57,8 +57,8 @@ const HowItWorks: React.FC = () => {
           className="font-serif text-xl italic text-neutral-400"
         >
           {market === 'india'
-            ? 'Upload history. See the leak in rupees. Choose between a one-time reset window and a monthly live loop depending on how much continuity you need.'
-            : 'Upload history. Separate edge from sabotage. Use a persistent workspace that keeps the loop alive session by session.'}
+            ? 'Sample explains the workflow. Activation opens the live trader account. Upload, context, and append proof turn the workspace into an India-first action board.'
+            : 'Sample explains the workflow. Activation opens the live trader account. Upload, context, and append proof turn the workspace into a persistent action board.'}
         </motion.p>
       </div>
 
@@ -82,12 +82,12 @@ const HowItWorks: React.FC = () => {
         className="border-t border-white/5 pt-12"
       >
         <p className="mb-8 text-center font-mono text-xs uppercase tracking-widest text-neutral-500">
-          Works with exports from
+          Universal ingestion first, deeper connectors later
         </p>
         <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale transition-all duration-500 hover:grayscale-0 md:gap-16">
           {(market === 'india'
-            ? ['Zerodha', 'Dhan', 'Angel One', 'Upstox', 'FYERS', 'MetaTrader 5']
-            : ['MetaTrader 4', 'MetaTrader 5', 'cTrader', 'TradingView', 'NinjaTrader']
+            ? ['CSV upload', 'Contract notes', 'Paste parser', 'Zerodha export', 'Dhan export', 'MetaTrader export']
+            : ['CSV upload', 'Statement upload', 'Paste parser', 'MetaTrader export', 'cTrader export', 'Broker export']
           ).map((platform, index) => (
             <motion.span
               key={platform}

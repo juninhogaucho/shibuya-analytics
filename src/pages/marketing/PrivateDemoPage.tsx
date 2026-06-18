@@ -1,0 +1,138 @@
+import { type FormEvent, useState } from 'react'
+import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { addMarketToPath, resolveMarket } from '../../lib/market'
+import {
+  PRIVATE_DEMO_CODE_ENV_KEY,
+  enterPrivateResetProDemo,
+  hasPrivateDemoGateConfigured,
+  verifyPrivateDemoCode,
+} from '../../lib/privateDemoAccess'
+
+export default function PrivateDemoPage() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const market = resolveMarket(location.pathname, location.search)
+  const [code, setCode] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const configured = hasPrivateDemoGateConfigured()
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    const result = verifyPrivateDemoCode(code)
+
+    if (!result.ok) {
+      setError(
+        result.reason === 'not_configured'
+          ? `Private demo access is disabled in this build. Configure ${PRIVATE_DEMO_CODE_ENV_KEY} before sharing a Reset Pro demo.`
+          : 'That demo code does not unlock the private Reset Pro workspace.',
+      )
+      return
+    }
+
+    enterPrivateResetProDemo(market)
+    navigate('/dashboard', { replace: true })
+  }
+
+  return (
+    <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+        <div className="lg:sticky lg:top-28">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-indigo-300">
+            Private Reset Pro Demo
+          </p>
+          <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
+            Show the trader workspace without making it public.
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
+            This gate opens the Reset Pro preview workspace for controlled demos only. It uses demo data,
+            does not persist live trades, and must not be treated as account-specific analysis. After
+            unlock, the operator lands on a 3-minute path through Mission HQ, slump protocol, alerts,
+            edge portfolio, propOS shadow boxing, and append-proof flow.
+          </p>
+
+          <div className="mt-8 grid gap-3 text-sm text-neutral-300">
+            {[
+              'The public story and free report stay open to everyone.',
+              'The Reset Pro workspace requires a private code configured at build time.',
+              'The dashboard opens a founder talk track before the normal workspace cards.',
+              'The preview-only boundary stays visible after unlock.',
+            ].map((item) => (
+              <div key={item} className="flex gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
+                Founder-controlled access
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Enter private demo code.</h2>
+            </div>
+            <div className="rounded-2xl border border-indigo-300/20 bg-indigo-300/[0.08] p-3 text-indigo-100">
+              <LockKeyhole className="h-5 w-5" />
+            </div>
+          </div>
+
+          {!configured ? (
+            <div className="mb-5 rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 text-sm leading-7 text-amber-100">
+              Private demo access is intentionally disabled because <span className="font-mono">{PRIVATE_DEMO_CODE_ENV_KEY}</span> is not configured in this build.
+            </div>
+          ) : null}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <label className="block">
+              <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                Demo code
+              </span>
+              <input
+                type="password"
+                value={code}
+                onChange={(event) => {
+                  setCode(event.target.value)
+                  setError(null)
+                }}
+                placeholder="Private code"
+                className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-indigo-300/50"
+              />
+            </label>
+
+            {error ? (
+              <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.08] p-4 text-sm text-rose-100">
+                {error}
+              </div>
+            ) : null}
+
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-black transition hover:bg-indigo-200"
+            >
+              Unlock Reset Pro Preview
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </form>
+
+          <div className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+            <Link
+              to={addMarketToPath('/activate', market)}
+              className="rounded-xl border border-white/10 px-4 py-3 text-center font-semibold text-white transition hover:bg-white hover:text-black"
+            >
+              Activate Paid Account
+            </Link>
+            <Link
+              to={addMarketToPath('/pricing', market)}
+              className="rounded-xl border border-white/10 px-4 py-3 text-center font-semibold text-white transition hover:bg-white hover:text-black"
+            >
+              View Paid Ladder
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

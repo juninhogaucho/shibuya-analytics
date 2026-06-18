@@ -1,49 +1,41 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { TrendingDown, ArrowUpRight, Brain, Flame, Target, Shield } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, ClipboardList, FileText, KeyRound, UploadCloud } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { resolveMarket } from '../../lib/market'
 
-const MetricPreview = ({
+const StateCard = ({
   icon: Icon,
   label,
   value,
-  trend,
-  trendLabel,
+  detail,
   variant = 'default',
 }: {
   icon: React.ElementType
   label: string
   value: string
-  trend?: 'up' | 'down'
-  trendLabel?: string
-  variant?: 'default' | 'danger' | 'success' | 'primary'
+  detail: string
+  variant?: 'default' | 'success' | 'primary'
 }) => {
   const variantStyles = {
-    default: 'border-white/5 hover:border-white/20',
-    danger: 'border-red-500/20 hover:border-red-500/40',
-    success: 'border-emerald-500/20 hover:border-emerald-500/40',
-    primary: 'border-indigo-500/20 hover:border-indigo-500/40 bg-gradient-to-br from-indigo-600/10 to-violet-600/5',
+    default: 'border-white/8',
+    success: 'border-emerald-500/25 bg-emerald-500/[0.04]',
+    primary: 'border-indigo-500/25 bg-indigo-500/[0.05]',
   }
 
   return (
     <motion.div
-      whileHover={{ y: -5, scale: 1.02 }}
+      whileHover={{ y: -4 }}
       className={`rounded-2xl border bg-[#0A0A0F] p-5 transition-all duration-300 ${variantStyles[variant]}`}
     >
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-4 flex items-center gap-3">
         <div className="rounded-lg bg-white/5 p-2">
-          <Icon className="h-4 w-4 text-white/60" />
+          <Icon className="h-4 w-4 text-white/70" />
         </div>
         <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">{label}</span>
       </div>
-      <div className="mb-2 font-mono text-2xl font-bold tracking-tight text-white">{value}</div>
-      {trendLabel && (
-        <div className={`flex items-center gap-1.5 text-xs ${trend === 'down' ? 'text-red-400' : 'text-emerald-400'}`}>
-          {trend === 'down' ? <TrendingDown className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
-          <span>{trendLabel}</span>
-        </div>
-      )}
+      <div className="mb-2 text-xl font-semibold text-white">{value}</div>
+      <p className="text-sm leading-relaxed text-neutral-400">{detail}</p>
     </motion.div>
   )
 }
@@ -52,21 +44,16 @@ const DashboardPreview: React.FC = () => {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
 
+  const nextAction =
+    market === 'india'
+      ? 'Reduce index F&O size until the first clean upload-to-append cycle is complete.'
+      : 'Reduce size until the first clean upload-to-append cycle is complete.'
+
   return (
     <section className="relative overflow-hidden bg-[#020203] py-32">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#020203] via-transparent to-[#020203]" />
-        <div className="absolute inset-0 bg-[#020203]/60" />
-        <div className="absolute inset-0 opacity-10">
-          <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <pattern id="neural-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <circle cx="5" cy="5" r="0.5" fill="rgba(99, 102, 241, 0.5)" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#neural-grid)" />
-          </svg>
-        </div>
+        <div className="absolute inset-0 bg-[#020203]/70" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
@@ -77,8 +64,8 @@ const DashboardPreview: React.FC = () => {
             viewport={{ once: true }}
             className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2"
           >
-            <Brain className="h-4 w-4 text-indigo-400" />
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-indigo-400">Inside the Engine</span>
+            <ClipboardList className="h-4 w-4 text-indigo-400" />
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-indigo-400">Action Board Preview</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -87,7 +74,7 @@ const DashboardPreview: React.FC = () => {
             transition={{ delay: 0.1 }}
             className="mb-4 text-4xl font-display font-bold uppercase text-white md:text-6xl"
           >
-            Execution you cannot rationalize away.
+            Reset Pro is a first-cycle command room, not a prettier report.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -96,7 +83,7 @@ const DashboardPreview: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="mx-auto max-w-2xl text-lg text-neutral-400"
           >
-            Not a prettier journal. A control surface that turns mistakes, standards, and recovery protocols into something you can actually act on.
+            The public experience should make the next screen obvious: sample workspace for inspection, live trader account for persistent uploads, and Reset Pro for the first guided review after evidence exists.
           </motion.p>
         </div>
 
@@ -114,42 +101,37 @@ const DashboardPreview: React.FC = () => {
               <div className="h-3 w-3 rounded-full bg-green-500/60" />
             </div>
             <div className="flex-1 text-center">
-              <span className="font-mono text-xs text-neutral-500">shibuya-analytics.com/dashboard</span>
+              <span className="font-mono text-xs text-neutral-500">shibuya-analytics.com/dashboard/workspace</span>
             </div>
           </div>
 
           <div className="p-6 md:p-8">
-            <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <MetricPreview
-                icon={Flame}
-                label="Discipline Tax"
-                value={market === 'india' ? '-\u20b98,470' : '-EUR 640'}
-                trend="down"
-                trendLabel="+12% vs last month"
-                variant="danger"
+            <div className="mb-6 grid gap-4 md:grid-cols-4">
+              <StateCard
+                icon={ClipboardList}
+                label="Runtime"
+                value="Sample or live"
+                detail="Sample teaches the workflow. Live persists only after activation."
+                variant="primary"
               />
-              <MetricPreview
-                icon={Target}
-                label="Edge Score"
-                value="72/100"
-                trend="up"
-                trendLabel="Top 15%"
+              <StateCard
+                icon={KeyRound}
+                label="Activation"
+                value="Order code"
+                detail="Email plus code unlocks the live trader account."
                 variant="success"
               />
-              <MetricPreview
-                icon={Shield}
-                label="Ruin Probability"
-                value="4.2%"
-                trend="down"
-                trendLabel="Low risk"
-                variant="default"
+              <StateCard
+                icon={UploadCloud}
+                label="Ingestion"
+                value="Universal first"
+                detail="CSV, statement, or paste parser before deeper connectors."
               />
-              <MetricPreview
-                icon={Brain}
-                label="BQL Score"
-                value="68"
-                trendLabel="Stable"
-                variant="primary"
+              <StateCard
+                icon={FileText}
+                label="Reset Pro"
+                value="Review after upload"
+                detail="The guided checkpoint follows the first meaningful upload."
               />
             </div>
 
@@ -161,71 +143,32 @@ const DashboardPreview: React.FC = () => {
                 viewport={{ once: true }}
                 className="rounded-2xl border border-white/5 bg-[#080809] p-6 md:col-span-2"
               >
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h4 className="mb-1 font-medium text-white">Potential Equity Without Unforced Errors</h4>
-                    <p className="text-sm text-neutral-500">What the account would look like with tighter execution</p>
+                    <h4 className="mb-1 font-medium text-white">First-cycle Reset Pro path</h4>
+                    <p className="text-sm text-neutral-500">Generated after context and upload, then checked against the next append.</p>
                   </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-bold text-emerald-400">
-                      {market === 'india' ? '+\u20b925,280' : '+EUR 1,920'}
-                    </span>
-                    <span className="block text-xs text-neutral-500">unrealized</span>
+                  <div className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-200">
+                    Action board
                   </div>
                 </div>
 
-                <div className="relative h-32">
-                  <svg className="h-full w-full" viewBox="0 0 400 100" preserveAspectRatio="none">
-                    <motion.path
-                      d="M0,80 Q50,75 100,60 T200,55 T300,65 T400,50"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.3)"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1.5 }}
-                    />
-                    <motion.path
-                      d="M0,70 Q50,55 100,40 T200,30 T300,25 T400,15"
-                      fill="none"
-                      stroke="#6366f1"
-                      strokeWidth="2.5"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1.5, delay: 0.3 }}
-                    />
-                    <motion.path
-                      d="M0,80 Q50,75 100,60 T200,55 T300,65 T400,50 L400,15 Q350,25 300,25 T200,30 T100,40 Q50,55 0,70 Z"
-                      fill="url(#gradient-fill)"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                    />
-                    <defs>
-                      <linearGradient id="gradient-fill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(99, 102, 241, 0.3)" />
-                        <stop offset="100%" stopColor="rgba(99, 102, 241, 0)" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute bottom-0 left-0 right-0 flex justify-between font-mono text-[10px] text-neutral-600">
-                    <span>30d ago</span>
-                    <span>Today</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
-                  <div className="flex items-center gap-4 text-xs">
-                    <span className="flex items-center gap-2">
-                      <span className="h-0.5 w-3 bg-white/30" />
-                      <span className="text-neutral-500">Actual</span>
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <span className="h-0.5 w-3 bg-indigo-500" />
-                      <span className="text-neutral-500">Without errors</span>
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium text-indigo-400">+18% difference</span>
+                <div className="space-y-4">
+                  {[
+                    ['Before trading', 'Review allowed setup, size limit, and the condition that stops the session.'],
+                    ['During the first cycle', nextAction],
+                    ['After session', 'Append the new trades and compare adherence, improvement, or relapse before guided review.'],
+                  ].map(([title, body], index) => (
+                    <div key={title} className="flex gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 font-mono text-xs text-neutral-300">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="mb-1 text-sm font-semibold text-white">{title}</div>
+                        <p className="text-sm leading-relaxed text-neutral-400">{body}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
 
@@ -234,42 +177,23 @@ const DashboardPreview: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
                 viewport={{ once: true }}
-                className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#080809] p-6 text-center"
+                className="flex flex-col rounded-2xl border border-white/5 bg-[#080809] p-6"
               >
-                <div className="relative mb-4 h-28 w-28">
-                  <svg className="h-full w-full -rotate-90">
-                    <circle cx="56" cy="56" r="50" stroke="#1a1a2e" strokeWidth="8" fill="none" />
-                    <motion.circle
-                      initial={{ strokeDashoffset: 314 }}
-                      whileInView={{ strokeDashoffset: 88 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
-                      cx="56"
-                      cy="56"
-                      r="50"
-                      stroke="#6366f1"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray="314"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ delay: 1.2 }}
-                      className="text-3xl font-bold text-white"
-                    >
-                      72
-                    </motion.span>
-                    <span className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-indigo-400">Good</span>
-                  </div>
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-300" />
                 </div>
-                <h4 className="mb-1 text-sm font-medium text-white">Psych Score</h4>
-                <p className="text-xs text-neutral-500">Top 15% of users</p>
-                <div className="mt-3 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-400">
-                  Up 8 pts from last month
+                <h4 className="mb-2 text-lg font-semibold text-white">Guided review checkpoint</h4>
+                <p className="mb-6 text-sm leading-relaxed text-neutral-400">
+                  Reset Pro unlocks a guided checkpoint after the first meaningful upload, so the call reviews the board, the mandate, and the actual reset plan.
+                </p>
+                <div className="mt-auto rounded-xl border border-white/5 bg-black/30 p-4">
+                  <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                    Included where plan says guided
+                  </div>
+                  <p className="text-xs leading-relaxed text-neutral-500">
+                    Self-serve plans still keep the workspace loop. Guided review is an explicit plan feature, not a hidden claim or pre-evidence promise.
+                  </p>
                 </div>
               </motion.div>
             </div>
@@ -283,7 +207,7 @@ const DashboardPreview: React.FC = () => {
           transition={{ delay: 0.5 }}
           className="mt-8 text-center text-sm italic text-neutral-500"
         >
-          Sample dashboard preview. Your standards. Your leaks. Your path to a tighter operating process.
+          Preview uses bounded product states. Live accounts must bind to backend state or show the missing state honestly.
         </motion.p>
       </div>
     </section>

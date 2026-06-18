@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { bootstrapPassword, isAuthenticated, logTraderLifecycleEvent } from '../../lib/api'
+import { logTraderLifecycleEvent } from '../../lib/api'
+import { bootstrapPassword, isAuthenticated } from '../../lib/api/auth'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 
 export default function ClaimAccountPage() {

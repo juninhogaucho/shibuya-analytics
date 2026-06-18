@@ -8,39 +8,43 @@ const FAQ: React.FC = () => {
   const faqs = [
     {
       q: 'What exactly do I get after I pay?',
-      a: 'You receive an order code, activate your live workspace, create your return password, upload your trade history, and get a decision-grade action board built around the leak, the stop, and the next-session mandate.',
+      a: 'You receive an order code, activate with your email and code, create return access, set trader context, upload trade history, and open a live action board with next-session decisions and report artifacts where your plan includes them.',
     },
     {
-      q: 'Why use this instead of ChatGPT or a normal journal?',
-      a: 'Because generic AI gives you a conversation. Shibuya gives you a stored baseline, a repeatable standards layer, delivery-state tracking, comparison artifacts, and a next-session control loop built on your actual trading history.',
+      q: 'What is the difference between sample and live?',
+      a: 'Sample workspace uses sample data and does not persist your trading history. A live trader account starts after activation and is where uploads, history, alerts, prescriptions, reports, and guided-review status belong.',
     },
     {
-      q: "How do you calculate the 'discipline tax'?",
-      a: 'We analyze patterns in your trading data that correlate with emotional decisions: trades taken after losses, size spikes, fatigue windows, and other execution breaks from your own edge. The point is to make the leak concrete, not philosophical.',
+      q: 'Is this a PDF report?',
+      a: 'No. Reports can exist as artifacts, but the product is the live workspace: activation, context, upload, action board, append-after-session loop, and proof trail.',
     },
     {
       q: 'Is this therapy or mindset coaching?',
-      a: 'No. The standard here is professional execution. Shibuya treats tilt, overtrading, and size indiscipline as performance failures that should be measured, named, and corrected, not romanticized.',
+      a: 'No. Shibuya is a trader performance operating system. It is not medical advice, investment advice, or a promise of profitability.',
     },
     {
-      q: 'Is this only for losing traders?',
-      a: 'No. The primary wedge is the trader who keeps leaking money for behavioral reasons, but profitable traders also use Shibuya to protect what actually pays them and stop self-sabotaging between good sessions.',
+      q: 'What does guided review mean?',
+      a: 'Reset Pro includes one guided review checkpoint in the first billing cycle after the first meaningful upload. The call reviews the board, the mandate, and the reset plan; it does not replace the workspace.',
     },
     {
       q: 'Does this help with prop challenges and funded accounts?',
-      a: 'Yes. The same loop is useful for direct traders and for traders trying to stop breaching prop rules. The product is built to surface repeat-breach behavior, size drift, revenge loops, and the setups worth protecting.',
+      a: 'Yes, but this page is Shibuya Direct. Traders can use the upload and action-board loop whether or not their firm uses PropOS. Partner and embedded prop-firm infrastructure belongs on the Decrypt/PropOS side.',
     },
     {
       q: 'Do I need a live broker connection before I start?',
-      a: 'No. If you can export timestamped history, you can start. The current product is built around upload-first activation so you can get value without waiting on deep integrations.',
+      a: 'No. The current path is universal ingestion first: CSV, statement upload, or paste parser. MT4, MT5, cTrader, Match-Trader, DXtrade, partner endpoints, and embedded paths are the connector ladder, not the first requirement.',
     },
     {
-      q: 'Do you offer one-time and monthly options?',
-      a: 'Yes. You can buy a one-time reset window if you want a bounded intervention, or use the monthly live tiers if you want the workspace, uploads, and corrective loop to stay alive across sessions.',
+      q: 'What should I not assume yet?',
+      a: 'Do not treat Shibuya as proven at broad paid scale, a guaranteed performance fix, or a fully embedded broker/prop integration. The public claim is the direct-trader workflow and the activation-to-upload loop.',
     },
     {
-      q: 'Do I need an automatic broker connection before I can get value?',
-      a: 'No. The current India-first path is manual upload by design. If you can export timestamped trade history or contract notes, you can start now and get the same standards layer, reports, and next-session protocol without waiting on connectors.',
+      q: 'Why use this instead of ChatGPT or a normal journal?',
+      a: 'Generic AI gives you a conversation. Shibuya gives you runtime state, activation, uploads, history, action boards, artifacts, append proof, and a repeatable loop built around your trading record.',
+    },
+    {
+      q: 'Is Shibuya claiming magic AI detection?',
+      a: 'No. The product story is calculation discipline, trader context, process inference, and proof over repeated uploads. Any advanced model claim has to be backed by generated backend artifacts before the UI treats it as live.',
     },
   ]
 

@@ -5,7 +5,7 @@ import { AuthGuard } from '../AuthGuard'
 
 const isAuthenticatedMock = vi.fn()
 
-vi.mock('../../lib/api', () => ({
+vi.mock('../../lib/api/auth', () => ({
   isAuthenticated: () => isAuthenticatedMock(),
 }))
 

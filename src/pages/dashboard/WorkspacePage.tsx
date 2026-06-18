@@ -68,10 +68,10 @@ function humanizeOfferKind(offerKind?: string | null): string {
   switch (offerKind) {
     case 'psych_audit':
     case 'edge_or_behavior':
-      return 'One-time audit'
+      return 'Legacy bounded audit'
     case 'reset_intensive':
     case 'next_session_reset':
-      return 'One-time reset'
+      return 'Legacy bounded reset'
     case 'psych_audit_live':
       return 'Monthly live'
     case 'reset_pro_live':
@@ -174,7 +174,7 @@ function buildNextMilestone({
   if (readOnly) {
     return {
       title: 'Reopen the loop',
-      detail: 'This one-time window is now read only. Reopen it with a fresh package or a monthly tier if you want new uploads.',
+      detail: 'This legacy bounded window is now read only. Reopen it with a monthly tier if you want new uploads.',
       ctaLabel: 'See pricing',
       ctaTo: '/pricing?upgrade=reset-pro',
     }
@@ -325,10 +325,10 @@ export function WorkspacePage() {
                 ? 'Sample mode never persists your trading data.'
                 : oneTimeAccess
                   ? effectiveReadOnly
-                    ? 'This one-time reset window is now read only.'
+                    ? 'This legacy bounded reset window is now read only.'
                     : effectiveDaysRemaining != null
                       ? `${effectiveDaysRemaining} day${effectiveDaysRemaining === 1 ? '' : 's'} left in the current window.`
-                      : 'One-time access window is active.'
+                      : 'Legacy bounded access window is active.'
                   : 'Monthly continuity is active as long as the billing state stays healthy.'}
             </p>
           </article>
@@ -513,7 +513,7 @@ export function WorkspacePage() {
         {!sampleMode && overview?.discipline_tax_30d != null && (
           <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
             <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <h4 style={{ marginBottom: '0.35rem' }}>Behavioral leak</h4>
+              <h4 style={{ marginBottom: '0.35rem' }}>Behavioral cost</h4>
               <p style={{ marginBottom: 0, fontSize: '1.2rem', fontWeight: 700 }}>
                 {formatMoney(overview.discipline_tax_30d, market)}
               </p>

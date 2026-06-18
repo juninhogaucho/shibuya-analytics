@@ -2,6 +2,47 @@ import { describe, expect, it } from 'vitest'
 import { buildJourneyState } from '../journeyState'
 
 describe('buildJourneyState', () => {
+  it('keeps sample workspaces out of live-loop journey states', () => {
+    const state = buildJourneyState({
+      overview: {
+        access_tier: 'sample',
+        billing_status: 'sample',
+        offer_kind: 'sample',
+        case_status: 'sample_preview',
+        trader_mode: 'retail_fn0_struggler',
+        next_action: 'Upload next meaningful session',
+        data_source: 'sample_dataset',
+        bql_state: 'WATCH',
+        bql_score: 0.4,
+        monte_carlo_drift: 100,
+        ruin_probability: 0.1,
+        discipline_tax_30d: 200,
+        sharpe_scenario: 1,
+        total_trades: 20,
+        winning_trades: 10,
+        edge_portfolio: [],
+        loyalty_unlock: null,
+        next_coach_date: new Date().toISOString(),
+      },
+      profile: {
+        capital_band: '50k_to_250k_inr',
+        monthly_income_band: '25k_to_75k_inr',
+        trader_focus: 'retail_fo',
+        broker_platform: 'Sample broker',
+        primary_instruments: ['nifty_options'],
+        trader_mode: 'retail_fn0_struggler',
+        completed: true,
+      },
+      sessionMeta: { market: 'india', offerKind: 'sample', tier: 'sample' },
+      market: 'india',
+    })
+
+    expect(state.eyebrow).toBe('SAMPLE WORKSPACE')
+    expect(state.nextAction?.to).toBe('/pricing?market=india')
+    expect(state.steps.find((step) => step.key === 'activate')?.status).toBe('current')
+    expect(state.steps.find((step) => step.key === 'upload')?.status).toBe('upcoming')
+  })
+
   it('pushes incomplete profiles into onboarding first', () => {
     const state = buildJourneyState({
       overview: null,

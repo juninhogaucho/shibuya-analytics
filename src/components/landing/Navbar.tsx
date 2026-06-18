@@ -2,7 +2,6 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, getMarketHomePath, persistMarket, resolveMarket } from '../../lib/market'
-import { enterSampleMode } from '../../lib/runtime'
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate()
@@ -14,14 +13,9 @@ const Navbar: React.FC = () => {
     navigate(getMarketHomePath(market))
   }
 
-  const goHowItWorks = () => {
+  const goStory = () => {
     persistMarket(market)
-    window.location.assign(`${getMarketHomePath(market)}#how-it-works`)
-  }
-
-  const openSample = () => {
-    enterSampleMode()
-    navigate('/dashboard')
+    navigate(`${getMarketHomePath(market)}#story-experience`)
   }
 
   const goPricing = () => {
@@ -36,7 +30,7 @@ const Navbar: React.FC = () => {
 
   const goPrimary = () => {
     persistMarket(market)
-    navigate(addMarketToPath('/pricing', market))
+    navigate(addMarketToPath('/upload', market))
   }
 
   const switchMarket = () => {
@@ -65,9 +59,9 @@ const Navbar: React.FC = () => {
 
         <div className="hidden items-center gap-6 text-sm font-medium tracking-wide md:flex">
           {[
-            { label: 'How It Works', active: location.hash === '#how-it-works', onClick: goHowItWorks },
+            { label: 'Story', active: location.hash === '#story-experience' || ['/', '/global', '/intl', '/story'].includes(location.pathname), onClick: goStory },
+            { label: 'Upload', active: location.pathname === '/upload', onClick: goPrimary },
             { label: 'Pricing', active: location.pathname === '/pricing', onClick: goPricing },
-            { label: 'Sample', active: location.pathname.startsWith('/dashboard'), onClick: openSample },
             { label: 'Sign In', active: location.pathname === '/login', onClick: goLogin },
           ].map((item, index) => (
             <motion.button
@@ -101,7 +95,7 @@ const Navbar: React.FC = () => {
             onClick={goPrimary}
             className="border border-white/30 bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:border-white"
           >
-            {market === 'india' ? 'Get My Audit' : 'View Plans'}
+            Upload
           </motion.button>
         </div>
       </div>

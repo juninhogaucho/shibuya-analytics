@@ -1,0 +1,73 @@
+import { describe, expect, test } from 'vitest'
+import {
+  buildPredictedFingerprint,
+  buildBehavioralPressureIndex,
+  buildFreeReportPreview,
+  createInitialStorySignal,
+  getBehavioralPressureBand,
+  getDominantFingerprintAxis,
+  recordPricingInterest,
+  recordSceneView,
+  recordUploadIntent,
+  selectArchetype,
+  togglePainAxis,
+} from '../storyExperience'
+
+describe('story experience signal model', () => {
+  test('starts as a provisional neutral fingerprint', () => {
+    const fingerprint = buildPredictedFingerprint(createInitialStorySignal())
+
+    expect(fingerprint).toHaveLength(8)
+    expect(fingerprint.every((axis) => axis.score === 34)).toBe(true)
+  })
+
+  test('raises axes based on archetype, pain taps, pricing curiosity, and upload intent', () => {
+    let signal = createInitialStorySignal()
+    signal = selectArchetype(signal, 'priya')
+    signal = togglePainAxis(signal, 'drawdown_pressure')
+    signal = recordPricingInterest(signal)
+    signal = recordUploadIntent(signal)
+    signal = recordSceneView(signal, 'cold-open')
+    signal = recordSceneView(signal, 'archetypes')
+
+    const fingerprint = buildPredictedFingerprint(signal)
+    const dominant = getDominantFingerprintAxis(fingerprint)
+
+    expect(dominant.id).toBe('drawdown_pressure')
+    expect(dominant.score).toBeGreaterThan(70)
+    expect(fingerprint.find((axis) => axis.id === 'revenge_reentry')?.score).toBeGreaterThan(40)
+  })
+
+  test('computes a bounded website-level behavioral pressure index', () => {
+    let signal = createInitialStorySignal()
+    signal = selectArchetype(signal, 'priya')
+    signal = togglePainAxis(signal, 'drawdown_pressure')
+    signal = togglePainAxis(signal, 'revenge_reentry')
+    signal = recordUploadIntent(signal)
+
+    const pressureIndex = buildBehavioralPressureIndex(buildPredictedFingerprint(signal))
+    const band = getBehavioralPressureBand(pressureIndex)
+
+    expect(pressureIndex).toBeGreaterThanOrEqual(52)
+    expect(pressureIndex).toBeLessThanOrEqual(92)
+    expect(['pressure_building', 'intervention_candidate']).toContain(band.id)
+  })
+
+  test('builds the free report preview with unlocked and locked sections', () => {
+    const report = buildFreeReportPreview({
+      reportId: 'sample-report',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+    })
+
+    expect(report.reportId).toBe('sample-report')
+    expect(report.archetype.id).toBe('marco')
+    expect(report.dominantAxis.id).toBe('edge_decay')
+    expect(report.pressureIndex).toBeGreaterThan(0)
+    expect(report.pressureBand.label).toBeTruthy()
+    expect(report.recommendedPath.cta).toBeTruthy()
+    expect(report.unlocked).toHaveLength(6)
+    expect(report.locked.map((section) => section.title)).toContain('Next-session state warning')
+    expect(report.conversionLine).toContain('live workspace')
+  })
+})

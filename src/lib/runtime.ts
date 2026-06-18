@@ -6,6 +6,18 @@ export const SHIBUYA_SESSION_META_STORAGE_KEY = 'shibuya_session_meta'
 export const SHIBUYA_SAMPLE_API_KEY = 'shibuya_demo_mode'
 
 export type ShibuyaRuntimeMode = 'anonymous' | 'sample' | 'live'
+export type ShibuyaRuntimePersistence = 'none' | 'local_only' | 'backend'
+export type ShibuyaSamplePreview = 'core' | 'reset_pro'
+
+export interface ShibuyaRuntimeContract {
+  mode: ShibuyaRuntimeMode
+  label: string
+  canUseSampleData: boolean
+  canPersistTrades: boolean
+  persistence: ShibuyaRuntimePersistence
+  requiresBackend: boolean
+  proofBoundary: string
+}
 
 export interface ShibuyaSessionMeta {
   customerId?: string
@@ -21,6 +33,12 @@ export interface ShibuyaSessionMeta {
   dataSource?: string | null
   affiliateSlug?: string
   refCode?: string
+  samplePreview?: ShibuyaSamplePreview
+}
+
+export interface EnterSampleModeOptions {
+  market?: Market
+  preview?: ShibuyaSamplePreview
 }
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
@@ -52,7 +70,8 @@ export function getStoredSessionOfferKind(): string | null {
 }
 
 export function hasPremiumAccess(): boolean {
-  return getStoredSessionTier() === 'reset_pro'
+  const meta = getStoredSessionMeta()
+  return meta?.tier === 'reset_pro' || (getShibuyaRuntimeMode() === 'sample' && meta?.samplePreview === 'reset_pro')
 }
 
 export function isOneTimeOffer(offerKind?: string | null): boolean {
@@ -100,19 +119,97 @@ export function isSampleMode(): boolean {
   return getShibuyaRuntimeMode() === 'sample'
 }
 
-export function enterSampleMode(): void {
+export function getShibuyaRuntimeContract(): ShibuyaRuntimeContract {
+  const mode = getShibuyaRuntimeMode()
+
+  if (mode === 'live') {
+    return {
+      mode,
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    }
+  }
+
+  if (mode === 'sample') {
+    return {
+      mode,
+      label: 'Sample workspace',
+      canUseSampleData: true,
+      canPersistTrades: false,
+      persistence: 'local_only',
+      requiresBackend: false,
+      proofBoundary: 'Sample mode may demonstrate workflow only. It must not imply live persistence, live billing, or account-specific analytics.',
+    }
+  }
+
+  return {
+    mode,
+    label: 'Public visitor',
+    canUseSampleData: false,
+    canPersistTrades: false,
+    persistence: 'none',
+    requiresBackend: false,
+    proofBoundary: 'Anonymous visitors can inspect the public product story but cannot access account analytics.',
+  }
+}
+
+export function requireLiveRuntime(featureName: string): void {
+  const contract = getShibuyaRuntimeContract()
+
+  if (contract.mode !== 'live') {
+    throw new Error(`${featureName} requires a live trader account. Current runtime: ${contract.label}.`)
+  }
+}
+
+export function isResetProSamplePreview(meta?: ShibuyaSessionMeta | null): boolean {
+  return (meta ?? getStoredSessionMeta())?.samplePreview === 'reset_pro'
+}
+
+export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
+  const market = options.market ?? 'india'
+  const preview = options.preview ?? 'core'
+
   localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY)
   localStorage.setItem(
     SHIBUYA_SESSION_META_STORAGE_KEY,
-    JSON.stringify({ tier: 'sample', market: 'india' as Market, offerKind: 'sample' }),
+    JSON.stringify({
+      tier: 'sample',
+      market,
+      offerKind: 'sample',
+      caseStatus: 'sample_preview',
+      samplePreview: preview,
+    }),
   )
 }
 
 export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, apiKey)
-  if (meta) {
-    const previous = getStoredSessionMeta() ?? {}
-    localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify({ ...previous, ...meta }))
+
+  const previous = getStoredSessionMeta() ?? {}
+  const nextMeta = { ...previous, ...(meta ?? {}) }
+  delete nextMeta.samplePreview
+
+  if (nextMeta.tier === 'sample') {
+    delete nextMeta.tier
+  }
+  if (nextMeta.offerKind === 'sample') {
+    delete nextMeta.offerKind
+  }
+  if (nextMeta.caseStatus === 'sample_preview') {
+    delete nextMeta.caseStatus
+  }
+  if (nextMeta.dataSource === 'sample_dataset') {
+    delete nextMeta.dataSource
+  }
+
+  if (Object.keys(nextMeta).length > 0) {
+    localStorage.setItem(SHIBUYA_SESSION_META_STORAGE_KEY, JSON.stringify(nextMeta))
+  } else {
+    localStorage.removeItem(SHIBUYA_SESSION_META_STORAGE_KEY)
   }
 }
 

@@ -176,7 +176,7 @@ export function EdgePortfolioPage() {
           <span className="stat-label">
             Losing Money
             <InfoTooltip 
-              content="DECAYED setups: These are bleeding your account. Stop trading them." 
+              content="DECAYED setups: These are costing the account. Stop or reduce them." 
               position="bottom"
             />
           </span>

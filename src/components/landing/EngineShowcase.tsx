@@ -51,7 +51,7 @@ export function EngineShowcase() {
               viewport={{ once: true }}
               className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-4 block"
             >
-              The Mathematics
+              The Review Stack
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -60,8 +60,8 @@ export function EngineShowcase() {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-display font-bold text-white uppercase leading-[0.92] mb-6"
             >
-              Other tools run 15 formulas.<br />
-              <span className="text-neutral-600">We run 68 engines.</span>
+              Turn trade history into checks.<br />
+              <span className="text-neutral-600">Keep every claim tied to an artifact.</span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -70,9 +70,8 @@ export function EngineShowcase() {
               transition={{ delay: 0.2 }}
               className="text-neutral-400 text-base leading-relaxed max-w-2xl"
             >
-              Built on the same mathematics used by Goldman Sachs, Two Sigma, and Basel III.
-              Applied to the one variable the big desks ignore: you. The formulas below are all textbook.
-              How we chain them together is not.
+              The product should show what changed, what is risky, what deserves protection,
+              and what the trader should review before the next session.
             </motion.p>
           </div>
 
@@ -181,8 +180,8 @@ export function EngineShowcase() {
             className="mt-12 pt-8 border-t border-white/5 text-center"
           >
             <p className="text-sm text-neutral-600 font-mono">
-              These are 12 of 68 engines. The formulas are textbook.
-              <span className="text-neutral-500"> How we chain them together is not.</span>
+              These checks are product examples. Public claims still need generated artifacts.
+              <span className="text-neutral-500"> The homepage stays focused on the action board.</span>
             </p>
           </motion.div>
         </div>

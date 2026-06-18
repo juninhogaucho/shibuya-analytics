@@ -1,8 +1,9 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { logTraderLifecycleEvent, verifyActivation } from '../../lib/api'
-import { addMarketToPath, getPlanByPlanId, persistMarket, resolveMarket } from '../../lib/market'
-import { enterSampleMode, setLiveApiKey } from '../../lib/runtime'
+import { logTraderLifecycleEvent } from '../../lib/api'
+import { verifyActivation } from '../../lib/api/auth'
+import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
+import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 
 export function ActivationPage() {
@@ -72,12 +73,6 @@ export function ActivationPage() {
     }
   }
 
-  const handleSampleWorkspace = () => {
-    persistMarket(market)
-    enterSampleMode()
-    navigate('/dashboard', { replace: true })
-  }
-
   return (
     <section className="activation-terminal">
       <div className="terminal-background-grid"></div>
@@ -99,7 +94,7 @@ export function ActivationPage() {
 
           <div className="terminal-output">
             <p className="text-green-400">Live trader workspace: AVAILABLE</p>
-            <p className="text-green-400">Sample workspace: AVAILABLE</p>
+            <p className="text-green-400">Public free report: AVAILABLE</p>
             <p>Shibuya Analytics trader runtime</p>
             <p className="terminal-muted">
               Use the exact email and order code from payment to unlock the live workspace.
@@ -185,16 +180,16 @@ export function ActivationPage() {
           </form>
 
           <div className="terminal-divider">
-            <span>OR EXPLORE FIRST</span>
+            <span>OR RUN THE PUBLIC MIRROR FIRST</span>
           </div>
 
-          <button onClick={handleSampleWorkspace} className="terminal-btn terminal-btn-ghost">
+          <Link to={addMarketToPath('/upload', market)} className="terminal-btn terminal-btn-ghost">
             <span className="demo-icon">▶</span>
-            OPEN SAMPLE WORKSPACE
-          </button>
+            GENERATE FREE REPORT
+          </Link>
 
           <p className="terminal-hint">
-            Sample is for evaluation. Live is where uploads, history, alerts, next-session mandates, and your return access persist.
+            The public report is for evaluation. Live is where uploads, history, alerts, next-session mandates, and your return access persist.
           </p>
 
           <div className="terminal-footer">

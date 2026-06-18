@@ -57,7 +57,7 @@ export function PrivacyPage() {
           the service, such as:
         </p>
         <ul>
-          <li><strong>Stripe:</strong> for payment processing, one-time purchases, and subscription events</li>
+          <li><strong>Stripe:</strong> for payment processing and subscription events</li>
           <li><strong>Email providers:</strong> for transactional emails only</li>
           <li><strong>Infrastructure providers:</strong> for secure hosting, storage, and service delivery</li>
         </ul>

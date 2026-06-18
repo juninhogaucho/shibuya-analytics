@@ -5,27 +5,27 @@ import { addMarketToPath, resolveMarket } from '../../lib/market'
 const productSurfaces = [
   {
     title: 'Psych Audit',
-    summary: 'The baseline that tells you whether the real problem is edge, behavior, or the state you keep entering before you self-sabotage.',
+    summary: 'The baseline that tells you whether the real problem is edge, behavior, or the state you keep entering before the next bad decision.',
     bullets: [
       'Discipline tax in real money',
-      'Behavioral leak diagnosis',
+      'Repeat mistake diagnosis',
       'Edge concentration and weak-zone mapping',
       'First next-session mandate',
     ],
   },
   {
     title: 'Reset Layer',
-    summary: 'The premium reset track for traders who already know they are stuck in a loop and need either a harder one-time intervention or a deeper live monthly tier.',
+    summary: 'The premium reset track for traders who already know they are stuck in a loop and need a deeper live monthly tier with guided review.',
     bullets: [
       'Everything in Psych Audit',
-      'Reset Intensive for a guided one-time reset window',
-      'Reset Pro Live for deeper monthly continuity',
+      'Reset Pro for guided monthly continuity',
+      'Reset Pro for deeper monthly continuity',
       'Built for repeat breach and relapse recovery',
     ],
   },
   {
     title: 'Live Workspace',
-    summary: 'The system you use after activation: upload, inspect the leak, carry the mandate forward, and see whether the fix actually held.',
+    summary: 'The system you use after activation: upload, inspect the repeat pattern, carry the mandate forward, and see whether the fix actually held.',
     bullets: [
       'Upload and append trade history',
       'History, alerts, and slump diagnosis',
@@ -46,7 +46,7 @@ const differentiation = [
   },
   {
     title: 'Not just prettier analytics',
-    body: 'The point is not more charts. The point is to know what to stop, what to press, and whether your leak is behavioral or structural.',
+    body: 'The point is not more charts. The point is to know what to stop, what to press, and whether the repeat problem is behavioral or structural.',
   },
 ]
 
@@ -67,7 +67,7 @@ export function SolutionsPage() {
               The Shibuya Trader Loop
             </h1>
             <p className="mx-auto max-w-3xl text-xl leading-relaxed text-gray-400">
-              Shibuya exists to answer three questions brutally fast: is this an edge problem or a behavior problem, how much is the leak costing, and what changes next session.
+              Shibuya exists to answer three questions fast: is this an edge problem or a behavior problem, what is the process cost, and what changes next session.
             </p>
           </motion.div>
         </div>

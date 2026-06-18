@@ -79,12 +79,12 @@ export function ShadowBoxingPage() {
       <header className="section-header">
         <div className="flex items-center gap-2 mb-2">
           <p className="badge" style={{ marginBottom: 0 }}>Prop Firm Simulator</p>
-          <EngineTag engineId="cox" label="Cox Hazard survival" />
-          <EngineTag engineId="bql" label="Monte Carlo" />
+          <EngineTag engineId="cox" label="Breach hazard review" />
+          <EngineTag engineId="bql" label="Stress scenario" />
         </div>
         <h1>Shadow Boxing</h1>
         <p className="text-muted">
-          We run your actual trades through funded-account evaluation rulebooks. Cox proportional hazard survival analysis predicts your breach timeline, and Monte Carlo stress-tests your pass probability across 10,000 scenarios.
+          This view compares your trade history against funded-account style rulebooks and surfaces where rule pressure appears. Treat the percentages as planning signals, not pass guarantees or certified breach predictions.
         </p>
       </header>
 

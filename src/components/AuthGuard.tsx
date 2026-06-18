@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { isAuthenticated } from '../lib/api'
+import { isAuthenticated } from '../lib/api/auth'
 
 interface AuthGuardProps {
   children: React.ReactNode

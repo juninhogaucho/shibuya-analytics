@@ -1,8 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { login, verifyActivation } from '../../lib/api'
-import { addMarketToPath, getMarketHomePath, persistMarket, resolveMarket } from '../../lib/market'
-import { enterSampleMode } from '../../lib/runtime'
+import { login, verifyActivation } from '../../lib/api/auth'
+import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 
 type LoginMode = 'login' | 'activate'
@@ -62,12 +61,6 @@ export function LoginPage() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const handleSampleWorkspace = () => {
-    persistMarket(market)
-    enterSampleMode()
-    navigate('/dashboard', { replace: true })
   }
 
   return (
@@ -224,24 +217,21 @@ export function LoginPage() {
             </form>
           )}
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[var(--color-border)]"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[var(--color-surface)] px-2 text-[var(--color-text-muted)]">or</span>
+              <span className="bg-[var(--color-surface)] px-2 text-[var(--color-text-muted)]">need access?</span>
             </div>
           </div>
 
-          {/* Sample workspace */}
-          <button
-            type="button"
-            onClick={handleSampleWorkspace}
+          <Link
+            to={addMarketToPath('/upload', market)}
             className="w-full py-3 px-4 border border-[var(--color-border)] text-[var(--color-text)] font-medium rounded-lg hover:bg-[var(--color-bg)] transition-colors"
           >
-            Explore Sample Workspace
-          </button>
+            Generate Free Report
+          </Link>
 
           {/* Footer Links */}
           <div className="mt-6 text-center text-sm text-[var(--color-text-muted)]">

@@ -72,10 +72,10 @@ function humanizeOfferKind(value?: string | null): string {
   switch (value) {
     case 'psych_audit':
     case 'edge_or_behavior':
-      return 'Psych Audit one-time'
+      return 'Psych Audit legacy bounded'
     case 'reset_intensive':
     case 'next_session_reset':
-      return 'Reset Intensive one-time'
+      return 'Reset Intensive legacy bounded'
     case 'psych_audit_live':
       return 'Psych Audit monthly'
     case 'reset_pro_live':
@@ -209,7 +209,11 @@ export function AccessPage() {
     }
 
     if (!selectedTicketId) {
-      setSelectedTicket(null)
+      queueMicrotask(() => {
+        if (active) {
+          setSelectedTicket(null)
+        }
+      })
       return () => {
         active = false
       }
@@ -478,11 +482,11 @@ export function AccessPage() {
             </p>
             <p className="text-muted" style={{ marginBottom: 0 }}>
               {effectiveReadOnly
-                ? 'Read only until you reopen the loop with a new one-time package or a monthly plan.'
+                ? 'Read only until you reopen the loop with a monthly plan.'
                 : oneTimeAccess
                   ? daysRemaining != null
                     ? `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} left in this reset window.`
-                    : 'One-time reset window is active.'
+                    : 'Legacy bounded reset window is active.'
                   : 'Monthly live access should remain active while billing is healthy.'}
             </p>
           </article>

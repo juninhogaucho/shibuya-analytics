@@ -10,6 +10,7 @@ const uploadTradesCSVMock = vi.fn()
 const getTradePasteMemoryMock = vi.fn()
 const logTraderLifecycleEventMock = vi.fn()
 const isSampleModeMock = vi.fn()
+const getShibuyaRuntimeContractMock = vi.fn()
 const getStoredSessionMetaMock = vi.fn()
 const isReadOnlySessionMock = vi.fn()
 const updateSessionMetaMock = vi.fn()
@@ -24,6 +25,7 @@ vi.mock('../../../lib/api', () => ({
 
 vi.mock('../../../lib/runtime', () => ({
   isSampleMode: () => isSampleModeMock(),
+  getShibuyaRuntimeContract: () => getShibuyaRuntimeContractMock(),
   getStoredSessionMeta: () => getStoredSessionMetaMock(),
   isReadOnlySession: (...args: unknown[]) => isReadOnlySessionMock(...args),
   updateSessionMeta: (...args: unknown[]) => updateSessionMetaMock(...args),
@@ -50,6 +52,15 @@ describe('AppendTradesPage', () => {
     getStoredSessionMetaMock.mockReturnValue(null)
     isReadOnlySessionMock.mockReturnValue(false)
     updateSessionMetaMock.mockReset()
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'sample',
+      label: 'Sample workspace',
+      canUseSampleData: true,
+      canPersistTrades: false,
+      persistence: 'local_only',
+      requiresBackend: false,
+      proofBoundary: 'Sample mode may demonstrate workflow only.',
+    })
     getTradePasteMemoryMock.mockResolvedValue({
       has_previous: true,
       message: 'Comparing upload #3 to #2',
@@ -87,6 +98,15 @@ describe('AppendTradesPage', () => {
 
   test('shows real trade-paste-memory deltas in live mode', async () => {
     isSampleModeMock.mockReturnValue(false)
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'live',
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    })
     getStoredSessionMetaMock.mockReturnValue({
       caseStatus: 'awaiting_upload',
       market: 'india',

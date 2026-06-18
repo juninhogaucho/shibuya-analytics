@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { resetPassword } from '../../lib/api'
+import { resetPassword } from '../../lib/api/auth'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 
 export default function ResetPasswordPage() {

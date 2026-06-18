@@ -18,11 +18,12 @@ import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressC
 import { CampaignProofCard } from '../../components/dashboard/CampaignProofCard'
 import { FieldKitCard } from '../../components/dashboard/FieldKitCard'
 import { MissionBriefCard } from '../../components/dashboard/MissionBriefCard'
+import { ResetProDemoCommandCenter } from '../../components/dashboard/ResetProDemoCommandCenter'
 import { buildJourneyState } from '../../lib/journeyState'
 import { buildReportArtifact, downloadReportArtifact } from '../../lib/reportArtifact'
 import { buildExecutionProtocol } from '../../lib/executionProtocol'
 import { buildPerformanceStory } from '../../lib/performanceStory'
-import { getStoredSessionMeta, hasPremiumAccess, isSampleMode } from '../../lib/runtime'
+import { getStoredSessionMeta, hasPremiumAccess, isResetProSamplePreview, isSampleMode } from '../../lib/runtime'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
 import type { DashboardOverview, EdgeItem, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
 import { Link } from 'react-router-dom'
@@ -33,7 +34,7 @@ const EXPLANATIONS = {
     <div style={{ maxWidth: '280px' }}>
       <strong>BQL = Behavioral Quality Level</strong>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', lineHeight: 1.5 }}>
-        Our Bayesian Hidden Markov Model detects when decision quality is drifting away from your disciplined baseline. A high score means command is slipping. Treat it like a cockpit warning, not a mood diary.
+        BQL is the trader-state review score shown by the workspace. Treat it like a cockpit warning, not a mood diary. Model-specific claims require generated backend artifacts.
       </p>
     </div>
   ),
@@ -41,23 +42,23 @@ const EXPLANATIONS = {
     <div style={{ maxWidth: '280px' }}>
       <strong>Discipline Tax = Estimated Cost of Behavioral Errors</strong>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', lineHeight: 1.5 }}>
-        DEAN (our Huber IRLS regression) decomposes your P&L into market conditions, execution quality, timing, and behavior. The discipline tax is the behavioral slice — money you earned and gave back through errors.
+        Discipline tax estimates the behavioral slice of account damage from the available trade history. It should be read as an operating signal, not as certified forensic attribution.
       </p>
     </div>
   ),
   monteCarlo: (
     <div style={{ maxWidth: '280px' }}>
-      <strong>Monte Carlo Edge = Luck-adjusted Alpha</strong>
+      <strong>Stress-Adjusted Account Signal</strong>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', lineHeight: 1.5 }}>
-        10,000 simulations of your trade history isolate what skill produced vs. what luck contributed. This is your real edge, stripped of noise. If it's positive, you have genuine alpha. If it's negative, you're not profitable — you've been lucky.
+        This compares recent account behavior against stress-style scenarios. It is a decision-support signal, not proof of alpha, profitability, or future performance.
       </p>
     </div>
   ),
   ruinProbability: (
     <div style={{ maxWidth: '280px' }}>
-      <strong>Ruin Probability = EVT Survival Analysis</strong>
+      <strong>Risk Pressure = Drawdown Guardrail</strong>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', lineHeight: 1.5 }}>
-        Generalized Pareto Distribution fitted via MLE with Newton-Raphson. Basel III requires this exact method for bank capital adequacy. Reduce your behavioral errors and this number drops immediately.
+        This guardrail helps frame whether the next session should press, reduce, or stop. It is not a guarantee, investment advice, or an institutional risk certification.
       </p>
     </div>
   ),
@@ -76,7 +77,7 @@ export function DashboardOverviewPage() {
   const [data, setData] = useState<DashboardOverview | null>(null)
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
   const [comparison, setComparison] = useState<TradingReportComparisonResponse | null>(null)
-  const [principle, setPrinciple] = useState('')
+  const [principle] = useState(() => DAILY_PRINCIPLES[Math.floor(Math.random() * DAILY_PRINCIPLES.length)])
   const [briefCopied, setBriefCopied] = useState(false)
   const [reportDownloaded, setReportDownloaded] = useState(false)
   const [campaignRefreshToken, setCampaignRefreshToken] = useState(0)
@@ -84,7 +85,6 @@ export function DashboardOverviewPage() {
   const premiumAccess = hasPremiumAccess()
 
   useEffect(() => {
-    setPrinciple(DAILY_PRINCIPLES[Math.floor(Math.random() * DAILY_PRINCIPLES.length)])
     async function fetchData() {
       try {
         setLoading(true)
@@ -176,18 +176,25 @@ export function DashboardOverviewPage() {
     : null
   const tradingMandate = buildTradingMandate(data)
   const market = sessionMeta?.market ?? 'india'
+  const sampleActive = isSampleMode()
+  const resetProPreview = sampleActive && isResetProSamplePreview(sessionMeta)
+  const premiumVisible = premiumAccess || resetProPreview
   const accessTierLabel =
-    data.access_tier === 'reset_pro' || premiumAccess
+    sampleActive
+      ? resetProPreview ? 'Reset Pro preview' : 'Sample'
+      : data.access_tier === 'reset_pro' || premiumVisible
       ? 'Reset Pro'
       : sessionMeta?.tier === 'sample'
         ? 'Sample'
         : 'Psych Audit'
   const offerKindLabel =
-    data.offer_kind === 'reset_intensive'
+    sampleActive
+      ? resetProPreview ? 'Reset Pro sample' : 'Sample preview'
+      : data.offer_kind === 'reset_intensive'
       || data.offer_kind === 'next_session_reset'
-      ? 'One-time reset'
+      ? 'Legacy bounded reset'
       : data.offer_kind === 'psych_audit' || data.offer_kind === 'edge_or_behavior'
-        ? 'One-time audit'
+        ? 'Legacy bounded audit'
         : data.offer_kind === 'reset_pro_live'
           ? 'Monthly live'
           : data.offer_kind === 'psych_audit_live'
@@ -195,9 +202,11 @@ export function DashboardOverviewPage() {
             : sessionMeta?.offerKind === 'sample'
               ? 'Sample'
               : 'Live access'
-  const oneTimeAccess = Boolean((data.offer_kind ?? sessionMeta?.offerKind) && !(data.offer_kind ?? sessionMeta?.offerKind)?.endsWith('_live') && (data.offer_kind ?? sessionMeta?.offerKind) !== 'sample')
+  const oneTimeAccess = !sampleActive && Boolean((data.offer_kind ?? sessionMeta?.offerKind) && !(data.offer_kind ?? sessionMeta?.offerKind)?.endsWith('_live') && (data.offer_kind ?? sessionMeta?.offerKind) !== 'sample')
   const billingStatusLabel =
-    data.billing_status === 'active'
+    sampleActive
+      ? 'Sample only'
+      : data.billing_status === 'active'
       ? data.offer_kind && !data.offer_kind.endsWith('_live')
         ? 'Access active'
         : 'Billing active'
@@ -209,7 +218,9 @@ export function DashboardOverviewPage() {
             ? 'Canceled'
             : 'Activation ready'
   const caseStatusLabel =
-    data.case_status === 'awaiting_onboarding'
+    sampleActive
+      ? resetProPreview ? 'Guided preview' : 'Preview mode'
+      : data.case_status === 'awaiting_onboarding'
       ? 'Finish setup'
       : data.case_status === 'awaiting_upload'
         ? 'Awaiting upload'
@@ -280,7 +291,7 @@ export function DashboardOverviewPage() {
         ...(backendProtectList.length ? backendProtectList : [
           data.edge_portfolio[0] ? `Keep pressing: ${data.edge_portfolio[0].name}` : 'Protect the one setup that is still paying you.',
         ]),
-        premiumAccess
+        premiumVisible
           ? 'Use alerts and slump workflow before the damage compounds.'
           : 'Upgrade when you need deeper alerts and intervention, not just the baseline.',
         protectionDirective,
@@ -302,7 +313,7 @@ export function DashboardOverviewPage() {
     mandate: tradingMandate,
     profile: profileContext,
     market,
-    premiumAccess,
+    premiumAccess: premiumVisible,
   })
   const journeyState = buildJourneyState({
     overview: data,
@@ -345,32 +356,37 @@ export function DashboardOverviewPage() {
       mandate: tradingMandate,
       profile: profileContext,
       market,
-      premiumAccess,
+      premiumAccess: premiumVisible,
     })
     downloadReportArtifact(artifact)
     setReportDownloaded(true)
     window.setTimeout(() => setReportDownloaded(false), 1800)
   }
 
-  const sampleActive = isSampleMode()
-
   return (
     <div className="dashboard-stack">
       {sampleActive && (
         <div className="flex items-center justify-between gap-4 rounded-lg border border-amber-500/20 bg-amber-500/5 px-5 py-3">
           <p className="text-sm text-amber-200/90">
-            <strong className="font-semibold text-amber-100">Sample workspace.</strong>{' '}
-            You are viewing demo data. Upload your own trades to see your real analysis.
+            <strong className="font-semibold text-amber-100">
+              {resetProPreview ? 'Reset Pro preview.' : 'Sample workspace.'}
+            </strong>{' '}
+            {resetProPreview
+              ? 'You are viewing the highest-tier journey with demo data. It unlocks the review path for demo purposes only; live persistence still requires activation.'
+              : 'You are viewing demo data. Activate a live account before uploading real trades or treating the board as account-specific analysis.'}
           </p>
           <Link
             to="/dashboard/upload"
             className="shrink-0 rounded bg-amber-500/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-amber-100 transition-colors hover:bg-amber-500/30"
           >
-            Upload Trades
+            Inspect Upload Flow
           </Link>
         </div>
       )}
       <JourneyProgressCard state={journeyState} />
+      {resetProPreview ? (
+        <ResetProDemoCommandCenter market={market} overview={data} />
+      ) : null}
       {data.market_context_status === 'estimated' ? (
         <div
           className="glass-panel"
@@ -408,7 +424,7 @@ export function DashboardOverviewPage() {
         story={performanceStory}
         metrics={campaignMetrics}
         market={market}
-        premiumAccess={premiumAccess}
+        premiumAccess={premiumVisible}
       />
 
       {/* Header */}
@@ -427,7 +443,7 @@ export function DashboardOverviewPage() {
           </div>
           <h1>Mission HQ</h1>
           <p className="text-muted">
-            {premiumAccess
+            {premiumVisible
               ? 'Start with the most expensive leak, lock the next-session mandate, then use the deeper corrective surfaces only if they change a decision.'
               : 'Start with the most expensive leak, lock the next-session mandate, and use this baseline to decide whether you need the deeper reset layer.'}
           </p>
@@ -460,7 +476,7 @@ export function DashboardOverviewPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <p className="badge" style={{ marginBottom: 0 }}>TODAY'S ACTION BOARD</p>
-              {!premiumAccess && <ToneBadge tone="focus" />}
+              {!premiumVisible && <ToneBadge tone="focus" />}
               <Badge variant="neutral" label={humanizeTraderMode(traderMode)} />
             </div>
             <h3 style={{ marginBottom: '0.5rem' }}>Three things only: the leak, the stop, and the protection.</h3>
@@ -713,7 +729,7 @@ export function DashboardOverviewPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <p className="badge" style={{ marginBottom: 0 }}>RESET BRIEF</p>
-              <Badge variant={premiumAccess ? 'success' : 'neutral'} label={accessTierLabel} />
+              <Badge variant={premiumVisible ? 'success' : 'neutral'} label={accessTierLabel} />
             </div>
             <h3 style={{ marginBottom: '0.5rem' }}>{actionBrief.title}</h3>
             <p className="text-muted" style={{ maxWidth: '60rem' }}>{actionBrief.subtitle}</p>
@@ -729,7 +745,7 @@ export function DashboardOverviewPage() {
             </button>
             <button className="btn btn-sm btn-secondary" onClick={handleDownloadReport}>
               <Download className="w-4 h-4" />
-              {reportDownloaded ? 'Downloaded' : premiumAccess ? 'Download Reset Report' : 'Download Baseline Report'}
+              {reportDownloaded ? 'Downloaded' : premiumVisible ? 'Download Reset Report' : 'Download Baseline Report'}
             </button>
             <button className="btn btn-sm btn-primary" onClick={() => void handleCopyBrief()}>
               {briefCopied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -762,8 +778,12 @@ export function DashboardOverviewPage() {
           <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
             <h4 style={{ marginBottom: '0.5rem' }}>Account continuity</h4>
             <p className="text-muted" style={{ marginBottom: '0.5rem' }}>
-              {data.case_status === 'read_only'
-                ? 'This one-time reset window is now read only. Review the board and history, then renew access if you want to upload fresh data again.'
+              {sampleActive
+                ? resetProPreview
+                  ? 'Reset Pro preview is active. This demonstrates the first-cycle guided review path without live persistence, billing, or account-specific analytics.'
+                  : 'Sample workspace is active. Inspect the loop here, then activate live access before uploading real trades.'
+              : data.case_status === 'read_only'
+                ? 'This legacy bounded reset window is now read only. Review the board and history, then renew access if you want to upload fresh data again.'
                 : data.guided_review_status === 'booked'
                   ? 'Your guided review is booked. Review the board, carry the mandate, and show up with the next decision changes you actually made.'
                 : data.guided_review_status === 'completed'
@@ -777,8 +797,8 @@ export function DashboardOverviewPage() {
                   : data.offer_kind === 'reset_intensive' || data.offer_kind === 'next_session_reset'
                     ? 'Reset Intensive is active. Use the 30-day window hard, book the kickoff review, and turn the brief into a real reset.'
                     : data.offer_kind === 'psych_audit' || data.offer_kind === 'edge_or_behavior'
-                      ? 'Psych Audit is active as a one-time reset window. Keep the loop simple, work the brief, and decide later if continuity is justified.'
-                  : premiumAccess
+                      ? 'Psych Audit is active as a legacy bounded reset window. Keep the loop simple, work the brief, and decide later if continuity is justified.'
+                  : premiumVisible
                     ? 'Reset Pro is active. Use the deeper corrective surfaces only when they clearly change the next decision.'
                     : 'Psych Audit is active. Stay brutally simple until the baseline is clean enough to justify deeper intervention.'}
             </p>
@@ -811,10 +831,12 @@ export function DashboardOverviewPage() {
             <ul className="digest-preview">
               <li>
                 Uploads used: {data.upload_count ?? 0}
-                {data.upload_limit ? ` / ${data.upload_limit}` : ' (live tier)'}
+                {data.upload_limit ? ` / ${data.upload_limit}` : sampleActive ? ' (sample dataset)' : ' (live tier)'}
               </li>
               <li>
-                {data.upload_limit
+                {sampleActive
+                  ? 'Uploads remaining: disabled until live activation'
+                  : data.upload_limit
                   ? `Uploads remaining: ${data.uploads_remaining ?? 0}`
                   : 'Uploads remaining: unlimited while continuity is active'}
               </li>
@@ -934,9 +956,9 @@ export function DashboardOverviewPage() {
       {/* Core Metrics Grid */}
       <div className="grid-responsive three">
         <MetricCard
-          label="Monte Carlo Edge"
+          label="Stress-Adjusted Signal"
           value={formatSignedMoney(data.monte_carlo_drift, market)}
-          delta="Luck-adjusted alpha over 10,000 simulations"
+          delta="Stress-adjusted account signal"
           tone={data.monte_carlo_drift > 0 ? 'success' : 'danger'}
           caption={
             <span>

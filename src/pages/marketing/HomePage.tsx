@@ -1,14 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../../components/landing/Navbar';
-import Hero from '../../components/landing/Hero';
-import ProofStack from '../../components/landing/ProofStack';
-import StatsGrid from '../../components/landing/StatsGrid';
-import { EngineShowcase } from '../../components/landing/EngineShowcase';
-import Methodology from '../../components/landing/Methodology';
-import HowItWorks from '../../components/landing/HowItWorks';
-import DashboardPreview from '../../components/landing/DashboardPreview';
-import FAQ from '../../components/landing/FAQ';
+import StoryExperience from '../../components/landing/StoryExperience';
 import Footer from '../../components/landing/Footer';
 import CustomCursor from '../../components/landing/CustomCursor';
 import {
@@ -17,7 +10,7 @@ import {
   markAffiliateClickTracked,
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution';
-import { trackAffiliateClick } from '../../lib/api';
+import { trackAffiliateClick } from '../../lib/api/checkout';
 import { persistMarket, resolveMarket } from '../../lib/market';
 
 const HomePage: React.FC = () => {
@@ -44,14 +37,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-[#050505] text-white landing-page">
       <CustomCursor />
       <Navbar />
-      <Hero />
-      <ProofStack />
-      <StatsGrid />
-      <EngineShowcase />
-      <Methodology />
-      <HowItWorks />
-      <DashboardPreview />
-      <FAQ />
+      <StoryExperience />
       <Footer />
     </div>
   );

@@ -17,14 +17,14 @@ export function TermsPage() {
 
         <h3>2. Payment Terms</h3>
         <p>
-          Public Shibuya offers may be one-time reset packages or recurring live-workspace subscriptions,
+          Public Shibuya offers are centered on recurring live-workspace subscriptions,
           processed securely through Stripe. Prices are displayed in the currency shown on the relevant market
           route, including INR on India-facing offers and EUR on global offers.
         </p>
         <p>
-          Access begins only after successful payment and activation. One-time reset packages unlock a bounded
-          live workspace window and may later move to read-only status. Subscription access continues until the
-          end of the already-paid billing period unless a different rule is required by law.
+          Access begins only after successful payment and activation. Subscription access continues until the
+          end of the already-paid billing period unless a different rule is required by law. Legacy bounded-access
+          purchases, where honored, may move to read-only status after their stated access window.
         </p>
 
         <h3>3. Refund Policy</h3>

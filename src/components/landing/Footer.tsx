@@ -64,7 +64,7 @@ const Footer: React.FC = () => {
               <span className="text-sm font-bold text-white tracking-wide">shibuya</span>
             </div>
             <p className="text-neutral-500 text-sm mb-8 max-w-sm leading-relaxed">
-              A trader performance operating system built to show whether the leak is edge, behavior, or the state you keep entering before the next breach.
+              A trader performance operating system built to show whether the problem is edge, behavior, or the state you keep entering before the next breach.
             </p>
             <div className="flex items-center gap-2 text-sm text-neutral-500">
               <Mail className="w-4 h-4" />
