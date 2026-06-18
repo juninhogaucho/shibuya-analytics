@@ -63,6 +63,10 @@ describe('AppendTradesPage', () => {
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
       demoUnlockReceiptId: 'reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
       demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
+      demoEngagementReportViewCount: 2,
+      demoEngagementLockedSectionClickCount: 1,
+      demoEngagementPrivateDemoIntentCount: 1,
+      demoEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
       demoEntryMode: 'append_proof_shortcut',
     })
     isReadOnlySessionMock.mockReturnValue(false)
@@ -148,6 +152,9 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Unlock receipt carried')).toBeInTheDocument()
     expect(screen.getByText(/reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map/i)).toBeInTheDocument()
     expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
+    expect(screen.getByText('Engagement receipt carried')).toBeInTheDocument()
+    expect(screen.getByText(/2 report view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('Sample parse demonstrated')).toBeInTheDocument()
     expect(screen.getByText('Private question preserved')).toBeInTheDocument()
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
@@ -187,6 +194,10 @@ describe('AppendTradesPage', () => {
       activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
       activationBridgeWhyNow: 'The public story recognized edge decay; the live workspace must prove it from real history.',
       activationBridgeLiveProof: ['Upload baseline history', 'Append the next session'],
+      activationEngagementReportViewCount: 2,
+      activationEngagementLockedSectionClickCount: 1,
+      activationEngagementPrivateDemoIntentCount: 1,
+      activationEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
     })
     submitParsedTradesMock.mockResolvedValue({ status: 'ok', trades_uploaded: 2 })
     const user = userEvent.setup()
@@ -203,6 +214,9 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Marco: Profitable refiner - Edge Decay')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6; axes Edge Decay')).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
+    expect(screen.getByText('2 report view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
+    expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()
     expect(screen.getByText('RESET PRO LIVE QUESTION')).toBeInTheDocument()
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
     expect(screen.queryByText('This is the demo endpoint, not live evidence.')).not.toBeInTheDocument()

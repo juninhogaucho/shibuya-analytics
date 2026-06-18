@@ -87,6 +87,18 @@ function buildSampleNotes(tradesUploaded: number): string[] {
   ]
 }
 
+function formatEngagementReceipt(
+  reportViewCount?: number,
+  lockedSectionClickCount?: number,
+  privateDemoIntentCount?: number,
+): string | null {
+  if (typeof reportViewCount !== 'number') {
+    return null
+  }
+
+  return `${reportViewCount} report view(s), ${lockedSectionClickCount ?? 0} locked click(s), ${privateDemoIntentCount ?? 0} gate attempt(s)`
+}
+
 function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) {
   if (!sessionMeta?.activationSource) {
     return null
@@ -97,6 +109,11 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
   const signalMarkerLabels = getPublicStorySignalMarkers(sessionMeta.activationSignalMarkerIds).map((marker) => marker.label)
   const storySource = sessionMeta.activationStorySource
   const visitedSceneCount = sessionMeta.activationVisitedSceneCount ?? 0
+  const engagementReceipt = formatEngagementReceipt(
+    sessionMeta.activationEngagementReportViewCount,
+    sessionMeta.activationEngagementLockedSectionClickCount,
+    sessionMeta.activationEngagementPrivateDemoIntentCount,
+  )
   const activationTitle = sessionMeta.activationSource === 'locked_insight'
     ? 'Activated from locked report module'
     : sessionMeta.activationSource === 'free_report'
@@ -119,6 +136,8 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
     bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion,
     bridgeWhyNow: sessionMeta.activationBridgeWhyNow,
     bridgeLiveProof: sessionMeta.activationBridgeLiveProof ?? [],
+    engagementReceipt: engagementReceipt ?? 'No activation engagement receipt attached.',
+    engagementBoundary: sessionMeta.activationEngagementBoundary,
   }
 }
 
@@ -144,12 +163,23 @@ export function AppendTradesPage() {
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
   const traderMode = profileContext?.trader_mode ?? sessionMeta?.traderMode
   const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(sessionMeta)
+  const resetProEngagementReceipt = formatEngagementReceipt(
+    sessionMeta?.demoEngagementReportViewCount,
+    sessionMeta?.demoEngagementLockedSectionClickCount,
+    sessionMeta?.demoEngagementPrivateDemoIntentCount,
+  )
   const resetProProofReceiptRows = [
     {
       label: 'Unlock receipt carried',
       body: sessionMeta?.demoUnlockReceiptId
         ? `${sessionMeta.demoUnlockReceiptId}. ${sessionMeta.demoUnlockBoundary ?? 'Founder gate receipt was attached without exposing the private code.'}`
         : 'No private demo unlock receipt was attached to this sample append.',
+    },
+    {
+      label: 'Engagement receipt carried',
+      body: resetProEngagementReceipt
+        ? `${resetProEngagementReceipt}. ${sessionMeta?.demoEngagementBoundary ?? 'Route continuity only; not trader evidence.'}`
+        : 'No report engagement receipt was attached to this append close.',
     },
     {
       label: 'Sample parse demonstrated',
@@ -494,6 +524,7 @@ export function AppendTradesPage() {
               ['Public fingerprint', liveActivationProofTarget.fingerprint],
               ['Story handoff', liveActivationProofTarget.storyHandoff],
               ['Public signal markers', liveActivationProofTarget.signalMarkers],
+              ['Activation engagement receipt', liveActivationProofTarget.engagementReceipt],
             ].map(([label, value]) => (
               <article key={label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
                 <h4 style={{ marginBottom: '0.5rem' }}>{label}</h4>
@@ -501,6 +532,11 @@ export function AppendTradesPage() {
               </article>
             ))}
           </div>
+          {liveActivationProofTarget.engagementBoundary ? (
+            <p className="text-muted" style={{ marginTop: '1rem', marginBottom: 0 }}>
+              Engagement boundary: {liveActivationProofTarget.engagementBoundary}
+            </p>
+          ) : null}
           {liveActivationProofTarget.bridgeDecisionQuestion ? (
             <article
               className="glass-panel"
