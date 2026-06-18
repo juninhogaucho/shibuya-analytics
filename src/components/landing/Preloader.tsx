@@ -6,10 +6,9 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [text, setText] = useState("INITIALIZING SHIBUYA...");
 
   useEffect(() => {
-    // Simulate loading progress
     const timer = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.random() * 10;
+        const next = prev + 18;
         if (next >= 100) {
           clearInterval(timer);
           return 100;
@@ -20,16 +19,15 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
     // Text sequence
     const textTimers = [
-      setTimeout(() => setText("LOADING ASSETS..."), 800),
-      setTimeout(() => setText("CONNECTING TO ANALYTICS ENGINE..."), 1600),
-      setTimeout(() => setText("ESTABLISHING SECURE CONNECTION..."), 2400),
-    setTimeout(() => setText("READY? WE ARE."), 3200),
+      setTimeout(() => setText("LOADING ASSETS..."), 300),
+      setTimeout(() => setText("CONNECTING TO ANALYTICS ENGINE..."), 650),
+      setTimeout(() => setText("ESTABLISHING SECURE CONNECTION..."), 950),
+      setTimeout(() => setText("READY? WE ARE."), 1150),
     ];
 
-    // Complete
     const completeTimer = setTimeout(() => {
       onComplete();
-    }, 3500);
+    }, 1400);
 
     return () => {
       clearInterval(timer);
