@@ -8,6 +8,7 @@ import {
   markAffiliateClickTracked,
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution'
+import { appendCheckoutIntentToPath, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, formatPrice, getPlansForType, persistMarket, resolveMarket, type PricingPlan } from '../../lib/market'
 
 function getPlanFit(plan: PricingPlan): { bestFor: string; outcome: string } {
@@ -131,6 +132,13 @@ function PlanCard({
 export default function PricingPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
+  const checkoutIntent = readCheckoutIntent(location.search)
+  const privateDemoHref = checkoutIntent?.source === 'locked_insight'
+    ? addMarketToPath(appendCheckoutIntentToPath('/private-demo', checkoutIntent), market)
+    : addMarketToPath('/upload', market)
+  const privateDemoLabel = checkoutIntent?.source === 'locked_insight'
+    ? 'Continue Private Demo Gate'
+    : 'Generate Free Report First'
   const monthlyPlans = getPlansForType(market, 'subscription')
 
   useEffect(() => {
@@ -195,7 +203,7 @@ export default function PricingPage() {
               <PlanCard
                 key={plan.id}
                 plan={plan}
-                ctaHref={addMarketToPath(`/checkout/${plan.checkoutSlug}`, market)}
+                ctaHref={addMarketToPath(appendCheckoutIntentToPath(`/checkout/${plan.checkoutSlug}`, checkoutIntent), market)}
               />
             ))}
           </div>
@@ -237,10 +245,10 @@ export default function PricingPage() {
                   Generate Free Report
                 </Link>
                 <Link
-                  to={addMarketToPath('/private-demo', market)}
+                  to={privateDemoHref}
                   className="w-full rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-sm font-semibold text-indigo-100 transition-colors hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
                 >
-                  Private Demo Access
+                  {privateDemoLabel}
                 </Link>
                 <Link
                   to={addMarketToPath('/activate', market)}

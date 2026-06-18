@@ -53,6 +53,11 @@ const REQUIRED_SURFACES = [
     markers: ['Checkout intent', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'enrichedCheckoutIntent'],
   },
   {
+    label: 'pricing context ladder',
+    file: 'src/pages/marketing/PricingPage.tsx',
+    markers: ['readCheckoutIntent', 'appendCheckoutIntentToPath', 'Generate Free Report First', 'Continue Private Demo Gate'],
+  },
+  {
     label: 'checkout intent URL handoff',
     file: 'src/lib/checkoutIntent.ts',
     markers: ['storySource', 'scene_count', 'pain_axes', 'enrichCheckoutIntent'],
