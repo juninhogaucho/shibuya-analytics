@@ -143,6 +143,12 @@ export function AppendTradesPage() {
   const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(sessionMeta)
   const resetProProofReceiptRows = [
     {
+      label: 'Unlock receipt carried',
+      body: sessionMeta?.demoUnlockReceiptId
+        ? `${sessionMeta.demoUnlockReceiptId}. ${sessionMeta.demoUnlockBoundary ?? 'Founder gate receipt was attached without exposing the private code.'}`
+        : 'No private demo unlock receipt was attached to this sample append.',
+    },
+    {
       label: 'Sample parse demonstrated',
       body: 'The operator showed how a session enters the proof loop without claiming the sample account changed.',
     },

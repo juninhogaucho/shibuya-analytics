@@ -61,6 +61,8 @@ describe('AppendTradesPage', () => {
       samplePreview: 'reset_pro',
       demoLockedSectionTitle: 'Edge decay map',
       demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      demoUnlockReceiptId: 'reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map',
+      demoUnlockBoundary: 'Founder code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
     })
     isReadOnlySessionMock.mockReturnValue(false)
     updateSessionMetaMock.mockReset()
@@ -120,6 +122,9 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Sample mode shows parsing and workflow only. It does not persist uploads or update your account history.')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO APPEND PROOF RECEIPT')).toBeInTheDocument()
     expect(screen.getByText('The demo closed correctly: workflow shown, live proof still locked.')).toBeInTheDocument()
+    expect(screen.getByText('Unlock receipt carried')).toBeInTheDocument()
+    expect(screen.getByText(/reset-pro-demo:india:locked-insight:free-report-123:marco:edge-decay:edge-decay-map/i)).toBeInTheDocument()
+    expect(screen.getByText(/Founder code opened sample Reset Pro access only/i)).toBeInTheDocument()
     expect(screen.getByText('Sample parse demonstrated')).toBeInTheDocument()
     expect(screen.getByText('Private question preserved')).toBeInTheDocument()
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
