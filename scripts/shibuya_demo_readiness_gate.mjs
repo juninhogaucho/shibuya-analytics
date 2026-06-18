@@ -98,6 +98,11 @@ const REQUIRED_SURFACES = [
     markers: ['LIVE ACTIVATION ORIGIN', 'Story handoff', 'Public signal markers', 'No local story packet attached', 'LIVE FIRST UPLOAD CONTRACT', 'First upload must create', 'Append must prove', 'First screen after unlock is the Reset Pro command center'],
   },
   {
+    label: 'Reset Pro context strip',
+    file: 'src/components/dashboard/ResetProDemoContextStrip.tsx',
+    markers: ['RESET PRO DEMO CONTEXT STRIP', 'Keep the public-to-private handoff visible across every workspace surface.', 'Private gate checksum', 'sample route, not live answer', 'Append Proof'],
+  },
+  {
     label: 'Reset Pro command center',
     file: 'src/lib/resetProDemo.ts',
     markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Private gate checksum:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],

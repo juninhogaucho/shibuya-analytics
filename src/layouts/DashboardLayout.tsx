@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { WelcomeModal } from '../components/ui/WelcomeModal'
+import { ResetProDemoContextStrip } from '../components/dashboard/ResetProDemoContextStrip'
 import { getDashboardOverview } from '../lib/api/dashboard'
 import { buildJourneyState } from '../lib/journeyState'
 import { addMarketToPath } from '../lib/market'
@@ -335,6 +336,10 @@ export function DashboardLayout() {
               )
             })() : null}
           </div>
+        ) : null}
+
+        {resetProPreview && sessionMeta?.demoSource ? (
+          <ResetProDemoContextStrip sessionMeta={sessionMeta} />
         ) : null}
 
         <div
