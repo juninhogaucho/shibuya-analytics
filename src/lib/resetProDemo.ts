@@ -14,6 +14,12 @@ export interface ResetProDemoStep {
   proof: string
 }
 
+export interface ResetProDemoPresenterRouteItem extends ResetProDemoStep {
+  phase: 'start' | 'show' | 'close'
+  phaseLabel: string
+  boundary: string
+}
+
 export interface ResetProDemoShowMoment {
   timebox: string
   title: string
@@ -78,6 +84,7 @@ export interface ResetProDemoScript {
   proofLadder: ResetProDemoProofStage[]
   readinessChecklist: ResetProDemoChecklistItem[]
   pressureMetrics: ResetProDemoMetric[]
+  presenterRoute: ResetProDemoPresenterRouteItem[]
   steps: ResetProDemoStep[]
   proofArtifacts: string[]
   originCard?: ResetProDemoOriginCard
@@ -97,6 +104,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const originCard = buildOriginCard(origin)
   const bridgeCard = buildBridgeCard(origin)
   const proofLadder = buildProofLadder(origin, Boolean(originCard), Boolean(bridgeCard))
+  const steps = buildResetProDemoSteps()
 
   return {
     headline: 'Private Reset Pro command center',
@@ -193,44 +201,8 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
         detail: overview.review_eligibility ? 'Guided review is visible in this private preview.' : 'Guided review stays locked outside Reset Pro.',
       },
     ],
-    steps: [
-      {
-        label: '1. Mission HQ',
-        route: '/dashboard',
-        routeLabel: 'Open HQ',
-        proof: 'Frame the trader state, current enemy, and next-session mandate in under 30 seconds.',
-      },
-      {
-        label: '2. Slump protocol',
-        route: '/dashboard/slump',
-        routeLabel: 'Show protocol',
-        proof: 'Demonstrate how Shibuya converts pressure into constraints, not motivation.',
-      },
-      {
-        label: '3. Alerts',
-        route: '/dashboard/alerts',
-        routeLabel: 'Show alerts',
-        proof: 'Show crucial-moment and margin-of-safety warnings as intervention surfaces.',
-      },
-      {
-        label: '4. Edge portfolio',
-        route: '/dashboard/edges',
-        routeLabel: 'Show edges',
-        proof: 'Separate what still pays from what only feels familiar.',
-      },
-      {
-        label: '5. Prop shadow boxing',
-        route: '/dashboard/shadow-boxing',
-        routeLabel: 'Show propOS angle',
-        proof: 'Translate behavior into funded-account rulebook survivability.',
-      },
-      {
-        label: '6. Append proof',
-        route: '/dashboard/upload',
-        routeLabel: 'Show upload',
-        proof: 'Close the loop: the next session must produce evidence, not another story.',
-      },
-    ],
+    presenterRoute: buildPresenterRoute(steps, Boolean(originCard), Boolean(bridgeCard)),
+    steps,
     proofArtifacts: [
       firstArtifact?.label ?? 'Baseline Brief',
       resetPacket?.label ?? 'Reset Pro Review Packet',
@@ -241,6 +213,88 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
   }
+}
+
+function buildResetProDemoSteps(): ResetProDemoStep[] {
+  return [
+    {
+      label: '1. Mission HQ',
+      route: '/dashboard',
+      routeLabel: 'Open HQ',
+      proof: 'Frame the trader state, current enemy, and next-session mandate in under 30 seconds.',
+    },
+    {
+      label: '2. Slump protocol',
+      route: '/dashboard/slump',
+      routeLabel: 'Show protocol',
+      proof: 'Demonstrate how Shibuya converts pressure into constraints, not motivation.',
+    },
+    {
+      label: '3. Alerts',
+      route: '/dashboard/alerts',
+      routeLabel: 'Show alerts',
+      proof: 'Show crucial-moment and margin-of-safety warnings as intervention surfaces.',
+    },
+    {
+      label: '4. Edge portfolio',
+      route: '/dashboard/edges',
+      routeLabel: 'Show edges',
+      proof: 'Separate what still pays from what only feels familiar.',
+    },
+    {
+      label: '5. Prop shadow boxing',
+      route: '/dashboard/shadow-boxing',
+      routeLabel: 'Show propOS angle',
+      proof: 'Translate behavior into funded-account rulebook survivability.',
+    },
+    {
+      label: '6. Append proof',
+      route: '/dashboard/upload',
+      routeLabel: 'Show upload',
+      proof: 'Close the loop: the next session must produce evidence, not another story.',
+    },
+  ]
+}
+
+function buildPresenterRoute(
+  steps: ResetProDemoStep[],
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoPresenterRouteItem[] {
+  return steps.map((step, index) => {
+    const isStart = index === 0
+    const isClose = index === steps.length - 1
+
+    return {
+      ...step,
+      phase: isStart ? 'start' : isClose ? 'close' : 'show',
+      phaseLabel: isStart ? 'START HERE' : isClose ? 'CLOSE HERE' : 'SHOW NEXT',
+      routeLabel: getPresenterRouteLabel(step, isStart, isClose),
+      boundary: isStart
+        ? hasOriginCard
+          ? 'Use carried public context as the opening brief, not as account proof.'
+          : 'Direct demo entry only; call out that no public report handoff is attached.'
+        : isClose
+          ? 'End on append-proof. Live improvement claims require account activation and repeated uploads.'
+          : hasBridgeCard
+            ? 'Show the surface as sample workflow answering the carried private question.'
+            : 'Show product structure only; no account-specific conclusion is allowed.',
+    }
+  })
+}
+
+function getPresenterRouteLabel(step: ResetProDemoStep, isStart: boolean, isClose: boolean): string {
+  if (isStart) {
+    return 'Start Mission HQ'
+  }
+
+  if (isClose) {
+    return 'Close On Append Proof'
+  }
+
+  return step.label
+    .replace(/^\d+\.\s*/, 'Inspect ')
+    .replace('Prop shadow boxing', 'PropOS Angle')
 }
 
 function buildProofLadder(

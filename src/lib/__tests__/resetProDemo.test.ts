@@ -63,6 +63,24 @@ describe('Reset Pro demo script', () => {
       '/dashboard/shadow-boxing',
       '/dashboard/upload',
     ])
+    expect(script.presenterRoute.map((step) => step.phaseLabel)).toEqual([
+      'START HERE',
+      'SHOW NEXT',
+      'SHOW NEXT',
+      'SHOW NEXT',
+      'SHOW NEXT',
+      'CLOSE HERE',
+    ])
+    expect(script.presenterRoute[0]).toMatchObject({
+      label: '1. Mission HQ',
+      routeLabel: 'Start Mission HQ',
+      boundary: 'Direct demo entry only; call out that no public report handoff is attached.',
+    })
+    expect(script.presenterRoute[5]).toMatchObject({
+      label: '6. Append proof',
+      routeLabel: 'Close On Append Proof',
+      boundary: 'End on append-proof. Live improvement claims require account activation and repeated uploads.',
+    })
     expect(script.proofArtifacts).toContain('Reset Pro Review Packet')
     expect(script.truthBoundary).toContain('demo data only')
     expect(script.truthBoundary).toContain('payment')
@@ -113,6 +131,8 @@ describe('Reset Pro demo script', () => {
     expect(script.showSequence[0].boundary).toContain('not proof')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.status).toBe('ready')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.detail).toContain('Report, archetype, axis')
+    expect(script.presenterRoute[0].boundary).toBe('Use carried public context as the opening brief, not as account proof.')
+    expect(script.presenterRoute[1].boundary).toBe('Show the surface as sample workflow answering the carried private question.')
     expect(script.proofLadder).toEqual([
       expect.objectContaining({
         label: 'Public recognition',

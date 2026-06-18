@@ -134,7 +134,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
     expect(screen.getByText('MARKET: INDIA')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Append Proof/i })).toHaveAttribute('href', '/dashboard/upload?market=india')
+    expect(screen.getByRole('link', { name: 'Append Proof' })).toHaveAttribute('href', '/dashboard/upload?market=india')
     expect(screen.getByRole('link', { name: /Inspect Upload Flow/i })).toHaveAttribute('href', '/dashboard/upload?market=india')
     expect(screen.getByText(/Live Reset Pro requires payment, activation, first meaningful upload/i)).toBeInTheDocument()
   })

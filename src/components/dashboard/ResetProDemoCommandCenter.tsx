@@ -63,6 +63,49 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </div>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(16,185,129,0.065)', borderColor: 'rgba(16,185,129,0.22)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>PRESENTER ROUTE</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Run the private demo from this rail first.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              The longer command center stays below for detail. This rail is the actual first-screen path after the founder gate.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+          {script.presenterRoute.map((step) => (
+            <article
+              key={`${step.phase}-${step.label}`}
+              className="glass-panel"
+              style={{
+                background: step.phase === 'start'
+                  ? 'rgba(16,185,129,0.08)'
+                  : step.phase === 'close'
+                    ? 'rgba(245,158,11,0.08)'
+                    : 'rgba(99,102,241,0.07)',
+                borderColor: step.phase === 'start'
+                  ? 'rgba(16,185,129,0.24)'
+                  : step.phase === 'close'
+                    ? 'rgba(245,158,11,0.24)'
+                    : 'rgba(99,102,241,0.22)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{step.phaseLabel}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{step.label}</h4>
+              <p className="text-muted" style={{ marginBottom: '0.75rem' }}>{step.proof}</p>
+              <p className="text-muted" style={{ marginBottom: '0.75rem', fontSize: '0.8rem' }}>
+                <strong className="text-amber-100">Boundary:</strong> {step.boundary}
+              </p>
+              <Link to={addMarketToPath(step.route, market)} className="btn btn-sm btn-secondary">
+                {step.routeLabel}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </article>
+          ))}
+        </div>
+      </article>
+
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>
