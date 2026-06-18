@@ -72,6 +72,36 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         className="glass-panel"
         style={{
           marginTop: '1rem',
+          background: 'rgba(14,165,233,0.075)',
+          borderColor: 'rgba(125,211,252,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO UNLOCK RECEIPT</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>{script.unlockReceipt.headline}</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              {script.unlockReceipt.nextAction}
+            </p>
+          </div>
+          <span className="badge">{script.unlockReceipt.statusLabel}</span>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+          {script.unlockReceipt.facts.map((fact) => (
+            <div key={fact} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)' }}>
+              <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.85rem' }}>{fact}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-muted" style={{ margin: '1rem 0 0', fontSize: '0.82rem' }}>
+          <strong className="text-amber-100">Boundary:</strong> {script.unlockReceipt.boundary}
+        </p>
+      </article>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
           background: 'rgba(0,0,0,0.2)',
           borderColor: 'rgba(129,140,248,0.24)',
           position: 'relative',

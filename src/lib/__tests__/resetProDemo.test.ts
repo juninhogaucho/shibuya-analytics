@@ -16,6 +16,14 @@ describe('Reset Pro demo script', () => {
     ])
     expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
     expect(script.showSequence[3].show).toContain('Append proof flow')
+    expect(script.unlockReceipt).toMatchObject({
+      statusLabel: 'DIRECT DEMO RECEIPT',
+      headline: 'Reset Pro opened without public context; frame this as a cold sample workspace.',
+      nextAction: 'Run Mission HQ first, inspect one intervention surface, then close on append proof.',
+    })
+    expect(script.unlockReceipt.facts).toContain('Report carried: none')
+    expect(script.unlockReceipt.facts).toContain('Evidence packet: direct demo only')
+    expect(script.unlockReceipt.boundary).toContain('does not prove live activation')
     expect(script.proofLadder).toEqual([
       expect.objectContaining({
         label: 'Public recognition',
@@ -128,6 +136,13 @@ describe('Reset Pro demo script', () => {
     expect(script.originCard?.facts).toContain('Public signal markers: Mirror selected, Pain axis tapped, Evidence intent')
     expect(script.originCard?.facts).toContain('Requested private insight: Highest-cost state')
     expect(script.originCard?.body).toContain('not proof')
+    expect(script.unlockReceipt.statusLabel).toBe('UNLOCK RECEIPT')
+    expect(script.unlockReceipt.headline).toBe('Reset Pro received the public question; the sample workspace can only show the operating loop.')
+    expect(script.unlockReceipt.facts).toContain('Report carried: free-report-123')
+    expect(script.unlockReceipt.facts).toContain('Locked question: Highest-cost state')
+    expect(script.unlockReceipt.facts).toContain('Story route: guided; scenes 4')
+    expect(script.unlockReceipt.facts).toContain('Evidence packet: Sample history packet')
+    expect(script.unlockReceipt.facts).toContain('Public markers: Mirror selected, Pain axis tapped, Evidence intent')
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
     expect(script.showSequence[0].say).toContain('Does the trader become a different operator near the drawdown line?')
     expect(script.showSequence[0].boundary).toContain('not proof')

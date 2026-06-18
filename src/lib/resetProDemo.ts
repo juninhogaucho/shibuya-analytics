@@ -74,6 +74,14 @@ export interface ResetProDemoClaimLedger {
   forbidden: string[]
 }
 
+export interface ResetProDemoUnlockReceipt {
+  statusLabel: string
+  headline: string
+  facts: string[]
+  nextAction: string
+  boundary: string
+}
+
 export interface ResetProDemoProofStage {
   label: string
   status: 'ready' | 'warning' | 'locked'
@@ -87,6 +95,7 @@ export interface ResetProDemoScript {
   demoThesis: string
   founderTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
+  unlockReceipt: ResetProDemoUnlockReceipt
   proofLadder: ResetProDemoProofStage[]
   readinessChecklist: ResetProDemoChecklistItem[]
   claimLedger: ResetProDemoClaimLedger
@@ -110,6 +119,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const resetPacket = overview.artifact_descriptors?.find((artifact) => artifact.kind === 'reset_pro_review_packet')
   const originCard = buildOriginCard(origin)
   const bridgeCard = buildBridgeCard(origin)
+  const unlockReceipt = buildUnlockReceipt(origin, Boolean(originCard), Boolean(bridgeCard))
   const proofLadder = buildProofLadder(origin, Boolean(originCard), Boolean(bridgeCard))
   const steps = buildResetProDemoSteps()
 
@@ -161,6 +171,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
         boundary: 'The demo ends at sample workflow proof. Live Reset Pro still needs account-specific evidence before private conclusions are presented as truth.',
       },
     ],
+    unlockReceipt,
     proofLadder,
     claimLedger: {
       allowed: [
@@ -237,6 +248,40 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     originCard,
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildUnlockReceipt(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoUnlockReceipt {
+  const facts = [
+    origin?.reportId ? `Report carried: ${origin.reportId}` : 'Report carried: none',
+    origin?.lockedSectionTitle ? `Locked question: ${origin.lockedSectionTitle}` : 'Locked question: not attached',
+    origin?.storySource
+      ? `Story route: ${origin.storySource}; scenes ${origin.visitedSceneCount ?? 0}`
+      : 'Story route: not attached',
+    origin?.evidenceLabel
+      ? `Evidence packet: ${origin.evidenceLabel}`
+      : hasOriginCard
+        ? 'Evidence packet: URL context only'
+        : 'Evidence packet: direct demo only',
+    origin?.signalMarkerLabels?.length
+      ? `Public markers: ${origin.signalMarkerLabels.join(', ')}`
+      : 'Public markers: not attached',
+  ]
+
+  return {
+    statusLabel: hasOriginCard ? 'UNLOCK RECEIPT' : 'DIRECT DEMO RECEIPT',
+    headline: hasBridgeCard
+      ? 'Reset Pro received the public question; the sample workspace can only show the operating loop.'
+      : hasOriginCard
+        ? 'Reset Pro received public routing context; the sample workspace can only show structure.'
+        : 'Reset Pro opened without public context; frame this as a cold sample workspace.',
+    facts,
+    nextAction: 'Run Mission HQ first, inspect one intervention surface, then close on append proof.',
+    boundary: 'This receipt proves the founder gate carried context into the sample workspace. It does not prove live activation, live upload, generated artifacts, or account-specific conclusions.',
   }
 }
 
