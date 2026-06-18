@@ -42,13 +42,16 @@ describe('public Shibuya route canary', () => {
 
     render(app)
 
-    expect((await screen.findAllByRole('heading', { name: /You do not have a strategy problem/i })).length).toBeGreaterThan(0)
+    expect((await screen.findAllByRole('heading', { name: /The market did not break you/i })).length).toBeGreaterThan(0)
     expect(screen.getByText(/The first public job is recognition/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /Priya/i }))
-    await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))
-    await user.click(screen.getByRole('button', { name: /Continue To Upload/i }))
+    await user.click(screen.getByRole('button', { name: /I changed near the limit line/i }))
+    expect(await screen.findByText(/Current hypothesis: Priya \/ Prop evaluation survivor with Drawdown Pressure/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('link', { name: /Turn Mirror Into Evidence/i }))
 
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    })
     expect(await screen.findByRole('heading', { name: /Upload your trade history/i })).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')

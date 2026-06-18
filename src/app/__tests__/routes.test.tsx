@@ -38,7 +38,7 @@ describe('public route contract', () => {
     )
 
     expect(
-      (await screen.findAllByRole('heading', { name: /You do not have a strategy problem/i })).length,
+      (await screen.findAllByRole('heading', { name: /The market did not break you/i })).length,
     ).toBeGreaterThan(0)
   })
 
@@ -50,7 +50,7 @@ describe('public route contract', () => {
     )
 
     expect(
-      (await screen.findAllByRole('heading', { name: /You do not have a strategy problem/i })).length,
+      (await screen.findAllByRole('heading', { name: /The market did not break you/i })).length,
     ).toBeGreaterThan(0)
   })
 

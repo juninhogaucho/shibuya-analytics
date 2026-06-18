@@ -1,13 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { getSampleWorkspaceOverview } from '../../../lib/sampleWorkspace'
 import {
   SHIBUYA_API_KEY_STORAGE_KEY,
   SHIBUYA_SAMPLE_API_KEY,
   SHIBUYA_SESSION_META_STORAGE_KEY,
 } from '../../../lib/runtime'
-import { DashboardOverviewPage } from '../OverviewPage'
 
 const apiMocks = vi.hoisted(() => ({
   getDashboardOverview: vi.fn(),
@@ -60,7 +59,14 @@ vi.mock('../../../lib/api/trader', () => ({
   logTraderLifecycleEvent: apiMocks.logTraderLifecycleEvent,
 }))
 
+let DashboardOverviewPage: typeof import('../OverviewPage').DashboardOverviewPage
+
 describe('DashboardOverviewPage', () => {
+  beforeAll(async () => {
+    vi.resetModules()
+    DashboardOverviewPage = (await import('../OverviewPage')).DashboardOverviewPage
+  })
+
   beforeEach(() => {
     apiMocks.getDashboardOverview.mockResolvedValue(getSampleWorkspaceOverview('reset_pro'))
     apiMocks.getTradingReportComparison.mockResolvedValue(null)

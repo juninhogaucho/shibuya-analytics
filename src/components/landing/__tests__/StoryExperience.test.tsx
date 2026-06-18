@@ -20,11 +20,12 @@ describe('StoryExperience', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getAllByText('You do not have a strategy problem. You have a state problem.')).not.toHaveLength(0)
-    expect(screen.getByText('Story is the product')).toBeInTheDocument()
-    expect(screen.getByText(/Shibuya is the trader truth layer/i)).toBeInTheDocument()
-    expect(screen.getByText('Public mirror contract')).toBeInTheDocument()
-    expect(screen.getByText(/not by selling a platform/i)).toBeInTheDocument()
+    expect(screen.getByText('Interactive film / public mirror')).toBeInTheDocument()
+    expect(screen.getByText('The market did not break you.')).toBeInTheDocument()
+    expect(screen.getByText('Your state repeated.')).toBeInTheDocument()
+    expect(screen.getByText('Choose the frame that stings')).toBeInTheDocument()
+    expect(screen.getByText('Public story contract')).toBeInTheDocument()
+    expect(screen.getByText(/This is the first product surface/i)).toBeInTheDocument()
     expect(screen.getByText('Truth ladder')).toBeInTheDocument()
     expect(screen.getByText('Public story creates a provisional mirror.')).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro becomes the operating loop only after access and evidence boundaries are clear/i)).toBeInTheDocument()
@@ -32,10 +33,11 @@ describe('StoryExperience', () => {
     expect(screen.queryByText(/operator run sheet/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/emergency demo lane/i)).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /Start The Mirror/i }))
+    await user.click(screen.getByRole('button', { name: /I changed near the limit line/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/story')
     expect(screen.getAllByText('Choose the uncomfortable mirror').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Current hypothesis: Priya \/ Prop evaluation survivor with Drawdown Pressure/i)).toBeInTheDocument()
   })
 
   test('routes a selected public hypothesis into upload without claiming account evidence', async () => {
@@ -57,7 +59,7 @@ describe('StoryExperience', () => {
     expect(screen.getByText(/Current hypothesis: Priya \/ Prop evaluation survivor with Drawdown Pressure/i)).toBeInTheDocument()
     expect(screen.getByText(/No raw trade rows, account id, brokerage login, P&L, or private conclusion/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /Continue To Upload/i }))
+    await user.click(screen.getByRole('link', { name: /Continue To Upload/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
@@ -76,7 +78,7 @@ describe('StoryExperience', () => {
       </MemoryRouter>,
     )
 
-    await user.click(screen.getByRole('button', { name: /Turn Mirror Into Evidence/i }))
+    await user.click(screen.getByRole('link', { name: /Turn Mirror Into Evidence/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')

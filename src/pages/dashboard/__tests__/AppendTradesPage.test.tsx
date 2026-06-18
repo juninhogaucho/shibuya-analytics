@@ -1,8 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, test, vi, beforeEach } from 'vitest'
-import { AppendTradesPage } from '../AppendTradesPage'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const parseTradePasteMock = vi.fn()
 const submitParsedTradesMock = vi.fn()
@@ -14,9 +13,11 @@ const getShibuyaRuntimeContractMock = vi.fn()
 const getStoredSessionMetaMock = vi.fn()
 const isReadOnlySessionMock = vi.fn()
 const updateSessionMetaMock = vi.fn()
+const getTraderProfileContextMock = vi.fn()
+let AppendTradesPage: typeof import('../AppendTradesPage').AppendTradesPage
 
 vi.mock('../../../lib/api/trader', () => ({
-  getTraderProfileContext: vi.fn().mockResolvedValue(null),
+  getTraderProfileContext: (...args: unknown[]) => getTraderProfileContextMock(...args),
   logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
 }))
 
@@ -36,6 +37,11 @@ vi.mock('../../../lib/runtime', () => ({
 }))
 
 describe('AppendTradesPage', () => {
+  beforeAll(async () => {
+    vi.resetModules()
+    AppendTradesPage = (await import('../AppendTradesPage')).AppendTradesPage
+  })
+
   function renderPage() {
     return render(
       <MemoryRouter>
@@ -53,6 +59,15 @@ describe('AppendTradesPage', () => {
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
     logTraderLifecycleEventMock.mockResolvedValue(undefined)
+    getTraderProfileContextMock.mockResolvedValue({
+      capital_band: '50k_to_250k_inr',
+      monthly_income_band: '25k_to_75k_inr',
+      trader_focus: 'retail_fo',
+      broker_platform: 'Sample broker',
+      primary_instruments: ['nifty_options', 'banknifty_options'],
+      trader_mode: 'retail_fn0_struggler',
+      completed: true,
+    })
     getStoredSessionMetaMock.mockReturnValue({
       tier: 'sample',
       market: 'india',

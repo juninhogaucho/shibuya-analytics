@@ -43,7 +43,7 @@ describe('public Shibuya journey pages', () => {
 
     await user.click(screen.getByRole('button', { name: /Priya/i }))
     await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))
-    await user.click(screen.getByRole('button', { name: /Continue To Upload/i }))
+    await user.click(screen.getByRole('link', { name: /Continue To Upload/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=priya')

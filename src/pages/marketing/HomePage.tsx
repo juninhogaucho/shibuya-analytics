@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import Navbar from '../../components/landing/Navbar';
 import StoryExperience from '../../components/landing/StoryExperience';
 import Footer from '../../components/landing/Footer';
-import CustomCursor from '../../components/landing/CustomCursor';
 import {
   captureAffiliateAttributionFromLocation,
   getPreferredAffiliateCode,
@@ -35,7 +34,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white landing-page">
-      <CustomCursor />
       <Navbar />
       <StoryExperience />
       <Footer />

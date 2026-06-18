@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, ChevronLeft, ChevronRight, Lock, UploadCloud } from 'lucide-react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
   FINGERPRINT_AXES,
@@ -56,6 +57,36 @@ const ENGINE_PIPELINE_STAGES = [
     body: 'Explain the detected state in trader language after the math has run.',
   },
 ] as const
+
+const CINEMATIC_CHOICES: Array<{
+  line: string
+  subline: string
+  archetypeId: StoryArchetypeId
+  axisId: FingerprintAxisId
+  nextSceneIndex: number
+}> = [
+  {
+    line: 'I kept trading after the trade was already gone.',
+    subline: 'Loss became recovery mission.',
+    archetypeId: 'john',
+    axisId: 'revenge_reentry',
+    nextSceneIndex: 4,
+  },
+  {
+    line: 'I changed near the limit line.',
+    subline: 'The account pressure changed the operator.',
+    archetypeId: 'priya',
+    axisId: 'drawdown_pressure',
+    nextSceneIndex: 4,
+  },
+  {
+    line: 'I defended an edge that stopped paying.',
+    subline: 'The setup looked familiar. The market was different.',
+    archetypeId: 'marco',
+    axisId: 'edge_decay',
+    nextSceneIndex: 4,
+  },
+]
 
 export default function StoryExperience() {
   const navigate = useNavigate()
@@ -131,6 +162,25 @@ export default function StoryExperience() {
     setSignal((current) => togglePainAxis(current, axisId))
   }
 
+  const chooseCinematicMirror = (
+    archetypeId: StoryArchetypeId,
+    axisId: FingerprintAxisId,
+    nextSceneIndex: number,
+  ) => {
+    const safeNextIndex = Math.max(0, Math.min(nextSceneIndex, STORY_SCENES.length - 1))
+    const nextScene = STORY_SCENES[safeNextIndex]
+
+    setActiveSceneIndex(safeNextIndex)
+    setSignal((current) => {
+      const withArchetype = selectArchetype(current, archetypeId)
+      const withPainAxis = withArchetype.selectedPainAxes.includes(axisId)
+        ? withArchetype
+        : togglePainAxis(withArchetype, axisId)
+
+      return recordSceneView(withPainAxis, nextScene.id)
+    })
+  }
+
   const goPreviousScene = () => {
     inspectScene(Math.max(activeSceneIndex - 1, 0))
   }
@@ -144,15 +194,7 @@ export default function StoryExperience() {
     navigate(addMarketToPath('/pricing', market))
   }
 
-  const startTruthMirror = () => {
-    const mirrorSceneIndex = STORY_SCENES.findIndex((scene) => scene.id === 'archetypes')
-    const nextIndex = mirrorSceneIndex >= 0 ? mirrorSceneIndex : 1
-
-    inspectScene(nextIndex)
-  }
-
-  const inspectUploadFlow = () => {
-    const nextSignal = recordUploadIntent(signal)
+  const buildUploadPath = (nextSignal: typeof signal) => {
     const archetypeId = nextSignal.archetypeId ?? 'john'
     const uploadParams = new URLSearchParams({
       archetype: archetypeId,
@@ -166,91 +208,174 @@ export default function StoryExperience() {
       uploadParams.set('pain_axes', nextSignal.selectedPainAxes.join(','))
     }
 
+    return addMarketToPath(`/upload?${uploadParams.toString()}`, market)
+  }
+
+  const pendingUploadSignal = recordUploadIntent(signal)
+  const uploadPath = buildUploadPath(pendingUploadSignal)
+
+  const recordPendingUploadIntent = () => {
+    setSignal(pendingUploadSignal)
+  }
+
+  const inspectUploadFlow = () => {
+    const nextSignal = recordUploadIntent(signal)
+
     setSignal(nextSignal)
-    navigate(addMarketToPath(`/upload?${uploadParams.toString()}`, market))
+    navigate(buildUploadPath(nextSignal))
   }
 
   return (
-    <section id="story-experience" className="shibuya-story-experience overflow-hidden border-b border-white/5 bg-[#030304] pb-16 pt-32 md:pb-24 md:pt-40">
-      <div className="mx-auto w-full max-w-full px-5 sm:px-6 md:px-12 lg:max-w-7xl">
-        <div className="mb-10 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-          <div className="min-w-0">
-            <h2 className="break-words font-display text-[2rem] font-bold uppercase leading-tight text-white sm:text-3xl md:text-5xl">
-              You do not have a strategy problem. You have a state problem.
-            </h2>
-            <p className="mt-6 max-w-full break-words text-base leading-relaxed text-neutral-300 md:text-lg lg:max-w-2xl">
-              Shibuya is the trader truth layer. The public story is the first mirror; upload turns recognition into
-              evidence; Reset Pro turns the next session into a controlled operating loop.
-            </p>
-            <div className="mt-6 min-w-0 overflow-hidden rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.07] p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100 sm:tracking-[0.24em]">Story is the product</p>
-              <p className="mt-3 break-words text-sm leading-relaxed text-neutral-200">
-                This is not a landing page before the experience. This is the experience: recognize the state, choose
-                the uncomfortable mirror, reveal a provisional fingerprint, then decide whether your trade history can
-                prove or reject it.
-              </p>
-              <div className="mt-4 grid gap-2 text-xs leading-5 text-indigo-50/75 sm:grid-cols-3">
-                {[
-                  ['Mirror', 'Name the pressure state before talking about strategy, signals, or dashboards.'],
-                  ['Evidence', 'Carry only a public hypothesis forward until upload proves something real.'],
-                  ['Operating loop', 'Use Reset Pro privately to prepare the next session around what evidence survived.'],
-                ].map(([label, body]) => (
-                  <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-100">{label}</span>
-                    <span className="mt-1 block">{body}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button
-                type="button"
-                onClick={startTruthMirror}
-                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-black transition hover:bg-indigo-200 sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
-              >
-                Start The Mirror
-                <ArrowRight className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={inspectUploadFlow}
-                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
-              >
-                <UploadCloud className="h-4 w-4" />
-                Upload Trade History
-              </button>
-              <button
-                type="button"
-                onClick={() => inspectScene(1)}
-                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black sm:w-auto sm:px-5 sm:text-sm sm:tracking-[0.14em]"
-              >
-                See How It Works
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="mt-3 max-w-full break-words text-xs leading-5 text-neutral-500 lg:max-w-xl">
-              Public interaction can only create a hypothesis. The proof path carries that hypothesis into upload,
-              free report, locked insight, and the private Reset Pro gate without pretending the website analyzed an account.
-            </p>
+    <section
+      id="story-experience"
+      className="shibuya-story-experience relative overflow-hidden border-b border-white/5 bg-[#020203] pb-16 pt-24 text-white md:pb-24 md:pt-28"
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-12rem] top-[-10rem] h-[34rem] w-[34rem] rounded-full bg-indigo-500/15 blur-[120px]" />
+        <div className="absolute right-[-14rem] top-[18rem] h-[38rem] w-[38rem] rounded-full bg-cyan-400/10 blur-[140px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.08),transparent_36%),linear-gradient(180deg,rgba(2,2,3,0)_0%,#020203_76%)]" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-full px-5 sm:px-6 md:px-12 lg:max-w-7xl">
+        <div className="relative min-h-[calc(100vh-6rem)] overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-2xl shadow-black/50">
+          <div className="pointer-events-none absolute inset-0">
+            <motion.div
+              key={`light-${activeScene.id}`}
+              initial={false}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+              className="absolute inset-0"
+              style={{
+                background:
+                  activeSceneIndex % 3 === 0
+                    ? 'radial-gradient(circle at 24% 26%, rgba(129,140,248,0.34), transparent 32%), radial-gradient(circle at 80% 20%, rgba(34,211,238,0.14), transparent 34%), linear-gradient(130deg, #030309 0%, #070711 44%, #010102 100%)'
+                    : activeSceneIndex % 3 === 1
+                      ? 'radial-gradient(circle at 75% 22%, rgba(244,114,182,0.22), transparent 30%), radial-gradient(circle at 18% 72%, rgba(56,189,248,0.16), transparent 34%), linear-gradient(130deg, #020203 0%, #10070d 48%, #030304 100%)'
+                      : 'radial-gradient(circle at 72% 70%, rgba(16,185,129,0.16), transparent 36%), radial-gradient(circle at 28% 18%, rgba(255,255,255,0.13), transparent 24%), linear-gradient(130deg, #020202 0%, #05050b 48%, #010101 100%)',
+              }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:72px_72px] opacity-25" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.15)_50%,rgba(0,0,0,0.72)_100%)]" />
           </div>
-          <div className="min-w-0 space-y-4 text-sm leading-relaxed text-neutral-400 md:text-base">
-            <p>
-              P&L tells you what happened. Shibuya shows the repeatable behavioral state that appeared before it happened.
-              This page builds a provisional fingerprint from the way you move through the story, then asks your trade history to confirm or reject it.
-            </p>
-            <div className="min-w-0 overflow-hidden rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-              <div className="mb-3 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-                <span>3-minute guided story</span>
-                <span>Scene {activeSceneIndex + 1}/{STORY_SCENES.length}</span>
+
+          <div className="relative flex min-h-[calc(100vh-6rem)] flex-col justify-between p-5 sm:p-7 md:p-10">
+            <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.26em] text-white/55">
+              <span>Interactive film / public mirror</span>
+              <span>{activeScene.label} / {progress}% complete</span>
+            </div>
+
+            <div className="grid gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.43fr)] lg:items-end">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeScene.id}
+                  initial={false}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -18, filter: 'blur(12px)' }}
+                  transition={{ duration: 0.48, ease: 'easeOut' }}
+                  className="min-w-0"
+                >
+                  <p className="font-mono text-[10px] uppercase tracking-[0.36em] text-indigo-100/80">
+                    Shibuya scene experience
+                  </p>
+                  <h2 className="mt-5 max-w-5xl break-words font-display text-[3.1rem] font-black uppercase leading-[0.86] tracking-[-0.07em] text-white sm:text-[4.7rem] md:text-[6.4rem] lg:text-[7.4rem]">
+                    {activeSceneIndex === 0 ? (
+                      <>
+                        The market did not break you.
+                        <span className="block text-white/40">Your state repeated.</span>
+                      </>
+                    ) : (
+                      activeScene.title
+                    )}
+                  </h2>
+                  <p className="mt-7 max-w-2xl break-words text-lg leading-8 text-neutral-200 md:text-xl md:leading-9">
+                    {activeSceneIndex === 0
+                      ? 'P&L is the last frame. Shibuya rewinds the film: pressure, hesitation, size, exit, re-entry, damage.'
+                      : activeScene.body}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              <motion.aside
+                initial={false}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.55, ease: 'easeOut', delay: 0.1 }}
+                className="min-w-0 rounded-[1.5rem] border border-white/10 bg-black/45 p-4 backdrop-blur-xl md:p-5"
+              >
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/55">Choose the frame that stings</p>
+                <div className="mt-4 space-y-3">
+                  {CINEMATIC_CHOICES.map((choice) => {
+                    const selected = signal.archetypeId === choice.archetypeId || signal.selectedPainAxes.includes(choice.axisId)
+
+                    return (
+                      <button
+                        key={choice.axisId}
+                        type="button"
+                        onClick={() => chooseCinematicMirror(choice.archetypeId, choice.axisId, choice.nextSceneIndex)}
+                        className={`group w-full rounded-2xl border p-4 text-left transition ${
+                          selected
+                            ? 'border-white/40 bg-white text-black'
+                            : 'border-white/10 bg-white/[0.035] text-white hover:border-white/30 hover:bg-white/[0.08]'
+                        }`}
+                      >
+                        <span className="block text-sm font-semibold leading-6">{choice.line}</span>
+                        <span className={`mt-2 block text-xs leading-5 ${selected ? 'text-black/60' : 'text-neutral-400 group-hover:text-neutral-300'}`}>
+                          {choice.subline}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="mt-5 rounded-2xl border border-amber-200/20 bg-amber-200/[0.06] p-4 text-sm leading-6 text-amber-50/85">
+                  This is recognition, not proof. Account-specific truth starts after upload.
+                </div>
+              </motion.aside>
+            </div>
+
+            <div className="flex flex-col gap-4 border-t border-white/10 pt-5 md:flex-row md:items-end md:justify-between">
+              <div className="min-w-0">
+                <div className="h-1 max-w-xl overflow-hidden rounded-full bg-white/10">
+                  <motion.div
+                    className="h-full rounded-full bg-white"
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  />
+                </div>
+                <p className="mt-3 max-w-2xl text-xs leading-5 text-neutral-400">
+                  Public interaction can create only a hypothesis. Upload/report decides what survives contact with trade history.
+                </p>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-indigo-300 transition-all duration-300" style={{ width: `${progress}%` }} />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={goNextScene}
+                  disabled={activeSceneIndex === STORY_SCENES.length - 1}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                >
+                  Next Scene
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <Link
+                  to={uploadPath}
+                  onClick={recordPendingUploadIntent}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black sm:w-auto"
+                >
+                  <UploadCloud className="h-4 w-4" />
+                  Upload evidence
+                </Link>
               </div>
             </div>
-            <p className="break-words rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-amber-100/90">
-              This is not your report. It is a website-level prediction based on interaction. Upload history or activate a live account before treating anything as account-specific analysis.
-            </p>
           </div>
+        </div>
+
+        <div className="mb-8 rounded-[2rem] border border-white/10 bg-white/[0.035] p-5 text-sm leading-7 text-neutral-300 md:p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Public story contract</p>
+          <p className="mt-3">
+            This is the first product surface: recognize the pressure state, choose the uncomfortable mirror, reveal a
+            provisional fingerprint, then decide whether trade history can prove or reject it.
+          </p>
         </div>
 
         <div className="mb-8">
@@ -260,13 +385,6 @@ export default function StoryExperience() {
           />
         </div>
 
-        <div className="mb-8 rounded-[2rem] border border-white/10 bg-white/[0.035] p-5 text-sm leading-7 text-neutral-300 md:p-6">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Public mirror contract</p>
-          <p className="mt-3">
-            Shibuya starts by helping the trader recognize a possible state, not by selling a platform. Every public click
-            is treated as routing context until upload/report evidence proves or rejects it.
-          </p>
-        </div>
         <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div className="order-2 space-y-3 lg:order-1">
             <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
@@ -506,24 +624,24 @@ export default function StoryExperience() {
                 <p className="mt-4 text-xs leading-relaxed text-indigo-50/65">
                   The public story earns the upload. Private workspace access can show the operating loop, but live proof still begins at upload and append history.
                 </p>
-                <button
-                  type="button"
-                  onClick={inspectUploadFlow}
+                <Link
+                  to={uploadPath}
+                  onClick={recordPendingUploadIntent}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-300/30 bg-indigo-300/[0.08] px-4 py-3 text-sm font-bold uppercase tracking-[0.14em] text-indigo-100 transition hover:border-indigo-200/50 hover:bg-indigo-300/[0.14]"
                 >
                   Turn Mirror Into Evidence
                   <ArrowRight className="h-4 w-4" />
-                </button>
+                </Link>
               </div>
               <div className="space-y-3 rounded-3xl border border-white/10 bg-[#09090B] p-5">
-                <button
-                  type="button"
-                  onClick={inspectUploadFlow}
+                <Link
+                  to={uploadPath}
+                  onClick={recordPendingUploadIntent}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                 >
                   <UploadCloud className="h-4 w-4" />
                   Continue To Upload
-                </button>
+                </Link>
                 <button
                   type="button"
                   onClick={goPricing}

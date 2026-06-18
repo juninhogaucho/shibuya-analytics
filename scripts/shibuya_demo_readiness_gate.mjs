@@ -20,7 +20,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['Story is the product', 'Shibuya is the trader truth layer', 'Start The Mirror', 'Public mirror contract', 'not by selling a platform', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
+    markers: ['Interactive film / public mirror', 'Shibuya scene experience', 'The market did not break you.', 'Choose the frame that stings', 'CINEMATIC_CHOICES', 'Public story contract', 'This is the first product surface', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
   },
   {
     label: 'public journey contract',
