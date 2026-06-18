@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, Handshake, LineChart, ShieldCheck, Split, Target } from 'lucide-react'
+import { ArrowRight, BarChart3, Handshake, LineChart, ShieldCheck, Split, Target, TimerReset } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export function PartnersPage() {
@@ -26,7 +26,7 @@ export function PartnersPage() {
 
   const dealModels = [
     {
-      title: 'Base distribution',
+      title: 'Base distribution fee',
       eyebrow: 'Fastest path',
       body: 'A clean account, challenge, funded-account, or trader-month fee. Best when the partner already has reach and wants Shibuya as a resellable intelligence layer.',
     },
@@ -40,6 +40,12 @@ export function PartnersPage() {
       eyebrow: 'Measured upside',
       body: 'A 10-25% share of verified annualized value added can sit above the base deal, but only after the baseline, floor, attribution window, and exclusions are agreed.',
     },
+  ]
+
+  const proofLanes = [
+    'Paid pilot: fixed implementation/access economics, then optional TVA only above the agreed floor.',
+    'Involved pilot: lower upfront cost when the partner provides data, staff time, distribution, and case-study permission.',
+    'Merit/design-partner pilot: very low upfront only for a high-signal cohort where Shibuya can prove repeatable value.',
   ]
 
   return (
@@ -143,6 +149,23 @@ export function PartnersPage() {
                 <strong className="text-white">Contract rule:</strong> partner revenue share pays for distribution.
                 TVA share pays only for verified incremental value above an agreed floor.
               </div>
+            </article>
+            <article className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <TimerReset className="h-5 w-5 text-amber-300" />
+                <h3 className="text-lg font-bold text-white">Pilot structure</h3>
+              </div>
+              <ul className="grid gap-3 text-sm leading-relaxed text-neutral-400">
+                {proofLanes.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-relaxed text-neutral-300">
+                Source principle: use a short proof window to define the baseline, then charge for access, distribution, and verified incremental value separately.
+              </p>
             </article>
             <article className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
               <div className="mb-4 flex items-center gap-3">

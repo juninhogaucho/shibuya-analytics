@@ -40,6 +40,8 @@ Source model extracted from `C:\Users\luisp\Downloads\Documento sem nome.pdf`:
 - TVA means "Total de Valor Adicionado" / total value added.
 - It annualizes value created from several measurable categories.
 - Example categories in the PDF: hours saved, operating cost savings, profit or margin increases, new revenue, and agreed advanced metrics.
+- The source FAQ values executive/manager/owner hours at EUR 15/hour and other employee hours at EUR 7/hour for illustrative TVA math.
+- The source example annualizes monthly time savings, cost reduction, and added revenue into one TVA figure.
 - One path charges an upfront intervention fee: EUR 250/week for 10 weeks in the source offer.
 - Another path lowers or removes upfront payment in exchange for active participation/resource contribution.
 - The source offer sets a target of at least EUR 4,000 in annualized TVA and charges 25% of annualized TVA above EUR 5,000 for the paid intervention path.

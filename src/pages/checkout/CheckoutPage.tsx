@@ -11,6 +11,7 @@ import {
   readAffiliateAttribution,
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution'
+import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
@@ -27,6 +28,7 @@ const CheckoutPage: React.FC = () => {
   const market = resolveMarket(location.pathname, location.search)
   const planKey = getPlanKey(plan)
   const currentPlan = getMarketPricing(market)[planKey]
+  const checkoutIntent = readCheckoutIntent(location.search)
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
 
@@ -99,8 +101,13 @@ const CheckoutPage: React.FC = () => {
     try {
       persistMarket(market)
       const origin = window.location.origin
-      const successUrl = `${origin}${addMarketToPath(`/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`, market)}`
-      const cancelUrl = `${origin}${addMarketToPath(`/checkout/${currentPlan.checkoutSlug}`, market)}`
+      const successPath = appendCheckoutIntentToPath(
+        `/checkout/success?plan=${encodeURIComponent(currentPlan.planId)}`,
+        checkoutIntent,
+      )
+      const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, checkoutIntent)
+      const successUrl = `${origin}${addMarketToPath(successPath, market)}`
+      const cancelUrl = `${origin}${addMarketToPath(cancelPath, market)}`
 
       const session = await createCheckoutSession({
         plan_id: currentPlan.planId,
@@ -123,6 +130,7 @@ const CheckoutPage: React.FC = () => {
         currency: currentPlan.currency,
         orderId: session.order_id,
         sessionId: session.session_id,
+        checkoutIntent,
         timestamp: new Date().toISOString(),
       }))
 
@@ -176,6 +184,27 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
+        {checkoutIntent && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-8 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-5 text-left"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-200">Checkout intent</p>
+            <h3 className="mt-2 text-lg font-semibold text-white">{describeCheckoutIntent(checkoutIntent)}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-300">
+              We will carry this public-story context into activation so the private workspace starts from the module you tried to unlock.
+            </p>
+            <div className="mt-4 grid gap-2 text-xs text-neutral-400 md:grid-cols-2">
+              {checkoutIntent.lockedSectionId && <span>Module: {checkoutIntent.lockedSectionId}</span>}
+              {checkoutIntent.reportId && <span>Report: {checkoutIntent.reportId}</span>}
+              {checkoutIntent.archetypeId && <span>Archetype: {checkoutIntent.archetypeId}</span>}
+              {checkoutIntent.axisId && <span>Axis: {checkoutIntent.axisId}</span>}
+            </div>
+          </motion.div>
+        )}
 
         <motion.form
           initial={{ opacity: 0, y: 20 }}

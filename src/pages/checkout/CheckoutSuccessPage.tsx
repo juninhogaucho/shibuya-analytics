@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle, Mail, Clock, ArrowRight, KeyRound, Loader2, AlertCircle } from 'lucide-react'
 import { getCheckoutSession } from '../../lib/api/checkout'
+import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
+import type { CheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getMarketHomePath, getPlanByPlanId, inferMarketFromPlanId, persistMarket, resolveMarket } from '../../lib/market'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 
@@ -15,6 +17,7 @@ interface OrderInfo {
   currency?: string
   orderId?: string
   sessionId?: string
+  checkoutIntent?: CheckoutIntent | null
   timestamp: string
 }
 
@@ -37,6 +40,7 @@ const CheckoutSuccessPage: React.FC = () => {
   const location = useLocation()
   const urlMarket = resolveMarket(location.pathname, location.search)
   const sessionId = searchParams.get('session_id')
+  const urlCheckoutIntent = useMemo(() => readCheckoutIntent(location.search), [location.search])
   const [initialOrder] = useState<OrderInfo | null>(() => loadStoredOrder())
   const [order, setOrder] = useState<OrderInfo | null>(initialOrder)
   const [loading, setLoading] = useState(initialOrder === null && Boolean(sessionId))
@@ -73,6 +77,7 @@ const CheckoutSuccessPage: React.FC = () => {
             market: inferredMarket,
             orderId: session.order_id,
             sessionId: session.session_id,
+            checkoutIntent: urlCheckoutIntent,
             timestamp: new Date().toISOString(),
           }
           rememberRecentOrderAccess({
@@ -91,10 +96,12 @@ const CheckoutSuccessPage: React.FC = () => {
         setVerifyError('Could not verify your order. Check your email for the order code, or contact support.')
       })
       .finally(() => setLoading(false))
-  }, [order, sessionId, urlMarket])
+  }, [order, sessionId, urlMarket, urlCheckoutIntent])
 
   const market = order?.market ?? urlMarket
   const plan = getPlanByPlanId(order?.planId)
+  const checkoutIntent = order?.checkoutIntent ?? urlCheckoutIntent
+  const activationPath = addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)
 
   if (loading) {
     return (
@@ -115,7 +122,7 @@ const CheckoutSuccessPage: React.FC = () => {
         <p className="mb-8 text-lg text-neutral-400">{verifyError}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
-            to={addMarketToPath('/activate', market)}
+            to={activationPath}
             className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-500"
           >
             Go to Activation
@@ -189,6 +196,27 @@ const CheckoutSuccessPage: React.FC = () => {
         </motion.div>
       )}
 
+      {checkoutIntent && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="mb-8 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-5 text-left"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-200">Carried into activation</p>
+          <h3 className="mt-2 font-semibold text-white">{describeCheckoutIntent(checkoutIntent)}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-300">
+            Activation keeps the public-story context attached so the live workspace can start from the exact locked module instead of treating this like a generic signup.
+          </p>
+          <div className="mt-4 grid gap-2 text-xs text-neutral-400 md:grid-cols-2">
+            {checkoutIntent.lockedSectionId && <span>Module: {checkoutIntent.lockedSectionId}</span>}
+            {checkoutIntent.reportId && <span>Report: {checkoutIntent.reportId}</span>}
+            {checkoutIntent.archetypeId && <span>Archetype: {checkoutIntent.archetypeId}</span>}
+            {checkoutIntent.axisId && <span>Axis: {checkoutIntent.axisId}</span>}
+          </div>
+        </motion.div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -258,7 +286,7 @@ const CheckoutSuccessPage: React.FC = () => {
       >
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
-            to={addMarketToPath('/activate', market)}
+            to={activationPath}
             className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-500"
           >
             Activate Live Account
