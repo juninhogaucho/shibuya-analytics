@@ -93,14 +93,17 @@ export function DashboardOverviewPage() {
     ? {
         source: sessionMeta.demoSource,
         reportId: sessionMeta.demoReportId,
+        archetypeId: sessionMeta.demoArchetypeId,
         archetypeLabel: sessionMeta.demoArchetypeId
           ? `${getTraderArchetype(sessionMeta.demoArchetypeId).name}: ${getTraderArchetype(sessionMeta.demoArchetypeId).title}`
           : undefined,
+        axisId: sessionMeta.demoAxisId,
         axisLabel: sessionMeta.demoAxisId ? getFingerprintAxis(sessionMeta.demoAxisId).label : undefined,
         reportSource: sessionMeta.demoReportSource,
         evidenceLabel: sessionMeta.demoEvidenceLabel,
         validationSummary: sessionMeta.demoValidationSummary,
         storySource: sessionMeta.demoStorySource,
+        selectedPainAxisIds: sessionMeta.demoSelectedPainAxisIds,
         selectedPainAxisLabels: sessionMeta.demoSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
         visitedSceneCount: sessionMeta.demoVisitedSceneCount,
         signalMarkerLabels: getPublicStorySignalMarkers(sessionMeta.demoSignalMarkerIds).map((marker) => marker.label),

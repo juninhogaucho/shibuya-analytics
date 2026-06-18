@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { BehavioralFingerprint } from '../landing/BehavioralFingerprint'
 import { formatMoney } from '../../lib/display'
 import { buildResetProDemoScript, type ResetProDemoOrigin } from '../../lib/resetProDemo'
 import { addMarketToPath, type Market } from '../../lib/market'
@@ -13,7 +14,7 @@ interface ResetProDemoCommandCenterProps {
 
 const OPERATOR_STRIP_CLOSE_MARKER = 'Close On Append Proof'
 
-function renderMetricValue(metric: ReturnType<typeof buildResetProDemoScript>['pressureMetrics'][number], market: Market) {
+function renderMetricValue(metric: { kind: 'money' | 'percent' | 'text'; value: number | string }, market: Market) {
   if (metric.kind === 'money' && typeof metric.value === 'number') {
     return formatMoney(metric.value, market)
   }
@@ -101,6 +102,46 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
           </div>
         </div>
       </div>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
+          background: 'rgba(34,211,238,0.07)',
+          borderColor: 'rgba(34,211,238,0.22)',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO LIVING MIRROR</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>{script.livingMirror.headline}</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              {script.livingMirror.body}
+            </p>
+          </div>
+          <span className="badge">{script.livingMirror.dominantAxisLabel}</span>
+        </div>
+        <div className="grid-responsive two" style={{ marginTop: '1rem', alignItems: 'start' }}>
+          <div>
+            <BehavioralFingerprint scores={script.livingMirror.fingerprintScores} />
+            <p className="text-muted" style={{ margin: '0.75rem 0 0', fontSize: '0.82rem' }}>
+              Public fingerprint: {script.livingMirror.publicFingerprintLabel}
+            </p>
+          </div>
+          <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+            {script.livingMirror.rows.map((row) => (
+              <article key={row.label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                <p className="badge" style={{ marginBottom: '0.5rem' }}>{row.label}</p>
+                <h4 style={{ marginBottom: '0.5rem' }}>{renderMetricValue(row, market)}</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>{row.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+        <p className="text-muted" style={{ margin: '1rem 0 0', fontSize: '0.82rem' }}>
+          <strong className="text-amber-100">Boundary:</strong> {script.livingMirror.boundary}
+        </p>
+      </article>
 
       <article
         className="glass-panel"

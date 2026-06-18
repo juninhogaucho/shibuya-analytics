@@ -1,4 +1,10 @@
 import type { DashboardOverview } from './types'
+import {
+  buildPredictedFingerprint,
+  createSignalFromPublicJourney,
+  getDominantFingerprintAxis,
+  type FingerprintScore,
+} from './storyExperience'
 
 export interface ResetProDemoMetric {
   label: string
@@ -31,12 +37,15 @@ export interface ResetProDemoShowMoment {
 export interface ResetProDemoOrigin {
   source?: string
   reportId?: string
+  archetypeId?: string
   archetypeLabel?: string
+  axisId?: string
   axisLabel?: string
   reportSource?: string
   evidenceLabel?: string
   validationSummary?: string
   storySource?: string
+  selectedPainAxisIds?: string[]
   selectedPainAxisLabels?: string[]
   visitedSceneCount?: number
   signalMarkerLabels?: string[]
@@ -117,12 +126,30 @@ export interface ResetProDemoCloseContract {
   rows: ResetProDemoCloseContractItem[]
 }
 
+export interface ResetProDemoLivingMirrorRow {
+  label: string
+  value: number | string
+  kind: 'money' | 'percent' | 'text'
+  body: string
+}
+
+export interface ResetProDemoLivingMirror {
+  headline: string
+  body: string
+  publicFingerprintLabel: string
+  dominantAxisLabel: string
+  fingerprintScores: FingerprintScore[]
+  rows: ResetProDemoLivingMirrorRow[]
+  boundary: string
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
   demoThesis: string
   founderTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
+  livingMirror: ResetProDemoLivingMirror
   unlockReceipt: ResetProDemoUnlockReceipt
   decisionPacket: ResetProDemoDecisionPacket
   proofLadder: ResetProDemoProofStage[]
@@ -154,6 +181,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
   const decisionPacket = buildDecisionPacket(origin, Boolean(originCard), Boolean(bridgeCard))
   const proofLadder = buildProofLadder(origin, Boolean(originCard), Boolean(bridgeCard))
   const steps = buildResetProDemoSteps()
+  const livingMirror = buildLivingMirror(overview, origin, nextSessionCommand)
 
   return {
     headline: 'Private Reset Pro command center',
@@ -203,6 +231,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
         boundary: 'The demo ends at sample workflow proof. Live Reset Pro still needs account-specific evidence before private conclusions are presented as truth.',
       },
     ],
+    livingMirror,
     unlockReceipt,
     decisionPacket,
     proofLadder,
@@ -283,6 +312,91 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     originCard,
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
+  }
+}
+
+function buildLiveSignalLabel(overview: DashboardOverview): string {
+  const state = overview.analysis_summary?.state ?? overview.recovery_ladder
+  const bqlScore = overview.bql_score
+
+  if (state === 'loss_of_command' || bqlScore < 0.45 || overview.ruin_probability >= 0.08) {
+    return 'RED: stop and protect'
+  }
+
+  if (state === 'under_pressure' || bqlScore < 0.65 || overview.ruin_probability >= 0.03) {
+    return 'AMBER: pressure visible'
+  }
+
+  return 'GREEN: controlled enough to proceed'
+}
+
+function buildLivingMirror(
+  overview: DashboardOverview,
+  origin: ResetProDemoOrigin | undefined,
+  nextSessionCommand: string,
+): ResetProDemoLivingMirror {
+  const fingerprintScores = buildPredictedFingerprint(
+    createSignalFromPublicJourney({
+      archetypeId: origin?.archetypeId,
+      axisId: origin?.axisId,
+      selectedPainAxisIds: origin?.selectedPainAxisIds,
+      visitedSceneCount: origin?.visitedSceneCount,
+    }),
+  )
+  const dominantAxis = getDominantFingerprintAxis(fingerprintScores)
+  const decayedEdges = overview.edge_portfolio.filter((edge) => edge.status === 'DECAYED')
+  const leadingEdge = decayedEdges[0] ?? overview.edge_portfolio[0]
+  const publicFingerprintLabel = origin?.archetypeLabel || origin?.axisLabel
+    ? `${origin?.archetypeLabel ?? 'public archetype not attached'} / ${origin?.axisLabel ?? dominantAxis.label}`
+    : 'Direct Reset Pro sample fingerprint'
+
+  return {
+    headline: 'Story became the product: fingerprint, mandate, signal, proof loop.',
+    body: 'RESET PRO LIVING MIRROR: the private workspace should feel like the public fingerprint became operational. It shows what to protect next, while keeping sample/live boundaries visible.',
+    publicFingerprintLabel,
+    dominantAxisLabel: origin?.axisLabel ?? dominantAxis.label,
+    fingerprintScores,
+    rows: [
+      {
+        label: 'Public fingerprint',
+        value: publicFingerprintLabel,
+        kind: 'text',
+        body: origin?.storySource
+          ? `Carried from ${origin.storySource} after ${origin.visitedSceneCount ?? 0} public scene${origin.visitedSceneCount === 1 ? '' : 's'}.`
+          : 'No public story route is attached; this is a direct sample mirror only.',
+      },
+      {
+        label: 'Discipline Tax',
+        value: overview.discipline_tax_30d,
+        kind: 'money',
+        body: 'Shown as sample operating pressure here. Live values require backend-generated account artifacts.',
+      },
+      {
+        label: 'Next Session Mandate',
+        value: nextSessionCommand,
+        kind: 'text',
+        body: 'The mandate is the first private action text. It constrains behavior; it is not a trade signal.',
+      },
+      {
+        label: 'LiveSignal',
+        value: buildLiveSignalLabel(overview),
+        kind: 'text',
+        body: 'Workspace state language must move green, amber, or red before the trader acts. In demo mode this is sample state only.',
+      },
+      {
+        label: 'Edge Portfolio',
+        value: leadingEdge ? `${leadingEdge.status}: ${leadingEdge.name}` : 'No edge cards available',
+        kind: 'text',
+        body: 'The edge surface should separate what still pays from what only feels familiar.',
+      },
+      {
+        label: 'Append proof',
+        value: 'Required next evidence',
+        kind: 'text',
+        body: 'The next upload must confirm, reject, or update the mandate before improvement is claimed.',
+      },
+    ],
+    boundary: 'This living mirror is sample workflow proof. It does not prove payment, live upload, generated artifacts, durable account deltas, or trader-specific improvement.',
   }
 }
 

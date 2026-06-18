@@ -17,6 +17,16 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('MARKET: INDIA')).toBeInTheDocument()
     expect(screen.getAllByText('DEMO DATA ONLY')[0]).toBeInTheDocument()
     expect(screen.getByText(/Shibuya does not tell the trader what to buy or sell/i)).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO LIVING MIRROR')).toBeInTheDocument()
+    expect(screen.getByText('Story became the product: fingerprint, mandate, signal, proof loop.')).toBeInTheDocument()
+    expect(screen.getByText(/the private workspace should feel like the public fingerprint became operational/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Public fingerprint').length).toBeGreaterThan(0)
+    expect(screen.getByText('Direct Reset Pro sample fingerprint')).toBeInTheDocument()
+    expect(screen.getByText('Next Session Mandate')).toBeInTheDocument()
+    expect(screen.getByText('LiveSignal')).toBeInTheDocument()
+    expect(screen.getByText('Edge Portfolio')).toBeInTheDocument()
+    expect(screen.getByText('Append proof')).toBeInTheDocument()
+    expect(screen.getByText(/This living mirror is sample workflow proof/i)).toBeInTheDocument()
     expect(screen.getByText('RESET PRO WORKSPACE STATUS SNAPSHOT')).toBeInTheDocument()
     expect(screen.getByText('Know what is live, what is carried, and what must be proven next.')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
@@ -48,7 +58,7 @@ describe('ResetProDemoCommandCenter', () => {
     expect(screen.getByText('The direct sample workspace can demonstrate the Reset Pro operating loop and end at the upload/append proof path.')).toBeInTheDocument()
     expect(screen.getByText('What remains unproven')).toBeInTheDocument()
     expect(screen.getByText('Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.')).toBeInTheDocument()
-    expect(screen.getByText('Required next evidence')).toBeInTheDocument()
+    expect(screen.getAllByText('Required next evidence').length).toBeGreaterThan(0)
     expect(screen.getByText('A live activated account must complete first meaningful upload, generated artifact review, and repeat append history.')).toBeInTheDocument()
     expect(screen.getByText('DEMO CLAIM LEDGER')).toBeInTheDocument()
     expect(screen.getByText('What the presenter may say, and what stays forbidden.')).toBeInTheDocument()
@@ -113,12 +123,15 @@ describe('ResetProDemoCommandCenter', () => {
           origin={{
             source: 'free_report',
             reportId: 'free-report-123',
+            archetypeId: 'priya',
             archetypeLabel: 'Priya: Prop evaluation survivor',
+            axisId: 'drawdown_pressure',
             axisLabel: 'Drawdown Pressure',
             reportSource: 'sample',
             evidenceLabel: 'Sample history packet',
             validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
             storySource: 'guided',
+            selectedPainAxisIds: ['drawdown_pressure'],
             selectedPainAxisLabels: ['Drawdown Pressure'],
             visitedSceneCount: 4,
             lockedSectionId: 'highest-cost-state',
@@ -143,6 +156,11 @@ describe('ResetProDemoCommandCenter', () => {
     )
 
     expect(screen.getByText('Carried in from the public report')).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO LIVING MIRROR')).toBeInTheDocument()
+    expect(screen.getAllByText('Priya: Prop evaluation survivor / Drawdown Pressure').length).toBeGreaterThan(0)
+    expect(screen.getByText('Carried from guided after 4 public scenes.')).toBeInTheDocument()
+    expect(screen.getByText('Next Session Mandate')).toBeInTheDocument()
+    expect(screen.getByText('LiveSignal')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO WORKSPACE STATUS SNAPSHOT')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO PRIVATE GATE CHECKSUM')).toBeInTheDocument()
     expect(screen.getByText('Attached after founder unlock')).toBeInTheDocument()

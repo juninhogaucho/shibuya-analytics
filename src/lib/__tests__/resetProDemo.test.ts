@@ -16,6 +16,19 @@ describe('Reset Pro demo script', () => {
     ])
     expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
     expect(script.showSequence[3].show).toContain('Append proof flow')
+    expect(script.livingMirror.headline).toContain('Story became the product')
+    expect(script.livingMirror.body).toContain('RESET PRO LIVING MIRROR')
+    expect(script.livingMirror.publicFingerprintLabel).toBe('Direct Reset Pro sample fingerprint')
+    expect(script.livingMirror.rows.map((row) => row.label)).toEqual([
+      'Public fingerprint',
+      'Discipline Tax',
+      'Next Session Mandate',
+      'LiveSignal',
+      'Edge Portfolio',
+      'Append proof',
+    ])
+    expect(script.livingMirror.rows.find((row) => row.label === 'LiveSignal')?.value).toBe('AMBER: pressure visible')
+    expect(script.livingMirror.boundary).toContain('sample workflow proof')
     expect(script.unlockReceipt).toMatchObject({
       statusLabel: 'DIRECT DEMO RECEIPT',
       headline: 'Reset Pro opened without public context; frame this as a cold sample workspace.',
@@ -136,12 +149,15 @@ describe('Reset Pro demo script', () => {
     const script = buildResetProDemoScript(getSampleWorkspaceOverview('reset_pro'), {
       source: 'free_report',
       reportId: 'free-report-123',
+      archetypeId: 'priya',
       archetypeLabel: 'Priya: Prop evaluation survivor',
+      axisId: 'drawdown_pressure',
       axisLabel: 'Drawdown Pressure',
       reportSource: 'sample',
       evidenceLabel: 'Sample history packet',
       validationSummary: 'Demo packet accepted. This proves the public journey transition, not live analytics.',
       storySource: 'guided',
+      selectedPainAxisIds: ['drawdown_pressure'],
       selectedPainAxisLabels: ['Drawdown Pressure'],
       visitedSceneCount: 4,
       signalMarkerLabels: ['Mirror selected', 'Pain axis tapped', 'Evidence intent'],
@@ -153,6 +169,10 @@ describe('Reset Pro demo script', () => {
     })
 
     expect(script.originCard?.title).toBe('Carried in from the public report')
+    expect(script.livingMirror.publicFingerprintLabel).toBe('Priya: Prop evaluation survivor / Drawdown Pressure')
+    expect(script.livingMirror.dominantAxisLabel).toBe('Drawdown Pressure')
+    expect(script.livingMirror.rows.find((row) => row.label === 'Public fingerprint')?.body).toBe('Carried from guided after 4 public scenes.')
+    expect(script.livingMirror.rows.find((row) => row.label === 'Next Session Mandate')?.body).toContain('not a trade signal')
     expect(script.originCard?.facts).toContain('Origin report: free-report-123')
     expect(script.originCard?.facts).toContain('Public archetype: Priya: Prop evaluation survivor')
     expect(script.originCard?.facts).toContain('Predicted axis: Drawdown Pressure')

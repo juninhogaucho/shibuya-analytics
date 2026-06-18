@@ -115,12 +115,12 @@ const REQUIRED_SURFACES = [
   {
     label: 'Reset Pro command center',
     file: 'src/lib/resetProDemo.ts',
-    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Private gate checksum:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
+    markers: ['Public packet source:', 'Handoff evidence:', 'Validation note:', 'Story handoff:', 'Public pain axes:', 'Private gate checksum:', 'Receipt id:', 'UNLOCK RECEIPT', 'RESET PRO LIVING MIRROR', 'Story became the product', 'LiveSignal', 'Next Session Mandate', 'RESET PRO CLOSE CONTRACT', 'Live upload, generated backend artifacts, durable account deltas, repeated append history, and trader-specific improvement remain unproven.', 'This receipt proves the founder gate carried context into the sample workspace.'],
   },
   {
     label: 'Reset Pro operator strip',
     file: 'src/components/dashboard/ResetProDemoCommandCenter.tsx',
-    markers: ['RESET PRO WORKSPACE STATUS SNAPSHOT', 'Mode: sample-only', 'Context carried', 'Next proof required', 'Know what is live, what is carried, and what must be proven next.', 'RESET PRO PRIVATE GATE CHECKSUM', 'The workspace must match the locked-insight route it received.', 'Continuity check only', 'RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
+    markers: ['RESET PRO WORKSPACE STATUS SNAPSHOT', 'Mode: sample-only', 'Context carried', 'Next proof required', 'Know what is live, what is carried, and what must be proven next.', 'RESET PRO LIVING MIRROR', 'Public fingerprint:', 'RESET PRO PRIVATE GATE CHECKSUM', 'The workspace must match the locked-insight route it received.', 'Continuity check only', 'RESET PRO UNLOCK RECEIPT', 'RESET PRO OPERATOR STRIP', 'No dashboard wandering', 'Start at Mission HQ', 'Close On Append Proof', 'RESET PRO CLOSE CONTRACT', 'RESET PRO OBJECTION MAP', 'Fast answers for the questions that can break the demo.'],
   },
   {
     label: 'append-proof exit',
