@@ -509,6 +509,17 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Founder demo continuation')).toBeInTheDocument()
     expect(screen.getByText('Carry this locked question into Reset Pro.')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet to carry/i)).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro decision-room handoff')).toBeInTheDocument()
+    expect(screen.getByText('Turn the locked question into a demo route, not a claim.')).toBeInTheDocument()
+    expect(screen.getByText('Opening line')).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro is not answering "Is the trader defending a setup that no longer deserves the same risk\?" yet/i)).toBeInTheDocument()
+    expect(screen.getByText('One surface to show')).toBeInTheDocument()
+    expect(screen.getAllByText('Sample cost-state card and founder talk track.').length).toBeGreaterThan(1)
+    expect(screen.getByText('Evidence checkpoint')).toBeInTheDocument()
+    expect(screen.getAllByText('Normalized trade history with enough rows to estimate repeat behavioral cost.').length).toBeGreaterThan(1)
+    expect(screen.getByText('Close condition')).toBeInTheDocument()
+    expect(screen.getByText(/End on append proof\. The question stays unresolved/i)).toBeInTheDocument()
+    expect(screen.getByText(/Decision-room rule: the private demo can show workflow relevance/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
       'href',
       '/private-demo?source=locked_insight&report=sample-free-report&archetype=marco&axis=edge_decay&section=highest-cost-state&market=global',
@@ -535,6 +546,9 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
     expect(screen.getByText(/Blocks the answer until activation, upload, generated artifacts, and append history exist/i)).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro decision-room handoff')).toBeInTheDocument()
+    expect(screen.getByText(/Turn the locked question into a demo route, not a claim/i)).toBeInTheDocument()
+    expect(screen.getByText(/only live data can answer the carried private question/i)).toBeInTheDocument()
     expect(screen.getByText(/URL story context only: guided; scenes 6; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText(/No local upload-step validation packet was found/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(

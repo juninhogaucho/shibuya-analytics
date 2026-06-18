@@ -50,7 +50,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked private insight',
     file: 'src/pages/marketing/LockedInsightPage.tsx',
-    markers: ['Locked Private Insight', 'Private module preview', 'This is where recognition becomes evidence.', 'Locked insight presenter guardrail', 'Presenter guardrail rule: the locked insight is a proof contract, not a private conclusion.', 'Claims this page refuses'],
+    markers: ['Locked Private Insight', 'Private module preview', 'This is where recognition becomes evidence.', 'Locked insight presenter guardrail', 'Presenter guardrail rule: the locked insight is a proof contract, not a private conclusion.', 'Reset Pro decision-room handoff', 'Turn the locked question into a demo route, not a claim.', 'Decision-room rule: the private demo can show workflow relevance', 'Claims this page refuses'],
   },
   {
     label: 'private demo gate',

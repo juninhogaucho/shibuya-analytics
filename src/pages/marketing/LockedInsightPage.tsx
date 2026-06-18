@@ -157,6 +157,24 @@ export default function LockedInsightPage() {
     ).toString()}`,
     market,
   )
+  const decisionRoomHandoffRows = [
+    {
+      label: 'Opening line',
+      body: `Reset Pro is not answering "${report.resetProBridge.decisionQuestion}" yet. It is showing the operating loop that will test it.`,
+    },
+    {
+      label: 'One surface to show',
+      body: lockedInsightPreview.demoMayPreview[0] ?? 'Show one sample private surface that matches the requested module.',
+    },
+    {
+      label: 'Evidence checkpoint',
+      body: lockedInsightPreview.proofRequired[lockedInsightPreview.proofRequired.length - 1],
+    },
+    {
+      label: 'Close condition',
+      body: 'End on append proof. The question stays unresolved until live activation, real upload, generated artifacts, and repeat append history exist.',
+    },
+  ]
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
@@ -367,6 +385,34 @@ export default function LockedInsightPage() {
                 </Link>
               </div>
             </div>
+          </article>
+
+          <article className="rounded-[2rem] border border-sky-300/20 bg-sky-300/[0.055] p-5 md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
+                  Reset Pro decision-room handoff
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                  Turn the locked question into a demo route, not a claim.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-sky-50/75">
+                  This is the presenter bridge between the public locked insight and the private workspace. It keeps
+                  the next click operational: say the question, show one relevant Reset Pro surface, then close on append proof.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {decisionRoomHandoffRows.map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-sky-100">{item.label}</p>
+                    <p className="mt-2 text-sm leading-6 text-sky-50/75">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-sky-50/60">
+              Decision-room rule: the private demo can show workflow relevance; only live data can answer the carried private question.
+            </p>
           </article>
 
           <article className="rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.06] p-5 md:p-8">
