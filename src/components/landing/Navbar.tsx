@@ -91,9 +91,10 @@ const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={switchMarket}
+            aria-label={`Switch to ${market === 'india' ? 'global' : 'India'} market`}
             className="hidden rounded-full border border-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-300 transition-all hover:border-white/20 hover:text-white md:inline-flex"
           >
-            {market === 'india' ? 'Global' : 'India'}
+            {market === 'india' ? 'Market: India' : 'Market: Global'}
           </button>
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: '#ffffff', color: '#000000' }}

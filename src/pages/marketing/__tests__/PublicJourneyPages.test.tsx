@@ -70,10 +70,10 @@ describe('public Shibuya journey pages', () => {
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
 
-    expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
-    expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
+    expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
     expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
@@ -81,7 +81,7 @@ describe('public Shibuya journey pages', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard')
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=india')
     expect(screen.getByText('Reset Pro dashboard route')).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
     expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
@@ -304,7 +304,7 @@ describe('public Shibuya journey pages', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard')
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=india')
     expect(screen.getByText('Reset Pro dashboard route')).toBeInTheDocument()
     expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
       demoSource: 'locked_insight',

@@ -77,7 +77,7 @@ export default function PrivateDemoPage() {
       lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
       lockedSectionTitle: lockedSection?.title,
     })
-    navigate('/dashboard', { replace: true })
+    navigate(addMarketToPath('/dashboard', market), { replace: true })
   }
 
   return (
@@ -88,7 +88,7 @@ export default function PrivateDemoPage() {
             Private Reset Pro Demo
           </p>
           <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
-            Show the trader workspace without making it public.
+            Open the Reset Pro workspace for a controlled demo.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
             This gate opens the Reset Pro preview workspace for controlled demos only. It uses demo data,
@@ -101,6 +101,7 @@ export default function PrivateDemoPage() {
             {[
               'The public story and free report stay open to everyone.',
               'The Reset Pro workspace requires a private code configured at build time.',
+              `The demo opens in the ${market} market context and carries the public handoff forward.`,
               'The dashboard opens a founder talk track before the normal workspace cards.',
               'The preview-only boundary stays visible after unlock.',
             ].map((item) => (
@@ -133,10 +134,10 @@ export default function PrivateDemoPage() {
 
           {hasReportHandoff ? (
             <div className="mb-5 rounded-2xl border border-indigo-300/20 bg-indigo-300/[0.08] p-4 text-sm leading-7 text-indigo-50/85">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Report handoff packet</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">Public-to-private handoff</p>
               <p className="mt-2">
                 This unlock will carry <span className="font-mono text-white">{handoffReportId ?? 'direct-report'}</span> into
-                the Reset Pro preview as a private demo origin. Demo archetype: <span className="text-white">{handoffArchetype.name}</span>.
+                the Reset Pro preview as demo routing context. Demo archetype: <span className="text-white">{handoffArchetype.name}</span>.
                 Dominant axis: <span className="text-white">{handoffAxis.label}</span>.
               </p>
               {handoffSectionId ? (
@@ -154,7 +155,7 @@ export default function PrivateDemoPage() {
               ) : null}
               <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">
-                  Handoff evidence boundary
+                  Evidence boundary
                 </p>
                 <h3 className="mt-2 text-base font-semibold text-white">
                   {reportSession?.evidenceLabel ?? 'Direct-link fallback only'}

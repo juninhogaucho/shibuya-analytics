@@ -61,10 +61,10 @@ describe('PrivateDemoPage', () => {
 
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
 
-    expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
-    expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
+    expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Demo packet accepted/i)).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided/i)).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard')
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
     expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
       market: 'global',
@@ -96,7 +96,7 @@ describe('PrivateDemoPage', () => {
 
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=6&pain_axes=drawdown_pressure&market=global')
 
-    expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
+    expect(screen.getByText('Evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
     expect(screen.getAllByText(/URL context only/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Use the public upload page/i)).toBeInTheDocument()
@@ -129,7 +129,7 @@ describe('PrivateDemoPage', () => {
 
     renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
 
-    expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
     expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
     expect(screen.getByText('Edge decay map')).toBeInTheDocument()
     expect(screen.getByText(/Which setup still deserves risk/i)).toBeInTheDocument()
