@@ -88,7 +88,8 @@ Backend touched files:
    - use at least 8 characters
    - do not use a placeholder value
    - do not reuse a sensitive password because the gate is client-side demo control, not high-security authentication
-4. run one real paid canary:
+4. run `npm run demo:gate` before sharing a controlled private Reset Pro sample demo
+5. run one real paid canary:
    - checkout
    - success
    - activation
@@ -96,7 +97,7 @@ Backend touched files:
    - onboarding context
    - login
    - upload
-5. decide whether India should enable extra payment methods such as UPI in Stripe
+6. decide whether India should enable extra payment methods such as UPI in Stripe
 
 ## Launch Claim Boundary
 
@@ -104,8 +105,10 @@ You can say:
 - Shibuya sells recurring direct-trader live workspace access
 - activation and fulfillment are wired for live use
 - the repo is green locally
+- the controlled private Reset Pro sample demo passed `npm run demo:gate`, when that command has actually been run with a non-placeholder demo code
 
 You should not yet say:
 - India is proven at scale
 - the product is battle-tested on paid traffic
 - retention / renewal / continuity is already validated
+- the private demo gate is secure authentication; it is client-side controlled-demo access only

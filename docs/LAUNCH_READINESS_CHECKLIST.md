@@ -24,6 +24,7 @@ All items below must be true on the same commit and same environment.
 - The product gives the trader at least one clear next action after upload, not just passive reporting.
 
 ### Engineering Discipline
+- `npm run demo:gate` passes before any controlled private Reset Pro demo is shared.
 - `npm run lint` passes.
 - `npm run test:run` passes.
 - `npm run build` passes.
