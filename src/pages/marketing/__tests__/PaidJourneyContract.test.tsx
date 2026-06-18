@@ -115,7 +115,7 @@ describe('paid Shibuya journey contract', () => {
     const firstRender = render(
       <MemoryRouter
         initialEntries={[
-          '/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay',
+          '/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent',
         ]}
       >
         <Routes>
@@ -133,11 +133,15 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByText('Scenes before upload')).toBeInTheDocument()
     expect(screen.getByText('6')).toBeInTheDocument()
     expect(screen.getByText('Marco / Edge Decay')).toBeInTheDocument()
+    expect(screen.getByText('Why this hypothesis followed you here')).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected')).toBeInTheDocument()
+    expect(screen.getByText('Evidence intent')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
     expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
     expect(screen.getByText('Selected public pain axes: Edge Decay.')).toBeInTheDocument()
+    expect(screen.getByText('Website-level signal markers: Mirror selected, Evidence intent.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Unlock Highest-cost state/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
@@ -148,6 +152,7 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
     expect(screen.getByText('Locked private insight')).toBeInTheDocument()
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
+    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 6; axes 1/i)).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
@@ -171,6 +176,7 @@ describe('paid Shibuya journey contract', () => {
         public_context_story_source: 'guided',
         public_context_story_scene_count: '6',
         public_context_pain_axes: 'edge_decay',
+        public_context_signal_markers: 'mirror_selected,upload_intent',
       }),
     )
     expect(journeyMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
@@ -187,6 +193,7 @@ describe('paid Shibuya journey contract', () => {
         storySource: 'guided',
         visitedSceneCount: 6,
         selectedPainAxisIds: ['edge_decay'],
+        signalMarkerIds: ['mirror_selected', 'upload_intent'],
       },
     })
 
@@ -205,6 +212,7 @@ describe('paid Shibuya journey contract', () => {
 
     expect(screen.getByText('Carried into activation')).toBeInTheDocument()
     expect(screen.getByText('Report: sample-behavioral-leak-report')).toBeInTheDocument()
+    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 6; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
@@ -214,6 +222,7 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
     expect(screen.getByText(/Report: sample-behavioral-leak-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
 
     await user.clear(screen.getByLabelText(/EMAIL_ADDRESS/i))
     await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
@@ -240,6 +249,7 @@ describe('paid Shibuya journey contract', () => {
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       activationLockedSectionId: 'highest-cost-state',
       activationLockedSectionTitle: 'Highest-cost state',
     })
@@ -251,6 +261,7 @@ describe('paid Shibuya journey contract', () => {
           activationReportId: 'sample-behavioral-leak-report',
           activationStorySource: 'guided',
           activationVisitedSceneCount: 6,
+          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
           activationLockedSectionId: 'highest-cost-state',
         }),
       }),
