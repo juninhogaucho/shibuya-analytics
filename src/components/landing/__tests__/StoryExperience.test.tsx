@@ -48,6 +48,7 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
     expect(screen.getByTestId('location')).toHaveTextContent('scene_count=1')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
+    expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cupload_intent')
   })
 
   test('offers a deterministic guided demo path for expo handoffs', async () => {
@@ -68,6 +69,7 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
     expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
+    expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
   })
 
   test('exposes the deterministic guided demo path in the hero', async () => {
@@ -88,5 +90,6 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
     expect(screen.getByTestId('location')).toHaveTextContent('scene_count=4')
     expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=edge_decay')
+    expect(screen.getByTestId('location')).toHaveTextContent('signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent')
   })
 })

@@ -52,6 +52,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Drawdown Pressure').length).toBeGreaterThan(0)
     expect(screen.getByText('Current upload hypothesis')).toBeInTheDocument()
     expect(screen.getByText('Priya / Drawdown Pressure')).toBeInTheDocument()
+    expect(screen.getByText('Why this hypothesis followed you here')).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected')).toBeInTheDocument()
+    expect(screen.getByText('Pain axis tapped')).toBeInTheDocument()
+    expect(screen.getByText('Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText(/These are public website markers only/i)).toBeInTheDocument()
     expect(screen.getByText('Report packet contract')).toBeInTheDocument()
     expect(screen.getByText('What this upload step is allowed to prove.')).toBeInTheDocument()
     expect(screen.getByText(/Creates a local report handoff with source, market, archetype/i)).toBeInTheDocument()
@@ -68,9 +73,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
     expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
     expect(screen.getByText('Selected public pain axes: Drawdown Pressure.')).toBeInTheDocument()
+    expect(screen.getByText('Website-level signal markers: Mirror selected, Pain axis tapped, Evidence intent.')).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText('What survived from the public story?')).toBeInTheDocument()
     expect(screen.getByText(/Guided StoryExperience signal: 1 scene viewed; public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
+    expect(screen.getByText('Why this report path exists')).toBeInTheDocument()
     expect(screen.getByText(/This is a website-level handoff/i)).toBeInTheDocument()
     expect(screen.getByText(/Live workspace evidence must still prove the pattern/i)).toBeInTheDocument()
     expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
@@ -84,7 +91,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('The next click should answer one private question.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
       'href',
-      '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=1&pain_axes=drawdown_pressure&market=india',
+      '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=1&pain_axes=drawdown_pressure&signals=mirror_selected%2Cpain_axis_selected%2Cupload_intent&market=india',
     )
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
@@ -98,6 +105,8 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('What Reset Pro preview receives after unlock.')).toBeInTheDocument()
+    expect(screen.getByText('Public signal markers')).toBeInTheDocument()
+    expect(screen.getAllByText('Mirror selected, Pain axis tapped, Evidence intent').length).toBeGreaterThan(0)
 
     await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
@@ -119,6 +128,7 @@ describe('public Shibuya journey pages', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 1,
+      demoSignalMarkerIds: ['mirror_selected', 'pain_axis_selected', 'upload_intent'],
       demoBridgeHeadline: 'Reset Pro should decide whether pressure changes the account before the breach.',
       demoBridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
     })

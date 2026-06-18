@@ -31,6 +31,7 @@ describe('public report sessions', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['drawdown_pressure', 'not-real', 'drawdown_pressure'],
       visitedSceneCount: 99,
+      signalMarkerIds: ['mirror_selected', 'bad-marker', 'upload_intent', 'mirror_selected'],
     })
 
     persistPublicReportSession(session)
@@ -45,9 +46,13 @@ describe('public report sessions', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['drawdown_pressure'],
       visitedSceneCount: 15,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     })
     expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
       'Selected public pain axes: Drawdown Pressure.',
+    )
+    expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
+      'Website-level signal markers: Mirror selected, Evidence intent.',
     )
   })
 })

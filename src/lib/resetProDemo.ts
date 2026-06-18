@@ -39,6 +39,7 @@ export interface ResetProDemoOrigin {
   storySource?: string
   selectedPainAxisLabels?: string[]
   visitedSceneCount?: number
+  signalMarkerLabels?: string[]
   lockedSectionId?: string
   lockedSectionTitle?: string
   bridgeHeadline?: string
@@ -383,6 +384,9 @@ function buildOriginCard(origin?: ResetProDemoOrigin): ResetProDemoOriginCard | 
     origin.selectedPainAxisLabels?.length
       ? `Public pain axes: ${origin.selectedPainAxisLabels.join(', ')}`
       : 'Public pain axes: not available',
+    origin.signalMarkerLabels?.length
+      ? `Public signal markers: ${origin.signalMarkerLabels.join(', ')}`
+      : 'Public signal markers: not available',
     origin.lockedSectionTitle ? `Requested private insight: ${origin.lockedSectionTitle}` : 'Requested private insight: not provided',
     origin.bridgeDecisionQuestion ? `Bridge question: ${origin.bridgeDecisionQuestion}` : 'Bridge question: not provided',
   ]

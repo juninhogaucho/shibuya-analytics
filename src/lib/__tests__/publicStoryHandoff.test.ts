@@ -10,6 +10,16 @@ describe('public story URL handoff', () => {
       storySource: 'guided',
       selectedPainAxisIds: ['drawdown_pressure', 'edge_decay'],
       visitedSceneCount: 15,
+      signalMarkerIds: [],
+    })
+  })
+
+  test('reads sanitized public signal markers without carrying unknown values', () => {
+    expect(readPublicStoryHandoff('?signals=mirror_selected,bad,upload_intent,mirror_selected')).toEqual({
+      storySource: 'direct',
+      selectedPainAxisIds: [],
+      visitedSceneCount: 0,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
     })
   })
 
@@ -24,9 +34,10 @@ describe('public story URL handoff', () => {
         storySource: 'guided',
         selectedPainAxisIds: ['edge_decay'],
         visitedSceneCount: 6,
+        signalMarkerIds: ['mirror_selected', 'upload_intent'],
       },
     )
 
-    expect(params.toString()).toBe('source=free_report&report=sample-report&story=guided&scene_count=6&pain_axes=edge_decay')
+    expect(params.toString()).toBe('source=free_report&report=sample-report&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent')
   })
 })

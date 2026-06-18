@@ -18,6 +18,7 @@ export default function FreeReportPage() {
   const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
   const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
+  const effectiveSignalMarkerIds = reportSession?.signalMarkerIds ?? urlStoryHandoff?.signalMarkerIds
   const report = buildFreeReportPreview({
     reportId,
     archetypeId: params.get('archetype'),
@@ -25,6 +26,7 @@ export default function FreeReportPage() {
     storySource: effectiveStorySource,
     selectedPainAxisIds: effectiveSelectedPainAxisIds,
     visitedSceneCount: effectiveVisitedSceneCount,
+    signalMarkerIds: effectiveSignalMarkerIds,
   })
   const selectedPainAxes = report.storyHandoff.selectedPainAxes
   const guidedLockedSection = getGuidedLockedSectionForAxis(report)
@@ -36,6 +38,7 @@ export default function FreeReportPage() {
         storySource: report.storyHandoff.source,
         selectedPainAxisIds: report.storyHandoff.selectedPainAxes.map((axis) => axis.id),
         visitedSceneCount: report.storyHandoff.visitedSceneCount,
+        signalMarkerIds: report.storyHandoff.signalMarkers.map((marker) => marker.id),
       }
     : null
   const reportCheckoutQuery = appendPublicStoryHandoffParams(
@@ -203,11 +206,23 @@ export default function FreeReportPage() {
                   URL story context only. This preserves the public journey signal, but it is weaker than a local upload packet.
                 </p>
               ) : null}
-              <p className="mt-3 text-xs leading-5 text-indigo-50/60">
-                Public pain axes: {selectedPainAxes.length ? selectedPainAxes.map((axis) => axis.label).join(', ') : 'none captured'}.
-              </p>
-              <p className="mt-3 text-xs leading-5 text-indigo-50/60">{report.storyHandoff.boundary}</p>
-            </article>
+                <p className="mt-3 text-xs leading-5 text-indigo-50/60">
+                  Public pain axes: {selectedPainAxes.length ? selectedPainAxes.map((axis) => axis.label).join(', ') : 'none captured'}.
+                </p>
+                {report.storyHandoff.signalMarkers.length > 0 ? (
+                  <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-3">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">Why this report path exists</p>
+                    <ul className="mt-3 space-y-2 text-xs leading-5 text-indigo-50/70">
+                      {report.storyHandoff.signalMarkers.map((marker) => (
+                        <li key={marker.id}>
+                          <span className="font-semibold text-white">{marker.label}:</span> {marker.body}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                <p className="mt-3 text-xs leading-5 text-indigo-50/60">{report.storyHandoff.boundary}</p>
+              </article>
 
             <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Local packet</p>

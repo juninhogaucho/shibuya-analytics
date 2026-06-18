@@ -17,6 +17,7 @@ export default function LockedInsightPage() {
   const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
   const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
+  const effectiveSignalMarkerIds = reportSession?.signalMarkerIds ?? urlStoryHandoff?.signalMarkerIds
   const report = buildFreeReportPreview({
     reportId,
     archetypeId: params.get('archetype'),
@@ -24,6 +25,7 @@ export default function LockedInsightPage() {
     storySource: effectiveStorySource,
     selectedPainAxisIds: effectiveSelectedPainAxisIds,
     visitedSceneCount: effectiveVisitedSceneCount,
+    signalMarkerIds: effectiveSignalMarkerIds,
   })
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
@@ -36,6 +38,7 @@ export default function LockedInsightPage() {
         storySource: report.storyHandoff.source,
         selectedPainAxisIds: report.storyHandoff.selectedPainAxes.map((axis) => axis.id),
         visitedSceneCount: report.storyHandoff.visitedSceneCount,
+        signalMarkerIds: report.storyHandoff.signalMarkers.map((marker) => marker.id),
       }
     : null
   const lockedCheckoutQuery = appendPublicStoryHandoffParams(
@@ -218,10 +221,13 @@ export default function LockedInsightPage() {
                   Demo packet to carry
                 </p>
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-neutral-300">
-                  {[
+                  {[ 
                     `Locked module: ${lockedSection.title}.`,
                     `Bridge question: ${report.resetProBridge.decisionQuestion}`,
                     `Evidence status: ${reportSession?.evidenceLabel ?? 'direct-link fallback only'}.`,
+                    report.storyHandoff.signalMarkers.length
+                      ? `Public signal markers: ${report.storyHandoff.signalMarkers.map((marker) => marker.label).join(', ')}.`
+                      : 'Public signal markers: none attached.',
                   ].map((item) => (
                     <div key={item} className="rounded-2xl border border-white/8 bg-black/25 p-3">
                       {item}

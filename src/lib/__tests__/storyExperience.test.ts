@@ -18,7 +18,7 @@ import {
 describe('story experience signal model', () => {
   test('keeps public story scene copy ASCII-safe for demo surfaces and logs', () => {
     for (const scene of STORY_SCENES) {
-      expect(`${scene.title}${scene.body}${scene.proof}${scene.visualCue}`).toMatch(/^[\x00-\x7F]*$/)
+      expect([...`${scene.title}${scene.body}${scene.proof}${scene.visualCue}`].every((character) => character.charCodeAt(0) <= 0x7f)).toBe(true)
     }
   })
 

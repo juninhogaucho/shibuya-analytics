@@ -1,7 +1,10 @@
 import type { Market } from './market'
 import {
   getFingerprintAxis,
+  getPublicStorySignalMarkers,
+  normalizePublicStorySignalMarkerIds,
   type FingerprintAxisId,
+  type PublicStorySignalMarkerId,
   type StoryArchetypeId,
 } from './storyExperience'
 
@@ -20,6 +23,7 @@ export interface PublicReportValidationInput {
   storySource?: string | null
   selectedPainAxisIds?: string[]
   visitedSceneCount?: number
+  signalMarkerIds?: string[]
 }
 
 export interface PublicReportSession {
@@ -36,6 +40,7 @@ export interface PublicReportSession {
   storySource?: 'guided' | 'direct'
   selectedPainAxisIds: FingerprintAxisId[]
   visitedSceneCount: number
+  signalMarkerIds: PublicStorySignalMarkerId[]
 }
 
 interface PublicReportSessionStore {
@@ -97,6 +102,8 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const storySource = params.storySource === 'guided' ? 'guided' : 'direct'
   const selectedPainAxisIds = normalizePainAxes(params.selectedPainAxisIds)
   const visitedSceneCount = normalizeVisitedSceneCount(params.visitedSceneCount)
+  const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
+  const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
   const storyFacts =
     storySource === 'guided'
       ? [
@@ -105,6 +112,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
           selectedPainAxisIds.length > 0
             ? `Selected public pain axes: ${selectedPainAxisIds.map((axisId) => getFingerprintAxis(axisId).label).join(', ')}.`
             : 'Selected public pain axes: none captured.',
+          signalMarkers.length > 0
+            ? `Website-level signal markers: ${signalMarkers.map((marker) => marker.label).join(', ')}.`
+            : 'Website-level signal markers: none captured.',
         ]
       : ['Public story handoff: direct upload route.']
   const evidenceLabel =
@@ -148,6 +158,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     storySource,
     selectedPainAxisIds,
     visitedSceneCount,
+    signalMarkerIds,
   }
 }
 

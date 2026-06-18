@@ -42,6 +42,20 @@ export interface StorySignalState {
   uploadIntent: number
 }
 
+export type PublicStorySignalMarkerId =
+  | 'mirror_selected'
+  | 'pain_axis_selected'
+  | 'scene_depth_light'
+  | 'scene_depth_deep'
+  | 'pricing_curiosity'
+  | 'upload_intent'
+
+export interface PublicStorySignalMarker {
+  id: PublicStorySignalMarkerId
+  label: string
+  body: string
+}
+
 export interface FingerprintScore extends FingerprintAxis {
   score: number
 }
@@ -88,6 +102,7 @@ export interface FreeReportPreview {
     source: 'guided' | 'direct'
     selectedPainAxes: FingerprintAxis[]
     visitedSceneCount: number
+    signalMarkers: PublicStorySignalMarker[]
     summary: string
     boundary: string
   }
@@ -459,6 +474,41 @@ const PRESSURE_WEIGHTS: Record<FingerprintAxisId, number> = {
   session_fatigue: 0.85,
 }
 
+export const PUBLIC_STORY_SIGNAL_MARKERS: PublicStorySignalMarker[] = [
+  {
+    id: 'mirror_selected',
+    label: 'Mirror selected',
+    body: 'The visitor chose a trader archetype before upload.',
+  },
+  {
+    id: 'pain_axis_selected',
+    label: 'Pain axis tapped',
+    body: 'The visitor named at least one public pain axis.',
+  },
+  {
+    id: 'scene_depth_light',
+    label: 'Story depth: light',
+    body: 'The visitor moved through enough scenes to create routing context.',
+  },
+  {
+    id: 'scene_depth_deep',
+    label: 'Story depth: deep',
+    body: 'The visitor inspected a deeper part of the product story before upload.',
+  },
+  {
+    id: 'pricing_curiosity',
+    label: 'Pricing curiosity',
+    body: 'The visitor asked to inspect the paid ladder before upload.',
+  },
+  {
+    id: 'upload_intent',
+    label: 'Evidence intent',
+    body: 'The visitor moved from recognition toward upload or sample report generation.',
+  },
+]
+
+const PUBLIC_STORY_SIGNAL_MARKER_IDS = new Set(PUBLIC_STORY_SIGNAL_MARKERS.map((marker) => marker.id))
+
 export function createInitialStorySignal(): StorySignalState {
   return {
     archetypeId: null,
@@ -510,6 +560,49 @@ export function recordUploadIntent(state: StorySignalState): StorySignalState {
     ...state,
     uploadIntent: state.uploadIntent + 1,
   }
+}
+
+export function normalizePublicStorySignalMarkerIds(values?: string[] | null): PublicStorySignalMarkerId[] {
+  const seen = new Set<PublicStorySignalMarkerId>()
+
+  for (const value of values ?? []) {
+    const markerId = value.trim() as PublicStorySignalMarkerId
+    if (PUBLIC_STORY_SIGNAL_MARKER_IDS.has(markerId) && !seen.has(markerId)) {
+      seen.add(markerId)
+    }
+  }
+
+  return [...seen]
+}
+
+export function getPublicStorySignalMarkers(markerIds?: string[] | null): PublicStorySignalMarker[] {
+  const normalized = normalizePublicStorySignalMarkerIds(markerIds)
+
+  return PUBLIC_STORY_SIGNAL_MARKERS.filter((marker) => normalized.includes(marker.id))
+}
+
+export function buildPublicStorySignalMarkerIds(state: StorySignalState): PublicStorySignalMarkerId[] {
+  const markerIds: PublicStorySignalMarkerId[] = []
+
+  if (state.archetypeId) {
+    markerIds.push('mirror_selected')
+  }
+  if (state.selectedPainAxes.length > 0) {
+    markerIds.push('pain_axis_selected')
+  }
+  if (state.visitedSceneIds.length >= 8) {
+    markerIds.push('scene_depth_deep')
+  } else if (state.visitedSceneIds.length >= 2) {
+    markerIds.push('scene_depth_light')
+  }
+  if (state.pricingInterest > 0) {
+    markerIds.push('pricing_curiosity')
+  }
+  if (state.uploadIntent > 0) {
+    markerIds.push('upload_intent')
+  }
+
+  return markerIds
 }
 
 export function buildPredictedFingerprint(state: StorySignalState): FingerprintScore[] {
@@ -635,6 +728,7 @@ export function buildFreeReportPreview(params: {
   selectedPainAxisIds?: string[] | null
   visitedSceneCount?: number | null
   storySource?: string | null
+  signalMarkerIds?: string[] | null
 } = {}): FreeReportPreview {
   const signal = createSignalFromPublicJourney({
     archetypeId: params.archetypeId,
@@ -654,6 +748,9 @@ export function buildFreeReportPreview(params: {
   const selectedPainLabel = selectedPainAxes.length
     ? selectedPainAxes.map((axis) => axis.label).join(', ')
     : 'none captured'
+  const signalMarkers = params.signalMarkerIds?.length
+    ? getPublicStorySignalMarkers(params.signalMarkerIds)
+    : []
 
   return {
     reportId: params.reportId ?? 'sample-free-report',
@@ -665,6 +762,7 @@ export function buildFreeReportPreview(params: {
       source: storySource,
       selectedPainAxes,
       visitedSceneCount,
+      signalMarkers,
       summary: storySource === 'guided'
         ? `Guided StoryExperience signal: ${visitedSceneCount} scene${visitedSceneCount === 1 ? '' : 's'} viewed; public pain axes: ${selectedPainLabel}.`
         : `Direct upload/report signal: public pain axes from URL or fallback model: ${selectedPainLabel}.`,

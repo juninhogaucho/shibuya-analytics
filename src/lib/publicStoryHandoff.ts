@@ -1,12 +1,15 @@
 import {
+  normalizePublicStorySignalMarkerIds,
   normalizeFingerprintAxisIds,
   type FingerprintAxisId,
+  type PublicStorySignalMarkerId,
 } from './storyExperience'
 
 export interface PublicStoryHandoff {
   storySource: 'guided' | 'direct'
   selectedPainAxisIds: FingerprintAxisId[]
   visitedSceneCount: number
+  signalMarkerIds?: PublicStorySignalMarkerId[]
 }
 
 function normalizeVisitedSceneCount(value: string | number | null | undefined): number {
@@ -28,12 +31,27 @@ function readPainAxes(value: string | null): FingerprintAxisId[] {
   )
 }
 
+function readSignalMarkers(value: string | null): PublicStorySignalMarkerId[] {
+  return normalizePublicStorySignalMarkerIds(
+    (value ?? '')
+      .split(',')
+      .map((markerId) => markerId.trim())
+      .filter(Boolean),
+  )
+}
+
 export function readPublicStoryHandoff(search: string): PublicStoryHandoff | null {
   const params = new URLSearchParams(search)
   const story = params.get('story')
   const selectedPainAxisIds = readPainAxes(params.get('pain_axes'))
   const visitedSceneCount = normalizeVisitedSceneCount(params.get('scene_count'))
-  const hasStorySignal = story === 'guided' || story === 'direct' || selectedPainAxisIds.length > 0 || visitedSceneCount > 0
+  const signalMarkerIds = readSignalMarkers(params.get('signals'))
+  const hasStorySignal =
+    story === 'guided' ||
+    story === 'direct' ||
+    selectedPainAxisIds.length > 0 ||
+    visitedSceneCount > 0 ||
+    signalMarkerIds.length > 0
 
   if (!hasStorySignal) {
     return null
@@ -43,6 +61,7 @@ export function readPublicStoryHandoff(search: string): PublicStoryHandoff | nul
     storySource: story === 'guided' ? 'guided' : 'direct',
     selectedPainAxisIds,
     visitedSceneCount,
+    signalMarkerIds,
   }
 }
 
@@ -62,6 +81,10 @@ export function appendPublicStoryHandoffParams(
 
   if (handoff.selectedPainAxisIds.length > 0) {
     params.set('pain_axes', handoff.selectedPainAxisIds.join(','))
+  }
+
+  if (handoff.signalMarkerIds?.length) {
+    params.set('signals', handoff.signalMarkerIds.join(','))
   }
 
   return params

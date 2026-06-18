@@ -37,6 +37,7 @@ export default function PrivateDemoPage() {
   const effectiveStorySource = reportSession?.storySource ?? urlStoryHandoff?.storySource
   const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
+  const effectiveSignalMarkerIds = reportSession?.signalMarkerIds ?? urlStoryHandoff?.signalMarkerIds
   const handoffReport = buildFreeReportPreview({
     reportId: handoffReportId,
     archetypeId: params.get('archetype'),
@@ -44,6 +45,7 @@ export default function PrivateDemoPage() {
     storySource: effectiveStorySource,
     selectedPainAxisIds: effectiveSelectedPainAxisIds,
     visitedSceneCount: effectiveVisitedSceneCount,
+    signalMarkerIds: effectiveSignalMarkerIds,
   })
   const selectedPainAxes = handoffReport.storyHandoff.selectedPainAxes
   const lockedSection = findLockedReportSectionBySlug(handoffReport, handoffSectionId)
@@ -58,6 +60,7 @@ export default function PrivateDemoPage() {
     ['Archetype', hasReportHandoff ? `${handoffArchetype.name}: ${handoffArchetype.title}` : 'not attached'],
     ['Dominant axis', hasReportHandoff ? handoffAxis.label : 'not attached'],
     ['Story handoff', effectiveStorySource ? `${effectiveStorySource}; scenes ${effectiveVisitedSceneCount ?? 0}` : 'not attached'],
+    ['Public signal markers', handoffReport.storyHandoff.signalMarkers.length ? handoffReport.storyHandoff.signalMarkers.map((marker) => marker.label).join(', ') : 'not attached'],
     ['Evidence packet', reportSession?.evidenceLabel ?? (hasReportHandoff ? 'direct-link fallback only' : 'demo entry only')],
     ['Locked module', lockedSection?.title ?? handoffSectionId ?? 'not attached'],
     ['Bridge question', hasReportHandoff ? resetProBridge.decisionQuestion : 'not attached'],
@@ -87,6 +90,7 @@ export default function PrivateDemoPage() {
       storySource: effectiveStorySource,
       selectedPainAxisIds: effectiveSelectedPainAxisIds,
       visitedSceneCount: effectiveVisitedSceneCount,
+      signalMarkerIds: handoffReport.storyHandoff.signalMarkers.map((marker) => marker.id),
       lockedSectionId: lockedSection ? toReportSectionSlug(lockedSection.title) : handoffSectionId,
       lockedSectionTitle: lockedSection?.title,
       bridgeHeadline: hasReportHandoff ? resetProBridge.headline : undefined,

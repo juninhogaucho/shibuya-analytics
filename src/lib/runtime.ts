@@ -44,6 +44,7 @@ export interface ShibuyaSessionMeta {
   demoStorySource?: string
   demoSelectedPainAxisIds?: string[]
   demoVisitedSceneCount?: number
+  demoSignalMarkerIds?: string[]
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
   demoBridgeHeadline?: string
@@ -79,6 +80,7 @@ export interface EnterSampleModeOptions {
   demoStorySource?: string
   demoSelectedPainAxisIds?: string[]
   demoVisitedSceneCount?: number
+  demoSignalMarkerIds?: string[]
   demoLockedSectionId?: string
   demoLockedSectionTitle?: string
   demoBridgeHeadline?: string
@@ -239,6 +241,7 @@ export function enterSampleMode(options: EnterSampleModeOptions = {}): void {
       demoStorySource: options.demoStorySource,
       demoSelectedPainAxisIds: options.demoSelectedPainAxisIds,
       demoVisitedSceneCount: options.demoVisitedSceneCount,
+      demoSignalMarkerIds: options.demoSignalMarkerIds,
       demoLockedSectionId: options.demoLockedSectionId,
       demoLockedSectionTitle: options.demoLockedSectionTitle,
       demoBridgeHeadline: options.demoBridgeHeadline,
@@ -279,6 +282,7 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   delete nextMeta.demoStorySource
   delete nextMeta.demoSelectedPainAxisIds
   delete nextMeta.demoVisitedSceneCount
+  delete nextMeta.demoSignalMarkerIds
   delete nextMeta.demoLockedSectionId
   delete nextMeta.demoLockedSectionTitle
   delete nextMeta.demoBridgeHeadline

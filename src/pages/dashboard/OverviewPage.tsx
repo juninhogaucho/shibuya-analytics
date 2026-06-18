@@ -25,7 +25,7 @@ import { buildReportArtifact, downloadReportArtifact } from '../../lib/reportArt
 import { buildExecutionProtocol } from '../../lib/executionProtocol'
 import { buildPerformanceStory } from '../../lib/performanceStory'
 import { getStoredSessionMeta, hasPremiumAccess, isResetProSamplePreview, isSampleMode } from '../../lib/runtime'
-import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
+import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
 import { addMarketToPath } from '../../lib/market'
 import type { DashboardOverview, EdgeItem, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
@@ -103,6 +103,7 @@ export function DashboardOverviewPage() {
         storySource: sessionMeta.demoStorySource,
         selectedPainAxisLabels: sessionMeta.demoSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
         visitedSceneCount: sessionMeta.demoVisitedSceneCount,
+        signalMarkerLabels: getPublicStorySignalMarkers(sessionMeta.demoSignalMarkerIds).map((marker) => marker.label),
         lockedSectionId: sessionMeta.demoLockedSectionId,
         lockedSectionTitle: sessionMeta.demoLockedSectionTitle,
         bridgeHeadline: sessionMeta.demoBridgeHeadline,

@@ -13,6 +13,7 @@ import {
   FINGERPRINT_AXES,
   TRADER_ARCHETYPES,
   getFingerprintAxis,
+  getPublicStorySignalMarkers,
   getTraderArchetype,
   type FingerprintAxisId,
   type StoryArchetypeId,
@@ -29,6 +30,10 @@ export default function PublicUploadPage() {
   const selectedPainAxisIds = (params.get('pain_axes') ?? '').split(',').filter(Boolean)
   const visitedSceneCount = Number(params.get('scene_count') ?? 0)
   const publicStoryHandoff = readPublicStoryHandoff(location.search)
+  const signalMarkers = useMemo(
+    () => getPublicStorySignalMarkers(publicStoryHandoff?.signalMarkerIds),
+    [publicStoryHandoff?.signalMarkerIds],
+  )
   const [archetypeId, setArchetypeId] = useState<StoryArchetypeId>(initialArchetype.id)
   const [axisId, setAxisId] = useState<FingerprintAxisId>(initialAxis.id)
   const [fileName, setFileName] = useState('')
@@ -85,6 +90,7 @@ export default function PublicUploadPage() {
       storySource,
       selectedPainAxisIds,
       visitedSceneCount,
+      signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
     }))
 
     navigate(`/report/${reportId}${reportSearch}`)
@@ -168,6 +174,22 @@ export default function PublicUploadPage() {
                     <span className="mt-1 block text-white">{archetype.name} / {axis.label}</span>
                   </div>
                 </div>
+                {signalMarkers.length > 0 ? (
+                  <div className="mt-4 rounded-2xl border border-white/8 bg-black/20 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-200">Why this hypothesis followed you here</p>
+                    <div className="mt-3 grid gap-2 text-xs leading-5 text-indigo-50/75 sm:grid-cols-2">
+                      {signalMarkers.map((marker) => (
+                        <div key={marker.id} className="rounded-xl border border-white/8 bg-white/[0.03] p-3">
+                          <span className="block font-semibold text-white">{marker.label}</span>
+                          <span className="mt-1 block">{marker.body}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-xs leading-5 text-indigo-50/55">
+                      These are public website markers only. They route the sample report; they do not diagnose the account.
+                    </p>
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => generateReport('sample')}

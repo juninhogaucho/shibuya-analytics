@@ -112,6 +112,7 @@ describe('Reset Pro demo script', () => {
       storySource: 'guided',
       selectedPainAxisLabels: ['Drawdown Pressure'],
       visitedSceneCount: 4,
+      signalMarkerLabels: ['Mirror selected', 'Pain axis tapped', 'Evidence intent'],
       lockedSectionId: 'highest-cost-state',
       lockedSectionTitle: 'Highest-cost state',
       bridgeDecisionQuestion: 'Does the trader become a different operator near the drawdown line?',
@@ -124,6 +125,7 @@ describe('Reset Pro demo script', () => {
     expect(script.originCard?.facts).toContain('Public packet source: sample')
     expect(script.originCard?.facts).toContain('Handoff evidence: Sample history packet')
     expect(script.originCard?.facts).toContain('Validation note: Demo packet accepted. This proves the public journey transition, not live analytics.')
+    expect(script.originCard?.facts).toContain('Public signal markers: Mirror selected, Pain axis tapped, Evidence intent')
     expect(script.originCard?.facts).toContain('Requested private insight: Highest-cost state')
     expect(script.originCard?.body).toContain('not proof')
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')

@@ -64,6 +64,7 @@ describe('shibuya runtime', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 4,
+      demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -84,6 +85,7 @@ describe('shibuya runtime', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 4,
+      demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -130,6 +132,7 @@ describe('shibuya runtime', () => {
       demoStorySource: 'guided',
       demoSelectedPainAxisIds: ['drawdown_pressure'],
       demoVisitedSceneCount: 4,
+      demoSignalMarkerIds: ['mirror_selected', 'upload_intent'],
       demoLockedSectionId: 'highest-cost-state',
       demoLockedSectionTitle: 'Highest-cost state',
     })
@@ -152,6 +155,7 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoStorySource).toBeUndefined()
     expect(getStoredSessionMeta()?.demoSelectedPainAxisIds).toBeUndefined()
     expect(getStoredSessionMeta()?.demoVisitedSceneCount).toBeUndefined()
+    expect(getStoredSessionMeta()?.demoSignalMarkerIds).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionId).toBeUndefined()
     expect(getStoredSessionMeta()?.demoLockedSectionTitle).toBeUndefined()
   })

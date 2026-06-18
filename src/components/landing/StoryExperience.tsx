@@ -8,6 +8,7 @@ import {
   TRADER_ARCHETYPES,
   buildBehavioralPressureIndex,
   buildPredictedFingerprint,
+  buildPublicStorySignalMarkerIds,
   createInitialStorySignal,
   getBehavioralPressureBand,
   getDominantFingerprintAxis,
@@ -116,6 +117,7 @@ export default function StoryExperience() {
       axis: dominantAxis.id,
       story: 'guided',
       scene_count: String(nextSignal.visitedSceneIds.length),
+      signals: buildPublicStorySignalMarkerIds(nextSignal).join(','),
     })
 
     if (nextSignal.selectedPainAxes.length > 0) {
@@ -146,6 +148,7 @@ export default function StoryExperience() {
       story: 'guided',
       scene_count: String(demoSignal.visitedSceneIds.length),
       pain_axes: 'edge_decay',
+      signals: buildPublicStorySignalMarkerIds(demoSignal).join(','),
     })
     const uploadMomentIndex = STORY_SCENES.findIndex((scene) => scene.id === 'upload-moment')
 

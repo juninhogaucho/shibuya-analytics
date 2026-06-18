@@ -32,6 +32,7 @@ export interface PrivateResetProDemoHandoff {
   storySource?: string
   selectedPainAxisIds?: string[]
   visitedSceneCount?: number
+  signalMarkerIds?: string[]
   lockedSectionId?: string
   lockedSectionTitle?: string
   bridgeHeadline?: string
@@ -83,6 +84,7 @@ export function enterPrivateResetProDemo(market: Market, handoff: PrivateResetPr
     demoStorySource: handoff.storySource,
     demoSelectedPainAxisIds: handoff.selectedPainAxisIds,
     demoVisitedSceneCount: handoff.visitedSceneCount,
+    demoSignalMarkerIds: handoff.signalMarkerIds,
     demoLockedSectionId: handoff.lockedSectionId,
     demoLockedSectionTitle: handoff.lockedSectionTitle,
     demoBridgeHeadline: handoff.bridgeHeadline,
