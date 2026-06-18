@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { readTodayCampaignEntry, saveDailyBriefing, saveDailyDebrief } from '../../lib/dailyPractice'
-import { saveTraderDailyBriefing, saveTraderDailyDebrief } from '../../lib/api'
+import { saveTraderDailyBriefing, saveTraderDailyDebrief } from '../../lib/api/trader'
 import type { CampaignMetrics, CampaignRiskTag, CampaignStateLevel, DashboardOverview } from '../../lib/types'
 import type { PerformanceStory } from '../../lib/performanceStory'
 

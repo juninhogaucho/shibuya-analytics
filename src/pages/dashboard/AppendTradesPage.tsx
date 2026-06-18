@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   getTraderProfileContext,
   logTraderLifecycleEvent,
-} from '../../lib/api'
+} from '../../lib/api/trader'
 import {
   getTradePasteMemory,
   parseTradePaste,

@@ -9,10 +9,10 @@ import {
   getMyAppointments,
   getSupportTicket,
   getSupportTickets,
-  getTraderProfileContext,
   replyToSupportTicket,
 } from '../../lib/api'
 import { getDashboardOverview } from '../../lib/api/dashboard'
+import { getTraderProfileContext } from '../../lib/api/trader'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { buildJourneyState } from '../../lib/journeyState'
 import { getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isSampleMode } from '../../lib/runtime'

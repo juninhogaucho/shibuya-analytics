@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { logTraderLifecycleEvent } from '../../lib/api'
+import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { verifyActivation } from '../../lib/api/auth'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
 import { setLiveApiKey } from '../../lib/runtime'

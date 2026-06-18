@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { logTraderLifecycleEvent } from '../../lib/api'
+import { logTraderLifecycleEvent } from '../../lib/api/trader'
 import { bootstrapPassword, isAuthenticated } from '../../lib/api/auth'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 

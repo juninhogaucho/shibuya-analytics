@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
-import { getTraderProfileContext, logTraderLifecycleEvent, saveTraderProfileContext } from '../../lib/api'
+import { getTraderProfileContext, logTraderLifecycleEvent, saveTraderProfileContext } from '../../lib/api/trader'
 import { buildJourneyState } from '../../lib/journeyState'
 import type {
   TraderCapitalBand,

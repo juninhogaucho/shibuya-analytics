@@ -15,7 +15,8 @@ const getStoredSessionMetaMock = vi.fn()
 const isReadOnlySessionMock = vi.fn()
 const updateSessionMetaMock = vi.fn()
 
-vi.mock('../../../lib/api', () => ({
+vi.mock('../../../lib/api/trader', () => ({
+  getTraderProfileContext: vi.fn().mockResolvedValue(null),
   logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
 }))
 

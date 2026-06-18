@@ -165,9 +165,9 @@ Verification:
 - `tsc -b`: passed.
 - `vite build`: passed, 2,831 modules transformed.
 
-## Next Foundation Slice
+## Remaining Foundation Slices
 
-Continue splitting `src/lib/api.ts` into capability-specific API modules. Profile/lifecycle, support/appointments, ops, and site-contact code still share the broad facade.
+Continue splitting `src/lib/api.ts` into capability-specific API modules. Support/appointments, ops, and site-contact code still share the broad facade. Profile, lifecycle, and daily-practice persistence now live behind the trader API boundary.
 
 ## Sixth Foundation Slice Completed
 
@@ -193,10 +193,35 @@ Verification:
 - `vitest run src/lib/api/__tests__/dashboard.test.ts src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`: passed.
 - `tsc -b`: passed.
 
+## Seventh Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/api.ts`
+- `src/lib/api/trader.ts`
+- `src/lib/api/__tests__/trader.test.ts`
+- Trader-loop consumers in dashboard, marketing activation, claim-account, and daily command components.
+- `src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`
+
+Behavior now verified:
+
+- Trader profile context, lifecycle event logging, onboarding context save, daily briefing, and daily debrief calls now live in `src/lib/api/trader.ts`.
+- Dashboard and marketing consumers import trader/customer-loop capabilities directly from `api/trader`.
+- `src/lib/api.ts` keeps compatibility re-exports but no longer owns trader profile, lifecycle, or daily-practice implementations.
+- Sample mode still returns explicit local/sample-shaped trader state without claiming durable backend persistence.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/trader.test.ts src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`: 2 files / 6 tests passed.
+- `vitest run`: 30 files / 79 tests passed.
+- `tsc -b`: passed.
+- `vite build`: passed, 2,834 modules transformed.
+
 Success condition:
 
 - `api.ts` becomes either a temporary compatibility barrel or disappears.
 - Dashboard pages import dashboard functions from a dashboard API module. Done for current dashboard data/upload consumers.
+- Trader pages import profile/lifecycle/daily-practice functions from a trader API module. Done for current trader-loop consumers.
 - Ops pages import ops functions from an ops API module.
 - Auth and checkout pages migrate from compatibility imports to their capability modules once the facade is thin enough.
 - Live dashboard functions fail loudly on missing backend/session instead of silently looking usable.

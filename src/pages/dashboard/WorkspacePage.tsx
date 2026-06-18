@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
-import { getTraderProfileContext } from '../../lib/api'
+import { getTraderProfileContext } from '../../lib/api/trader'
 import { getDashboardOverview } from '../../lib/api/dashboard'
 import { formatMoney, humanizeFocus, humanizeInstrument } from '../../lib/display'
 import { buildJourneyState } from '../../lib/journeyState'
