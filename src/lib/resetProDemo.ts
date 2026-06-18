@@ -97,6 +97,12 @@ export interface ResetProDemoProofStage {
   boundary: string
 }
 
+export interface ResetProDemoObjectionResponse {
+  prompt: string
+  response: string
+  boundary: string
+}
+
 export interface ResetProDemoScript {
   headline: string
   subline: string
@@ -106,6 +112,7 @@ export interface ResetProDemoScript {
   unlockReceipt: ResetProDemoUnlockReceipt
   decisionPacket: ResetProDemoDecisionPacket
   proofLadder: ResetProDemoProofStage[]
+  objectionResponses: ResetProDemoObjectionResponse[]
   readinessChecklist: ResetProDemoChecklistItem[]
   claimLedger: ResetProDemoClaimLedger
   pressureMetrics: ResetProDemoMetric[]
@@ -184,6 +191,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     unlockReceipt,
     decisionPacket,
     proofLadder,
+    objectionResponses: buildObjectionResponses(origin, Boolean(originCard), Boolean(bridgeCard)),
     claimLedger: {
       allowed: [
         'This is a controlled sample workspace showing the Reset Pro operating loop.',
@@ -260,6 +268,39 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
   }
+}
+
+function buildObjectionResponses(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoObjectionResponse[] {
+  return [
+    {
+      prompt: 'Are these the viewer real trades?',
+      response: hasOriginCard
+        ? `No. The demo carried ${origin?.evidenceLabel ?? 'routing context'} from the public journey into a sample workspace.`
+        : 'No. This is a cold sample workspace with no public report or upload packet attached.',
+      boundary: 'Do not imply the sample account belongs to the viewer or that Shibuya analyzed their live history.',
+    },
+    {
+      prompt: 'What would make this live proof?',
+      response: 'Payment/activation, a real account, normalized trade history, generated backend artifacts, and repeat append history.',
+      boundary: 'Until those exist, Reset Pro can show workflow structure only, not account-specific conclusions.',
+    },
+    {
+      prompt: 'Is Shibuya telling the trader what to trade?',
+      response: 'No. The workspace constrains decision state, rule pressure, sizing behavior, and review cadence; it does not provide buy/sell calls.',
+      boundary: 'Keep every claim framed as trader operating support, not investment advice or performance prediction.',
+    },
+    {
+      prompt: 'Where should the demo end?',
+      response: hasBridgeCard
+        ? 'End on append proof: the carried private question remains unanswered until the next real upload can confirm or reject it.'
+        : 'End on append proof: the sample walkthrough stops where live evidence would have to start.',
+      boundary: 'Do not end on a performance promise. End on the proof loop and the missing live evidence.',
+    },
+  ]
 }
 
 function buildDecisionPacket(

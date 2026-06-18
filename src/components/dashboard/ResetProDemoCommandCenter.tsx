@@ -238,6 +238,32 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </article>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(14,165,233,0.055)', borderColor: 'rgba(125,211,252,0.2)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO OBJECTION MAP</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Fast answers for the questions that can break the demo.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              Use these responses before continuing the walkthrough. If the answer would require live proof, say that before showing another card.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+          {script.objectionResponses.map((item) => (
+            <article key={item.prompt} className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>IF ASKED</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{item.prompt}</h4>
+              <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
+                <strong className="text-white">Answer:</strong> {item.response}
+              </p>
+              <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.8rem' }}>
+                <strong className="text-amber-100">Boundary:</strong> {item.boundary}
+              </p>
+            </article>
+          ))}
+        </div>
+      </article>
+
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(16,185,129,0.065)', borderColor: 'rgba(16,185,129,0.22)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>

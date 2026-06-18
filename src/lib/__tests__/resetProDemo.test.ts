@@ -28,6 +28,23 @@ describe('Reset Pro demo script', () => {
     })
     expect(script.decisionPacket.proceedIf).toContain('The presenter says this is a generic sample account before showing any metric.')
     expect(script.decisionPacket.stopIf).toContain('Someone asks whether these are the viewer real trades.')
+    expect(script.objectionResponses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          prompt: 'Are these the viewer real trades?',
+          response: 'No. This is a cold sample workspace with no public report or upload packet attached.',
+          boundary: 'Do not imply the sample account belongs to the viewer or that Shibuya analyzed their live history.',
+        }),
+        expect.objectContaining({
+          prompt: 'What would make this live proof?',
+          response: 'Payment/activation, a real account, normalized trade history, generated backend artifacts, and repeat append history.',
+        }),
+        expect.objectContaining({
+          prompt: 'Is Shibuya telling the trader what to trade?',
+          boundary: 'Keep every claim framed as trader operating support, not investment advice or performance prediction.',
+        }),
+      ]),
+    )
     expect(script.unlockReceipt.facts).toContain('Report carried: none')
     expect(script.unlockReceipt.facts).toContain('Evidence packet: direct demo only')
     expect(script.unlockReceipt.boundary).toContain('does not prove live activation')
@@ -158,6 +175,18 @@ describe('Reset Pro demo script', () => {
     expect(script.decisionPacket.proceedIf).toContain('The evidence label is stated out loud: Sample history packet.')
     expect(script.decisionPacket.proceedIf).toContain('The locked private question is framed as what live data must prove.')
     expect(script.decisionPacket.stopIf).toContain('The presenter cannot explain that backend upload/payment proof is still missing.')
+    expect(script.objectionResponses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          prompt: 'Are these the viewer real trades?',
+          response: 'No. The demo carried Sample history packet from the public journey into a sample workspace.',
+        }),
+        expect.objectContaining({
+          prompt: 'Where should the demo end?',
+          response: 'End on append proof: the carried private question remains unanswered until the next real upload can confirm or reject it.',
+        }),
+      ]),
+    )
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
     expect(script.showSequence[0].say).toContain('Does the trader become a different operator near the drawdown line?')
     expect(script.showSequence[0].boundary).toContain('not proof')
