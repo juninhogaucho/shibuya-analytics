@@ -22,12 +22,19 @@ export default function LockedInsightPage() {
   const lockedSection = requestedSection ?? report.locked[0]
   const sectionSlug = toReportSectionSlug(lockedSection.title)
   const lockedInsightPreview = buildLockedInsightPreview(report, sectionSlug)
+  const lockedCheckoutQuery = new URLSearchParams({
+    source: 'locked_insight',
+    section: sectionSlug,
+    report: report.reportId,
+    archetype: report.archetype.id,
+    axis: report.dominantAxis.id,
+  }).toString()
   const checkoutPath = addMarketToPath(
-    `/checkout/${resetPlan.checkoutSlug}?source=locked_insight&section=${sectionSlug}&report=${encodeURIComponent(report.reportId)}`,
+    `/checkout/${resetPlan.checkoutSlug}?${lockedCheckoutQuery}`,
     market,
   )
   const auditCheckoutPath = addMarketToPath(
-    `/checkout/${auditPlan.checkoutSlug}?source=locked_insight&section=${sectionSlug}&report=${encodeURIComponent(report.reportId)}`,
+    `/checkout/${auditPlan.checkoutSlug}?${lockedCheckoutQuery}`,
     market,
   )
   const privateDemoPath = addMarketToPath(

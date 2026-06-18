@@ -161,7 +161,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/no buy\/sell instruction/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
       'href',
-      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=sample-free-report&market=global',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
