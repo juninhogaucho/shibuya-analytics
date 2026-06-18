@@ -123,6 +123,20 @@ const CheckoutSuccessPage: React.FC = () => {
     ),
     market,
   )
+  const activationHandoffContractRows = [
+    {
+      label: 'Order code proves',
+      body: 'Checkout created a payment handoff that can be verified during activation.',
+    },
+    {
+      label: 'Activation must verify',
+      body: 'Email, order code, customer state, entitlement, market, and selected plan before live workspace state is created.',
+    },
+    {
+      label: 'Upload must prove',
+      body: 'Normalized trade history, generated artifacts, and append history before account-specific private conclusions are allowed.',
+    },
+  ]
 
   if (loading) {
     return (
@@ -251,6 +265,17 @@ const CheckoutSuccessPage: React.FC = () => {
             <p className="mt-2 text-neutral-500">
               Activation boundary: payment can carry this context forward, but the live workspace still needs a first meaningful upload before private claims are treated as account-specific evidence.
             </p>
+          </div>
+          <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100">Activation handoff contract</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              {activationHandoffContractRows.map((row) => (
+                <div key={row.label} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <p className="font-semibold text-white">{row.label}</p>
+                  <p className="mt-2 text-xs leading-5 text-neutral-400">{row.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
       )}

@@ -60,6 +60,11 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
+    expect(screen.getByText('Activation handoff contract')).toBeInTheDocument()
+    expect(screen.getByText('Order code proves')).toBeInTheDocument()
+    expect(screen.getByText('Activation must verify')).toBeInTheDocument()
+    expect(screen.getByText('Upload must prove')).toBeInTheDocument()
+    expect(screen.getByText(/Normalized trade history, generated artifacts, and append history/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?source=locked_insight&report=sample-free-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
@@ -101,6 +106,8 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('URL context only')).toBeInTheDocument()
     expect(screen.getByText(/not upload-step evidence/i)).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText('Activation handoff contract')).toBeInTheDocument()
+    expect(screen.getByText('Activation must verify')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?source=locked_insight&report=missing-report&section=highest-cost-state&archetype=marco&axis=edge_decay&story=guided&scene_count=5&pain_axes=edge_decay&signals=mirror_selected&market=global',

@@ -74,6 +74,11 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText('Checkout handoff contract')).toBeInTheDocument()
+    expect(screen.getByText('Payment can carry')).toBeInTheDocument()
+    expect(screen.getByText('Payment cannot prove')).toBeInTheDocument()
+    expect(screen.getByText(/Live activation, normalized trade history, generated backend artifacts/i)).toBeInTheDocument()
+    expect(screen.getByText('Next live proof step')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
     await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
@@ -149,6 +154,8 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Story: guided')).toBeInTheDocument()
     expect(screen.getByText('Scenes: 6')).toBeInTheDocument()
     expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('Checkout handoff contract')).toBeInTheDocument()
+    expect(screen.getByText(/Payment cannot prove/i)).toBeInTheDocument()
 
     return user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
       .then(() => user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test'))

@@ -60,7 +60,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'enrichedCheckoutIntent'],
+    markers: ['Checkout intent', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'enrichedCheckoutIntent'],
   },
   {
     label: 'pricing context ladder',
@@ -75,7 +75,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout success activation handoff',
     file: 'src/pages/checkout/CheckoutSuccessPage.tsx',
-    markers: ['Carried into activation', 'URL context only', 'Activate Live Account'],
+    markers: ['Carried into activation', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'URL context only', 'Activate Live Account'],
   },
   {
     label: 'checkout API public context payload',

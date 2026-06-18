@@ -47,6 +47,20 @@ const CheckoutPage: React.FC = () => {
   })
   const isSubscription = currentPlan.type === 'subscription'
   const isGuided = currentPlan.supportTier === 'guided'
+  const checkoutHandoffContractRows = [
+    {
+      label: 'Payment can carry',
+      body: 'Plan, market, public context, report id, locked module, story route, selected public pain axes, and signal markers.',
+    },
+    {
+      label: 'Payment cannot prove',
+      body: 'Live activation, normalized trade history, generated backend artifacts, append history, or account-specific private conclusions.',
+    },
+    {
+      label: 'Next live proof step',
+      body: 'Complete checkout, activate with the order code, then upload meaningful history before treating private insight as evidence.',
+    },
+  ]
 
   const [loading, setLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -253,6 +267,17 @@ const CheckoutPage: React.FC = () => {
                   Story handoff: {reportSession.storySource}; scenes {reportSession.visitedSceneCount}; axes {reportSession.selectedPainAxisIds.length}.
                 </p>
               ) : null}
+            </div>
+            <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100">Checkout handoff contract</p>
+              <div className="mt-3 grid gap-3 md:grid-cols-3">
+                {checkoutHandoffContractRows.map((row) => (
+                  <div key={row.label} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                    <p className="font-semibold text-white">{row.label}</p>
+                    <p className="mt-2 text-xs leading-5 text-neutral-400">{row.body}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
