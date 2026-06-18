@@ -6,6 +6,21 @@ import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../li
 import { getPublicReportSession } from '../../lib/publicReportSession'
 import { buildFreeReportPreview, buildLockedInsightPreview, toReportSectionSlug } from '../../lib/storyExperience'
 
+const LOCKED_INSIGHT_DECISION_CHECKS = [
+  {
+    label: 'Public packet',
+    body: 'Explains why this module was requested and what the visitor recognized before checkout.',
+  },
+  {
+    label: 'Private question',
+    body: 'Names the exact thing Reset Pro or the live workspace must prove from normalized history.',
+  },
+  {
+    label: 'Proof missing',
+    body: 'Blocks the answer until activation, upload, generated artifacts, and append history exist.',
+  },
+] as const
+
 export default function LockedInsightPage() {
   const { section } = useParams()
   const location = useLocation()
@@ -84,13 +99,13 @@ export default function LockedInsightPage() {
   )
 
   return (
-    <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-        <div className="lg:sticky lg:top-28">
+    <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
+      <div className="mx-0 grid w-full max-w-[22.25rem] min-w-0 gap-8 sm:mx-auto sm:max-w-7xl lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+        <div className="min-w-0 lg:sticky lg:top-28">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-indigo-300">
             Locked Private Insight
           </p>
-          <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
+          <h1 className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
             This is where recognition becomes evidence.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
@@ -105,11 +120,32 @@ export default function LockedInsightPage() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <PublicJourneySpine
             activeStage="insight"
             detail="The private insight page explains the locked module and proof contract before checkout or founder-gated demo access."
           />
+
+          <article className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">
+              Private insight decision gate
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">
+              This page carries a question, not an answer.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-emerald-50/75">
+              The locked module should make the next private question obvious without pretending the public report has
+              already earned a private conclusion.
+            </p>
+            <div className="mt-5 grid gap-3 md:grid-cols-3">
+              {LOCKED_INSIGHT_DECISION_CHECKS.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm font-semibold text-white">{item.label}</p>
+                  <p className="mt-2 text-xs leading-5 text-emerald-50/70">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </article>
 
           <article className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
@@ -187,14 +223,14 @@ export default function LockedInsightPage() {
                 <h2 className="mt-2 text-xl font-semibold text-white">
                   {reportSession?.evidenceLabel ?? 'Direct-link fallback only'}
                 </h2>
-              <p className="mt-3 text-sm leading-7 text-emerald-50/75">
-                {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'}
-              </p>
-              {!reportSession && urlStoryHandoff ? (
-                <p className="mt-3 text-xs leading-5 text-amber-100/75">
-                  URL story context only: {urlStoryHandoff.storySource}; scenes {urlStoryHandoff.visitedSceneCount}; axes {urlStoryHandoff.selectedPainAxisIds.length}.
+                <p className="mt-3 text-sm leading-7 text-emerald-50/75">
+                  {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'}
                 </p>
-              ) : null}
+                {!reportSession && urlStoryHandoff ? (
+                  <p className="mt-3 text-xs leading-5 text-amber-100/75">
+                    URL story context only: {urlStoryHandoff.storySource}; scenes {urlStoryHandoff.visitedSceneCount}; axes {urlStoryHandoff.selectedPainAxisIds.length}.
+                  </p>
+                ) : null}
               </div>
             </div>
             <p className="rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-emerald-50/65">

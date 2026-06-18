@@ -301,6 +301,11 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
     expect(screen.getByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
+    expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
+    expect(screen.getByText('This page carries a question, not an answer.')).toBeInTheDocument()
+    expect(screen.getByText('Public packet')).toBeInTheDocument()
+    expect(screen.getByText('Private question')).toBeInTheDocument()
+    expect(screen.getByText('Proof missing')).toBeInTheDocument()
     expect(screen.getByText('Requested locked module')).toBeInTheDocument()
     expect(screen.getAllByText('Highest-cost state').length).toBeGreaterThan(0)
     expect(screen.getByText('Private module preview')).toBeInTheDocument()
@@ -337,6 +342,8 @@ describe('public Shibuya journey pages', () => {
     )
 
     expect(screen.getByText('Direct-link fallback only')).toBeInTheDocument()
+    expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
+    expect(screen.getByText(/Blocks the answer until activation, upload, generated artifacts, and append history exist/i)).toBeInTheDocument()
     expect(screen.getByText(/URL story context only: guided; scenes 6; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText(/No local upload-step validation packet was found/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue To Private Demo Gate/i })).toHaveAttribute(
