@@ -15,6 +15,7 @@ function LocationProbe() {
 }
 
 afterEach(() => {
+  window.localStorage.clear()
   vi.unstubAllEnvs()
 })
 
@@ -164,6 +165,40 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
     )
+  })
+
+  test('upload paste validation rejects prose and accepts a trade table', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=india&archetype=priya&axis=drawdown_pressure']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    const sampleInput = screen.getByLabelText(/Or paste a small trade sample/i)
+
+    expect(screen.getByText(/Pasted samples need a header row plus one trade row/i)).toBeInTheDocument()
+
+    await user.type(sampleInput, 'I overtrade during volatility and need this to become a report even though it is not a table.')
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=india&archetype=priya&axis=drawdown_pressure')
+    expect(screen.getByText(/Paste a table-like sample, not free text/i)).toBeInTheDocument()
+
+    await user.clear(sampleInput)
+    await user.type(sampleInput, 'date,symbol,side,size,entry,exit,pnl\n2026-06-18,NIFTY,buy,1,100,101,50')
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+    expect(screen.getByText('Public report packet')).toBeInTheDocument()
+    expect(screen.getAllByText('Pasted trade sample').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Pasted sample passed local structure check/i)).toBeInTheDocument()
+    expect(screen.getByText(/Raw file contents and pasted trade rows are not stored/i)).toBeInTheDocument()
   })
 
   test('global upload route keeps story and pricing navigation in the global market', () => {

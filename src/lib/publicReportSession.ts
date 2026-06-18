@@ -47,6 +47,32 @@ interface PublicReportSessionStore {
   sessions: Record<string, PublicReportSession>
 }
 
+interface HeaderGroup {
+  label: string
+  patterns: RegExp[]
+}
+
+const PASTE_SEPARATORS = [',', '\t', ';', '|'] as const
+
+const REQUIRED_PASTE_HEADER_GROUPS: HeaderGroup[] = [
+  {
+    label: 'date/time',
+    patterns: [/\bdate\b/i, /\btime\b/i, /\btimestamp\b/i, /\bopened\b/i, /\bclosed\b/i],
+  },
+  {
+    label: 'symbol/instrument',
+    patterns: [/\bsymbol\b/i, /\bticker\b/i, /\binstrument\b/i, /\bpair\b/i, /\bmarket\b/i],
+  },
+  {
+    label: 'side/direction',
+    patterns: [/\bside\b/i, /\bdirection\b/i, /\btype\b/i, /\baction\b/i, /\bbuy\b/i, /\bsell\b/i],
+  },
+  {
+    label: 'pnl/price',
+    patterns: [/\bpnl\b/i, /\bp\/l\b/i, /\bprofit\b/i, /\bloss\b/i, /\bnet\b/i, /\bentry\b/i, /\bexit\b/i, /\bprice\b/i],
+  },
+]
+
 function getFileExtension(fileName: string): string {
   const candidate = fileName.split('.').pop()?.trim().toLowerCase()
 
@@ -95,6 +121,72 @@ function normalizePainAxes(axisIds?: string[]): FingerprintAxisId[] {
   return [...seen]
 }
 
+function getPasteRows(pasteBody?: string): string[] {
+  return (pasteBody ?? '')
+    .split(/\r?\n/)
+    .map((row) => row.trim())
+    .filter(Boolean)
+}
+
+function detectPasteSeparator(headerRow: string): (typeof PASTE_SEPARATORS)[number] | null {
+  let bestSeparator: (typeof PASTE_SEPARATORS)[number] | null = null
+  let bestCount = 0
+
+  for (const separator of PASTE_SEPARATORS) {
+    const count = headerRow.split(separator).length - 1
+    if (count > bestCount) {
+      bestSeparator = separator
+      bestCount = count
+    }
+  }
+
+  return bestCount > 0 ? bestSeparator : null
+}
+
+function splitPasteRow(row: string, separator: (typeof PASTE_SEPARATORS)[number]): string[] {
+  return row.split(separator).map((cell) => cell.trim()).filter(Boolean)
+}
+
+function getMissingPasteHeaderGroups(headerCells: string[]): string[] {
+  return REQUIRED_PASTE_HEADER_GROUPS
+    .filter((group) => !headerCells.some((cell) => group.patterns.some((pattern) => pattern.test(cell))))
+    .map((group) => group.label)
+}
+
+export function validatePublicPasteSample(pasteBody?: string): string | null {
+  const rows = getPasteRows(pasteBody)
+
+  if (rows.length === 0) {
+    return 'Attach a CSV/export, choose a local file, or paste a small table with headers such as date, symbol, side, entry, exit, pnl. For a demo, use the sample report button.'
+  }
+
+  const separator = detectPasteSeparator(rows[0])
+  if (!separator) {
+    return 'Paste a table-like sample, not free text: use comma, tab, semicolon, or pipe-separated columns such as date, symbol, side, entry, exit, pnl.'
+  }
+
+  const headerCells = splitPasteRow(rows[0], separator)
+  if (headerCells.length < 4) {
+    return 'The pasted header needs at least four columns, including date/time, symbol/instrument, side/direction, and pnl/price fields.'
+  }
+
+  const missingGroups = getMissingPasteHeaderGroups(headerCells)
+  if (missingGroups.length > 0) {
+    return `The pasted header is missing required fields: ${missingGroups.join(', ')}. Use headers such as date, symbol, side, entry, exit, pnl.`
+  }
+
+  if (rows.length < 2) {
+    return 'Paste at least one trade row under the header so the preview can validate the sample structure.'
+  }
+
+  const firstTradeRowCells = splitPasteRow(rows[1], separator)
+  if (firstTradeRowCells.length < 3 || firstTradeRowCells.length < Math.min(4, headerCells.length - 1)) {
+    return 'The first pasted trade row needs multiple columns under the header, for example: 2026-06-18,EURUSD,buy,1.0800,1.0830,30.'
+  }
+
+  return null
+}
+
 export function buildPublicReportSession(params: PublicReportValidationInput): PublicReportSession {
   const pasteLength = params.pasteBody?.trim().length ?? 0
   const source = getSource(params)
@@ -138,6 +230,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
           ...storyFacts,
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
+          pasteLength > 0 && !validatePublicPasteSample(params.pasteBody)
+            ? 'Pasted sample passed local structure check: date/time, instrument, direction, and result/price fields detected.'
+            : 'No validated pasted table structure included.',
           'Raw file contents and pasted trade rows are not stored by this public preview.',
         ]
 
@@ -171,11 +266,7 @@ export function validatePublicReportInput(params: Pick<PublicReportValidationInp
     return null
   }
 
-  if ((params.pasteBody?.trim().length ?? 0) >= 40) {
-    return null
-  }
-
-  return 'Attach a CSV/export or paste at least 40 characters of trade history. For a demo, use the sample report button.'
+  return validatePublicPasteSample(params.pasteBody)
 }
 
 function readStore(): PublicReportSessionStore {

@@ -104,11 +104,11 @@ export default function PublicUploadPage() {
   }
 
   return (
-    <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <div className="lg:sticky lg:top-28">
+    <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
+      <div className="mx-0 grid w-full max-w-[22.25rem] min-w-0 gap-10 sm:mx-auto sm:max-w-7xl lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div className="min-w-0 lg:sticky lg:top-28">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-indigo-300">Upload Moment</p>
-          <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
+          <h1 className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
             Upload your trade history. See what the fingerprint gets right.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
@@ -130,13 +130,13 @@ export default function PublicUploadPage() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <PublicJourneySpine
             activeStage="upload"
             detail="This step turns the public hypothesis into a report packet. In preview mode, it stores only local handoff metadata and never raw trade rows."
           />
 
-          <form onSubmit={handleSubmit} className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
+          <form onSubmit={handleSubmit} className="min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">Provisional signal</p>
@@ -264,9 +264,13 @@ export default function PublicUploadPage() {
                 value={pasteBody}
                 onChange={(event) => setPasteBody(event.target.value)}
                 rows={6}
-                placeholder="Example: date, symbol, side, size, entry, exit, pnl..."
+                placeholder={'date,symbol,side,size,entry,exit,pnl\n2026-06-18,EURUSD,buy,1,1.0800,1.0830,30'}
                 className="w-full rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-neutral-600 focus:border-indigo-300/50"
               />
+              <span className="mt-3 block rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-xs leading-5 text-neutral-400">
+                Pasted samples need a header row plus one trade row. Required signal columns: date/time,
+                symbol or instrument, side or direction, and pnl or price fields.
+              </span>
             </label>
 
             {error ? (
