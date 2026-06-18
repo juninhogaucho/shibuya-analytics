@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { API_BASE_URL } from '../../lib/constants';
+import { submitContactMessage } from '../../lib/api/site';
 
 const Footer: React.FC = () => {
   const [contactForm, setContactForm] = useState({ email: '', message: '' });
@@ -13,28 +13,13 @@ const Footer: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Send email via API (will be handled by backend)
-      const response = await fetch(`${API_BASE_URL}/v1/site/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: contactForm.email,
-          message: contactForm.message,
-          source: 'footer_contact'
-        })
+      await submitContactMessage({
+        email: contactForm.email,
+        message: contactForm.message,
+        source: 'footer_contact',
       });
-
-      if (response.ok) {
-        setContactSubmitted(true);
-        setContactForm({ email: '', message: '' });
-      } else {
-        // Fallback to mailto
-        const subject = encodeURIComponent('Contact from Shibuya Analytics');
-        const body = encodeURIComponent(`From: ${contactForm.email}\n\n${contactForm.message}`);
-        window.open(`mailto:support@shibuya-analytics.com?subject=${subject}&body=${body}`, '_blank');
-        setContactSubmitted(true);
-        setContactForm({ email: '', message: '' });
-      }
+      setContactSubmitted(true);
+      setContactForm({ email: '', message: '' });
     } catch {
       // Fallback to mailto on network error
       const subject = encodeURIComponent('Contact from Shibuya Analytics');

@@ -167,7 +167,7 @@ Verification:
 
 ## Remaining Foundation Slices
 
-Continue splitting `src/lib/api.ts` into capability-specific API modules. Site-contact code is the only implementation still living in the broad facade. Profile/lifecycle/daily-practice, support/appointments, and ops/admin now live behind dedicated API boundaries.
+`src/lib/api.ts` is now a compatibility export surface only. Dashboard, auth, checkout, trader loop, support/appointments, ops/admin, and site contact all live behind dedicated API modules.
 
 ## Sixth Foundation Slice Completed
 
@@ -264,9 +264,33 @@ Verification:
 - `tsc -b`: passed.
 - `vite build`: passed, 2,835 modules transformed.
 
+## Tenth Foundation Slice Completed
+
+Files changed:
+
+- `src/lib/api.ts`
+- `src/lib/api/site.ts`
+- `src/lib/api/__tests__/site.test.ts`
+- `src/components/landing/Footer.tsx`
+
+Behavior now verified:
+
+- Public contact form submission now lives in `src/lib/api/site.ts`.
+- `Footer` uses the site API boundary instead of raw `fetch` against `API_BASE_URL`.
+- Mailto fallback remains when the site API fails.
+- `src/lib/api.ts` no longer owns implementation code; it is a temporary compatibility export surface.
+- Site tests cover sample-mode local queue behavior and live endpoint routing.
+
+Verification:
+
+- `vitest run src/lib/api/__tests__/site.test.ts`: 1 file / 2 tests passed.
+- `vitest run`: 33 files / 85 tests passed.
+- `tsc -b`: passed.
+- `vite build`: passed, 2,836 modules transformed.
+
 Success condition:
 
-- `api.ts` becomes either a temporary compatibility barrel or disappears.
+- `api.ts` becomes either a temporary compatibility barrel or disappears. It is now a compatibility barrel.
 - Dashboard pages import dashboard functions from a dashboard API module. Done for current dashboard data/upload consumers.
 - Trader pages import profile/lifecycle/daily-practice functions from a trader API module. Done for current trader-loop consumers.
 - Support/access page imports appointment and ticket functions from a support API module. Done for current access-center consumers.
