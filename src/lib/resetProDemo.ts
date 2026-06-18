@@ -69,6 +69,11 @@ export interface ResetProDemoBridgeCard {
   previewShows: string[]
 }
 
+export interface ResetProDemoClaimLedger {
+  allowed: string[]
+  forbidden: string[]
+}
+
 export interface ResetProDemoProofStage {
   label: string
   status: 'ready' | 'warning' | 'locked'
@@ -84,6 +89,7 @@ export interface ResetProDemoScript {
   showSequence: ResetProDemoShowMoment[]
   proofLadder: ResetProDemoProofStage[]
   readinessChecklist: ResetProDemoChecklistItem[]
+  claimLedger: ResetProDemoClaimLedger
   pressureMetrics: ResetProDemoMetric[]
   presenterRoute: ResetProDemoPresenterRouteItem[]
   steps: ResetProDemoStep[]
@@ -156,6 +162,24 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
       },
     ],
     proofLadder,
+    claimLedger: {
+      allowed: [
+        'This is a controlled sample workspace showing the Reset Pro operating loop.',
+        originCard
+          ? 'The public report context was carried into the demo as routing context.'
+          : 'This is a direct private demo without a public report handoff.',
+        bridgeCard
+          ? 'The private workspace can preview the question live data must prove.'
+          : 'The private workspace can show structure before a locked question exists.',
+        'Append proof is the correct demo exit because live improvement requires new evidence.',
+      ],
+      forbidden: [
+        'Do not say the sample account belongs to the visitor.',
+        'Do not say Shibuya has analyzed the visitor real trades from this demo.',
+        'Do not promise profit improvement, challenge pass rates, or drawdown reduction.',
+        'Do not present sample metrics as generated backend artifacts for a live account.',
+      ],
+    },
     readinessChecklist: [
       {
         label: 'Public context carried',

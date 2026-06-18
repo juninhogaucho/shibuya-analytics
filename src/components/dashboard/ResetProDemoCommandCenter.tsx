@@ -63,6 +63,36 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         </div>
       </div>
 
+      <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>DEMO CLAIM LEDGER</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>What the presenter may say, and what stays forbidden.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              This is the first workspace-level truth check after unlock. Use it before showing any sample metric.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive two" style={{ marginTop: '1rem' }}>
+          <article className="glass-panel" style={{ background: 'rgba(16,185,129,0.07)', borderColor: 'rgba(16,185,129,0.2)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Allowed claims</h4>
+            <ul className="digest-preview" style={{ marginBottom: 0 }}>
+              {script.claimLedger.allowed.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+          <article className="glass-panel" style={{ background: 'rgba(244,63,94,0.07)', borderColor: 'rgba(244,63,94,0.2)' }}>
+            <h4 style={{ marginBottom: '0.75rem' }}>Forbidden claims</h4>
+            <ul className="digest-preview" style={{ marginBottom: 0 }}>
+              {script.claimLedger.forbidden.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </article>
+
       <article className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(16,185,129,0.065)', borderColor: 'rgba(16,185,129,0.22)' }}>
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
           <div>
