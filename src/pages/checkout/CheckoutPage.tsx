@@ -11,6 +11,7 @@ import {
   readAffiliateAttribution,
   wasAffiliateClickTracked,
 } from '../../lib/affiliateAttribution'
+import { redirectBrowser } from '../../lib/browserNavigation'
 import { appendCheckoutIntentToPath, describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
@@ -142,7 +143,7 @@ const CheckoutPage: React.FC = () => {
         planName: currentPlan.name,
       })
 
-      window.location.assign(session.checkout_url)
+      redirectBrowser(session.checkout_url)
     } catch (error) {
       console.error('Checkout error:', error)
       setCheckoutError('Payment system unavailable. Please try again or contact support@shibuya-analytics.com')
@@ -220,10 +221,11 @@ const CheckoutPage: React.FC = () => {
             </h3>
             <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-neutral-300">
+                <label htmlFor="checkout-name" className="mb-2 block text-sm font-medium text-neutral-300">
                   Full Name <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="checkout-name"
                   type="text"
                   name="name"
                   required
@@ -235,11 +237,12 @@ const CheckoutPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                <label htmlFor="checkout-email" className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
                   <Mail className="h-4 w-4" />
                   Email Address <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="checkout-email"
                   type="email"
                   name="email"
                   required
@@ -252,11 +255,12 @@ const CheckoutPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                <label htmlFor="checkout-discord" className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
                   <MessageSquare className="h-4 w-4" />
                   Discord Username <span className="text-neutral-500">(Optional)</span>
                 </label>
                 <input
+                  id="checkout-discord"
                   type="text"
                   name="discord"
                   value={form.discord}
@@ -267,12 +271,13 @@ const CheckoutPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
+                <label htmlFor="checkout-referral" className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-300">
                   <Gift className="h-4 w-4" />
                   Referral / Affiliate Code <span className="text-neutral-500">(Optional)</span>
                 </label>
                 <div className="flex gap-2">
                   <input
+                    id="checkout-referral"
                     type="text"
                     name="referral"
                     value={form.referral}
