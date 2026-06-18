@@ -8,7 +8,7 @@ import PrivateDemoPage from '../PrivateDemoPage'
 
 function LocationProbe() {
   const location = useLocation()
-  return <div data-testid="location">{location.pathname}</div>
+  return <div data-testid="location">{`${location.pathname}${location.search}`}</div>
 }
 
 function renderPrivateDemo(initialEntry = '/private-demo?market=global') {
@@ -59,7 +59,7 @@ describe('PrivateDemoPage', () => {
     renderPrivateDemo('/private-demo?source=free_report&report=free-report-123&archetype=priya&axis=drawdown_pressure&market=global')
 
     expect(screen.getByText('Report handoff packet')).toBeInTheDocument()
-    expect(screen.getByText(/free-report-123/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
     expect(screen.getByText('Handoff evidence boundary')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
@@ -117,5 +117,16 @@ describe('PrivateDemoPage', () => {
       demoLockedSectionId: 'edge-decay-map',
       demoLockedSectionTitle: 'Edge decay map',
     })
+  })
+
+  test('preserves report handoff context on the paid activation link', () => {
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo('/private-demo?source=locked_insight&report=free-report-123&archetype=marco&axis=edge_decay&section=edge-decay-map&market=global')
+
+    expect(screen.getByRole('link', { name: /Activate Paid Account/i })).toHaveAttribute(
+      'href',
+      '/activate?source=locked_insight&report=free-report-123&section=edge-decay-map&archetype=marco&axis=edge_decay&market=global',
+    )
   })
 })

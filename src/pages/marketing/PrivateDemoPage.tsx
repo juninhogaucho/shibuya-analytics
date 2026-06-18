@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { appendCheckoutIntentToPath, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 import {
   PRIVATE_DEMO_CODE_ENV_KEY,
@@ -27,6 +28,7 @@ export default function PrivateDemoPage() {
   const handoffAxis = getFingerprintAxis(params.get('axis'))
   const handoffSectionId = params.get('section')?.trim() || undefined
   const handoffSource = params.get('source') ?? undefined
+  const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
   const reportSession = getPublicReportSession(handoffReportId)
   const handoffReport = buildFreeReportPreview({
@@ -189,7 +191,7 @@ export default function PrivateDemoPage() {
 
           <div className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
             <Link
-              to={addMarketToPath('/activate', market)}
+              to={addMarketToPath(appendCheckoutIntentToPath('/activate', checkoutIntent), market)}
               className="rounded-xl border border-white/10 px-4 py-3 text-center font-semibold text-white transition hover:bg-white hover:text-black"
             >
               Activate Paid Account
