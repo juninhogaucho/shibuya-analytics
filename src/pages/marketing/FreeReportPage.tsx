@@ -18,6 +18,18 @@ export default function FreeReportPage() {
   const reportSession = getPublicReportSession(report.reportId)
   const resetPlan = getPlanForMarket(market, 'reset_monthly')
   const auditPlan = getPlanForMarket(market, 'audit_monthly')
+  const reportCheckoutQuery = new URLSearchParams({
+    source: 'free_report',
+    report: report.reportId,
+    archetype: report.archetype.id,
+    axis: report.dominantAxis.id,
+  }).toString()
+  const privateInsightGateQuery = new URLSearchParams({
+    source: 'private_insight_gate',
+    report: report.reportId,
+    archetype: report.archetype.id,
+    axis: report.dominantAxis.id,
+  }).toString()
   const privateDemoPath = addMarketToPath(
     `/private-demo?source=free_report&report=${encodeURIComponent(report.reportId)}&archetype=${report.archetype.id}&axis=${report.dominantAxis.id}`,
     market,
@@ -174,7 +186,7 @@ export default function FreeReportPage() {
                 <p className="text-sm leading-7 text-neutral-300">{report.privateInsightGate.demoPromise}</p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <Link
-                    to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?source=private_insight_gate`, market)}
+                    to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?${privateInsightGateQuery}`, market)}
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                   >
                     Unlock {report.privateInsightGate.primaryUnlock}
@@ -192,13 +204,13 @@ export default function FreeReportPage() {
 
             <section className="grid gap-3 md:grid-cols-3">
               <Link
-                to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}`, market)}
+                to={addMarketToPath(`/checkout/${resetPlan.checkoutSlug}?${reportCheckoutQuery}`, market)}
                 className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
               >
                 {resetPlan.ctaLabel}
               </Link>
               <Link
-                to={addMarketToPath(`/checkout/${auditPlan.checkoutSlug}`, market)}
+                to={addMarketToPath(`/checkout/${auditPlan.checkoutSlug}?${reportCheckoutQuery}`, market)}
                 className="inline-flex items-center justify-center rounded-xl border border-white/10 px-4 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
               >
                 {auditPlan.ctaLabel}

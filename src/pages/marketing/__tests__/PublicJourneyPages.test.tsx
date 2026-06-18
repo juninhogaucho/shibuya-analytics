@@ -122,6 +122,18 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/private-demo?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
     )
+    expect(screen.getByRole('link', { name: /^Unlock Free Report First$/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=private_insight_gate&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+    )
+    expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+    )
+    expect(screen.getByRole('link', { name: /^Start Psych Audit$/i })).toHaveAttribute(
+      'href',
+      '/checkout/psych-audit-live?source=free_report&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
+    )
     expect(screen.queryByRole('button', { name: /Preview Reset Pro/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Private Demo Access/i })).toHaveAttribute(
       'href',
