@@ -10,6 +10,23 @@ vi.mock('../../../lib/api/checkout', () => ({
 }))
 
 describe('CheckoutSuccessPage', () => {
+  test('blocks direct success route without stored order or verified session', () => {
+    render(
+      <MemoryRouter initialEntries={['/checkout/success?market=global']}>
+        <CheckoutSuccessPage />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Checkout success route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Checkout record missing')).toBeInTheDocument()
+    expect(screen.getByText(/cannot claim checkout completion without a stored order receipt or verified session id/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Generate Free Report First/i })).toHaveAttribute('href', '/upload?market=global')
+    expect(screen.getByRole('link', { name: /Return To Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
+    expect(screen.getByText(/Success route rule: order code, verified session, and activation handoff context are required/i)).toBeInTheDocument()
+    expect(screen.queryByText('Checkout Complete')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Activate Live Account/i })).not.toBeInTheDocument()
+  })
+
   test('keeps locked insight context attached to activation after checkout', () => {
     persistPublicReportSession(buildPublicReportSession({
       reportId: 'sample-free-report',

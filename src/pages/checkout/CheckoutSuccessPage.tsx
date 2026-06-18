@@ -194,6 +194,42 @@ const CheckoutSuccessPage: React.FC = () => {
     )
   }
 
+  if (!order && !sessionId) {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-24 text-center md:py-32">
+        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-rose-500/20">
+          <AlertCircle className="h-10 w-10 text-rose-300" />
+        </div>
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-rose-200">
+          Checkout success route integrity
+        </p>
+        <h1 className="mb-4 text-3xl font-bold text-white">Checkout record missing</h1>
+        <p className="mb-8 text-lg leading-8 text-neutral-400">
+          This page cannot claim checkout completion without a stored order receipt or verified session id.
+          Start from the public report and locked insight before payment so activation receives a real question.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link
+            to={addMarketToPath('/upload', market)}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-500"
+          >
+            Generate Free Report First
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to={addMarketToPath('/pricing', market)}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-6 py-3 font-semibold text-white transition-colors hover:bg-white hover:text-black"
+          >
+            Return To Pricing
+          </Link>
+        </div>
+        <p className="mt-6 text-sm text-neutral-500">
+          Success route rule: order code, verified session, and activation handoff context are required before this page can behave like a checkout receipt.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-24 text-center md:py-32">
       <motion.div
