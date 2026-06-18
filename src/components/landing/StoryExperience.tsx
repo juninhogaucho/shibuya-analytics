@@ -6,6 +6,7 @@ import {
   FINGERPRINT_AXES,
   STORY_SCENES,
   TRADER_ARCHETYPES,
+  buildPublicStoryDemoScript,
   buildBehavioralPressureIndex,
   buildPredictedFingerprint,
   buildPublicStorySignalMarkerIds,
@@ -69,6 +70,7 @@ export default function StoryExperience() {
   const activeScene = STORY_SCENES[activeSceneIndex]
   const progress = Math.round(((activeSceneIndex + 1) / STORY_SCENES.length) * 100)
   const selectedArchetype = TRADER_ARCHETYPES.find((archetype) => archetype.id === signal.archetypeId)
+  const publicDemoScript = useMemo(() => buildPublicStoryDemoScript(signal), [signal])
   const selectedPainAxisLabels = signal.selectedPainAxes
     .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
     .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
@@ -281,6 +283,65 @@ export default function StoryExperience() {
             </button>
           ))}
         </div>
+
+        <section className="mb-8 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">
+                Public StoryExperience demo script
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">{publicDemoScript.headline}</h3>
+            </div>
+            <p className="text-sm leading-7 text-emerald-50/75">{publicDemoScript.operatorBrief}</p>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-4">
+            {publicDemoScript.moments.map((moment) => (
+              <article key={`${moment.timebox}-${moment.title}`} className="rounded-3xl border border-white/10 bg-black/20 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">{moment.timebox}</p>
+                <h4 className="mt-2 text-base font-semibold text-white">{moment.title}</h4>
+                <p className="mt-3 text-xs leading-5 text-neutral-300">
+                  <span className="font-semibold text-white">Say:</span> {moment.say}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-neutral-300">
+                  <span className="font-semibold text-white">Show:</span> {moment.show}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-amber-100/75">
+                  <span className="font-semibold text-amber-100">Boundary:</span> {moment.boundary}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <article className="rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
+              <h4 className="text-base font-semibold text-white">Allowed public claims</h4>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-emerald-50/80">
+                {publicDemoScript.allowedClaims.map((claim) => (
+                  <li key={claim} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                    <span>{claim}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+            <article className="rounded-3xl border border-rose-300/20 bg-rose-300/[0.06] p-5">
+              <h4 className="text-base font-semibold text-white">Forbidden public claims</h4>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-rose-50/80">
+                {publicDemoScript.forbiddenClaims.map((claim) => (
+                  <li key={claim} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-300" />
+                    <span>{claim}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-7 text-emerald-50/75">
+            <span className="font-semibold text-white">Next action:</span> {publicDemoScript.nextAction}
+          </p>
+        </section>
 
         <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div className="order-2 space-y-3 lg:order-1">

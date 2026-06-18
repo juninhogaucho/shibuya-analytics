@@ -130,6 +130,23 @@ export interface LockedInsightPreview {
   proofRequired: string[]
 }
 
+export interface PublicStoryDemoMoment {
+  timebox: string
+  title: string
+  say: string
+  show: string
+  boundary: string
+}
+
+export interface PublicStoryDemoScript {
+  headline: string
+  operatorBrief: string
+  moments: PublicStoryDemoMoment[]
+  allowedClaims: string[]
+  forbiddenClaims: string[]
+  nextAction: string
+}
+
 export function toReportSectionSlug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
@@ -624,6 +641,70 @@ export function buildPredictedFingerprint(state: StorySignalState): FingerprintS
       score: clampScore(BASE_SCORE + archetypeWeight + painWeight + pricingWeight + uploadWeight + sceneWeight),
     }
   })
+}
+
+export function buildPublicStoryDemoScript(state: StorySignalState): PublicStoryDemoScript {
+  const scores = buildPredictedFingerprint(state)
+  const dominantAxis = getDominantFingerprintAxis(scores)
+  const pressureIndex = buildBehavioralPressureIndex(scores)
+  const pressureBand = getBehavioralPressureBand(pressureIndex)
+  const selectedArchetype = state.archetypeId ? getTraderArchetype(state.archetypeId) : null
+  const mirrorLine = selectedArchetype
+    ? `${selectedArchetype.name}: ${selectedArchetype.title}`
+    : 'No mirror selected yet'
+  const painLine = state.selectedPainAxes.length
+    ? state.selectedPainAxes.map((axisId) => getFingerprintAxis(axisId).label).join(', ')
+    : dominantAxis.label
+
+  return {
+    headline: 'Run the public story as a proof handoff, not a feature tour.',
+    operatorBrief: `Current public hypothesis: ${mirrorLine}; leading axis: ${dominantAxis.label}; pressure band: ${pressureBand.label}.`,
+    moments: [
+      {
+        timebox: '0:00-0:35',
+        title: 'Recognition',
+        say: 'Most traders keep changing strategy when the repeated problem is the state they trade from.',
+        show: 'Cold open, the current scene, and the mirror selection.',
+        boundary: 'This is recognition only. It is not a diagnosis.',
+      },
+      {
+        timebox: '0:35-1:20',
+        title: 'Fingerprint',
+        say: `The public page is forming a provisional hypothesis around ${painLine}.`,
+        show: 'Predicted dominant axis, behavioral pressure index, and selected pain axes.',
+        boundary: 'The page signal can route the journey. It cannot prove account truth.',
+      },
+      {
+        timebox: '1:20-2:05',
+        title: 'Evidence Ask',
+        say: 'The product earns trust by asking trade history to confirm or reject the mirror.',
+        show: 'Evidence contract and upload/report journey spine.',
+        boundary: 'No raw trade rows are stored by the public preview.',
+      },
+      {
+        timebox: '2:05-3:00',
+        title: 'Private Question',
+        say: 'The free report should name the private question; the Reset Pro workspace must prove the answer later.',
+        show: 'Guided upload path, locked private insight, then founder-gated Reset Pro preview.',
+        boundary: 'No profit uplift, pass-rate, drawdown, or live-account claim is allowed from the public story.',
+      },
+    ],
+    allowedClaims: [
+      'This public story builds a website-level hypothesis.',
+      'The upload/report step decides what survives contact with evidence.',
+      'The locked private insight carries a question into the paid or founder-gated workspace.',
+      'The Reset Pro demo uses sample data unless a live activation and upload are proven.',
+    ],
+    forbiddenClaims: [
+      'Do not say Shibuya analyzed the visitor account from the story page.',
+      'Do not call the pressure index a production backend artifact.',
+      'Do not promise profit, challenge pass rates, or drawdown reduction.',
+      'Do not imply the private workspace is unlocked for everyone.',
+    ],
+    nextAction: pressureBand.id === 'intervention_candidate'
+      ? 'Route to guided upload, then show the locked insight before the private Reset Pro gate.'
+      : 'Route to upload or sample report, then let the report choose the locked private question.',
+  }
 }
 
 export function getDominantFingerprintAxis(scores: FingerprintScore[]): FingerprintScore {

@@ -7240,10 +7240,14 @@ textarea:focus-visible {
 
   .shibuya-ifx-page > section,
   .shibuya-story-experience > div {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .shibuya-story-experience :where(div, aside, article, p, h2, h3, h4, ol, ul, li, a, button) {
+    max-width: 100% !important;
   }
 
   .shibuya-ifx-page h1 {
@@ -7253,8 +7257,9 @@ textarea:focus-visible {
   }
 
   .shibuya-story-experience h2 {
-    font-size: clamp(1.85rem, 8vw, 2.4rem) !important;
-    line-height: 1.08 !important;
+    font-size: clamp(1.55rem, 6.8vw, 2.15rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.035em;
   }
 }
 
