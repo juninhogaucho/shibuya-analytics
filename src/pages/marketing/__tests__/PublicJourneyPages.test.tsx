@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
 import { getPublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
+import { DemoLauncherPage } from '../DemoLauncherPage'
 import FreeReportPage from '../FreeReportPage'
 import LockedInsightPage from '../LockedInsightPage'
 import PrivateDemoPage from '../PrivateDemoPage'
@@ -210,6 +211,77 @@ describe('public Shibuya journey pages', () => {
 
     await waitFor(() => {
       expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
+    })
+  })
+
+  test('IFX launcher upload path carries controlled sample context into Reset Pro dashboard metadata', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    render(
+      <MemoryRouter initialEntries={['/demo?market=global']}>
+        <Routes>
+          <Route path="/demo" element={<DemoLauncherPage />} />
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+          <Route path="/private-demo" element={<PrivateDemoPage />} />
+          <Route path="/dashboard" element={<div>Reset Pro dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('link', { name: /Open Upload/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
+    expect(screen.getByText(/This route is marked as a controlled launcher sample/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Generate Guided Sample Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
+    expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
+
+    await user.click(screen.getByRole('link', { name: /Continue Guided Storyline/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/insight/edge-decay-map')
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
+    expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('link', { name: /Continue To Private Demo Gate/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
+    expect(screen.getByText('guided; scenes 6')).toBeInTheDocument()
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(1)
+
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    expect(screen.getByText('Reset Pro dashboard route')).toBeInTheDocument()
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      market: 'global',
+      samplePreview: 'reset_pro',
+      caseStatus: 'sample_preview',
+      demoSource: 'locked_insight',
+      demoReportId: 'sample-behavioral-leak-report',
+      demoArchetypeId: 'marco',
+      demoAxisId: 'edge_decay',
+      demoReportSource: 'sample',
+      demoEvidenceLabel: 'Demo launcher sample packet',
+      demoValidationSummary: 'Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.',
+      demoStorySource: 'guided',
+      demoSelectedPainAxisIds: ['edge_decay'],
+      demoVisitedSceneCount: 6,
+      demoSignalMarkerIds: ['mirror_selected', 'pain_axis_selected', 'scene_depth_light', 'upload_intent'],
+      demoLockedSectionId: 'edge-decay-map',
+      demoLockedSectionTitle: 'Edge decay map',
+      demoBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
+      demoBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
     })
   })
 
