@@ -67,13 +67,17 @@ export default function FreeReportPage() {
   )
 
   return (
-    <section className="min-h-screen bg-[#030304] px-6 pb-20 pt-14 text-white md:px-12">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-10 grid gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
-          <div>
+    <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
+      <div className="mx-0 w-full max-w-[22.25rem] min-w-0 sm:mx-auto sm:max-w-7xl">
+        <div className="mb-10 grid min-w-0 gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+          <div className="min-w-0">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.26em] text-emerald-300">Free Behavioral Leak Report</p>
-            <h1 className="font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">
-              Your baseline is forming.
+            <h1
+              aria-label="Your baseline is forming."
+              className="break-words font-display text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl"
+            >
+              <span className="block">Your baseline is</span>
+              <span className="block">forming.</span>
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-neutral-300">
               Report ID <span className="font-mono text-neutral-100">{report.reportId}</span>. This preview unlocks one sharp recognition point and shows what remains locked until the trader chooses a live workspace.
@@ -120,7 +124,7 @@ export default function FreeReportPage() {
           </div>
         </div>
 
-        <section className="mb-8 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-indigo-300/20 bg-indigo-300/[0.05] p-5 md:p-8">
           <div className="mb-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Prediction survival check</p>
@@ -169,15 +173,64 @@ export default function FreeReportPage() {
           </div>
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="space-y-5">
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.05] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">Reset Pro bridge</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">What the private workspace must decide next.</h2>
+            </div>
+            <p className="text-sm leading-7 text-emerald-50/75">
+              {report.resetProBridge.headline} The free report creates the question; the live workspace has to prove the answer with activation, upload, and append history.
+            </p>
+          </div>
+
+          <div className="grid min-w-0 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+            <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Decision question</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">{report.resetProBridge.decisionQuestion}</h3>
+              <p className="mt-4 text-sm leading-7 text-neutral-300">{report.resetProBridge.whyNow}</p>
+              <p className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-emerald-50/65">
+                This bridge is a product handoff, not a live diagnosis. Reset Pro sample mode can demonstrate the workflow; only the live account can produce account-specific proof.
+              </p>
+            </article>
+
+            <div className="grid min-w-0 gap-4 md:grid-cols-2">
+              <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <h3 className="text-base font-semibold text-white">Live workspace must prove</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-300">
+                  {report.resetProBridge.liveWorkspaceMustProve.map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+
+              <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <h3 className="text-base font-semibold text-white">Private demo may show</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-300">
+                  {report.resetProBridge.privatePreviewShows.map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="min-w-0 space-y-5">
             <BehavioralFingerprint scores={report.scores} />
             <div className="rounded-3xl border border-amber-500/20 bg-amber-500/[0.05] p-5 text-sm leading-7 text-amber-100/90">
               <strong>Not a trade call.</strong> Shibuya describes state. It does not tell traders what instrument to buy, sell, hold, or avoid.
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <section className="rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
               <div className="mb-6 flex items-center gap-3">
                 <UnlockKeyhole className="h-5 w-5 text-emerald-300" />

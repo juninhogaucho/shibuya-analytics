@@ -70,6 +70,14 @@ export interface PrivateInsightGate {
   refusesToClaim: string[]
 }
 
+export interface ResetProBridge {
+  headline: string
+  decisionQuestion: string
+  whyNow: string
+  liveWorkspaceMustProve: string[]
+  privatePreviewShows: string[]
+}
+
 export interface FreeReportPreview {
   reportId: string
   archetype: TraderArchetype
@@ -95,6 +103,7 @@ export interface FreeReportPreview {
     body: string
   }>
   privateInsightGate: PrivateInsightGate
+  resetProBridge: ResetProBridge
   conversionLine: string
 }
 
@@ -704,7 +713,87 @@ export function buildFreeReportPreview(params: {
       },
     ],
     privateInsightGate: buildPrivateInsightGate(archetype.id, dominantAxis.id, recommendedPath),
+    resetProBridge: buildResetProBridge(archetype.id, dominantAxis.id, pressureBand),
     conversionLine: `${recommendedPath.body} Unlock the live workspace when you want uploads, report artifacts, mandate history, and Reset Pro review state to persist.`,
+  }
+}
+
+function buildResetProBridge(
+  archetypeId: StoryArchetypeId,
+  axisId: FingerprintAxisId,
+  pressureBand: BehavioralPressureBand,
+): ResetProBridge {
+  const commonLiveProof = [
+    'First meaningful upload normalized by the live backend.',
+    'A visible next-session mandate tied to behavior rather than market direction.',
+    'Append-proof after the next session so improvement or relapse can be measured.',
+  ]
+  const commonPreview = [
+    'Sample mandate and pressure map.',
+    'Founder talk track for the private workspace.',
+    'The exact boundary between demo structure and live account evidence.',
+  ]
+
+  if (archetypeId === 'priya' || axisId === 'drawdown_pressure') {
+    return {
+      headline: 'Reset Pro should decide whether pressure changes the account before the breach.',
+      decisionQuestion: 'Does the trader become a different operator near the drawdown line?',
+      whyNow: `${pressureBand.label} means the next product step should test pressure behavior, not add another generic chart.`,
+      liveWorkspaceMustProve: [
+        ...commonLiveProof,
+        'Whether size, exit timing, or re-entry changes when rulebook pressure rises.',
+      ],
+      privatePreviewShows: [
+        ...commonPreview,
+        'How a prop-style drawdown warning becomes a pre-session operating constraint.',
+      ],
+    }
+  }
+
+  if (archetypeId === 'marco' || axisId === 'edge_decay') {
+    return {
+      headline: 'Reset Pro should separate real edge decay from normal variance.',
+      decisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
+      whyNow: `${pressureBand.label} means the private layer has to compare repeated windows before calling a setup decayed.`,
+      liveWorkspaceMustProve: [
+        ...commonLiveProof,
+        'Enough repeated setup history to mark stable, watchlist, or decayed behavior.',
+      ],
+      privatePreviewShows: [
+        ...commonPreview,
+        'How the edge portfolio turns a vague feeling into a watchlist decision.',
+      ],
+    }
+  }
+
+  if (axisId === 'revenge_reentry' || axisId === 'size_escalation' || axisId === 'tilt_susceptibility') {
+    return {
+      headline: 'Reset Pro should catch the moment one loss becomes a second decision.',
+      decisionQuestion: 'What state turns the next order into emotional recovery instead of planned risk?',
+      whyNow: `${pressureBand.label} means the live workspace must prioritize session control before more performance narration.`,
+      liveWorkspaceMustProve: [
+        ...commonLiveProof,
+        'The post-loss sequence where timing, frequency, or size stops matching the plan.',
+      ],
+      privatePreviewShows: [
+        ...commonPreview,
+        'How the warning appears before the trader has already paid for the relapse.',
+      ],
+    }
+  }
+
+  return {
+    headline: 'Reset Pro should turn recognition into a repeatable operating loop.',
+    decisionQuestion: 'Which behavior deserves the first constraint before the next real session?',
+    whyNow: `${pressureBand.label} means the next step is evidence continuity, not a heavier public report.`,
+    liveWorkspaceMustProve: [
+      ...commonLiveProof,
+      'Whether the detected leak stays visible across more than one upload window.',
+    ],
+    privatePreviewShows: [
+      ...commonPreview,
+      'How a simple baseline becomes mandate, review, and append-proof flow.',
+    ],
   }
 }
 

@@ -81,6 +81,14 @@ describe('story experience signal model', () => {
       'A next-session mandate linked to the detected state, not to a buy/sell recommendation.',
     )
     expect(report.privateInsightGate.refusesToClaim).toContain('No guaranteed profit uplift.')
+    expect(report.resetProBridge.headline).toContain('edge decay')
+    expect(report.resetProBridge.decisionQuestion).toContain('setup')
+    expect(report.resetProBridge.liveWorkspaceMustProve).toContain(
+      'Enough repeated setup history to mark stable, watchlist, or decayed behavior.',
+    )
+    expect(report.resetProBridge.privatePreviewShows).toContain(
+      'The exact boundary between demo structure and live account evidence.',
+    )
     expect(report.conversionLine).toContain('live workspace')
   })
 
@@ -102,6 +110,8 @@ describe('story experience signal model', () => {
     expect(report.storyHandoff.selectedPainAxes.map((axis) => axis.id)).toEqual(['drawdown_pressure', 'revenge_reentry'])
     expect(report.scores.find((axis) => axis.id === 'revenge_reentry')?.score).toBeGreaterThan(60)
     expect(report.storyHandoff.boundary).toContain('website-level handoff')
+    expect(report.resetProBridge.headline).toContain('pressure changes the account')
+    expect(report.resetProBridge.decisionQuestion).toContain('drawdown line')
   })
 
   test('builds module-specific locked insight previews', () => {

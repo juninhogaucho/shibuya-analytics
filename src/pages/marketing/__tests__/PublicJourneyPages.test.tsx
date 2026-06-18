@@ -72,6 +72,13 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Guided StoryExperience signal: 1 scene viewed; public pain axes: Drawdown Pressure/i)).toBeInTheDocument()
     expect(screen.getByText(/This is a website-level handoff/i)).toBeInTheDocument()
     expect(screen.getByText(/Live workspace evidence must still prove the pattern/i)).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
+    expect(screen.getByText('What the private workspace must decide next.')).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro should decide whether pressure changes the account before the breach/i)).toBeInTheDocument()
+    expect(screen.getByText(/Does the trader become a different operator near the drawdown line/i)).toBeInTheDocument()
+    expect(screen.getByText('Live workspace must prove')).toBeInTheDocument()
+    expect(screen.getByText('Private demo may show')).toBeInTheDocument()
+    expect(screen.getByText(/This bridge is a product handoff, not a live diagnosis/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
 
@@ -132,6 +139,8 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/No production upload or account-specific analysis is claimed/i)).toBeInTheDocument()
     expect(screen.getByText('Prediction survival check')).toBeInTheDocument()
     expect(screen.getByText(/Direct report route. No guided StoryExperience packet was attached/i)).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
+    expect(screen.getByText(/What the private workspace must decide next/i)).toBeInTheDocument()
   })
 
   test('global upload route keeps story and pricing navigation in the global market', () => {
@@ -158,6 +167,9 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
     expect(screen.getByText('Locked until live workspace')).toBeInTheDocument()
+    expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro should separate real edge decay from normal variance/i)).toBeInTheDocument()
+    expect(screen.getByText(/Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
     expect(screen.getByText('Private insight contract')).toBeInTheDocument()
     expect(screen.getByText(/The private layer separates real edge decay from ordinary variance/i)).toBeInTheDocument()
     expect(screen.getByText(/No guaranteed profit uplift/i)).toBeInTheDocument()

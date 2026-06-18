@@ -13,10 +13,15 @@ export default defineConfig({
   server: {
     // Bind to all interfaces
     host: true,
+    // Allow controlled Cloudflare quick-tunnel demos without opening every host.
+    allowedHosts: ['.trycloudflare.com'],
     // Pin a single dev port to avoid conflicts/SSL reuse confusion
     port: 3002,
     // Do not auto-switch ports; fail fast so we know
     strictPort: true,
+  },
+  preview: {
+    allowedHosts: ['.trycloudflare.com'],
   },
   build: {
     // Generate source maps for debugging in production
