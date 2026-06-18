@@ -89,6 +89,7 @@ export default function PrivateDemoPage() {
   )
   const checkoutIntent = readCheckoutIntent(location.search)
   const hasReportHandoff = ['free_report', 'locked_insight'].includes(handoffSource ?? '') || Boolean(handoffReportId)
+  const routeIntegrityReady = hasReportHandoff
   const storedReportSession = getPublicReportSession(handoffReportId)
   const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
@@ -148,6 +149,13 @@ export default function PrivateDemoPage() {
           : 'No public story or report handoff is attached. Use only if you are intentionally opening the workspace cold.'),
     },
     {
+      label: 'Route integrity',
+      value: routeIntegrityReady ? 'Public handoff attached' : 'Blocked: start from story/report',
+      body: routeIntegrityReady
+        ? 'The founder gate can open because this URL carries report, locked insight, or launcher sample context.'
+        : 'Cold private-demo unlocks are disabled. Start from StoryExperience, upload/report, locked insight, or the IFX demo launcher so Reset Pro receives a real question.',
+    },
+    {
       label: 'Locked question',
       value: lockedSection?.title ?? handoffSectionId ?? 'No locked module attached',
       body: hasReportHandoff
@@ -201,8 +209,10 @@ export default function PrivateDemoPage() {
       label: 'Stored after unlock',
       value: hasReportHandoff
         ? 'sample mode, market, report, archetype, dominant axis, locked module, bridge question, public signal markers, private gate checksum'
-        : 'sample mode, market, and direct demo boundary only',
-      body: 'These values seed the Reset Pro preview so the command center can open with the right context.',
+        : 'nothing; cold private-demo unlock is blocked',
+      body: hasReportHandoff
+        ? 'These values seed the Reset Pro preview so the command center can open with the right context.'
+        : 'The private workspace should not open without public story/report context because there is no carried question to test.',
     },
     {
       label: 'Not stored or proven',
@@ -250,6 +260,12 @@ export default function PrivateDemoPage() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
+
+    if (!routeIntegrityReady) {
+      setError('Open the private demo from StoryExperience, upload/report, locked insight, or the IFX demo launcher so the workspace receives a carried question.')
+      return
+    }
+
     const result = verifyPrivateDemoCode(code)
 
     if (!result.ok) {
@@ -356,6 +372,35 @@ export default function PrivateDemoPage() {
               Preflight approval does not create live proof. It only prevents the presenter from overstating what this sample route proves.
             </p>
           </div>
+
+          {!routeIntegrityReady ? (
+            <div className="mb-6 rounded-3xl border border-rose-300/25 bg-rose-300/[0.08] p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-200">
+                Route integrity blocked
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-white">
+                Private Reset Pro requires a carried public question.
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-rose-50/75">
+                Direct cold unlock is intentionally disabled. The correct product order is public StoryExperience,
+                upload/report, locked private insight, then founder-gated Reset Pro sample workspace.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Link
+                  to={addMarketToPath('/story', market)}
+                  className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+                >
+                  Open StoryExperience
+                </Link>
+                <Link
+                  to={addMarketToPath('/demo', market)}
+                  className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+                >
+                  Open IFX Demo Launcher
+                </Link>
+              </div>
+            </div>
+          ) : null}
 
           <div className="mb-6 rounded-3xl border border-violet-300/20 bg-violet-300/[0.06] p-5">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-200">

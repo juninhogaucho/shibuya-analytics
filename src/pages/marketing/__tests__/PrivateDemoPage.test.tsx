@@ -39,6 +39,13 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Private demo preflight')).toBeInTheDocument()
     expect(screen.getByText('Check the handoff before unlocking the workspace.')).toBeInTheDocument()
     expect(screen.getByText('Direct private-demo entry')).toBeInTheDocument()
+    expect(screen.getByText('Route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Blocked: start from story/report')).toBeInTheDocument()
+    expect(screen.getByText('Route integrity blocked')).toBeInTheDocument()
+    expect(screen.getByText('Private Reset Pro requires a carried public question.')).toBeInTheDocument()
+    expect(screen.getByText(/Direct cold unlock is intentionally disabled/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Open StoryExperience/i })).toHaveAttribute('href', '/story?market=global')
+    expect(screen.getByRole('link', { name: /Open IFX Demo Launcher/i })).toHaveAttribute('href', '/demo?market=global')
     expect(screen.getByText('Private demo disabled in this build')).toBeInTheDocument()
     expect(screen.getByText('Still missing by design')).toBeInTheDocument()
     expect(screen.getByText(/3-minute path through Mission HQ/i)).toBeInTheDocument()
@@ -60,7 +67,8 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Post-unlock destination')).toBeInTheDocument()
     expect(screen.getAllByText('Mission HQ first').length).toBeGreaterThan(0)
     expect(screen.getByText('Stored after unlock')).toBeInTheDocument()
-    expect(screen.getByText('sample mode, market, and direct demo boundary only')).toBeInTheDocument()
+    expect(screen.getByText('nothing; cold private-demo unlock is blocked')).toBeInTheDocument()
+    expect(screen.getByText(/The private workspace should not open without public story\/report context/i)).toBeInTheDocument()
     expect(screen.getByText('Not stored or proven')).toBeInTheDocument()
     expect(screen.getByText('raw visitor trades, payment proof, live backend artifacts, account-specific conclusions')).toBeInTheDocument()
     expect(screen.getByText('First screen after unlock')).toBeInTheDocument()
@@ -76,9 +84,27 @@ describe('PrivateDemoPage', () => {
     await user.type(screen.getByLabelText(/Demo code/i), 'anything')
     await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
 
-    expect(screen.getByText(/Private demo access is disabled in this build/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open the private demo from StoryExperience, upload\/report, locked insight, or the IFX demo launcher/i)).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+  })
+
+  test('blocks cold private-demo unlock even when a founder code is configured', async () => {
+    const user = userEvent.setup()
+    vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
+
+    renderPrivateDemo()
+
+    expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
+    expect(screen.getByText('Blocked: start from story/report')).toBeInTheDocument()
+
+    await user.click(screen.getByLabelText(/I acknowledge the private demo boundary/i))
+    await user.type(screen.getByLabelText(/Demo code/i), 'founder-only')
+    await user.click(screen.getByRole('button', { name: /Unlock Reset Pro Preview/i }))
+
+    expect(screen.getByText(/Open the private demo from StoryExperience, upload\/report, locked insight, or the IFX demo launcher/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
   })
 
   test('unlocks reset pro sample preview only with the configured private code', async () => {
@@ -106,6 +132,7 @@ describe('PrivateDemoPage', () => {
     expect(screen.getByText('Do not claim live activation, backend normalization, or account-specific improvement.')).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(1)
     expect(screen.getByText('Private demo code configured')).toBeInTheDocument()
+    expect(screen.getByText('Public handoff attached')).toBeInTheDocument()
     expect(screen.getByText('Operator runbook after unlock')).toBeInTheDocument()
     expect(screen.getAllByText(/free-report-123/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
