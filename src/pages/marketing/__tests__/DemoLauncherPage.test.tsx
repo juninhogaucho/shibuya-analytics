@@ -31,7 +31,7 @@ describe('DemoLauncherPage', () => {
     expect(screen.getByRole('link', { name: /Open Story/i })).toHaveAttribute('href', '/story?market=global')
     expect(screen.getByRole('link', { name: /Open Upload/i })).toHaveAttribute(
       'href',
-      '/upload?archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=global',
+      '/upload?demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=global',
     )
     expect(screen.getByRole('link', { name: /Open Report/i })).toHaveAttribute(
       'href',

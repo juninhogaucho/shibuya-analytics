@@ -5,7 +5,10 @@ import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
+  appendDemoLauncherSamplePacketParam,
+  buildDemoLauncherSampleReportSession,
   buildPublicReportSession,
+  hasDemoLauncherSamplePacketRequest,
   persistPublicReportSession,
   validatePublicReportInput,
 } from '../../lib/publicReportSession'
@@ -30,6 +33,7 @@ export default function PublicUploadPage() {
   const selectedPainAxisIds = (params.get('pain_axes') ?? '').split(',').filter(Boolean)
   const visitedSceneCount = Number(params.get('scene_count') ?? 0)
   const publicStoryHandoff = readPublicStoryHandoff(location.search)
+  const shouldUseDemoLauncherSamplePacket = hasDemoLauncherSamplePacketRequest(location.search)
   const signalMarkers = useMemo(
     () => getPublicStorySignalMarkers(publicStoryHandoff?.signalMarkerIds),
     [publicStoryHandoff?.signalMarkerIds],
@@ -56,15 +60,21 @@ export default function PublicUploadPage() {
     'Requires live backend normalization before any account-specific private claim.',
   ]
 
-  const reportSearchParams = appendPublicStoryHandoffParams(
-    new URLSearchParams({
-      market,
-      archetype: archetype.id,
-      axis: axis.id,
-    }),
-    publicStoryHandoff,
-  )
-  const reportSearch = `?${reportSearchParams.toString()}`
+  const buildReportSearch = (source: 'upload' | 'sample') => {
+    const reportSearchParams = appendDemoLauncherSamplePacketParam(
+      appendPublicStoryHandoffParams(
+        new URLSearchParams({
+          market,
+          archetype: archetype.id,
+          axis: axis.id,
+        }),
+        publicStoryHandoff,
+      ),
+      source === 'sample' && shouldUseDemoLauncherSamplePacket,
+    )
+
+    return `?${reportSearchParams.toString()}`
+  }
 
   const generateReport = (source: 'upload' | 'sample') => {
     const reportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
@@ -79,21 +89,34 @@ export default function PublicUploadPage() {
       return
     }
 
-    persistPublicReportSession(buildPublicReportSession({
-      reportId,
-      market,
-      archetypeId: archetype.id,
-      axisId: axis.id,
-      fileName,
-      pasteBody,
-      source,
-      storySource,
-      selectedPainAxisIds,
-      visitedSceneCount,
-      signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
-    }))
+    persistPublicReportSession(
+      source === 'sample' && shouldUseDemoLauncherSamplePacket
+        ? buildDemoLauncherSampleReportSession({
+            reportId,
+            market,
+            archetypeId: archetype.id,
+            axisId: axis.id,
+            storySource,
+            selectedPainAxisIds,
+            visitedSceneCount,
+            signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+          })
+        : buildPublicReportSession({
+            reportId,
+            market,
+            archetypeId: archetype.id,
+            axisId: axis.id,
+            fileName,
+            pasteBody,
+            source,
+            storySource,
+            selectedPainAxisIds,
+            visitedSceneCount,
+            signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+          }),
+    )
 
-    navigate(`/report/${reportId}${reportSearch}`)
+    navigate(`/report/${reportId}${buildReportSearch(source)}`)
   }
 
   const handleSubmit = (event: FormEvent) => {
@@ -200,6 +223,7 @@ export default function PublicUploadPage() {
                 </button>
                 <p className="mt-3 text-xs leading-5 text-indigo-50/60">
                   Use this for a fast expo handoff. It creates a local sample packet and carries the exact story context into the free report.
+                  {shouldUseDemoLauncherSamplePacket ? ' This route is marked as a controlled launcher sample, not visitor evidence.' : ''}
                 </p>
               </div>
             ) : null}

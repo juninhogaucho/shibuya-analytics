@@ -21,6 +21,7 @@ export const IFX_DEMO_STORY_SCENE_IDS = [
 
 export function buildIfxGuidedDemoParams(): URLSearchParams {
   return new URLSearchParams({
+    [DEMO_LAUNCHER_SAMPLE_PACKET_PARAM]: DEMO_LAUNCHER_SAMPLE_PACKET_VALUE,
     archetype: IFX_DEMO_ARCHETYPE_ID,
     axis: IFX_DEMO_AXIS_ID,
     story: 'guided',

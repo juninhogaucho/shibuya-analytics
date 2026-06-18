@@ -45,7 +45,7 @@ describe('StoryExperience', () => {
     expect(screen.getByText(/URL-only fallback context unless the upload page generates the local sample packet/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Open Upload/i })).toHaveAttribute(
       'href',
-      '/upload?archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
+      '/upload?demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&market=india',
     )
     expect(screen.getByRole('link', { name: /Open Report/i })).toHaveAttribute(
       'href',
@@ -106,6 +106,7 @@ describe('StoryExperience', () => {
     await user.click(screen.getByRole('button', { name: /Use Guided Demo Path/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
     expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
@@ -141,6 +142,7 @@ describe('StoryExperience', () => {
     await user.click(screen.getByRole('button', { name: /Finish To Sample Upload/i }))
 
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=marco')
     expect(screen.getByTestId('location')).toHaveTextContent('axis=edge_decay')
     expect(screen.getByTestId('location')).toHaveTextContent('story=guided')

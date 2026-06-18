@@ -180,6 +180,39 @@ describe('public Shibuya journey pages', () => {
     )
   })
 
+  test('controlled launcher upload creates an explicit demo launcher sample report packet', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,pain_axis_selected,scene_depth_light,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(/This route is marked as a controlled launcher sample/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Generate Guided Sample Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
+    expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
+    expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
+    expect(screen.getByText('Demo launcher initialized this sample packet from an explicit shared-link flag.')).toBeInTheDocument()
+    expect(screen.getByText('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')).toBeInTheDocument()
+    expect(screen.getByText(/Guided StoryExperience signal: 6 scenes viewed; public pain axes: Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=sample-behavioral-leak-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cpain_axis_selected%2Cscene_depth_light%2Cupload_intent&demo_packet=launcher_sample&market=global',
+    )
+
+    await waitFor(() => {
+      expect(getPublicReportSession('sample-behavioral-leak-report')?.evidenceLabel).toBe('Demo launcher sample packet')
+    })
+  })
+
   test('upload paste validation rejects prose and accepts a trade table', async () => {
     const user = userEvent.setup()
 
