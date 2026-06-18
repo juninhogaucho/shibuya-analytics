@@ -1,5 +1,9 @@
 import type { Market } from './market'
-import type { FingerprintAxisId, StoryArchetypeId } from './storyExperience'
+import {
+  getFingerprintAxis,
+  type FingerprintAxisId,
+  type StoryArchetypeId,
+} from './storyExperience'
 
 export const PUBLIC_REPORT_SESSION_STORAGE_KEY = 'shibuya_public_report_sessions_v1'
 
@@ -13,6 +17,9 @@ export interface PublicReportValidationInput {
   fileName?: string
   pasteBody?: string
   source: 'upload' | 'sample'
+  storySource?: string | null
+  selectedPainAxisIds?: string[]
+  visitedSceneCount?: number
 }
 
 export interface PublicReportSession {
@@ -26,6 +33,9 @@ export interface PublicReportSession {
   validationSummary: string
   validationFacts: string[]
   boundary: string
+  storySource?: 'guided' | 'direct'
+  selectedPainAxisIds: FingerprintAxisId[]
+  visitedSceneCount: number
 }
 
 interface PublicReportSessionStore {
@@ -59,10 +69,44 @@ function getSource(params: Pick<PublicReportValidationInput, 'fileName' | 'paste
   return 'paste'
 }
 
+function normalizeVisitedSceneCount(value?: number): number {
+  if (!Number.isFinite(value) || !value) {
+    return 0
+  }
+
+  return Math.max(0, Math.min(15, Math.floor(value)))
+}
+
+function normalizePainAxes(axisIds?: string[]): FingerprintAxisId[] {
+  const seen = new Set<FingerprintAxisId>()
+
+  for (const axisId of axisIds ?? []) {
+    const axis = getFingerprintAxis(axisId)
+    if (axis.id === axisId && !seen.has(axis.id)) {
+      seen.add(axis.id)
+    }
+  }
+
+  return [...seen]
+}
+
 export function buildPublicReportSession(params: PublicReportValidationInput): PublicReportSession {
   const pasteLength = params.pasteBody?.trim().length ?? 0
   const source = getSource(params)
   const extension = params.fileName ? getFileExtension(params.fileName) : null
+  const storySource = params.storySource === 'guided' ? 'guided' : 'direct'
+  const selectedPainAxisIds = normalizePainAxes(params.selectedPainAxisIds)
+  const visitedSceneCount = normalizeVisitedSceneCount(params.visitedSceneCount)
+  const storyFacts =
+    storySource === 'guided'
+      ? [
+          'Public story handoff: guided StoryExperience route.',
+          `Story scenes viewed before upload: ${visitedSceneCount}.`,
+          selectedPainAxisIds.length > 0
+            ? `Selected public pain axes: ${selectedPainAxisIds.map((axisId) => getFingerprintAxis(axisId).label).join(', ')}.`
+            : 'Selected public pain axes: none captured.',
+        ]
+      : ['Public story handoff: direct upload route.']
   const evidenceLabel =
     source === 'sample'
       ? 'Sample history packet'
@@ -75,11 +119,13 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const validationFacts =
     source === 'sample'
       ? [
+          ...storyFacts,
           'Sample packet selected for expo/demo flow.',
           'No production upload or account-specific analysis is claimed.',
           'The free report remains a public preview until live activation.',
         ]
       : [
+          ...storyFacts,
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
           'Raw file contents and pasted trade rows are not stored by this public preview.',
@@ -99,6 +145,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         : 'Public preview validation passed. The full production report still requires backend normalization and generated artifacts.',
     validationFacts,
     boundary: 'This packet is stored locally in the browser and contains no raw trade rows. It is not a production report artifact.',
+    storySource,
+    selectedPainAxisIds,
+    visitedSceneCount,
   }
 }
 

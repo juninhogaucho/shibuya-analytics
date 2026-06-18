@@ -23,6 +23,9 @@ export default function PublicUploadPage() {
   const params = new URLSearchParams(location.search)
   const initialArchetype = getTraderArchetype(params.get('archetype'))
   const initialAxis = getFingerprintAxis(params.get('axis'))
+  const storySource = params.get('story')
+  const selectedPainAxisIds = (params.get('pain_axes') ?? '').split(',').filter(Boolean)
+  const visitedSceneCount = Number(params.get('scene_count') ?? 0)
   const [archetypeId, setArchetypeId] = useState<StoryArchetypeId>(initialArchetype.id)
   const [axisId, setAxisId] = useState<FingerprintAxisId>(initialAxis.id)
   const [fileName, setFileName] = useState('')
@@ -55,6 +58,9 @@ export default function PublicUploadPage() {
       fileName,
       pasteBody,
       source,
+      storySource,
+      selectedPainAxisIds,
+      visitedSceneCount,
     }))
 
     navigate(`/report/${reportId}${reportSearch}`)

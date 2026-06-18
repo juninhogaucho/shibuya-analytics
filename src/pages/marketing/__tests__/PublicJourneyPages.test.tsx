@@ -44,11 +44,15 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
     expect(screen.getByTestId('location')).toHaveTextContent('archetype=priya')
     expect(screen.getByTestId('location')).toHaveTextContent('axis=drawdown_pressure')
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
     expect(screen.getByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText('Public story handoff: guided StoryExperience route.')).toBeInTheDocument()
+    expect(screen.getByText('Selected public pain axes: Drawdown Pressure.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: /Private Demo Access/i }))
 
@@ -96,11 +100,10 @@ describe('public Shibuya journey pages', () => {
 
     await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent(
-      '/report/sample-behavioral-leak-report?market=india&archetype=priya&axis=drawdown_pressure',
-    )
+    expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report?market=india&archetype=priya&axis=drawdown_pressure')
     expect(screen.getByText('Public report packet')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText('Public story handoff: direct upload route.')).toBeInTheDocument()
     expect(screen.getByText(/No production upload or account-specific analysis is claimed/i)).toBeInTheDocument()
   })
 

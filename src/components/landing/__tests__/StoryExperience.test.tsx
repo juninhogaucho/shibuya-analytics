@@ -6,7 +6,7 @@ import StoryExperience from '../StoryExperience'
 
 function LocationProbe() {
   const location = useLocation()
-  return <div data-testid="location">{location.pathname}</div>
+  return <div data-testid="location">{`${location.pathname}${location.search}`}</div>
 }
 
 describe('StoryExperience', () => {
@@ -33,5 +33,8 @@ describe('StoryExperience', () => {
 
     await user.click(screen.getByRole('button', { name: /Continue To Upload/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')
+    expect(screen.getByTestId('location')).toHaveTextContent('story=guided')
+    expect(screen.getByTestId('location')).toHaveTextContent('scene_count=1')
+    expect(screen.getByTestId('location')).toHaveTextContent('pain_axes=drawdown_pressure')
   })
 })

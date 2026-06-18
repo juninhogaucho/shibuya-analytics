@@ -62,9 +62,21 @@ export default function StoryExperience() {
   }
 
   const inspectUploadFlow = () => {
-    setSignal((current) => recordUploadIntent(current))
-    const archetypeId = signal.archetypeId ?? 'john'
-    navigate(addMarketToPath(`/upload?archetype=${archetypeId}&axis=${dominantAxis.id}`, market))
+    const nextSignal = recordUploadIntent(signal)
+    const archetypeId = nextSignal.archetypeId ?? 'john'
+    const uploadParams = new URLSearchParams({
+      archetype: archetypeId,
+      axis: dominantAxis.id,
+      story: 'guided',
+      scene_count: String(nextSignal.visitedSceneIds.length),
+    })
+
+    if (nextSignal.selectedPainAxes.length > 0) {
+      uploadParams.set('pain_axes', nextSignal.selectedPainAxes.join(','))
+    }
+
+    setSignal(nextSignal)
+    navigate(addMarketToPath(`/upload?${uploadParams.toString()}`, market))
   }
 
   return (
