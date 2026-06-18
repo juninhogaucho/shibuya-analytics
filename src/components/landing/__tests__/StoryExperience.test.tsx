@@ -22,6 +22,11 @@ describe('StoryExperience', () => {
 
     expect(screen.getAllByText('You do not have a strategy problem. You have a state problem.')).not.toHaveLength(0)
     expect(screen.getByText(/This is not your report\. It is a website-level prediction based on interaction/i)).toBeInTheDocument()
+    expect(screen.getByText('Evidence contract')).toBeInTheDocument()
+    expect(screen.getByText('Story first. Evidence second.')).toBeInTheDocument()
+    expect(screen.getByText('Public signal only')).toBeInTheDocument()
+    expect(screen.getByText('Upload must prove it')).toBeInTheDocument()
+    expect(screen.getByText('Private demo boundary')).toBeInTheDocument()
     expect(screen.getByText('3-minute demo path')).toBeInTheDocument()
     expect(screen.getByText('Public story predicts a provisional fingerprint.')).toBeInTheDocument()
     expect(screen.getByText('Locked insight explains what live evidence must prove.')).toBeInTheDocument()
@@ -30,6 +35,9 @@ describe('StoryExperience', () => {
     await user.click(screen.getByRole('button', { name: /Priya/i }))
     await user.click(screen.getByRole('button', { name: 'Drawdown Pressure' }))
     expect(screen.getByText('Predicted dominant axis')).toBeInTheDocument()
+    expect(screen.getByText(/Current hypothesis: Priya \/ Prop evaluation survivor with Drawdown Pressure/i)).toBeInTheDocument()
+    expect(screen.getByText(/Trade history has to confirm or reject Drawdown Pressure/i)).toBeInTheDocument()
+    expect(screen.getByText(/Reset Pro preview can show the operating loop with sample data only/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Continue To Upload/i }))
     expect(screen.getByTestId('location')).toHaveTextContent('/upload')

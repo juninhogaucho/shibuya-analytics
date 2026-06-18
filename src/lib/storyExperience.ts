@@ -327,7 +327,7 @@ export const STORY_SCENES: StoryScene[] = [
     id: 'archetypes',
     label: 'Scene 04',
     title: 'Which trader feels uncomfortably close?',
-    body: 'The first useful moment is not “features.” It is recognition. The trader should see a mirror: the beginner who escalates, the prop trader near limits, or the profitable trader whose edge is quietly decaying.',
+    body: 'The first useful moment is not "features." It is recognition. The trader should see a mirror: the beginner who escalates, the prop trader near limits, or the profitable trader whose edge is quietly decaying.',
     proof: 'A selected mirror becomes a provisional hypothesis. It is not proof until trade history challenges it.',
     visualCue: 'Pick the mirror that stings.',
   },
@@ -352,7 +352,7 @@ export const STORY_SCENES: StoryScene[] = [
     label: 'Scene 07',
     title: 'Shibuya does not tell you what to trade.',
     body: 'The moat is not another AI signal feed. Shibuya is a trader operating mirror: it tells you when your decision state is contaminated, not whether EURUSD should go up or down.',
-    proof: 'Bad: “take this trade.” Good: “your late-session revenge pattern is active; no add-ons until reset criteria are met.”',
+    proof: 'Bad: "take this trade." Good: "your late-session revenge pattern is active; no add-ons until reset criteria are met."',
     visualCue: 'Protect the decision, not the prediction.',
   },
   {

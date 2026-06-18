@@ -38,6 +38,20 @@ export default function StoryExperience() {
     .map((axisId) => FINGERPRINT_AXES.find((axis) => axis.id === axisId))
     .filter((axis): axis is (typeof FINGERPRINT_AXES)[number] => Boolean(axis))
     .map((axis) => axis.label)
+  const evidenceContractRows = [
+    {
+      label: 'Public signal only',
+      body: `Current hypothesis: ${selectedArchetype ? `${selectedArchetype.name} / ${selectedArchetype.title}` : 'no mirror selected yet'} with ${dominantAxis.label} as the leading axis. This is routing context, not account evidence.`,
+    },
+    {
+      label: 'Upload must prove it',
+      body: `Trade history has to confirm or reject ${dominantAxis.label} before Shibuya treats the pattern as account-specific truth.`,
+    },
+    {
+      label: 'Private demo boundary',
+      body: 'Reset Pro preview can show the operating loop with sample data only. Live persistence requires activation, upload, and generated artifacts.',
+    },
+  ]
 
   const presenterSteps = [
     {
@@ -338,6 +352,18 @@ export default function StoryExperience() {
                 </div>
                 <h4 className="mt-3 text-lg font-semibold text-indigo-100">{pressureBand.label}</h4>
                 <p className="mt-3 text-sm leading-relaxed text-neutral-400">{pressureBand.description}</p>
+              </div>
+              <div className="rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Evidence contract</p>
+                <h4 className="mt-2 text-lg font-semibold text-white">Story first. Evidence second.</h4>
+                <div className="mt-4 grid gap-3">
+                  {evidenceContractRows.map((row) => (
+                    <div key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-3">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100">{row.label}</p>
+                      <p className="mt-2 text-xs leading-relaxed text-neutral-300">{row.body}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="rounded-3xl border border-indigo-300/20 bg-indigo-300/[0.06] p-5">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">3-minute demo path</p>

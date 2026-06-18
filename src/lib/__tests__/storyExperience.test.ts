@@ -11,10 +11,17 @@ import {
   recordSceneView,
   recordUploadIntent,
   selectArchetype,
+  STORY_SCENES,
   togglePainAxis,
 } from '../storyExperience'
 
 describe('story experience signal model', () => {
+  test('keeps public story scene copy ASCII-safe for demo surfaces and logs', () => {
+    for (const scene of STORY_SCENES) {
+      expect(`${scene.title}${scene.body}${scene.proof}${scene.visualCue}`).toMatch(/^[\x00-\x7F]*$/)
+    }
+  })
+
   test('starts as a provisional neutral fingerprint', () => {
     const fingerprint = buildPredictedFingerprint(createInitialStorySignal())
 
