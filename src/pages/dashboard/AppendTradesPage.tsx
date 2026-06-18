@@ -272,6 +272,19 @@ export function AppendTradesPage() {
     setNotes([])
   }
 
+  const loadResetProSampleAppend = () => {
+    setPaste(SAMPLE_PLACEHOLDER)
+    setError(null)
+    setSuccess(null)
+    setParsedPreview(null)
+    setNotes([
+      'Reset Pro sample append packet loaded. Parse it to demonstrate the proof exit without claiming live persistence.',
+      sessionMeta?.demoBridgeDecisionQuestion
+        ? `Question being preserved: ${sessionMeta.demoBridgeDecisionQuestion}`
+        : 'No carried private question was attached to this sample append.',
+    ])
+  }
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (readOnlyAccess) {
       setError('This reset window is now read only. Start a new package or live tier to upload fresh trades.')
@@ -424,6 +437,26 @@ export function AppendTradesPage() {
             </article>
           ))}
         </div>
+        {resetProPreview ? (
+          <div
+            className="glass-panel"
+            style={{
+              marginTop: '1rem',
+              borderColor: 'rgba(125,211,252,0.22)',
+              background: 'rgba(14,165,233,0.07)',
+            }}
+          >
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO SAMPLE APPEND PACKET</p>
+            <h4 style={{ marginBottom: '0.5rem' }}>Load the closing sample in one click.</h4>
+            <p className="text-muted" style={{ marginBottom: '1rem' }}>
+              This fills the paste parser with a tiny trade block so the presenter can show parse, confirm, and append receipt.
+              It is still sample workflow proof only.
+            </p>
+            <button className="btn btn-sm btn-secondary" type="button" onClick={loadResetProSampleAppend}>
+              Load Reset Pro Sample Trades
+            </button>
+          </div>
+        ) : null}
       </section>
 
       {readOnlyAccess && (

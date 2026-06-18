@@ -98,10 +98,18 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('This is the demo endpoint, not live evidence.')).toBeInTheDocument()
     expect(screen.getByText('Sample only')).toBeInTheDocument()
     expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()
+    expect(screen.getByText('RESET PRO SAMPLE APPEND PACKET')).toBeInTheDocument()
+    expect(screen.getByText('Load the closing sample in one click.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Load Reset Pro Sample Trades/i })).toBeInTheDocument()
 
-    fireEvent.change(screen.getByLabelText('Trades'), {
-      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
-    })
+    await user.click(screen.getByRole('button', { name: /Load Reset Pro Sample Trades/i }))
+
+    expect(screen.getByLabelText('Trades')).toHaveValue(
+      '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20\n2024-01-15 11:45 BANKNIFTY24JAN48200PE SELL 1 210.00 184.35',
+    )
+    expect(screen.getByText(/Reset Pro sample append packet loaded/i)).toBeInTheDocument()
+    expect(screen.getByText(/Question being preserved: Is the trader defending a setup that no longer deserves the same risk/i)).toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
 
     expect(await screen.findByText('Sample workspace can preview the parser, but it will not write trades to a permanent account.')).toBeInTheDocument()
