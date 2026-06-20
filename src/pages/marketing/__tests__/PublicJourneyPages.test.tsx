@@ -14,10 +14,12 @@ import PublicUploadPage from '../PublicUploadPage'
 
 const publicReportMocks = vi.hoisted(() => ({
   generatePublicTeaserReport: vi.fn(),
+  getPublicTeaserReport: vi.fn(),
 }))
 
 vi.mock('../../../lib/api/publicReport', () => ({
   generatePublicTeaserReport: publicReportMocks.generatePublicTeaserReport,
+  getPublicTeaserReport: publicReportMocks.getPublicTeaserReport,
 }))
 
 function LocationProbe() {
@@ -28,6 +30,7 @@ function LocationProbe() {
 afterEach(() => {
   window.localStorage.clear()
   publicReportMocks.generatePublicTeaserReport.mockReset()
+  publicReportMocks.getPublicTeaserReport.mockReset()
   vi.unstubAllEnvs()
 })
 
@@ -746,6 +749,67 @@ describe('public Shibuya journey pages', () => {
     )
   })
 
+  test('free report recovers a persisted backend teaser receipt without local browser session state', async () => {
+    publicReportMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-share-123',
+      request_id: 'TEASER-share-123',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'c'.repeat(64),
+      trades_analyzed: 10,
+      headline: {
+        total_pnl: 310,
+        discipline_tax: 95,
+        win_rate: 60,
+        worst_pattern: 'Revenge Trading',
+        hook: '$95 discipline tax recovered from the persisted teaser.',
+      },
+      processing_time_seconds: 0.31,
+      created_at: '2026-06-20T22:00:00Z',
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/report/public-teaser-share-123?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(publicReportMocks.getPublicTeaserReport).toHaveBeenCalledWith('public-teaser-share-123')
+      expect(screen.getAllByText('Persisted backend teaser receipt').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getAllByText('Backend teaser persisted').length).toBeGreaterThan(0)
+    expect(screen.getByText('Backend teaser recovered: report public-teaser-share-123; request TEASER-share-123; 10 trades analyzed.')).toBeInTheDocument()
+    expect(screen.getByText(`Backend teaser receipt hash: ${'c'.repeat(64)}.`)).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser hook: $95 discipline tax recovered from the persisted teaser.')).toBeInTheDocument()
+    expect(screen.getByText(/Recovered from Medallion by report id\/request id/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Backend teaser receipt recovered from Medallion/i).length).toBeGreaterThan(0)
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=public-teaser-share-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+
+    expect(getPublicReportSession('public-teaser-share-123')).toMatchObject({
+      reportId: 'public-teaser-share-123',
+      source: 'backend_teaser',
+      evidenceLabel: 'Persisted backend teaser receipt',
+      artifactStatus: 'backend_teaser_persisted',
+      productionArtifactProven: false,
+      backendTeaser: {
+        reportId: 'public-teaser-share-123',
+        requestId: 'TEASER-share-123',
+        receiptHash: 'c'.repeat(64),
+        tradesAnalyzed: 10,
+      },
+    })
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
+  })
+
   test('demo launcher report link seeds an explicit sample packet without claiming live upload', async () => {
     render(
       <MemoryRouter initialEntries={['/report/sample-behavioral-leak-report?market=global&demo_packet=launcher_sample&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
@@ -877,6 +941,56 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
     )
+  })
+
+  test('locked insight recovers persisted backend teaser evidence before private handoff', async () => {
+    publicReportMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-lock-123',
+      request_id: 'TEASER-lock-123',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'd'.repeat(64),
+      trades_analyzed: 12,
+      headline: {
+        discipline_tax: 125,
+        worst_pattern: 'Tilt Spirals',
+        hook: '$125 discipline tax recovered before private handoff.',
+      },
+      processing_time_seconds: 0.28,
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/insight/highest-cost-state?market=global&source=locked_report&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(publicReportMocks.getPublicTeaserReport).toHaveBeenCalledWith('public-teaser-lock-123')
+      expect(screen.getAllByText('Persisted backend teaser receipt').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getAllByText(/Backend teaser receipt recovered from Medallion/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/persisted backend teaser receipt and secret-free handoff metadata/i)).toBeInTheDocument()
+    expect(screen.getByText('Evidence status: Persisted backend teaser receipt.')).toBeInTheDocument()
+    expect(screen.getByText(/source=locked_insight; report=public-teaser-lock-123; section=highest-cost-state/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+    expect(getPublicReportSession('public-teaser-lock-123')).toMatchObject({
+      source: 'backend_teaser',
+      artifactStatus: 'backend_teaser_persisted',
+      backendTeaser: {
+        requestId: 'TEASER-lock-123',
+        tradesAnalyzed: 12,
+        worstPattern: 'Tilt Spirals',
+      },
+    })
   })
 
   test('demo launcher locked insight link seeds the same sample packet before private demo', async () => {

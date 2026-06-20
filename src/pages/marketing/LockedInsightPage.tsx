@@ -7,11 +7,11 @@ import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../li
 import {
   appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
-  getPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
+import { usePublicReportSessionRecovery } from '../../lib/publicReportRecovery'
 import {
   buildPublicReportEngagementRows,
   getPublicReportEngagement,
@@ -92,18 +92,31 @@ export default function LockedInsightPage() {
   const market = resolveMarket(location.pathname, location.search)
   const params = new URLSearchParams(location.search)
   const reportId = params.get('report') || 'direct-locked-insight'
-  const storedReportSession = getPublicReportSession(reportId)
+  const archetype = getTraderArchetype(params.get('archetype'))
+  const axis = getFingerprintAxis(params.get('axis'))
+  const currentStoryHandoff = readPublicStoryHandoff(location.search)
+  const reportSessionRecovery = usePublicReportSessionRecovery({
+    reportId,
+    market,
+    archetypeId: archetype.id,
+    axisId: axis.id,
+    storySource: currentStoryHandoff?.storySource ?? params.get('story'),
+    selectedPainAxisIds: currentStoryHandoff?.selectedPainAxisIds,
+    visitedSceneCount: currentStoryHandoff?.visitedSceneCount,
+    signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
+    disabled: hasDemoLauncherSamplePacketRequest(location.search),
+  })
+  const storedReportSession = reportSessionRecovery.session
   const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
-  const currentStoryHandoff = readPublicStoryHandoff(location.search)
   const demoLauncherSession =
     hasStoredReportSession || !hasDemoLauncherSamplePacketRequest(location.search)
       ? null
       : buildDemoLauncherSampleReportSession({
         reportId,
         market,
-        archetypeId: getTraderArchetype(params.get('archetype')).id,
-        axisId: getFingerprintAxis(params.get('axis')).id,
+        archetypeId: archetype.id,
+        axisId: axis.id,
         storySource: currentStoryHandoff?.storySource ?? params.get('story'),
         selectedPainAxisIds: currentStoryHandoff?.selectedPainAxisIds,
         visitedSceneCount: currentStoryHandoff?.visitedSceneCount,
@@ -241,6 +254,20 @@ export default function LockedInsightPage() {
       body: 'Presenter-gated Reset Pro can carry this context into sample workflow only; live activation and upload proof must still answer the question.',
     },
   ] as const
+  const evidenceFallbackLabel =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking backend teaser receipt'
+      : 'Direct-link fallback only'
+  const evidenceFallbackSummary =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking Medallion for a persisted public teaser receipt before treating this locked insight as URL-only context.'
+      : reportSessionRecovery.status === 'failed'
+        ? `Backend teaser recovery failed: ${reportSessionRecovery.error}. This locked insight can preserve the question, but it cannot claim upload proof.`
+        : 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'
+  const evidenceFallbackBoundary =
+    reportSessionRecovery.attemptedBackendRecovery && reportSessionRecovery.status === 'failed'
+      ? 'Medallion recovery failed for this report id/request id. Use the upload page to generate or recover a stronger public report packet before presenting the report-to-private-insight transition.'
+      : 'Use the upload page to generate a stronger public report packet before presenting the report-to-private-insight transition.'
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
@@ -428,10 +455,10 @@ export default function LockedInsightPage() {
                   Evidence status
                 </p>
                 <h2 className="mt-2 text-xl font-semibold text-white">
-                  {reportSession?.evidenceLabel ?? 'Direct-link fallback only'}
+                  {reportSession?.evidenceLabel ?? evidenceFallbackLabel}
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-emerald-50/75">
-                  {reportSession?.validationSummary ?? 'No local upload-step validation packet was found in this browser. This page can explain the lock, but it cannot claim upload proof.'}
+                  {reportSession?.validationSummary ?? evidenceFallbackSummary}
                 </p>
                 {!reportSession && urlStoryHandoff ? (
                   <p className="mt-3 text-xs leading-5 text-amber-100/75">
@@ -441,7 +468,7 @@ export default function LockedInsightPage() {
               </div>
             </div>
             <p className="rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-emerald-50/65">
-              {reportSession?.boundary ?? 'Use the upload page to generate a stronger public report packet before presenting the report-to-private-insight transition.'}
+              {reportSession?.boundary ?? evidenceFallbackBoundary}
             </p>
           </article>
 

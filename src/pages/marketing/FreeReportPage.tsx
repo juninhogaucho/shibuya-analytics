@@ -9,11 +9,11 @@ import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../li
 import {
   appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
-  getPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
+import { usePublicReportSessionRecovery } from '../../lib/publicReportRecovery'
 import {
   buildPublicReportEngagementRows,
   getPublicReportEngagement,
@@ -71,18 +71,31 @@ export default function FreeReportPage() {
   const market = resolveMarket(location.pathname, location.search)
   const params = new URLSearchParams(location.search)
   const reportId = id ?? 'sample-free-report'
-  const storedReportSession = getPublicReportSession(reportId)
+  const archetype = getTraderArchetype(params.get('archetype'))
+  const axis = getFingerprintAxis(params.get('axis'))
+  const currentStoryHandoff = readPublicStoryHandoff(location.search)
+  const reportSessionRecovery = usePublicReportSessionRecovery({
+    reportId,
+    market,
+    archetypeId: archetype.id,
+    axisId: axis.id,
+    storySource: currentStoryHandoff?.storySource ?? params.get('story'),
+    selectedPainAxisIds: currentStoryHandoff?.selectedPainAxisIds,
+    visitedSceneCount: currentStoryHandoff?.visitedSceneCount,
+    signalMarkerIds: currentStoryHandoff?.signalMarkerIds,
+    disabled: hasDemoLauncherSamplePacketRequest(location.search),
+  })
+  const storedReportSession = reportSessionRecovery.session
   const hasStoredReportSession = Boolean(storedReportSession)
   const urlStoryHandoff = readPublicStoryHandoff(location.search)
-  const currentStoryHandoff = readPublicStoryHandoff(location.search)
   const demoLauncherSession =
     hasStoredReportSession || !hasDemoLauncherSamplePacketRequest(location.search)
       ? null
       : buildDemoLauncherSampleReportSession({
         reportId,
         market,
-        archetypeId: getTraderArchetype(params.get('archetype')).id,
-        axisId: getFingerprintAxis(params.get('axis')).id,
+        archetypeId: archetype.id,
+        axisId: axis.id,
         storySource: currentStoryHandoff?.storySource ?? params.get('story'),
         selectedPainAxisIds: currentStoryHandoff?.selectedPainAxisIds,
         visitedSceneCount: currentStoryHandoff?.visitedSceneCount,
@@ -136,6 +149,28 @@ export default function FreeReportPage() {
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
   const reportEngagementRows = buildPublicReportEngagementRows(reportEngagement)
   const reportLiveProofGap = reportSession?.liveProofGap ?? buildLiveProofReadinessContract()
+  const reportPacketFallbackLabel =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking backend teaser receipt'
+      : 'No local upload packet found'
+  const reportPacketFallbackSummary =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking Medallion for a persisted public teaser receipt before falling back to URL context.'
+      : reportSessionRecovery.status === 'failed'
+        ? `Backend teaser recovery failed: ${reportSessionRecovery.error}. This direct report route is URL context only.`
+        : 'This report was opened directly. It can show the public fingerprint preview, but it does not have upload-step validation metadata in this browser.'
+  const reportPacketFallbackFacts =
+    reportSessionRecovery.attemptedBackendRecovery && reportSessionRecovery.status === 'failed'
+      ? [
+          'Medallion public teaser receipt recovery was attempted and failed.',
+          'Story signal came from URL parameters only.',
+          'No raw trade rows, file metadata, or backend receipt is attached in this browser.',
+        ]
+      : [
+          'Story signal came from URL parameters only.',
+          'No raw trade rows, file metadata, or local validation packet is attached.',
+          'Use the upload page to generate a report with a local evidence handoff.',
+        ]
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -186,7 +221,7 @@ export default function FreeReportPage() {
             <div className="mt-6 rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Public report packet</p>
               <h2 className="mt-2 text-xl font-semibold text-white">
-                {reportSession?.evidenceLabel ?? 'No local upload packet found'}
+                {reportSession?.evidenceLabel ?? reportPacketFallbackLabel}
               </h2>
               <div className="mt-4 grid gap-3 text-xs leading-5 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
@@ -207,14 +242,10 @@ export default function FreeReportPage() {
                 </div>
               </div>
               <p className="mt-3 text-sm leading-7 text-emerald-50/80">
-                {reportSession?.validationSummary ?? 'This report was opened directly. It can show the public fingerprint preview, but it does not have upload-step validation metadata in this browser.'}
+                {reportSession?.validationSummary ?? reportPacketFallbackSummary}
               </p>
               <ul className="mt-4 space-y-2 text-sm text-emerald-50/75">
-                {(reportSession?.validationFacts ?? [
-                  'Story signal came from URL parameters only.',
-                  'No raw trade rows, file metadata, or local validation packet is attached.',
-                  'Use the upload page to generate a report with a local evidence handoff.',
-                ]).map((fact) => (
+                {(reportSession?.validationFacts ?? reportPacketFallbackFacts).map((fact) => (
                   <li key={fact} className="flex gap-2">
                     <span className="text-emerald-300">-</span>
                     <span>{fact}</span>

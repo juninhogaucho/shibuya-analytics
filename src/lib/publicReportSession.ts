@@ -14,7 +14,7 @@ export const PUBLIC_REPORT_SESSION_STORAGE_KEY = 'shibuya_public_report_sessions
 export const DEMO_LAUNCHER_SAMPLE_PACKET_PARAM = 'demo_packet'
 export const DEMO_LAUNCHER_SAMPLE_PACKET_VALUE = 'launcher_sample'
 
-export type PublicReportSource = 'file' | 'paste' | 'mixed' | 'sample'
+export type PublicReportSource = 'file' | 'paste' | 'mixed' | 'sample' | 'backend_teaser'
 export type PublicReportArtifactStatus =
   | 'local_preview_only'
   | 'sample_demo_only'
@@ -29,7 +29,7 @@ export interface PublicReportValidationInput {
   fileName?: string
   fileValidationFacts?: string[]
   pasteBody?: string
-  source: 'upload' | 'sample'
+  source: 'upload' | 'sample' | 'backend_teaser'
   storySource?: string | null
   selectedPainAxisIds?: string[]
   visitedSceneCount?: number
@@ -129,6 +129,9 @@ function getFileExtension(fileName: string): string {
 function getSource(params: Pick<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'>): PublicReportSource {
   if (params.source === 'sample') {
     return 'sample'
+  }
+  if (params.source === 'backend_teaser') {
+    return 'backend_teaser'
   }
 
   const hasFile = Boolean(params.fileName)
@@ -273,6 +276,8 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const evidenceLabel =
     source === 'sample'
       ? 'Sample history packet'
+      : source === 'backend_teaser'
+        ? 'Persisted backend teaser receipt'
       : source === 'mixed'
         ? `Local ${extension?.toUpperCase()} file plus pasted sample`
         : source === 'file'
@@ -302,6 +307,21 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
           'No production upload or account-specific analysis is claimed.',
           'The free report remains a public preview until live activation.',
         ]
+      : source === 'backend_teaser'
+        ? [
+            ...storyFacts,
+            backendTeaser
+              ? backendTeaserPersisted && backendTeaser.reportId
+                ? `Backend teaser recovered: report ${backendTeaser.reportId}; request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
+                : `Backend teaser recovered: request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
+              : 'Backend teaser recovery failed; no backend report receipt is attached.',
+            backendTeaserPersisted && backendTeaser?.receiptHash
+              ? `Backend teaser receipt hash: ${backendTeaser.receiptHash}.`
+              : null,
+            backendTeaser?.hook ? `Backend teaser hook: ${backendTeaser.hook}` : null,
+            'Recovered from Medallion by report id/request id; no raw trade rows or local file metadata are stored in this browser packet.',
+            'Private conclusions still require activation, live upload, generated artifacts, and append history.',
+          ].filter((fact): fact is string => Boolean(fact))
       : [
           ...storyFacts,
           backendTeaser
@@ -337,7 +357,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
       source === 'sample'
         ? 'Demo packet accepted. This proves the public journey transition, not live analytics.'
         : backendTeaser
-          ? backendTeaserPersisted
+          ? source === 'backend_teaser'
+            ? 'Backend teaser receipt recovered from Medallion. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
+            : backendTeaserPersisted
             ? 'Backend teaser receipt persisted. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
             : 'Backend teaser report generated. This proves public report processing, while private conclusions still require activation, live upload, and append history.'
           : 'Public preview validation passed. The full production report still requires backend normalization and generated artifacts.',
@@ -419,6 +441,9 @@ export function validatePublicReportInput(
   params: Pick<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'> & PublicReportInputValidationState,
 ): string | null {
   if (params.source === 'sample') {
+    return null
+  }
+  if (params.source === 'backend_teaser') {
     return null
   }
 

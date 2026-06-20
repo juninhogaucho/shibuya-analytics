@@ -31,3 +31,10 @@ export async function generatePublicTeaserReport(file: File): Promise<PublicTeas
   const { data } = await http.post<PublicTeaserReportResponse>('/v1/shibuya/teaser-report', formData)
   return data
 }
+
+export async function getPublicTeaserReport(reportIdOrRequestId: string): Promise<PublicTeaserReportResponse> {
+  const { data } = await http.get<PublicTeaserReportResponse>(
+    `/v1/shibuya/teaser-report/${encodeURIComponent(reportIdOrRequestId)}`,
+  )
+  return data
+}
