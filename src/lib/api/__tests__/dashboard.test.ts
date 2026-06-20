@@ -241,10 +241,16 @@ describe('dashboard API boundary', () => {
       activationVisitedSceneCount: 6,
       activationSignalMarkerIds: ['mirror_selected'],
       activationLockedSectionId: 'edge-decay-map',
+      activationLockedSectionTitle: 'Edge decay map',
+      activationBridgeHeadline: 'Old bridge',
+      activationBridgeDecisionQuestion: 'Old question?',
+      activationBridgeWhyNow: 'Old reason.',
+      activationBridgeLiveProof: ['Old upload proof'],
       activationEngagementReportViewCount: 2,
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
+      activationEngagementBoundary: 'Old route continuity only.',
     })
 
     await expect(getDashboardOverview()).resolves.toMatchObject({
@@ -263,6 +269,9 @@ describe('dashboard API boundary', () => {
     expect(session?.activationReportId).toBeUndefined()
     expect(session?.activationTeaserRequestId).toBeUndefined()
     expect(session?.activationStorySource).toBeUndefined()
+    expect(session?.activationLockedSectionTitle).toBeUndefined()
+    expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
     expect(session?.activationEngagementReportViewCount).toBeUndefined()
+    expect(session?.activationEngagementBoundary).toBeUndefined()
   })
 })

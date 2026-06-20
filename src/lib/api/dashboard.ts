@@ -43,10 +43,16 @@ const EMPTY_ACTIVATION_ORIGIN_META = {
   activationVisitedSceneCount: undefined,
   activationSignalMarkerIds: undefined,
   activationLockedSectionId: undefined,
+  activationLockedSectionTitle: undefined,
+  activationBridgeHeadline: undefined,
+  activationBridgeDecisionQuestion: undefined,
+  activationBridgeWhyNow: undefined,
+  activationBridgeLiveProof: undefined,
   activationEngagementReportViewCount: undefined,
   activationEngagementLockedSectionClickCount: undefined,
   activationEngagementCurrentSectionClickCount: undefined,
   activationEngagementPrivateDemoIntentCount: undefined,
+  activationEngagementBoundary: undefined,
 }
 
 function wait(ms: number): Promise<void> {
