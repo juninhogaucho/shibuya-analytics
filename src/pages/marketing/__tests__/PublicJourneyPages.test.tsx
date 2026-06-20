@@ -458,6 +458,70 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Raw file contents and pasted trade rows are not stored/i)).toBeInTheDocument()
   })
 
+  test('upload file validation reads CSV structure before creating a report packet', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    const fileInput = screen.getByLabelText(/Trade file/i)
+    const csvFile = new File(
+      ['date,symbol,side,size,entry,exit,pnl\n2026-06-18,EURUSD,buy,1,1.0800,1.0830,30'],
+      'reset-pro-export.csv',
+      { type: 'text/csv' },
+    )
+
+    await user.upload(fileInput, csvFile)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Selected: reset-pro-export.csv. Selected file passed the local public structure check/i)).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+    expect(screen.getByText('Public report packet')).toBeInTheDocument()
+    expect(screen.getAllByText('Local CSV file selected').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Selected local CSV file passed local structure check/i)).toBeInTheDocument()
+    expect(screen.getByText(/Preview bytes inspected locally/i)).toBeInTheDocument()
+    expect(screen.getByText(/Raw file contents were read only inside this browser session and were not stored/i)).toBeInTheDocument()
+  })
+
+  test('upload file validation blocks unsupported spreadsheet files without a pasted table', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    const fileInput = screen.getByLabelText(/Trade file/i)
+    const spreadsheetFile = new File(['not-readable-by-public-preview'], 'broker-export.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    })
+
+    await user.upload(fileInput, spreadsheetFile)
+
+    expect(screen.getByText(/Selected: broker-export.xlsx. This public preview cannot inspect spreadsheet\/binary files/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay')
+    expect(screen.getAllByText(/Export CSV\/TXT or paste a small trade table/i).length).toBeGreaterThan(0)
+  })
+
   test('global upload route keeps story and pricing navigation in the global market', () => {
     render(
       <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay']}>

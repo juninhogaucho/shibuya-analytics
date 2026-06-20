@@ -11,6 +11,7 @@ import {
   buildPublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   persistPublicReportSession,
+  validatePublicPasteSample,
   validatePublicReportInput,
 } from '../../lib/publicReportSession'
 import {
@@ -28,6 +29,26 @@ const LIVE_PROOF_STATUS_LABELS = {
   blocked: 'BLOCKED',
   required: 'REQUIRED',
 } as const
+
+const LOCAL_FILE_PREVIEW_BYTES = 32 * 1024
+
+interface LocalFileValidationState {
+  status: 'idle' | 'validating' | 'passed' | 'blocked'
+  message: string
+  facts: string[]
+  error?: string | null
+}
+
+const EMPTY_FILE_VALIDATION: LocalFileValidationState = {
+  status: 'idle',
+  message: 'CSV, TXT, and spreadsheet exports are accepted in the public preview surface.',
+  facts: [],
+  error: null,
+}
+
+function getUploadFileExtension(fileName: string): string {
+  return fileName.split('.').pop()?.trim().toLowerCase() ?? ''
+}
 
 export default function PublicUploadPage() {
   const location = useLocation()
@@ -48,6 +69,7 @@ export default function PublicUploadPage() {
   const [archetypeId, setArchetypeId] = useState<StoryArchetypeId>(initialArchetype.id)
   const [axisId, setAxisId] = useState<FingerprintAxisId>(initialAxis.id)
   const [fileName, setFileName] = useState('')
+  const [fileValidation, setFileValidation] = useState<LocalFileValidationState>(EMPTY_FILE_VALIDATION)
   const [pasteBody, setPasteBody] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -161,6 +183,8 @@ export default function PublicUploadPage() {
     const reportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
     const validationError = validatePublicReportInput({
       fileName,
+      fileValidationError: fileValidation.status === 'blocked' ? fileValidation.error : null,
+      fileValidationPassed: fileValidation.status === 'passed',
       pasteBody,
       source,
     })
@@ -188,6 +212,7 @@ export default function PublicUploadPage() {
             archetypeId: archetype.id,
             axisId: axis.id,
             fileName,
+            fileValidationFacts: fileValidation.facts,
             pasteBody,
             source,
             storySource,
@@ -198,6 +223,78 @@ export default function PublicUploadPage() {
     )
 
     navigate(`/report/${reportId}${buildReportSearch(source)}`)
+  }
+
+  const handleFileChange = async (file?: File | null) => {
+    const nextFileName = file?.name ?? ''
+    setFileName(nextFileName)
+    setError(null)
+
+    if (!file) {
+      setFileValidation(EMPTY_FILE_VALIDATION)
+      return
+    }
+
+    const extension = getUploadFileExtension(file.name)
+
+    if (!['csv', 'txt'].includes(extension)) {
+      setFileValidation({
+        status: 'blocked',
+        message: 'This public preview cannot inspect spreadsheet/binary files. Export CSV/TXT or paste a small trade table below.',
+        facts: [
+          `Selected local file extension: ${extension || 'unknown'} was not inspected by the public browser preview.`,
+          'Use CSV/TXT or a validated pasted table before treating this as an upload-step handoff.',
+        ],
+        error: 'This public preview cannot inspect spreadsheet/binary files. Export CSV/TXT or paste a small trade table below.',
+      })
+      return
+    }
+
+    setFileValidation({
+      status: 'validating',
+      message: 'Inspecting the first rows locally. Raw file contents will not be stored.',
+      facts: [],
+      error: null,
+    })
+
+    try {
+      const previewText = await file.slice(0, LOCAL_FILE_PREVIEW_BYTES).text()
+      const structureError = validatePublicPasteSample(previewText)
+
+      if (structureError) {
+        setFileValidation({
+          status: 'blocked',
+          message: 'Selected file did not pass the local public structure check.',
+          facts: [
+            `Selected local ${extension.toUpperCase()} file was inspected but did not pass the required public structure check.`,
+            'Raw file contents were read only inside this browser session and were not stored in the report packet.',
+          ],
+          error: `Selected file did not pass the local public structure check: ${structureError}`,
+        })
+        return
+      }
+
+      setFileValidation({
+        status: 'passed',
+        message: 'Selected file passed the local public structure check.',
+        facts: [
+          `Selected local ${extension.toUpperCase()} file passed local structure check: date/time, instrument, direction, and result/price fields detected.`,
+          `Preview bytes inspected locally: ${Math.min(file.size, LOCAL_FILE_PREVIEW_BYTES)} of ${file.size}.`,
+          'Raw file contents were read only inside this browser session and were not stored in the report packet.',
+        ],
+        error: null,
+      })
+    } catch {
+      setFileValidation({
+        status: 'blocked',
+        message: 'The selected file could not be read by this browser preview. Export CSV/TXT or paste a small trade table below.',
+        facts: [
+          'Selected local file could not be inspected by the public browser preview.',
+          'Use a validated pasted table before treating this as an upload-step handoff.',
+        ],
+        error: 'The selected file could not be read by this browser preview. Export CSV/TXT or paste a small trade table below.',
+      })
+    }
   }
 
   const handleSubmit = (event: FormEvent) => {
@@ -462,11 +559,13 @@ export default function PublicUploadPage() {
               <input
                 type="file"
                 accept=".csv,.txt,.xlsx"
-                onChange={(event) => setFileName(event.target.files?.[0]?.name ?? '')}
+                onChange={(event) => {
+                  void handleFileChange(event.target.files?.[0])
+                }}
                 className="block w-full text-sm text-neutral-300 file:mr-4 file:rounded-xl file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-black"
               />
               <span className="mt-3 block text-xs text-neutral-500">
-                {fileName ? `Selected: ${fileName}` : 'CSV, TXT, and spreadsheet exports are accepted in the public preview surface.'}
+                {fileName ? `Selected: ${fileName}. ${fileValidation.message}` : fileValidation.message}
               </span>
             </label>
 

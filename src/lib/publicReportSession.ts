@@ -22,6 +22,7 @@ export interface PublicReportValidationInput {
   archetypeId: StoryArchetypeId
   axisId: FingerprintAxisId
   fileName?: string
+  fileValidationFacts?: string[]
   pasteBody?: string
   source: 'upload' | 'sample'
   storySource?: string | null
@@ -56,6 +57,11 @@ export interface PublicReportLiveProofGap {
   headline: string
   rows: LiveProofReadinessRow[]
   boundary: string
+}
+
+export interface PublicReportInputValidationState {
+  fileValidationPassed?: boolean
+  fileValidationError?: string | null
 }
 
 interface PublicReportSessionStore {
@@ -249,6 +255,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
           ...storyFacts,
           'Artifact status: local preview only; no backend-generated production report exists for this packet.',
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
+          ...(params.fileValidationFacts ?? []),
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
           pasteLength > 0 && !validatePublicPasteSample(params.pasteBody)
             ? 'Pasted sample passed local structure check: date/time, instrument, direction, and result/price fields detected.'
@@ -340,16 +347,29 @@ export function buildDemoLauncherSampleReportSession(
   }
 }
 
-export function validatePublicReportInput(params: Pick<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'>): string | null {
+export function validatePublicReportInput(
+  params: Pick<PublicReportValidationInput, 'fileName' | 'pasteBody' | 'source'> & PublicReportInputValidationState,
+): string | null {
   if (params.source === 'sample') {
     return null
   }
 
-  if (params.fileName) {
+  const pasteError = validatePublicPasteSample(params.pasteBody)
+  if (params.pasteBody?.trim() && !pasteError) {
     return null
   }
 
-  return validatePublicPasteSample(params.pasteBody)
+  if (params.fileName) {
+    if (params.fileValidationError) {
+      return params.fileValidationError
+    }
+    if (params.fileValidationPassed) {
+      return null
+    }
+    return 'The selected file has not passed a local structure check yet. Use CSV/TXT with date, symbol, side, entry, exit, pnl columns, or paste a small trade table.'
+  }
+
+  return pasteError
 }
 
 function readStore(): PublicReportSessionStore {

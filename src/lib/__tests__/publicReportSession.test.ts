@@ -23,7 +23,9 @@ describe('public report sessions', () => {
     expect(validatePublicReportInput({ source: 'upload', pasteBody: 'date,symbol,side,size,entry,exit,pnl' })).toContain('Paste at least one trade row')
     expect(validatePublicReportInput({ source: 'upload', pasteBody: 'date,symbol,entry,exit\n2026-06-18,EURUSD,1.0800,1.0830' })).toContain('side/direction')
     expect(validatePublicReportInput({ source: 'upload', pasteBody: 'date,symbol,side,size,entry,exit,pnl\n2026-06-18,EURUSD,buy,1,1.0800,1.0830,30' })).toBeNull()
-    expect(validatePublicReportInput({ source: 'upload', fileName: 'trades.csv', pasteBody: '' })).toBeNull()
+    expect(validatePublicReportInput({ source: 'upload', fileName: 'trades.csv', pasteBody: '' })).toContain('has not passed a local structure check')
+    expect(validatePublicReportInput({ source: 'upload', fileName: 'trades.csv', fileValidationPassed: true, pasteBody: '' })).toBeNull()
+    expect(validatePublicReportInput({ source: 'upload', fileName: 'trades.xlsx', fileValidationError: 'Export CSV/TXT first.', pasteBody: '' })).toBe('Export CSV/TXT first.')
     expect(validatePublicReportInput({ source: 'sample' })).toBeNull()
   })
 
