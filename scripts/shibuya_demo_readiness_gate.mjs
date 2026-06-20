@@ -50,7 +50,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'locked free report',
     file: 'src/pages/marketing/FreeReportPage.tsx',
-    markers: ['Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Report engagement ledger', 'Conversion intent is tracked locally. It is not trader evidence.', 'Engagement ledger rule: report views, locked-section clicks, and private-demo intent', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
+    markers: ['REPORT_REVEAL_SEQUENCE', 'Report reveal sequence', 'Keep the report cinematic: one baseline, one packet, one private question.', 'Baseline reveal', 'Evidence receipt', 'Private question', 'Reset Pro bridge', 'Report reveal rule: do not let the report become a dashboard tour.', 'Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Report engagement ledger', 'Conversion intent is tracked locally. It is not trader evidence.', 'Engagement ledger rule: report views, locked-section clicks, and private-demo intent', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
   },
   {
     label: 'report engagement model',

@@ -27,6 +27,37 @@ import {
   toReportSectionSlug,
 } from '../../lib/storyExperience'
 
+const REPORT_REVEAL_SEQUENCE = [
+  {
+    timebox: '0:00',
+    label: 'Baseline reveal',
+    title: 'Name what survived the story.',
+    body: 'Start with archetype, dominant axis, and pressure band. Do not bury the trader in cards before the report has one clear thesis.',
+    boundary: 'Website-level recognition plus local packet context only.',
+  },
+  {
+    timebox: '0:40',
+    label: 'Evidence receipt',
+    title: 'Show what the packet can prove.',
+    body: 'Explain whether this came from a guided story, local sample, pasted table, or direct URL fallback before showing private modules.',
+    boundary: 'No raw rows or live backend artifact are proven on this public page.',
+  },
+  {
+    timebox: '1:20',
+    label: 'Private question',
+    title: 'Open one locked door.',
+    body: 'Route to the locked module that matches the dominant axis instead of making the visitor browse every possible feature.',
+    boundary: 'The locked module carries a question, not an answer.',
+  },
+  {
+    timebox: '2:10',
+    label: 'Reset Pro bridge',
+    title: 'End with the operating loop.',
+    body: 'Make the next step explicit: private workspace, sample boundary, and append proof are how the product becomes real.',
+    boundary: 'Account-specific claims wait for activation, upload, generated artifacts, and append history.',
+  },
+] as const
+
 export default function FreeReportPage() {
   const { id } = useParams()
   const location = useLocation()
@@ -192,6 +223,41 @@ export default function FreeReportPage() {
             detail="The report gives a useful baseline and names the private question. It still does not cross into account-specific truth without live evidence."
           />
         </div>
+
+        <section className="mb-8 min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-[#070708]">
+          <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
+            <div className="border-b border-white/10 p-5 md:p-8 lg:border-b-0 lg:border-r">
+              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-200">
+                Report reveal sequence
+              </p>
+              <h2 className="mt-3 text-3xl font-black uppercase leading-[0.95] tracking-[-0.04em] text-white md:text-5xl">
+                Keep the report cinematic: one baseline, one packet, one private question.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-neutral-300 md:text-base md:leading-8">
+                The report should feel like the second act of the same story: the public mirror becomes a baseline,
+                the packet explains what evidence exists, and the locked insight names the question Reset Pro must prove later.
+              </p>
+              <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-xs leading-6 text-amber-50/75">
+                Report reveal rule: do not let the report become a dashboard tour. It should route the next decision while keeping account-specific truth locked.
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2">
+              {REPORT_REVEAL_SEQUENCE.map((beat) => (
+                <article key={beat.label} className="border-b border-white/10 p-5 last:border-b-0 md:border-r md:[&:nth-child(even)]:border-r-0 md:[&:nth-last-child(-n+2)]:border-b-0 md:p-6">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-100">
+                    {beat.timebox} / {beat.label}
+                  </p>
+                  <h3 className="mt-3 text-lg font-semibold leading-tight text-white">{beat.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-neutral-400">{beat.body}</p>
+                  <p className="mt-4 rounded-2xl border border-white/8 bg-black/25 p-3 text-xs leading-5 text-neutral-400">
+                    Boundary: {beat.boundary}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <section className="mb-8 min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
           <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
