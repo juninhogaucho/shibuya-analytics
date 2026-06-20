@@ -201,6 +201,88 @@ describe('CheckoutPage', () => {
     })
   })
 
+  test('sends persisted backend teaser context into checkout verification payload', async () => {
+    const user = userEvent.setup()
+    persistPublicReportSession(buildPublicReportSession({
+      reportId: 'public-teaser-checkout-123',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'backend_teaser',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        report_id: 'public-teaser-checkout-123',
+        request_id: 'TEASER-checkout-123',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 'p'.repeat(64),
+        trades_analyzed: 14,
+        headline: {
+          discipline_tax: 510,
+          worst_pattern: 'Tilt Spiral',
+        },
+      },
+    }))
+    recordPublicReportView('public-teaser-checkout-123')
+    recordLockedSectionIntent('public-teaser-checkout-123', 'edge-decay-map')
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?source=locked_insight&section=edge-decay-map&report=public-teaser-checkout-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay,revenge_reentry&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Persisted backend teaser receipt')).toBeInTheDocument()
+    expect(screen.getByText(/Artifact status: Backend teaser persisted \/ Live\/private artifact: not proven/i)).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    await waitFor(() => {
+      expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
+    })
+
+    const checkoutPayload = checkoutMocks.createCheckoutSession.mock.calls[0][0]
+    expect(checkoutPayload).toMatchObject({
+      plan_id: 'shibuya_reset_pro_monthly',
+      email: 'founder@shibuya.test',
+      name: 'Luis Shibuya',
+      public_context_source: 'locked_insight',
+      public_context_report_id: 'public-teaser-checkout-123',
+      public_context_section_id: 'edge-decay-map',
+      public_context_archetype_id: 'marco',
+      public_context_axis_id: 'edge_decay',
+      public_context_packet_source: 'backend_teaser',
+      public_context_artifact_status: 'backend_teaser_persisted',
+      public_context_production_artifact_proven: 'false',
+      public_context_teaser_request_id: 'TEASER-checkout-123',
+      public_context_teaser_trades_analyzed: '14',
+      public_context_teaser_worst_pattern: 'Tilt Spiral',
+      public_context_story_source: 'guided',
+      public_context_story_scene_count: '6',
+      public_context_pain_axes: 'edge_decay,revenge_reentry',
+      public_context_signal_markers: 'mirror_selected,upload_intent',
+      public_context_report_views: '1',
+      public_context_locked_clicks: '1',
+      public_context_current_section_clicks: '1',
+      public_context_private_gate_attempts: '0',
+    })
+    expect(checkoutPayload).not.toHaveProperty('public_context_teaser_receipt_hash')
+    expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
+  })
+
   test('blocks URL-only locked insight checkout without a local intent receipt', async () => {
     const user = userEvent.setup()
     render(
