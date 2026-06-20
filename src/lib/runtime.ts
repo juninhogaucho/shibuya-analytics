@@ -129,6 +129,43 @@ export interface EnterSampleModeOptions {
   demoEntryMode?: ShibuyaDemoEntryMode
 }
 
+const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
+  'customerId',
+  'tier',
+  'planId',
+  'orderId',
+  'offerKind',
+  'caseStatus',
+  'traderMode',
+  'nextAction',
+  'accessExpiresAt',
+  'dataSource',
+  'activationSource',
+  'activationReportId',
+  'activationArchetypeId',
+  'activationAxisId',
+  'activationReportArtifactStatus',
+  'activationProductionArtifactProven',
+  'activationTeaserRequestId',
+  'activationTeaserTradesAnalyzed',
+  'activationTeaserWorstPattern',
+  'activationStorySource',
+  'activationSelectedPainAxisIds',
+  'activationVisitedSceneCount',
+  'activationSignalMarkerIds',
+  'activationLockedSectionId',
+  'activationLockedSectionTitle',
+  'activationBridgeHeadline',
+  'activationBridgeDecisionQuestion',
+  'activationBridgeWhyNow',
+  'activationBridgeLiveProof',
+  'activationEngagementReportViewCount',
+  'activationEngagementLockedSectionClickCount',
+  'activationEngagementCurrentSectionClickCount',
+  'activationEngagementPrivateDemoIntentCount',
+  'activationEngagementBoundary',
+]
+
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {
   if (!raw) {
     return null
@@ -348,7 +385,15 @@ export function setLiveApiKey(apiKey: string, meta?: ShibuyaSessionMeta): void {
   localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, apiKey)
 
   const previous = getStoredSessionMeta() ?? {}
-  const nextMeta = { ...previous, ...(meta ?? {}) }
+  const nextMeta = { ...previous }
+
+  if (meta) {
+    for (const key of LIVE_SESSION_DERIVED_META_KEYS) {
+      delete nextMeta[key]
+    }
+  }
+
+  Object.assign(nextMeta, meta ?? {})
   delete nextMeta.samplePreview
 
   if (nextMeta.tier === 'sample') {

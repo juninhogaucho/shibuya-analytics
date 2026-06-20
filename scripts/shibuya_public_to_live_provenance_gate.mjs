@@ -7,6 +7,7 @@ const ROOT = path.resolve(import.meta.dirname, '..')
 const DEFAULT_BACKEND_ROOT = path.resolve(ROOT, '..', 'medallion')
 
 const FRONTEND_TEST_TARGETS = [
+  'src/lib/__tests__/runtime.test.ts',
   'src/lib/__tests__/publicReportSession.test.ts',
   'src/pages/marketing/__tests__/PublicJourneyPages.test.tsx',
   'src/pages/checkout/__tests__/CheckoutPage.test.tsx',

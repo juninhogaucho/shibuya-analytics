@@ -216,6 +216,82 @@ describe('shibuya runtime', () => {
     expect(getStoredSessionMeta()?.demoEntryMode).toBeUndefined()
   })
 
+  test('clears stale live account context when partial live metadata is supplied', () => {
+    setLiveApiKey('live_old', {
+      customerId: 'customer_old',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      orderId: 'order_old',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      traderMode: 'profitable_refiner',
+      nextAction: 'upload_first_history',
+      accessExpiresAt: '2026-07-01T00:00:00Z',
+      dataSource: 'backend',
+      activationSource: 'locked_insight',
+      activationReportId: 'old-report',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationReportArtifactStatus: 'backend_teaser_generated',
+      activationProductionArtifactProven: 'false',
+      activationTeaserRequestId: 'TEASER-old',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationLockedSectionTitle: 'Edge decay map',
+      activationBridgeHeadline: 'Old bridge',
+      activationBridgeDecisionQuestion: 'Old question?',
+      activationBridgeWhyNow: 'Old why now.',
+      activationBridgeLiveProof: ['Old upload proof'],
+      activationEngagementReportViewCount: 2,
+      activationEngagementLockedSectionClickCount: 1,
+      activationEngagementCurrentSectionClickCount: 1,
+      activationEngagementPrivateDemoIntentCount: 1,
+      activationEngagementBoundary: 'Old route continuity only.',
+    })
+
+    setLiveApiKey('live_new', { tier: 'psych_audit' })
+
+    const session = getStoredSessionMeta()
+    expect(getStoredApiKey()).toBe('live_new')
+    expect(session).toMatchObject({ tier: 'psych_audit' })
+    expect(session?.customerId).toBeUndefined()
+    expect(session?.planId).toBeUndefined()
+    expect(session?.orderId).toBeUndefined()
+    expect(session?.offerKind).toBeUndefined()
+    expect(session?.caseStatus).toBeUndefined()
+    expect(session?.activationSource).toBeUndefined()
+    expect(session?.activationReportId).toBeUndefined()
+    expect(session?.activationTeaserRequestId).toBeUndefined()
+    expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
+    expect(session?.activationEngagementReportViewCount).toBeUndefined()
+  })
+
+  test('preserves live session context when only the api key is refreshed', () => {
+    setLiveApiKey('live_old', {
+      customerId: 'customer_old',
+      tier: 'reset_pro',
+      activationSource: 'locked_insight',
+      activationReportId: 'old-report',
+      activationBridgeDecisionQuestion: 'Is the trader defending a setup?',
+    })
+
+    setLiveApiKey('live_refreshed')
+
+    expect(getStoredApiKey()).toBe('live_refreshed')
+    expect(getStoredSessionMeta()).toMatchObject({
+      customerId: 'customer_old',
+      tier: 'reset_pro',
+      activationSource: 'locked_insight',
+      activationReportId: 'old-report',
+      activationBridgeDecisionQuestion: 'Is the trader defending a setup?',
+    })
+  })
+
   test('allows private Reset Pro sample workspace only with a gate receipt', () => {
     enterSampleMode({
       market: 'global',
