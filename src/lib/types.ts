@@ -89,6 +89,29 @@ export interface TradingReportRecord {
   report_pdf_path?: string | null
   created_at?: string | null
   updated_at?: string | null
+  upload_id?: string | null
+  report_snapshot_id?: string | null
+  snapshot_captured_at?: string | null
+  snapshot_total_trades?: number | null
+  snapshot_bql_state?: string | null
+  snapshot_bql_score?: number | null
+  snapshot_behavior_share?: number | null
+  snapshot_breach_risk_score?: number | null
+  upload_transport?: string | null
+  trades_uploaded?: number | null
+  artifact_status?: string | null
+  append_count?: number | null
+  request_id?: string | null
+  completed_at?: string | null
+  activation_source?: string | null
+  activation_report_id?: string | null
+  activation_archetype_id?: string | null
+  activation_axis_id?: string | null
+  activation_story_source?: string | null
+  activation_visited_scene_count?: number | null
+  activation_signal_marker_ids?: string[] | null
+  activation_locked_section_id?: string | null
+  proof_boundary?: string | null
 }
 
 export interface TradingReportsResponse {

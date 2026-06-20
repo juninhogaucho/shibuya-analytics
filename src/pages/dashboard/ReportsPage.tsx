@@ -550,6 +550,54 @@ export function ReportsPage() {
                     </p>
                   </article>
                 </div>
+
+                <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
+                  <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <h4 style={{ marginBottom: '0.5rem' }}>Upload proof</h4>
+                    <p className="text-muted" style={{ marginBottom: '0.35rem' }}>
+                      Snapshot: {report.report_snapshot_id ?? 'Not linked'}
+                    </p>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>
+                      {report.trades_uploaded != null ? `${report.trades_uploaded} trades` : 'Trade count unavailable'}
+                      {report.upload_transport ? ` via ${report.upload_transport}` : ''}
+                    </p>
+                  </article>
+                  <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <h4 style={{ marginBottom: '0.5rem' }}>Artifact status</h4>
+                    <p className="text-muted" style={{ marginBottom: '0.35rem' }}>
+                      {report.artifact_status ?? 'Unknown'}
+                    </p>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>
+                      Append #{report.append_count ?? 'not returned'}
+                      {report.request_id ? `; request ${report.request_id}` : ''}
+                    </p>
+                  </article>
+                  <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <h4 style={{ marginBottom: '0.5rem' }}>Activation trail</h4>
+                    <p className="text-muted" style={{ marginBottom: '0.35rem' }}>
+                      {report.activation_source ?? 'No carried activation context'}
+                    </p>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>
+                      {report.activation_report_id
+                        ? `From ${report.activation_report_id}${report.activation_locked_section_id ? ` / ${report.activation_locked_section_id}` : ''}`
+                        : 'Report generated without public-story linkage.'}
+                    </p>
+                  </article>
+                </div>
+
+                {report.proof_boundary ? (
+                  <div
+                    className="glass-panel"
+                    style={{
+                      marginTop: '1rem',
+                      borderColor: report.report_snapshot_id ? 'rgba(16,185,129,0.22)' : 'rgba(245,158,11,0.24)',
+                      background: report.report_snapshot_id ? 'rgba(16,185,129,0.06)' : 'rgba(245,158,11,0.06)',
+                    }}
+                  >
+                    <strong style={{ display: 'block', marginBottom: '0.35rem' }}>Proof boundary</strong>
+                    <p className="text-muted" style={{ marginBottom: 0 }}>{report.proof_boundary}</p>
+                  </div>
+                ) : null}
               </article>
             )
           })}

@@ -78,6 +78,18 @@ describe('ReportsPage', () => {
           primary_pattern: 'Tilt after first red trade',
           created_at: '2026-06-20T09:15:00Z',
           updated_at: '2026-06-20T09:16:00Z',
+          upload_id: 'upload_1',
+          report_snapshot_id: 'upload_1',
+          snapshot_total_trades: 24,
+          upload_transport: 'csv',
+          trades_uploaded: 24,
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_live_123',
+          activation_source: 'locked_insight',
+          activation_report_id: 'public_report_123',
+          activation_locked_section_id: 'edge-decay-map',
+          proof_boundary: 'Backend report record linked to a durable upload receipt and report snapshot.',
         },
       ],
     })
@@ -92,6 +104,18 @@ describe('ReportsPage', () => {
         primary_pattern: 'Tilt after first red trade',
         created_at: '2026-06-20T09:15:00Z',
         updated_at: '2026-06-20T09:16:00Z',
+        upload_id: 'upload_1',
+        report_snapshot_id: 'upload_1',
+        snapshot_total_trades: 24,
+        upload_transport: 'csv',
+        trades_uploaded: 24,
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_live_123',
+        activation_source: 'locked_insight',
+        activation_report_id: 'public_report_123',
+        activation_locked_section_id: 'edge-decay-map',
+        proof_boundary: 'Backend report record linked to a durable upload receipt and report snapshot.',
       },
     })
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:report')
@@ -108,6 +132,16 @@ describe('ReportsPage', () => {
     )
 
     expect(await screen.findByText('Live Baseline Brief')).toBeInTheDocument()
+    expect(screen.getByText('Upload proof')).toBeInTheDocument()
+    expect(screen.getByText('Snapshot: upload_1')).toBeInTheDocument()
+    expect(screen.getByText('24 trades via csv')).toBeInTheDocument()
+    expect(screen.getByText('Artifact status')).toBeInTheDocument()
+    expect(screen.getByText('generated')).toBeInTheDocument()
+    expect(screen.getByText('Append #1; request req_live_123')).toBeInTheDocument()
+    expect(screen.getByText('Activation trail')).toBeInTheDocument()
+    expect(screen.getByText('locked_insight')).toBeInTheDocument()
+    expect(screen.getByText('From public_report_123 / edge-decay-map')).toBeInTheDocument()
+    expect(screen.getByText('Backend report record linked to a durable upload receipt and report snapshot.')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: /Download archived artifact/i }))
 
     await waitFor(() => {
