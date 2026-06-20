@@ -46,6 +46,24 @@ export function assertDashboardBackendReady(featureName: string): void {
   }
 }
 
+function splitOverviewContextList(value?: string | null): string[] | undefined {
+  const items = value
+    ?.split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  return items && items.length > 0 ? items : undefined
+}
+
+function parseOverviewContextCount(value?: string | null): number | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 function buildSampleTradePastePreview(body: string): TradePastePreview {
   const lines = body.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
   const symbols = Array.from(new Set(lines.map((line) => {
@@ -154,7 +172,7 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
   assertDashboardBackendReady('Dashboard overview')
   return withRetry(async () => {
     const { data } = await http.get<DashboardOverview>('/v1/dashboard/overview')
-    updateSessionMeta({
+    const nextSessionMeta = {
       customerId: data.customer_id,
       tier: data.access_tier,
       offerKind: data.offer_kind,
@@ -163,7 +181,29 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
       nextAction: data.next_action,
       accessExpiresAt: data.access_expires_at ?? null,
       dataSource: data.data_source ?? null,
-    })
+    }
+
+    if (data.activation_origin) {
+      Object.assign(nextSessionMeta, {
+        activationSource: data.activation_origin.source ?? undefined,
+        activationReportId: data.activation_origin.report_id ?? undefined,
+        activationArchetypeId: data.activation_origin.archetype_id ?? undefined,
+        activationAxisId: data.activation_origin.axis_id ?? undefined,
+        activationReportArtifactStatus: data.activation_origin.artifact_status ?? undefined,
+        activationProductionArtifactProven: data.activation_origin.production_artifact_proven ?? undefined,
+        activationStorySource: data.activation_origin.story_source ?? undefined,
+        activationSelectedPainAxisIds: splitOverviewContextList(data.activation_origin.pain_axes),
+        activationVisitedSceneCount: parseOverviewContextCount(data.activation_origin.story_scene_count),
+        activationSignalMarkerIds: splitOverviewContextList(data.activation_origin.signal_markers),
+        activationLockedSectionId: data.activation_origin.section_id ?? undefined,
+        activationEngagementReportViewCount: parseOverviewContextCount(data.activation_origin.report_views),
+        activationEngagementLockedSectionClickCount: parseOverviewContextCount(data.activation_origin.locked_clicks),
+        activationEngagementCurrentSectionClickCount: parseOverviewContextCount(data.activation_origin.current_section_clicks),
+        activationEngagementPrivateDemoIntentCount: parseOverviewContextCount(data.activation_origin.private_gate_attempts),
+      })
+    }
+
+    updateSessionMeta(nextSessionMeta)
     return data
   })
 }

@@ -6,6 +6,7 @@ import {
   SHIBUYA_API_KEY_STORAGE_KEY,
   SHIBUYA_SAMPLE_API_KEY,
   SHIBUYA_SESSION_META_STORAGE_KEY,
+  updateSessionMeta,
 } from '../../../lib/runtime'
 
 const apiMocks = vi.hoisted(() => ({
@@ -232,6 +233,82 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
     expect(screen.getByText(/Payment and activation preserved the question/i)).toBeInTheDocument()
     expect(screen.getByText('Enough repeated setup history to mark stable, watchlist, or decayed behavior.')).toBeInTheDocument()
+    expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
+  })
+
+  test('renders live activation origin recovered from backend overview metadata', async () => {
+    apiMocks.getDashboardOverview.mockImplementation(async () => {
+      updateSessionMeta({
+        customerId: 'cust-live-123',
+        tier: 'reset_pro',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+        traderMode: 'profitable_refiner',
+        nextAction: 'upload_first_history',
+        dataSource: 'backend',
+        activationSource: 'locked_insight',
+        activationReportId: 'public_report_123',
+        activationArchetypeId: 'marco',
+        activationAxisId: 'edge_decay',
+        activationReportArtifactStatus: 'local_preview_only',
+        activationProductionArtifactProven: 'false',
+        activationStorySource: 'guided',
+        activationSelectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+        activationVisitedSceneCount: 6,
+        activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+        activationLockedSectionId: 'edge-decay-map',
+        activationEngagementReportViewCount: 2,
+        activationEngagementLockedSectionClickCount: 1,
+        activationEngagementCurrentSectionClickCount: 1,
+        activationEngagementPrivateDemoIntentCount: 1,
+      })
+
+      return {
+        ...getSampleWorkspaceOverview('core'),
+        data_source: 'backend',
+        activation_origin: {
+          source: 'locked_insight',
+          report_id: 'public_report_123',
+          section_id: 'edge-decay-map',
+          archetype_id: 'marco',
+          axis_id: 'edge_decay',
+          artifact_status: 'local_preview_only',
+          production_artifact_proven: 'false',
+          story_source: 'guided',
+          story_scene_count: '6',
+          pain_axes: 'edge_decay,revenge_reentry',
+          signal_markers: 'mirror_selected,upload_intent',
+          report_views: '2',
+          locked_clicks: '1',
+          current_section_clicks: '1',
+          private_gate_attempts: '1',
+        },
+      }
+    })
+    window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token-123')
+    window.localStorage.setItem(
+      SHIBUYA_SESSION_META_STORAGE_KEY,
+      JSON.stringify({
+        tier: 'reset_pro',
+        market: 'global',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+      }),
+    )
+
+    render(
+      <MemoryRouter>
+        <DashboardOverviewPage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('LIVE ACTIVATION ORIGIN')).toBeInTheDocument()
+    expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
+    expect(screen.getByText('public_report_123')).toBeInTheDocument()
+    expect(screen.getByText(/Marco: Profitable refiner - Edge Decay/i)).toBeInTheDocument()
+    expect(screen.getByText(/guided; scenes 6; axes Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
+    expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText(/2 view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/)).toBeInTheDocument()
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 

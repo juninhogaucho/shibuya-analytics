@@ -454,6 +454,25 @@ export interface UploadProofReceipt {
   activation_locked_section_id?: string
 }
 
+export interface DashboardActivationOrigin {
+  source?: string | null
+  report_id?: string | null
+  section_id?: string | null
+  archetype_id?: string | null
+  axis_id?: string | null
+  packet_source?: string | null
+  artifact_status?: string | null
+  production_artifact_proven?: string | null
+  story_source?: string | null
+  story_scene_count?: string | null
+  pain_axes?: string | null
+  signal_markers?: string | null
+  report_views?: string | null
+  locked_clicks?: string | null
+  current_section_clicks?: string | null
+  private_gate_attempts?: string | null
+}
+
 export interface DashboardOverview {
   customer_id?: string
   access_tier?: string
@@ -482,6 +501,7 @@ export interface DashboardOverview {
   first_upload_receipt?: UploadProofReceipt | null
   latest_upload_receipt?: UploadProofReceipt | null
   upload_receipt_history?: UploadProofReceipt[]
+  activation_origin?: DashboardActivationOrigin | null
   analysis_summary?: AnalysisSummary | null
   market_context_source?: string | null
   market_context_status?: string | null
