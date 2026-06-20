@@ -28,6 +28,27 @@ export interface TradeUploadResponse {
   append_count?: number
 }
 
+const EMPTY_ACTIVATION_ORIGIN_META = {
+  activationSource: undefined,
+  activationReportId: undefined,
+  activationArchetypeId: undefined,
+  activationAxisId: undefined,
+  activationReportArtifactStatus: undefined,
+  activationProductionArtifactProven: undefined,
+  activationTeaserRequestId: undefined,
+  activationTeaserTradesAnalyzed: undefined,
+  activationTeaserWorstPattern: undefined,
+  activationStorySource: undefined,
+  activationSelectedPainAxisIds: undefined,
+  activationVisitedSceneCount: undefined,
+  activationSignalMarkerIds: undefined,
+  activationLockedSectionId: undefined,
+  activationEngagementReportViewCount: undefined,
+  activationEngagementLockedSectionClickCount: undefined,
+  activationEngagementCurrentSectionClickCount: undefined,
+  activationEngagementPrivateDemoIntentCount: undefined,
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -204,6 +225,8 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
         activationEngagementCurrentSectionClickCount: parseOverviewContextCount(data.activation_origin.current_section_clicks),
         activationEngagementPrivateDemoIntentCount: parseOverviewContextCount(data.activation_origin.private_gate_attempts),
       })
+    } else {
+      Object.assign(nextSessionMeta, EMPTY_ACTIVATION_ORIGIN_META)
     }
 
     updateSessionMeta(nextSessionMeta)

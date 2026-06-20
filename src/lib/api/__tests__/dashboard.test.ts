@@ -189,4 +189,80 @@ describe('dashboard API boundary', () => {
       activationTeaserWorstPattern: 'Revenge Trading',
     })
   })
+
+  test('clears stale activation origin when live dashboard overview omits it', async () => {
+    const httpGet = vi.fn().mockResolvedValue({
+      data: {
+        customer_id: 'cust_live_456',
+        access_tier: 'psych_audit',
+        offer_kind: 'psych_audit_live',
+        case_status: 'awaiting_upload',
+        trader_mode: 'profitable_refiner',
+        next_action: 'upload_first_history',
+        access_expires_at: null,
+        data_source: 'backend',
+        bql_state: 'Unknown',
+        bql_score: 0,
+        monte_carlo_drift: 0,
+        ruin_probability: 0,
+        discipline_tax_30d: 0,
+        sharpe_scenario: 0,
+        edge_portfolio: [],
+        loyalty_unlock: null,
+        next_coach_date: '2026-04-05T19:00:00Z',
+      },
+    })
+
+    vi.doMock('../../constants', () => ({
+      API_BASE_URL: 'https://api.shibuya.example',
+      isApiBaseConfiguredForLive: () => true,
+    }))
+    vi.doMock('../httpClient', () => ({
+      http: { get: httpGet },
+      withRetry: <T>(fn: () => Promise<T>) => fn(),
+    }))
+
+    const { getStoredSessionMeta, setLiveApiKey } = await import('../../runtime')
+    const { getDashboardOverview } = await import('../dashboard')
+
+    setLiveApiKey('live-token-456', {
+      tier: 'reset_pro',
+      activationSource: 'locked_insight',
+      activationReportId: 'old-report',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationReportArtifactStatus: 'backend_teaser_generated',
+      activationProductionArtifactProven: 'false',
+      activationTeaserRequestId: 'TEASER-old',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationEngagementReportViewCount: 2,
+      activationEngagementLockedSectionClickCount: 1,
+      activationEngagementCurrentSectionClickCount: 1,
+      activationEngagementPrivateDemoIntentCount: 1,
+    })
+
+    await expect(getDashboardOverview()).resolves.toMatchObject({
+      customer_id: 'cust_live_456',
+      data_source: 'backend',
+    })
+
+    const session = getStoredSessionMeta()
+    expect(session).toMatchObject({
+      customerId: 'cust_live_456',
+      tier: 'psych_audit',
+      offerKind: 'psych_audit_live',
+      dataSource: 'backend',
+    })
+    expect(session?.activationSource).toBeUndefined()
+    expect(session?.activationReportId).toBeUndefined()
+    expect(session?.activationTeaserRequestId).toBeUndefined()
+    expect(session?.activationStorySource).toBeUndefined()
+    expect(session?.activationEngagementReportViewCount).toBeUndefined()
+  })
 })
