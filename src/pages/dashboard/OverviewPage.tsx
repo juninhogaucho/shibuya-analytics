@@ -140,6 +140,10 @@ export function DashboardOverviewPage() {
         axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
         artifactStatus: sessionMeta.activationReportArtifactStatus,
         productionArtifactProven: sessionMeta.activationProductionArtifactProven,
+        teaserVerified: sessionMeta.activationTeaserVerified,
+        teaserVerificationStatus: sessionMeta.activationTeaserVerificationStatus,
+        teaserReceiptHash: sessionMeta.activationTeaserReceiptHash,
+        teaserVerifiedAt: sessionMeta.activationTeaserVerifiedAt,
         storySource: sessionMeta.activationStorySource,
         selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
         visitedSceneCount: sessionMeta.activationVisitedSceneCount,
@@ -290,6 +294,14 @@ export function DashboardOverviewPage() {
                   {typeof liveActivationOrigin.engagementReportViewCount === 'number'
                     ? `${liveActivationOrigin.engagementReportViewCount} view(s), ${liveActivationOrigin.engagementLockedSectionClickCount ?? 0} locked click(s), ${liveActivationOrigin.engagementPrivateDemoIntentCount ?? 0} gate attempt(s)`
                     : 'No report engagement receipt attached'}
+                </p>
+              </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Teaser verification</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.teaserVerificationStatus
+                    ? `${liveActivationOrigin.teaserVerificationStatus}; verified ${liveActivationOrigin.teaserVerified ?? 'unknown'}; receipt ${liveActivationOrigin.teaserReceiptHash ?? 'not returned'}`
+                    : 'No teaser verification marker attached'}
                 </p>
               </article>
             </div>
@@ -657,6 +669,14 @@ export function DashboardOverviewPage() {
                 {typeof liveActivationOrigin.engagementReportViewCount === 'number'
                   ? `${liveActivationOrigin.engagementReportViewCount} view(s), ${liveActivationOrigin.engagementLockedSectionClickCount ?? 0} locked click(s), ${liveActivationOrigin.engagementPrivateDemoIntentCount ?? 0} gate attempt(s)`
                   : 'No report engagement receipt attached'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Teaser verification</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.teaserVerificationStatus
+                  ? `${liveActivationOrigin.teaserVerificationStatus}; verified ${liveActivationOrigin.teaserVerified ?? 'unknown'}; receipt ${liveActivationOrigin.teaserReceiptHash ?? 'not returned'}`
+                  : 'No teaser verification marker attached'}
               </p>
             </article>
           </div>

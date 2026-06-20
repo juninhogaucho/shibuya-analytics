@@ -263,6 +263,10 @@ describe('ActivationPage', () => {
       publicContextTeaserRequestId: 'TEASER-backend-456',
       publicContextTeaserTradesAnalyzed: '12',
       publicContextTeaserWorstPattern: 'Tilt Expansion',
+      publicContextTeaserVerified: 'true',
+      publicContextTeaserVerificationStatus: 'verified',
+      publicContextTeaserReceiptHash: 'receipt-hash-456',
+      publicContextTeaserVerifiedAt: '2026-06-20T00:00:00Z',
     })
 
     render(
@@ -309,6 +313,10 @@ describe('ActivationPage', () => {
       activationTeaserRequestId: 'TEASER-backend-456',
       activationTeaserTradesAnalyzed: 12,
       activationTeaserWorstPattern: 'Tilt Expansion',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'receipt-hash-456',
+      activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
     })
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -328,6 +336,10 @@ describe('ActivationPage', () => {
           activationTeaserRequestId: 'TEASER-backend-456',
           activationTeaserTradesAnalyzed: 12,
           activationTeaserWorstPattern: 'Tilt Expansion',
+          activationTeaserVerified: 'true',
+          activationTeaserVerificationStatus: 'verified',
+          activationTeaserReceiptHash: 'receipt-hash-456',
+          activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
         }),
       }),
     )

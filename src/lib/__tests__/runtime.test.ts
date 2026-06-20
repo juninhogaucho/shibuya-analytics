@@ -237,6 +237,10 @@ describe('shibuya runtime', () => {
       activationTeaserRequestId: 'TEASER-old',
       activationTeaserTradesAnalyzed: 10,
       activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'old-receipt-hash',
+      activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
@@ -267,6 +271,8 @@ describe('shibuya runtime', () => {
     expect(session?.activationSource).toBeUndefined()
     expect(session?.activationReportId).toBeUndefined()
     expect(session?.activationTeaserRequestId).toBeUndefined()
+    expect(session?.activationTeaserVerificationStatus).toBeUndefined()
+    expect(session?.activationTeaserReceiptHash).toBeUndefined()
     expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
     expect(session?.activationEngagementReportViewCount).toBeUndefined()
   })

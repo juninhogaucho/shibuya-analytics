@@ -101,7 +101,7 @@ function formatAppendProofNotes(comparison: TradingReportComparisonResponse | nu
     proof.latest_report_id ? `Latest report artifact: ${proof.latest_report_id}.` : 'Latest report artifact was not returned.',
     proof.latest_request_id ? `Latest append request receipt: ${proof.latest_request_id}.` : 'Latest append request receipt was not returned.',
     proof.activation_teaser_request_id
-      ? `Activation teaser receipt: ${proof.activation_teaser_request_id}; ${proof.activation_teaser_trades_analyzed ?? 'unknown'} trades; ${proof.activation_teaser_worst_pattern ?? 'pattern not returned'}.`
+      ? `Activation teaser receipt: ${proof.activation_teaser_request_id}; ${proof.activation_teaser_trades_analyzed ?? 'unknown'} trades; ${proof.activation_teaser_worst_pattern ?? 'pattern not returned'}; verification ${proof.activation_teaser_verification_status ?? 'not provided'}.`
       : 'Activation teaser receipt was not returned in append proof.',
   ]
 }
@@ -161,6 +161,10 @@ function buildFirstUploadLifecycleMetadata(
     activationTeaserRequestId: sessionMeta?.activationTeaserRequestId,
     activationTeaserTradesAnalyzed: sessionMeta?.activationTeaserTradesAnalyzed,
     activationTeaserWorstPattern: sessionMeta?.activationTeaserWorstPattern,
+    activationTeaserVerified: sessionMeta?.activationTeaserVerified,
+    activationTeaserVerificationStatus: sessionMeta?.activationTeaserVerificationStatus,
+    activationTeaserReceiptHash: sessionMeta?.activationTeaserReceiptHash,
+    activationTeaserVerifiedAt: sessionMeta?.activationTeaserVerifiedAt,
   }
 }
 
@@ -216,7 +220,7 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
     engagementReceipt: engagementReceipt ?? 'No activation engagement receipt attached.',
     engagementBoundary: sessionMeta.activationEngagementBoundary,
     teaserReceipt: sessionMeta.activationTeaserRequestId
-      ? `${sessionMeta.activationTeaserRequestId}; ${sessionMeta.activationTeaserTradesAnalyzed ?? 'unknown'} trades; ${sessionMeta.activationTeaserWorstPattern ?? 'pattern not returned'}`
+      ? `${sessionMeta.activationTeaserRequestId}; ${sessionMeta.activationTeaserTradesAnalyzed ?? 'unknown'} trades; ${sessionMeta.activationTeaserWorstPattern ?? 'pattern not returned'}; verification ${sessionMeta.activationTeaserVerificationStatus ?? 'not provided'}`
       : 'No backend teaser receipt attached.',
   }
 }

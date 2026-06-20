@@ -19,15 +19,27 @@ vi.unmock('../../components/dashboard/DailyCommandDeck')
 vi.unmock('../../components/dashboard/FieldKitCard')
 vi.unmock('../../components/dashboard/JourneyProgressCard')
 vi.unmock('../../components/dashboard/MissionBriefCard')
-vi.unmock('../../lib/runtime')
-vi.unmock('../../lib/api/dashboard')
-vi.unmock('../../lib/api/trader')
 vi.unmock('../../pages/marketing/HomePage')
 vi.unmock('../../pages/marketing/PublicUploadPage')
 vi.unmock('../../pages/marketing/FreeReportPage')
 vi.unmock('../../pages/marketing/LockedInsightPage')
 vi.unmock('../../pages/marketing/PrivateDemoPage')
 vi.unmock('../../pages/dashboard/OverviewPage')
+
+vi.mock('../../lib/runtime', async () => vi.importActual('../../lib/runtime'))
+
+vi.mock('../../lib/api/dashboard', async () => {
+  const sampleWorkspace = await vi.importActual<typeof import('../../lib/sampleWorkspace')>('../../lib/sampleWorkspace')
+  return {
+    getDashboardOverview: vi.fn(async () => sampleWorkspace.getSampleWorkspaceOverview('reset_pro')),
+    getTradingReportComparison: vi.fn(async () => null),
+  }
+})
+
+vi.mock('../../lib/api/trader', () => ({
+  getTraderProfileContext: vi.fn(async () => null),
+  logTraderLifecycleEvent: vi.fn(async () => undefined),
+}))
 
 function LocationProbe() {
   const location = useLocation()

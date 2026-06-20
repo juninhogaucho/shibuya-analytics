@@ -28,6 +28,10 @@ export interface ActivationResponse {
   publicContextTeaserRequestId?: string | null
   publicContextTeaserTradesAnalyzed?: string | null
   publicContextTeaserWorstPattern?: string | null
+  publicContextTeaserVerified?: string | null
+  publicContextTeaserVerificationStatus?: string | null
+  publicContextTeaserReceiptHash?: string | null
+  publicContextTeaserVerifiedAt?: string | null
   publicContextStorySource?: string | null
   publicContextStorySceneCount?: string | null
   publicContextPainAxes?: string | null
@@ -280,6 +284,10 @@ export interface AppendProofSummary {
   activation_teaser_request_id?: string | null
   activation_teaser_trades_analyzed?: number | string | null
   activation_teaser_worst_pattern?: string | null
+  activation_teaser_verified?: string | null
+  activation_teaser_verification_status?: string | null
+  activation_teaser_receipt_hash?: string | null
+  activation_teaser_verified_at?: string | null
   proof_boundary: string
 }
 
@@ -503,6 +511,10 @@ export interface UploadProofReceipt {
   activation_teaser_request_id?: string
   activation_teaser_trades_analyzed?: number | string
   activation_teaser_worst_pattern?: string
+  activation_teaser_verified?: string
+  activation_teaser_verification_status?: string
+  activation_teaser_receipt_hash?: string
+  activation_teaser_verified_at?: string
 }
 
 export interface DashboardActivationOrigin {
@@ -517,6 +529,10 @@ export interface DashboardActivationOrigin {
   teaser_request_id?: string | null
   teaser_trades_analyzed?: string | null
   teaser_worst_pattern?: string | null
+  teaser_verified?: string | null
+  teaser_verification_status?: string | null
+  teaser_receipt_hash?: string | null
+  teaser_verified_at?: string | null
   story_source?: string | null
   story_scene_count?: string | null
   pain_axes?: string | null

@@ -6,12 +6,28 @@ import { AppRoutes } from '../routes'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../lib/runtime'
 
 vi.unmock('../../components/AuthGuard')
-vi.unmock('../../lib/runtime')
-vi.unmock('../../lib/api/dashboard')
-vi.unmock('../../lib/api/trader')
 vi.unmock('../../pages/marketing/DemoLauncherPage')
 vi.unmock('../../pages/marketing/PrivateDemoPage')
 vi.unmock('../../pages/dashboard/AppendTradesPage')
+
+vi.mock('../../lib/runtime', async () => vi.importActual('../../lib/runtime'))
+
+vi.mock('../../lib/api/dashboard', async () => {
+  const sampleWorkspace = await vi.importActual<typeof import('../../lib/sampleWorkspace')>('../../lib/sampleWorkspace')
+  return {
+    getDashboardOverview: vi.fn(async () => sampleWorkspace.getSampleWorkspaceOverview('reset_pro')),
+    getTradePasteMemory: vi.fn(async () => ({ has_previous: false, deltas: [], message: 'Sample workspace does not retain paste memory.' })),
+    getTradingReportComparison: vi.fn(async () => null),
+    parseTradePaste: vi.fn(async () => ({ rowsParsed: 0, symbols: [], issues: ['Sample parser preview only.'] })),
+    submitParsedTrades: vi.fn(async () => ({ status: 'sample', trades_uploaded: 0 })),
+    uploadTradesCSV: vi.fn(async () => ({ status: 'sample', trades_uploaded: 0 })),
+  }
+})
+
+vi.mock('../../lib/api/trader', () => ({
+  getTraderProfileContext: vi.fn(async () => null),
+  logTraderLifecycleEvent: vi.fn(async () => undefined),
+}))
 
 function LocationProbe() {
   const location = useLocation()

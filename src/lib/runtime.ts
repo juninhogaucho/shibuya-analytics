@@ -72,6 +72,10 @@ export interface ShibuyaSessionMeta {
   activationTeaserRequestId?: string
   activationTeaserTradesAnalyzed?: number
   activationTeaserWorstPattern?: string
+  activationTeaserVerified?: string
+  activationTeaserVerificationStatus?: string
+  activationTeaserReceiptHash?: string
+  activationTeaserVerifiedAt?: string
   activationStorySource?: string
   activationSelectedPainAxisIds?: string[]
   activationVisitedSceneCount?: number
@@ -149,6 +153,10 @@ const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'activationTeaserRequestId',
   'activationTeaserTradesAnalyzed',
   'activationTeaserWorstPattern',
+  'activationTeaserVerified',
+  'activationTeaserVerificationStatus',
+  'activationTeaserReceiptHash',
+  'activationTeaserVerifiedAt',
   'activationStorySource',
   'activationSelectedPainAxisIds',
   'activationVisitedSceneCount',

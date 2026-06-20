@@ -252,6 +252,10 @@ describe('DashboardOverviewPage', () => {
         activationAxisId: 'edge_decay',
         activationReportArtifactStatus: 'local_preview_only',
         activationProductionArtifactProven: 'false',
+        activationTeaserVerified: 'true',
+        activationTeaserVerificationStatus: 'verified',
+        activationTeaserReceiptHash: 'receipt-hash-overview',
+        activationTeaserVerifiedAt: '2026-06-20T00:02:00Z',
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
         activationVisitedSceneCount: 6,
@@ -274,6 +278,10 @@ describe('DashboardOverviewPage', () => {
           axis_id: 'edge_decay',
           artifact_status: 'local_preview_only',
           production_artifact_proven: 'false',
+          teaser_verified: 'true',
+          teaser_verification_status: 'verified',
+          teaser_receipt_hash: 'receipt-hash-overview',
+          teaser_verified_at: '2026-06-20T00:02:00Z',
           story_source: 'guided',
           story_scene_count: '6',
           pain_axes: 'edge_decay,revenge_reentry',
@@ -309,6 +317,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/guided; scenes 6; axes Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
     expect(screen.getByText(/2 view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/)).toBeInTheDocument()
+    expect(screen.getByText('Teaser verification')).toBeInTheDocument()
+    expect(screen.getByText('verified; verified true; receipt receipt-hash-overview')).toBeInTheDocument()
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 

@@ -126,6 +126,10 @@ describe('dashboard API boundary', () => {
           teaser_request_id: 'TEASER-dashboard-123',
           teaser_trades_analyzed: '10',
           teaser_worst_pattern: 'Revenge Trading',
+          teaser_verified: 'true',
+          teaser_verification_status: 'verified',
+          teaser_receipt_hash: 'receipt-hash-dashboard',
+          teaser_verified_at: '2026-06-20T00:01:00Z',
         },
         bql_state: 'Unknown',
         bql_score: 0,
@@ -187,6 +191,10 @@ describe('dashboard API boundary', () => {
       activationTeaserRequestId: 'TEASER-dashboard-123',
       activationTeaserTradesAnalyzed: 10,
       activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'receipt-hash-dashboard',
+      activationTeaserVerifiedAt: '2026-06-20T00:01:00Z',
     })
   })
 
@@ -236,6 +244,10 @@ describe('dashboard API boundary', () => {
       activationTeaserRequestId: 'TEASER-old',
       activationTeaserTradesAnalyzed: 10,
       activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'old-receipt-hash',
+      activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
@@ -268,6 +280,8 @@ describe('dashboard API boundary', () => {
     expect(session?.activationSource).toBeUndefined()
     expect(session?.activationReportId).toBeUndefined()
     expect(session?.activationTeaserRequestId).toBeUndefined()
+    expect(session?.activationTeaserVerificationStatus).toBeUndefined()
+    expect(session?.activationTeaserReceiptHash).toBeUndefined()
     expect(session?.activationStorySource).toBeUndefined()
     expect(session?.activationLockedSectionTitle).toBeUndefined()
     expect(session?.activationBridgeDecisionQuestion).toBeUndefined()

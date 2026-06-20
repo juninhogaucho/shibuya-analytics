@@ -172,6 +172,10 @@ export function ActivationPage() {
             : parsePublicContextCount(response.publicContextTeaserTradesAnalyzed)
         const activationTeaserWorstPatternForStorage =
           carriedActivationReportSession?.backendTeaser?.worstPattern ?? response.publicContextTeaserWorstPattern ?? undefined
+        const activationTeaserVerifiedForStorage = response.publicContextTeaserVerified ?? undefined
+        const activationTeaserVerificationStatusForStorage = response.publicContextTeaserVerificationStatus ?? undefined
+        const activationTeaserReceiptHashForStorage = response.publicContextTeaserReceiptHash ?? undefined
+        const activationTeaserVerifiedAtForStorage = response.publicContextTeaserVerifiedAt ?? undefined
         const activationStorySourceForStorage = activationStorySource ?? response.publicContextStorySource ?? undefined
         const activationSelectedPainAxisIdsForLiveStorage = activationSelectedPainAxisIdsForStorage ?? backendPainAxisIds
         const activationVisitedSceneCountForStorage = activationVisitedSceneCount ?? backendVisitedSceneCount
@@ -210,6 +214,10 @@ export function ActivationPage() {
           activationTeaserRequestId: activationTeaserRequestIdForStorage,
           activationTeaserTradesAnalyzed: activationTeaserTradesAnalyzedForStorage,
           activationTeaserWorstPattern: activationTeaserWorstPatternForStorage,
+          activationTeaserVerified: activationTeaserVerifiedForStorage,
+          activationTeaserVerificationStatus: activationTeaserVerificationStatusForStorage,
+          activationTeaserReceiptHash: activationTeaserReceiptHashForStorage,
+          activationTeaserVerifiedAt: activationTeaserVerifiedAtForStorage,
           activationStorySource: activationStorySourceForStorage,
           activationSelectedPainAxisIds: activationSelectedPainAxisIdsForLiveStorage,
           activationVisitedSceneCount: activationVisitedSceneCountForStorage,
@@ -241,6 +249,10 @@ export function ActivationPage() {
             activationTeaserRequestId: activationTeaserRequestIdForStorage,
             activationTeaserTradesAnalyzed: activationTeaserTradesAnalyzedForStorage,
             activationTeaserWorstPattern: activationTeaserWorstPatternForStorage,
+            activationTeaserVerified: activationTeaserVerifiedForStorage,
+            activationTeaserVerificationStatus: activationTeaserVerificationStatusForStorage,
+            activationTeaserReceiptHash: activationTeaserReceiptHashForStorage,
+            activationTeaserVerifiedAt: activationTeaserVerifiedAtForStorage,
             activationStorySource: activationStorySourceForStorage,
             activationVisitedSceneCount: activationVisitedSceneCountForStorage,
             activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,
