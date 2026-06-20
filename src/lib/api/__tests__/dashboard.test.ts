@@ -10,7 +10,14 @@ afterEach(() => {
 describe('dashboard API boundary', () => {
   test('serves sample workspace data only in sample mode', async () => {
     const { enterSampleMode } = await import('../../runtime')
-    const { getDashboardOverview, getTradeHistory, parseTradePaste } = await import('../dashboard')
+    const {
+      getDashboardOverview,
+      getTradeHistory,
+      getTradingReportComparison,
+      parseTradePaste,
+      submitParsedTrades,
+      uploadTradesCSV,
+    } = await import('../dashboard')
 
     enterSampleMode({ preview: 'reset_pro' })
 
@@ -27,21 +34,65 @@ describe('dashboard API boundary', () => {
       symbols: ['NIFTY24JAN22500CE'],
       issues: [expect.stringContaining('Sample parser preview only')],
     })
+    await expect(submitParsedTrades({ trades: [], rawText: 'row-1\nrow-2' })).resolves.toMatchObject({
+      status: 'sample',
+      trades_uploaded: 2,
+    })
+    await expect(uploadTradesCSV(new File(['date,symbol,pnl\n2024-01-01,NIFTY,100'], 'trades.csv'))).resolves.toMatchObject({
+      status: 'sample',
+      trades_uploaded: 0,
+      report: {
+        message: expect.stringContaining('Upload disabled in sample workspace'),
+      },
+    })
+    await expect(getTradingReportComparison()).resolves.toMatchObject({
+      has_comparison: true,
+    })
   })
 
-  test('fails live dashboard writes when backend config is impossible', async () => {
+  test('fails every live dashboard request when backend config is impossible', async () => {
     vi.doMock('../../constants', () => ({
       API_BASE_URL: 'https://api-not-configured.invalid',
       isApiBaseConfiguredForLive: () => false,
     }))
 
     const { setLiveApiKey } = await import('../../runtime')
-    const { submitParsedTrades } = await import('../dashboard')
+    const {
+      getDashboardAlerts,
+      getDashboardOverview,
+      getEdgePortfolio,
+      getShadowBoxing,
+      getSlumpPrescription,
+      getTradeHistory,
+      getTradePasteMemory,
+      getTradingReport,
+      getTradingReportComparison,
+      getTradingReports,
+      parseTradePaste,
+      submitParsedTrades,
+      uploadTradesCSV,
+    } = await import('../dashboard')
 
     setLiveApiKey('live_123', { tier: 'psych_audit' })
 
+    const missingBackendError = /VITE_API_BASE is missing/
+
+    await expect(parseTradePaste({ body: 'row' })).rejects.toThrow(missingBackendError)
+    await expect(getTradePasteMemory()).rejects.toThrow(missingBackendError)
+    await expect(getTradeHistory()).rejects.toThrow(missingBackendError)
+    await expect(getTradingReports()).rejects.toThrow(missingBackendError)
+    await expect(getTradingReport('report_live_123')).rejects.toThrow(missingBackendError)
+    await expect(getTradingReportComparison()).rejects.toThrow(missingBackendError)
+    await expect(getDashboardOverview()).rejects.toThrow(missingBackendError)
+    await expect(getDashboardAlerts()).rejects.toThrow(missingBackendError)
+    await expect(getEdgePortfolio()).rejects.toThrow(missingBackendError)
+    await expect(getSlumpPrescription()).rejects.toThrow(missingBackendError)
+    await expect(getShadowBoxing()).rejects.toThrow(missingBackendError)
+    await expect(uploadTradesCSV(new File(['date,symbol,pnl\n2024-01-01,NIFTY,100'], 'trades.csv'))).rejects.toThrow(
+      missingBackendError,
+    )
     await expect(submitParsedTrades({ trades: [], rawText: 'row' })).rejects.toThrow(
-      /VITE_API_BASE is missing/,
+      missingBackendError,
     )
   })
 
