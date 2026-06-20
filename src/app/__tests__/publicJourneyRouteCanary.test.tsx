@@ -11,7 +11,17 @@ import {
 } from '../../lib/runtime'
 
 vi.unmock('../../components/AuthGuard')
+vi.unmock('../../components/charts/ChartCard')
+vi.unmock('../../components/charts/DisciplineTaxTrend')
+vi.unmock('../../components/charts/EquityCurve')
+vi.unmock('../../components/dashboard/CampaignProofCard')
+vi.unmock('../../components/dashboard/DailyCommandDeck')
+vi.unmock('../../components/dashboard/FieldKitCard')
+vi.unmock('../../components/dashboard/JourneyProgressCard')
+vi.unmock('../../components/dashboard/MissionBriefCard')
 vi.unmock('../../lib/runtime')
+vi.unmock('../../lib/api/dashboard')
+vi.unmock('../../lib/api/trader')
 vi.unmock('../../pages/marketing/HomePage')
 vi.unmock('../../pages/marketing/PublicUploadPage')
 vi.unmock('../../pages/marketing/FreeReportPage')
