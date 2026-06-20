@@ -211,7 +211,7 @@ export default function PublicUploadPage() {
   }
 
   const generateReport = async (source: 'upload' | 'sample') => {
-    const reportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
+    const fallbackReportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
     const validationError = validatePublicReportInput({
       fileName,
       fileValidationError: fileValidation.status === 'blocked' ? fileValidation.error : null,
@@ -238,6 +238,7 @@ export default function PublicUploadPage() {
         backendTeaserFacts.push(`Backend teaser attempted but failed: ${message}. Report created as local preview only.`)
       }
     }
+    const reportId = backendTeaser?.status === 'success' && backendTeaser.report_id ? backendTeaser.report_id : fallbackReportId
 
     try {
       persistPublicReportSession(

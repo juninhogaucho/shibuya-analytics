@@ -333,7 +333,11 @@ describe('public Shibuya journey pages', () => {
       return {
         status: 'success',
         report_type: 'teaser',
+        report_id: 'public-teaser-route-123',
         request_id: 'TEASER-route-123',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 'b'.repeat(64),
         trades_analyzed: 10,
         headline: {
           total_pnl: 420,
@@ -362,24 +366,30 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+      expect(screen.getByTestId('location')).toHaveTextContent('/report/public-teaser-route-123')
     })
 
     expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
-    expect(screen.getAllByText('Backend teaser generated').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Backend teaser persisted').length).toBeGreaterThan(0)
     expect(screen.getByText('Not proven')).toBeInTheDocument()
-    expect(screen.getByText('Backend teaser generated: request TEASER-route-123; 10 trades analyzed.')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser persisted: report public-teaser-route-123; request TEASER-route-123; 10 trades analyzed.')).toBeInTheDocument()
+    expect(screen.getByText(`Backend teaser receipt hash: ${'b'.repeat(64)}.`)).toBeInTheDocument()
     expect(screen.getByText('Backend teaser hook: $120 discipline tax detected before activation.')).toBeInTheDocument()
-    expect(screen.getAllByText(/Backend teaser report generated/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Backend teaser receipt persisted/i).length).toBeGreaterThan(0)
 
     const reportId = screen.getByTestId('location').textContent?.match(/\/report\/([^?]+)/)?.[1]
+    expect(reportId).toBe('public-teaser-route-123')
     const stored = getPublicReportSession(reportId)
     expect(stored).toMatchObject({
-      artifactStatus: 'backend_teaser_generated',
-      artifactStatusLabel: 'Backend teaser generated',
+      reportId: 'public-teaser-route-123',
+      artifactStatus: 'backend_teaser_persisted',
+      artifactStatusLabel: 'Backend teaser persisted',
       productionArtifactProven: false,
       backendTeaser: {
+        reportId: 'public-teaser-route-123',
         requestId: 'TEASER-route-123',
+        artifactStatus: 'backend_teaser_persisted',
+        receiptHash: 'b'.repeat(64),
         tradesAnalyzed: 10,
         disciplineTax: 120,
       },

@@ -3,7 +3,11 @@ import { http } from './httpClient'
 export interface PublicTeaserReportResponse {
   status: string
   report_type: 'teaser' | string
+  report_id?: string
   request_id: string
+  artifact_status?: 'backend_teaser_persisted' | string
+  production_artifact_proven?: boolean
+  receipt_hash?: string
   trades_analyzed: number
   headline?: {
     total_pnl?: number
@@ -17,6 +21,7 @@ export interface PublicTeaserReportResponse {
   unlock_message?: string
   cta_url?: string
   processing_time_seconds?: number
+  created_at?: string
 }
 
 export async function generatePublicTeaserReport(file: File): Promise<PublicTeaserReportResponse> {

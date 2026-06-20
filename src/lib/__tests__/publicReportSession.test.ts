@@ -107,7 +107,11 @@ describe('public report sessions', () => {
       backendTeaser: {
         status: 'success',
         report_type: 'teaser',
+        report_id: 'public-teaser-backed',
         request_id: 'TEASER-abc123',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 'a'.repeat(64),
         trades_analyzed: 10,
         headline: {
           total_pnl: 420,
@@ -129,11 +133,14 @@ describe('public report sessions', () => {
     expect(stored).toMatchObject({
       reportId: 'free-report-backed',
       source: 'paste',
-      artifactStatus: 'backend_teaser_generated',
-      artifactStatusLabel: 'Backend teaser generated',
+      artifactStatus: 'backend_teaser_persisted',
+      artifactStatusLabel: 'Backend teaser persisted',
       productionArtifactProven: false,
       backendTeaser: {
+        reportId: 'public-teaser-backed',
         requestId: 'TEASER-abc123',
+        artifactStatus: 'backend_teaser_persisted',
+        receiptHash: 'a'.repeat(64),
         tradesAnalyzed: 10,
         disciplineTax: 120,
         totalPnl: 420,
@@ -143,10 +150,11 @@ describe('public report sessions', () => {
         processingTimeSeconds: 0.42,
       },
     })
-    expect(stored?.validationSummary).toContain('Backend teaser report generated')
-    expect(stored?.validationFacts).toContain('Backend teaser generated: request TEASER-abc123; 10 trades analyzed.')
+    expect(stored?.validationSummary).toContain('Backend teaser receipt persisted')
+    expect(stored?.validationFacts).toContain('Backend teaser persisted: report public-teaser-backed; request TEASER-abc123; 10 trades analyzed.')
+    expect(stored?.validationFacts).toContain(`Backend teaser receipt hash: ${'a'.repeat(64)}.`)
     expect(stored?.validationFacts).toContain('Backend teaser hook: $120 discipline tax detected before activation.')
-    expect(stored?.boundary).toContain('stores only the backend teaser receipt')
+    expect(stored?.boundary).toContain('stores only the persisted backend teaser receipt')
   })
 
   test('builds an explicit demo launcher sample packet without raw upload claims', () => {
