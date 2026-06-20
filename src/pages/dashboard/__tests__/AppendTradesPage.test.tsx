@@ -7,6 +7,7 @@ const parseTradePasteMock = vi.fn()
 const submitParsedTradesMock = vi.fn()
 const uploadTradesCSVMock = vi.fn()
 const getTradePasteMemoryMock = vi.fn()
+const getTradingReportComparisonMock = vi.fn()
 const logTraderLifecycleEventMock = vi.fn()
 const isSampleModeMock = vi.fn()
 const getShibuyaRuntimeContractMock = vi.fn()
@@ -26,6 +27,7 @@ vi.mock('../../../lib/api/dashboard', () => ({
   submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
   uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
   getTradePasteMemory: (...args: unknown[]) => getTradePasteMemoryMock(...args),
+  getTradingReportComparison: (...args: unknown[]) => getTradingReportComparisonMock(...args),
 }))
 
 vi.mock('../../../lib/runtime', () => ({
@@ -58,6 +60,18 @@ describe('AppendTradesPage', () => {
     })
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
+    getTradingReportComparisonMock.mockResolvedValue({
+      has_comparison: false,
+      baseline: null,
+      latest: null,
+      delta_summary: null,
+      last_report_snapshot_id: null,
+      append_proof: {
+        status: 'awaiting_second_upload',
+        upload_count: 1,
+        proof_boundary: 'Append proof is not ready until this account has at least two durable upload snapshots.',
+      },
+    })
     logTraderLifecycleEventMock.mockResolvedValue(undefined)
     getTraderProfileContextMock.mockResolvedValue({
       capital_band: '50k_to_250k_inr',
@@ -107,6 +121,61 @@ describe('AppendTradesPage', () => {
           direction: 'up',
         },
       ],
+    })
+    getTradingReportComparisonMock.mockResolvedValue({
+      has_comparison: true,
+      baseline: {
+        snapshot_id: 'snap_upload_002',
+        discipline_tax: 420,
+        bql_score: 0.62,
+        bql_state: 'under_pressure',
+        pnl_net: 500,
+        pnl_gross: 920,
+        total_trades: 10,
+        winning_trades: 5,
+        ruin_probability: 0.08,
+        behavior_share: 0.45,
+        breach_risk_score: 55,
+      },
+      latest: {
+        snapshot_id: 'snap_upload_003',
+        discipline_tax: 260,
+        bql_score: 0.48,
+        bql_state: 'in_control',
+        pnl_net: 720,
+        pnl_gross: 980,
+        total_trades: 12,
+        winning_trades: 7,
+        ruin_probability: 0.04,
+        behavior_share: 0.27,
+        breach_risk_score: 35,
+      },
+      delta_summary: {
+        discipline_tax_change: -160,
+        revenge_change: -90,
+        overtrading_change: -40,
+        size_change: -30,
+        edge_vs_behavior_shift: 'behavior improving',
+        breach_risk_shift: 'risk improving',
+        bql_change: -0.14,
+      },
+      last_report_snapshot_id: 'snap_upload_003',
+      append_proof: {
+        status: 'comparison_ready',
+        upload_count: 3,
+        baseline_snapshot_id: 'snap_upload_001',
+        latest_snapshot_id: 'snap_upload_003',
+        baseline_report_id: 'report_upload_001',
+        latest_report_id: 'report_upload_003',
+        latest_append_count: 3,
+        latest_request_id: 'req_live_123',
+        latest_artifact_status: 'generated',
+        latest_trades_uploaded: 2,
+        activation_source: 'locked_insight',
+        activation_report_id: 'sample-behavioral-leak-report',
+        activation_locked_section_id: 'edge-decay-map',
+        proof_boundary: 'Append proof is backed by at least two durable upload snapshots and the latest upload receipt.',
+      },
     })
   })
 
@@ -266,10 +335,16 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Backend request receipt: req_live_123.')).toBeInTheDocument()
     expect(screen.getByText('Comparing upload #3 to #2')).toBeInTheDocument()
     expect(screen.getByText('Win Rate: 50.0% -> 55.0% (+5.0pp)')).toBeInTheDocument()
+    expect(screen.getByText('Append proof comparison is ready.')).toBeInTheDocument()
+    expect(screen.getByText('Append proof is backed by at least two durable upload snapshots and the latest upload receipt.')).toBeInTheDocument()
+    expect(screen.getByText('Baseline snapshot snap_upload_001 -> latest snapshot snap_upload_003.')).toBeInTheDocument()
+    expect(screen.getByText('Latest report artifact: report_upload_003.')).toBeInTheDocument()
+    expect(screen.getByText('Latest append request receipt: req_live_123.')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(getTradePasteMemoryMock).toHaveBeenCalledTimes(1)
     })
+    expect(getTradingReportComparisonMock).toHaveBeenCalledTimes(1)
     expect(logTraderLifecycleEventMock).toHaveBeenCalledWith({
       event_name: 'first_upload_completed',
       market: 'india',

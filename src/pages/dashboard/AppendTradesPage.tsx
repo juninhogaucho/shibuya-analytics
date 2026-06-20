@@ -6,6 +6,7 @@ import {
 } from '../../lib/api/trader'
 import {
   getTradePasteMemory,
+  getTradingReportComparison,
   parseTradePaste,
   submitParsedTrades,
   uploadTradesCSV,
@@ -23,7 +24,7 @@ import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
 import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
 import type { ShibuyaSessionMeta } from '../../lib/runtime'
-import type { TradePasteMemoryResponse, TraderProfileContext } from '../../lib/types'
+import type { TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 
 interface ParsedTrade {
@@ -77,6 +78,28 @@ function formatMemoryDelta(memory: TradePasteMemoryResponse): string[] {
   return [
     memory.message,
     ...memory.deltas.map((delta) => `${delta.metric}: ${delta.previous} -> ${delta.current} (${delta.delta})`),
+  ]
+}
+
+function formatAppendProofNotes(comparison: TradingReportComparisonResponse | null): string[] {
+  const proof = comparison?.append_proof
+  if (!proof) {
+    return ['Append-proof comparison was not returned by the backend yet.']
+  }
+
+  if (proof.status !== 'comparison_ready') {
+    return [
+      proof.proof_boundary,
+      `Durable upload snapshots on record: ${proof.upload_count}.`,
+    ]
+  }
+
+  return [
+    'Append proof comparison is ready.',
+    proof.proof_boundary,
+    `Baseline snapshot ${proof.baseline_snapshot_id ?? 'missing'} -> latest snapshot ${proof.latest_snapshot_id ?? 'missing'}.`,
+    proof.latest_report_id ? `Latest report artifact: ${proof.latest_report_id}.` : 'Latest report artifact was not returned.',
+    proof.latest_request_id ? `Latest append request receipt: ${proof.latest_request_id}.` : 'Latest append request receipt was not returned.',
   ]
 }
 
@@ -390,6 +413,10 @@ export function AppendTradesPage() {
         setLiveUploadProof(null)
       } else {
         const memory = await getTradePasteMemory().catch(() => null)
+        const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
+        const comparison = appendProofExpected
+          ? await getTradingReportComparison().catch(() => null)
+          : null
         if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
           await logTraderLifecycleEvent({
             event_name: 'first_upload_completed',
@@ -404,9 +431,10 @@ export function AppendTradesPage() {
         setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
         setNotes(
           memory
-            ? [...proofNotes, ...formatMemoryDelta(memory)]
+            ? [...proofNotes, ...formatMemoryDelta(memory), ...(appendProofExpected ? formatAppendProofNotes(comparison) : [])]
             : [
                 ...proofNotes,
+                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
                 'Analytics reran; artifact receipt above is the proof boundary for this append.',
                 'Trade Paste Memory is temporarily unavailable. Check back after your next session.',
               ],
@@ -478,6 +506,10 @@ export function AppendTradesPage() {
         ])
       } else {
         const memory = await getTradePasteMemory().catch(() => null)
+        const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
+        const comparison = appendProofExpected
+          ? await getTradingReportComparison().catch(() => null)
+          : null
         if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
           await logTraderLifecycleEvent({
             event_name: 'first_upload_completed',
@@ -496,10 +528,12 @@ export function AppendTradesPage() {
                 ...proofNotes,
                 ...(rescued.applied ? rescued.notes : []),
                 ...formatMemoryDelta(memory),
+                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
               ]
             : [
                 ...proofNotes,
                 ...(rescued.applied ? rescued.notes : []),
+                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
                 'Analytics reran; artifact receipt above is the proof boundary for this append.',
                 'Upload another batch to compare what actually changed between sessions.',
               ],

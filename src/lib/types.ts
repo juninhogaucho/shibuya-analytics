@@ -259,12 +259,31 @@ export interface TradingReportDeltaSummary {
   bql_change: number
 }
 
+export interface AppendProofSummary {
+  status: 'comparison_ready' | 'awaiting_second_upload' | string
+  upload_count: number
+  baseline_snapshot_id?: string | null
+  latest_snapshot_id?: string | null
+  baseline_report_id?: string | null
+  latest_report_id?: string | null
+  latest_append_count?: number | null
+  latest_request_id?: string | null
+  latest_artifact_status?: string | null
+  latest_upload_completed_at?: string | null
+  latest_trades_uploaded?: number | null
+  activation_source?: string | null
+  activation_report_id?: string | null
+  activation_locked_section_id?: string | null
+  proof_boundary: string
+}
+
 export interface TradingReportComparisonResponse {
   has_comparison: boolean
   baseline: TradingReportSnapshot | null
   latest: TradingReportSnapshot | null
   delta_summary: TradingReportDeltaSummary | null
   last_report_snapshot_id?: string | null
+  append_proof?: AppendProofSummary | null
 }
 
 export interface AnalysisSummary {
