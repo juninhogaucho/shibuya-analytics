@@ -131,7 +131,7 @@ describe('public report sessions', () => {
       source: 'paste',
       artifactStatus: 'backend_teaser_generated',
       artifactStatusLabel: 'Backend teaser generated',
-      productionArtifactProven: true,
+      productionArtifactProven: false,
       backendTeaser: {
         requestId: 'TEASER-abc123',
         tradesAnalyzed: 10,

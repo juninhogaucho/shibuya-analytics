@@ -7,9 +7,12 @@ const ROOT = path.resolve(import.meta.dirname, '..')
 const DEFAULT_BACKEND_ROOT = path.resolve(ROOT, '..', 'medallion')
 
 const FRONTEND_TEST_TARGETS = [
+  'src/lib/__tests__/publicReportSession.test.ts',
+  'src/pages/marketing/__tests__/PublicJourneyPages.test.tsx',
   'src/pages/checkout/__tests__/CheckoutPage.test.tsx',
   'src/pages/marketing/__tests__/ActivationPage.test.tsx',
   'src/lib/api/__tests__/dashboard.test.ts',
+  'src/pages/dashboard/__tests__/OverviewPage.test.tsx',
   'src/pages/dashboard/__tests__/AppendTradesPage.test.tsx',
 ]
 
@@ -20,7 +23,11 @@ const ESLINT_TARGETS = [
   'src/lib/api/checkout.ts',
   'src/lib/api/dashboard.ts',
   'src/pages/checkout/CheckoutPage.tsx',
+  'src/pages/checkout/CheckoutSuccessPage.tsx',
+  'src/pages/marketing/FreeReportPage.tsx',
+  'src/pages/marketing/PublicUploadPage.tsx',
   'src/pages/marketing/ActivationPage.tsx',
+  'src/pages/dashboard/OverviewPage.tsx',
   'src/pages/dashboard/AppendTradesPage.tsx',
   ...FRONTEND_TEST_TARGETS,
 ]

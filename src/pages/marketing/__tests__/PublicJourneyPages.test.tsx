@@ -302,7 +302,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Report live-proof gap')).toBeInTheDocument()
     expect(screen.getAllByText(/Artifact status/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Sample demo only/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Production artifact').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
     expect(screen.getByText(/Gap ledger rule/i)).toBeInTheDocument()
     expect(screen.getAllByText('Sample history packet').length).toBeGreaterThan(0)
@@ -367,7 +367,7 @@ describe('public Shibuya journey pages', () => {
 
     expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
     expect(screen.getAllByText('Backend teaser generated').length).toBeGreaterThan(0)
-    expect(screen.getByText('Proven')).toBeInTheDocument()
+    expect(screen.getByText('Not proven')).toBeInTheDocument()
     expect(screen.getByText('Backend teaser generated: request TEASER-route-123; 10 trades analyzed.')).toBeInTheDocument()
     expect(screen.getByText('Backend teaser hook: $120 discipline tax detected before activation.')).toBeInTheDocument()
     expect(screen.getAllByText(/Backend teaser report generated/i).length).toBeGreaterThan(0)
@@ -377,7 +377,7 @@ describe('public Shibuya journey pages', () => {
     expect(stored).toMatchObject({
       artifactStatus: 'backend_teaser_generated',
       artifactStatusLabel: 'Backend teaser generated',
-      productionArtifactProven: true,
+      productionArtifactProven: false,
       backendTeaser: {
         requestId: 'TEASER-route-123',
         tradesAnalyzed: 10,
@@ -412,7 +412,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('demo_packet=launcher_sample')
     expect(screen.getAllByText('Demo launcher sample packet').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Controlled launcher sample only/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Production artifact').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
     expect(screen.getByText('Demo launcher initialized this sample packet from an explicit shared-link flag.')).toBeInTheDocument()
     expect(screen.getByText('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')).toBeInTheDocument()
@@ -529,7 +529,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
     expect(screen.getByText('Public report packet')).toBeInTheDocument()
     expect(screen.getAllByText(/Local preview only/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Production artifact').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Pasted trade sample').length).toBeGreaterThan(0)
     expect(screen.getByText(/Pasted sample passed local structure check/i)).toBeInTheDocument()

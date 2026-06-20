@@ -196,7 +196,7 @@ export default function FreeReportPage() {
                   </strong>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                  <span className="block font-mono uppercase tracking-[0.18em] text-emerald-100">Production artifact</span>
+                  <span className="block font-mono uppercase tracking-[0.18em] text-emerald-100">Live/private artifact</span>
                   <strong className="mt-1 block text-sm text-white">
                     {reportSession?.productionArtifactProven ? 'Proven' : 'Not proven'}
                   </strong>

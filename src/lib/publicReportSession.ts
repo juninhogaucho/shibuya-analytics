@@ -310,7 +310,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     evidenceLabel,
     artifactStatus,
     artifactStatusLabel,
-    productionArtifactProven: Boolean(backendTeaser),
+    productionArtifactProven: false,
     validationSummary:
       source === 'sample'
         ? 'Demo packet accepted. This proves the public journey transition, not live analytics.'

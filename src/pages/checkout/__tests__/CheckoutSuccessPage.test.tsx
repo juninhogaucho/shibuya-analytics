@@ -79,7 +79,7 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText('Report: sample-free-report')).toBeInTheDocument()
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Artifact status: Sample demo only \/ Production artifact: not proven/i)).toBeInTheDocument()
+    expect(screen.getByText(/Artifact status: Sample demo only \/ Live\/private artifact: not proven/i)).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; pain axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
     expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()

@@ -280,7 +280,7 @@ export function DashboardOverviewPage() {
                 <h4 style={{ marginBottom: '0.5rem' }}>Public artifact status</h4>
                 <p className="text-muted" style={{ marginBottom: 0 }}>
                   {liveActivationOrigin.artifactStatus
-                    ? `${liveActivationOrigin.artifactStatus}; production artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
+                    ? `${liveActivationOrigin.artifactStatus}; live/private artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
                     : 'No public artifact status attached'}
                 </p>
               </article>
@@ -647,7 +647,7 @@ export function DashboardOverviewPage() {
               <h4 style={{ marginBottom: '0.5rem' }}>Public artifact status</h4>
               <p className="text-muted" style={{ marginBottom: 0 }}>
                 {liveActivationOrigin.artifactStatus
-                  ? `${liveActivationOrigin.artifactStatus}; production artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
+                  ? `${liveActivationOrigin.artifactStatus}; live/private artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
                   : 'No public artifact status attached'}
               </p>
             </article>

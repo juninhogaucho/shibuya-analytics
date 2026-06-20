@@ -121,7 +121,7 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Artifact status: Backend teaser generated \/ Production artifact: proven/i)).toBeInTheDocument()
+    expect(screen.getByText(/Artifact status: Backend teaser generated \/ Live\/private artifact: not proven/i)).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText('Checkout engagement receipt')).toBeInTheDocument()
     expect(screen.getByText(/Views 1; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
@@ -156,7 +156,7 @@ describe('CheckoutPage', () => {
         public_context_axis_id: 'edge_decay',
         public_context_packet_source: 'sample',
         public_context_artifact_status: 'backend_teaser_generated',
-        public_context_production_artifact_proven: 'true',
+        public_context_production_artifact_proven: 'false',
         public_context_story_source: 'guided',
         public_context_story_scene_count: '5',
         public_context_pain_axes: 'edge_decay',
