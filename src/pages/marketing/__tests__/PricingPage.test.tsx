@@ -21,6 +21,12 @@ describe('PricingPage', () => {
     )
 
     expect(screen.queryByRole('link', { name: /Private Demo Access/i })).not.toBeInTheDocument()
+    expect(screen.getByText('Product unboxing')).toBeInTheDocument()
+    expect(screen.getByText('Do not choose a plan. Choose the pressure loop.')).toBeInTheDocument()
+    expect(screen.getByText('The box contains a mirror, a mandate, and a proof loop.')).toBeInTheDocument()
+    expect(screen.getByText('01 / Mirror')).toBeInTheDocument()
+    expect(screen.getByText('04 / Proof')).toBeInTheDocument()
+    expect(screen.getByText(/The product is not real until upload/i)).toBeInTheDocument()
     expect(screen.getByText('Pricing route integrity')).toBeInTheDocument()
     expect(screen.getByText('Start paid intent from the report, not a cold checkout.')).toBeInTheDocument()
     expect(screen.getByText(/Generic pricing can explain the ladder/i)).toBeInTheDocument()
@@ -45,6 +51,8 @@ describe('PricingPage', () => {
     const expectedQuery = 'source=locked_insight&report=sample-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global'
 
     expect(screen.getByText('Pricing route integrity')).toBeInTheDocument()
+    expect(screen.getByText('Product unboxing')).toBeInTheDocument()
+    expect(screen.getByText(/Shibuya has to feel different before the first checkout click/i)).toBeInTheDocument()
     expect(screen.getByText('Checkout unlocks only after locked insight context.')).toBeInTheDocument()
     expect(screen.getByText(/carries report, archetype, dominant axis/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute(
@@ -55,9 +63,10 @@ describe('PricingPage', () => {
       'href',
       `/checkout/psych-audit-live?${expectedQuery}`,
     )
-    expect(screen.getByRole('link', { name: /Continue Private Demo Gate/i })).toHaveAttribute(
-      'href',
-      `/private-demo?${expectedQuery}`,
-    )
+    expect(
+      screen
+        .getAllByRole('link', { name: /Continue Private Demo Gate/i })
+        .every((link) => link.getAttribute('href') === `/private-demo?${expectedQuery}`),
+    ).toBe(true)
   })
 })

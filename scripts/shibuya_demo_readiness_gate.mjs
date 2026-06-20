@@ -20,7 +20,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'public StoryExperience',
     file: 'src/components/landing/StoryExperience.tsx',
-    markers: ['Interactive film / public mirror', 'Shibuya scene experience', 'The market did not break you.', 'Choose the frame that stings', 'CINEMATIC_CHOICES', 'Public story contract', 'This is the first product surface', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
+    markers: ['Interactive film / public mirror', 'Shibuya scene experience', 'The market did not break you.', 'Choose the frame that stings', 'CINEMATIC_CHOICES', 'STORY_REEL_BEATS', 'Evidence door', 'The public film ends only when the trader chooses evidence.', 'Upload becomes the next scene', 'Public story contract', 'This is the first product surface', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
   },
   {
     label: 'public journey contract',
@@ -90,7 +90,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'pricing context ladder',
     file: 'src/pages/marketing/PricingPage.tsx',
-    markers: ['readCheckoutIntent', 'appendCheckoutIntentToPath', 'Pricing route integrity', 'Start paid intent from the report, not a cold checkout.', 'Checkout unlocks only after locked insight context.', 'Generate Free Report First', 'Continue Private Demo Gate', 'hasLockedInsightIntent'],
+    markers: ['readCheckoutIntent', 'appendCheckoutIntentToPath', 'Product unboxing', 'Do not choose a plan. Choose the pressure loop.', 'The box contains a mirror, a mandate, and a proof loop.', 'The product is not real until upload.', 'Pricing route integrity', 'Start paid intent from the report, not a cold checkout.', 'Checkout unlocks only after locked insight context.', 'Generate Free Report First', 'Continue Private Demo Gate', 'hasLockedInsightIntent'],
   },
   {
     label: 'checkout intent URL handoff',

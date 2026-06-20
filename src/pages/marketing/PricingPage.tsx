@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Check } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { trackAffiliateClick } from '../../lib/api/checkout'
 import {
@@ -131,6 +131,29 @@ function PlanCard({
   )
 }
 
+const PRODUCT_REVEAL_STEPS = [
+  {
+    label: '01 / Mirror',
+    title: 'You do not buy a dashboard first.',
+    body: 'The public story and report identify the question worth testing. If there is no question, paid access should wait.',
+  },
+  {
+    label: '02 / Instrument',
+    title: 'Choose the operating instrument.',
+    body: 'Psych Audit is the monthly mirror. Reset Pro is the higher-pressure reset loop with first-cycle guided review.',
+  },
+  {
+    label: '03 / Activation',
+    title: 'The box opens only after activation.',
+    body: 'Payment becomes order code, account activation, return access, and a workspace that knows where the trader came from.',
+  },
+  {
+    label: '04 / Proof',
+    title: 'The product is not real until upload.',
+    body: 'Live upload, generated artifacts, and append history are what turn the experience into account-specific proof.',
+  },
+] as const
+
 export default function PricingPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
@@ -174,35 +197,81 @@ export default function PricingPage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
+        <div className="mx-auto mb-12 max-w-4xl text-center">
           <span className="mb-4 block font-mono text-xs uppercase tracking-widest text-indigo-400">
-            {market === 'india' ? 'India Direct Offer Ladder' : 'Direct Trader Offer Ladder'}
+            {market === 'india' ? 'India direct product reveal' : 'Direct trader product reveal'}
           </span>
-          <h1 className="mb-6 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">
+          <h1 className="mb-6 text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] text-white md:text-7xl">
             {market === 'india'
-              ? 'Choose The Monthly Live Workspace'
-              : 'Choose Continuous Live Access'}
+              ? 'Do not choose a plan. Choose the pressure loop.'
+              : 'Do not choose a plan. Choose the pressure loop.'}
           </h1>
-          <p className="font-serif text-xl italic text-neutral-400">
+          <p className="mx-auto max-w-3xl text-lg leading-8 text-neutral-300 md:text-xl md:leading-9">
             {market === 'india'
-              ? 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'
-              : 'Psych Audit keeps the self-serve loop alive. Reset Pro adds the first-cycle guided review after a meaningful upload, so the review has evidence to work from.'}
+              ? 'Shibuya should feel like opening an instrument, not buying AI software. The public story names the pressure. The paid workspace decides how hard the loop needs to be.'
+              : 'Shibuya should feel like opening an instrument, not buying AI software. The public story names the pressure. The paid workspace decides how hard the loop needs to be.'}
           </p>
-          <div className="mt-8 rounded-3xl border border-sky-300/20 bg-sky-300/[0.06] p-5 text-left">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
-              Pricing route integrity
-            </p>
-            <h2 className="mt-2 text-xl font-semibold text-white">
-              {hasLockedInsightIntent
-                ? 'Checkout unlocks only after locked insight context.'
-                : 'Start paid intent from the report, not a cold checkout.'}
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-sky-50/75">
-              {hasLockedInsightIntent
-                ? 'This page carries report, archetype, dominant axis, story handoff, and locked module into checkout or the presenter demo gate.'
-                : 'Generic pricing can explain the ladder, but it should route traders back to upload/report first so paid access starts from an explicit question.'}
-            </p>
+        </div>
+
+        <section className="mb-12 overflow-hidden rounded-[2rem] border border-white/10 bg-[#060607] shadow-2xl shadow-black/40">
+          <div className="grid min-h-[34rem] lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="relative flex flex-col justify-between border-b border-white/10 p-6 md:p-8 lg:border-b-0 lg:border-r">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(129,140,248,0.28),transparent_30%),radial-gradient(circle_at_80%_78%,rgba(34,211,238,0.12),transparent_34%)]" />
+              <div className="relative">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/50">
+                  Product unboxing
+                </p>
+                <h2 className="mt-5 max-w-2xl font-display text-4xl font-black uppercase leading-[0.9] tracking-[-0.05em] text-white md:text-6xl">
+                  The box contains a mirror, a mandate, and a proof loop.
+                </h2>
+                <p className="mt-6 max-w-xl text-sm leading-7 text-neutral-300 md:text-base md:leading-8">
+                  Everyone can say AI. Shibuya has to feel different before the first checkout click: cinematic recognition,
+                  a locked private question, then a workspace that only claims what evidence can prove.
+                </p>
+              </div>
+              <div className="relative mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to={reportFirstHref}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-indigo-100"
+                >
+                  Generate Free Report
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to={privateDemoHref}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.035] px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black"
+                >
+                  {privateDemoLabel}
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid gap-0 md:grid-cols-2">
+              {PRODUCT_REVEAL_STEPS.map((step) => (
+                <article key={step.label} className="border-b border-white/10 p-6 last:border-b-0 md:border-r md:[&:nth-child(even)]:border-r-0 md:[&:nth-last-child(-n+2)]:border-b-0 md:p-8">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">{step.label}</p>
+                  <h3 className="mt-4 text-xl font-semibold leading-tight text-white">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-neutral-400">{step.body}</p>
+                </article>
+              ))}
+            </div>
           </div>
+        </section>
+
+        <div className="mx-auto mb-16 max-w-4xl rounded-3xl border border-sky-300/20 bg-sky-300/[0.06] p-5 text-left md:p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
+            Pricing route integrity
+          </p>
+          <h2 className="mt-2 text-xl font-semibold text-white">
+            {hasLockedInsightIntent
+              ? 'Checkout unlocks only after locked insight context.'
+              : 'Start paid intent from the report, not a cold checkout.'}
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-sky-50/75">
+            {hasLockedInsightIntent
+              ? 'This page carries report, archetype, dominant axis, story handoff, and locked module into checkout or the presenter demo gate.'
+              : 'Generic pricing can explain the ladder, but it should route traders back to upload/report first so paid access starts from an explicit question.'}
+          </p>
         </div>
 
         <section className="mb-20">

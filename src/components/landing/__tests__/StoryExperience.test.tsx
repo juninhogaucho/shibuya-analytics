@@ -25,6 +25,10 @@ describe('StoryExperience', () => {
     expect(screen.getByText('Your state repeated.')).toBeInTheDocument()
     expect(screen.getByText('Choose the frame that stings')).toBeInTheDocument()
     expect(screen.getByText('Public story contract')).toBeInTheDocument()
+    expect(screen.getByText('Reel 1 / Cold open')).toBeInTheDocument()
+    expect(screen.getByText('Reel 4 / Evidence door')).toBeInTheDocument()
+    expect(screen.getByText('The public film ends only when the trader chooses evidence.')).toBeInTheDocument()
+    expect(screen.getAllByText('Upload becomes the next scene: confirm or reject the mirror with trade history.').length).toBeGreaterThan(0)
     expect(screen.getByText(/This is the first product surface/i)).toBeInTheDocument()
     expect(screen.getByText('Truth ladder')).toBeInTheDocument()
     expect(screen.getByText('Public story creates a provisional mirror.')).toBeInTheDocument()
@@ -38,6 +42,10 @@ describe('StoryExperience', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/story')
     expect(screen.getAllByText('Choose the uncomfortable mirror').length).toBeGreaterThan(0)
     expect(screen.getByText(/Current hypothesis: Priya \/ Prop evaluation survivor with Drawdown Pressure/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Reel 4 \/ Evidence door/i }))
+
+    expect(screen.getAllByText('Upload your trade history. See what the fingerprint gets right.').length).toBeGreaterThan(0)
   })
 
   test('routes a selected public hypothesis into upload without claiming account evidence', async () => {

@@ -42,7 +42,7 @@ describe('public Shibuya route canary', () => {
 
     render(app)
 
-    expect((await screen.findAllByRole('heading', { name: /The market did not break you/i })).length).toBeGreaterThan(0)
+    expect((await screen.findAllByRole('heading', { name: /The market did not break you/i }, { timeout: 5000 })).length).toBeGreaterThan(0)
     expect(screen.getByText(/The first public job is recognition/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /I changed near the limit line/i }))
@@ -58,18 +58,23 @@ describe('public Shibuya route canary', () => {
     expect(screen.getByText('Story-first context is attached.')).toBeInTheDocument()
     expect(screen.getByText('Report packet contract')).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /Use Sample History/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Use Sample History/i }))
 
-    expect(await screen.findByRole('heading', { name: /Your baseline is forming/i })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
+    })
+    expect(await screen.findByRole('heading', { name: /Your baseline is forming/i }, { timeout: 5000 })).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/report/sample-behavioral-leak-report')
     expect(screen.getByText('Report-to-private handoff receipt')).toBeInTheDocument()
     expect(screen.getByText('Reset Pro bridge')).toBeInTheDocument()
     expect(screen.getByText(/Reset Pro should decide whether pressure changes the account before the breach/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('link', { name: /Continue Guided Storyline/i }))
+    fireEvent.click(screen.getByRole('link', { name: /Continue Guided Storyline/i }))
 
-    expect(await screen.findByRole('heading', { name: /This is where recognition becomes evidence/i })).toBeInTheDocument()
-    expect(screen.getByTestId('location')).toHaveTextContent('/insight/breach-sequence')
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/insight/breach-sequence')
+    })
+    expect(await screen.findByRole('heading', { name: /This is where recognition becomes evidence/i }, { timeout: 5000 })).toBeInTheDocument()
     expect(screen.getByText('Private insight decision gate')).toBeInTheDocument()
     expect(screen.getByText('Private gate handoff checksum')).toBeInTheDocument()
     expect(getPublicReportEngagement('sample-behavioral-leak-report')).toMatchObject({

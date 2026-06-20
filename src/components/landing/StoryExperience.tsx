@@ -88,6 +88,33 @@ const CINEMATIC_CHOICES: Array<{
   },
 ]
 
+const STORY_REEL_BEATS = [
+  {
+    label: 'Cold open',
+    title: 'The trader sees the loop.',
+    body: 'Start with the repeated state, not the dashboard. The first emotional job is recognition.',
+    sceneIndex: 0,
+  },
+  {
+    label: 'Mirror cut',
+    title: 'The trader chooses the wound.',
+    body: 'One uncomfortable choice creates the public hypothesis: revenge, pressure, or edge decay.',
+    sceneIndex: 3,
+  },
+  {
+    label: 'Fingerprint reveal',
+    title: 'The page shows what it thinks.',
+    body: 'The reveal is intentionally provisional. It earns curiosity without claiming account proof.',
+    sceneIndex: 9,
+  },
+  {
+    label: 'Evidence door',
+    title: 'The story asks for history.',
+    body: 'Upload becomes the next scene: confirm or reject the mirror with trade history.',
+    sceneIndex: 10,
+  },
+] as const
+
 export default function StoryExperience() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -334,6 +361,37 @@ export default function StoryExperience() {
               </motion.aside>
             </div>
 
+            <div className="grid gap-3 border-t border-white/10 pt-5 md:grid-cols-4">
+              {STORY_REEL_BEATS.map((beat, index) => {
+                const selected = activeSceneIndex >= beat.sceneIndex && (
+                  index === STORY_REEL_BEATS.length - 1
+                    ? true
+                    : activeSceneIndex < STORY_REEL_BEATS[index + 1].sceneIndex
+                )
+
+                return (
+                  <button
+                    key={beat.label}
+                    type="button"
+                    onClick={() => inspectScene(beat.sceneIndex)}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                      selected
+                        ? 'border-white/45 bg-white text-black'
+                        : 'border-white/10 bg-white/[0.035] text-white hover:border-white/25 hover:bg-white/[0.07]'
+                    }`}
+                  >
+                    <span className={`font-mono text-[10px] uppercase tracking-[0.22em] ${selected ? 'text-black/55' : 'text-white/45'}`}>
+                      Reel {index + 1} / {beat.label}
+                    </span>
+                    <span className="mt-3 block text-sm font-semibold leading-5">{beat.title}</span>
+                    <span className={`mt-2 block text-xs leading-5 ${selected ? 'text-black/62' : 'text-neutral-400'}`}>
+                      {beat.body}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
             <div className="flex flex-col gap-4 border-t border-white/10 pt-5 md:flex-row md:items-end md:justify-between">
               <div className="min-w-0">
                 <div className="h-1 max-w-xl overflow-hidden rounded-full bg-white/10">
@@ -372,10 +430,26 @@ export default function StoryExperience() {
 
         <div className="mb-8 rounded-[2rem] border border-white/10 bg-white/[0.035] p-5 text-sm leading-7 text-neutral-300 md:p-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-200">Public story contract</p>
-          <p className="mt-3">
-            This is the first product surface: recognize the pressure state, choose the uncomfortable mirror, reveal a
-            provisional fingerprint, then decide whether trade history can prove or reject it.
-          </p>
+          <div className="mt-3 grid gap-5 lg:grid-cols-[0.84fr_1.16fr] lg:items-end">
+            <div>
+              <h3 className="text-2xl font-semibold leading-tight text-white md:text-3xl">
+                The public film ends only when the trader chooses evidence.
+              </h3>
+              <p className="mt-4">
+                This is the first product surface: recognize the pressure state, choose the uncomfortable mirror,
+                reveal a provisional fingerprint, then decide whether trade history can prove or reject it.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {STORY_REEL_BEATS.map((beat) => (
+                <div key={beat.label} className="rounded-2xl border border-white/8 bg-black/25 p-4">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-100">{beat.label}</span>
+                  <strong className="mt-2 block text-sm text-white">{beat.title}</strong>
+                  <span className="mt-2 block text-xs leading-5 text-neutral-400">{beat.body}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="mb-8">
