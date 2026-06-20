@@ -479,6 +479,7 @@ export interface DashboardOverview {
   last_report_snapshot_id?: string | null
   first_upload_receipt?: UploadProofReceipt | null
   latest_upload_receipt?: UploadProofReceipt | null
+  upload_receipt_history?: UploadProofReceipt[]
   analysis_summary?: AnalysisSummary | null
   market_context_source?: string | null
   market_context_status?: string | null

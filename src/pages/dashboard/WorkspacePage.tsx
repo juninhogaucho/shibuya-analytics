@@ -280,6 +280,7 @@ export function WorkspacePage() {
   const effectiveTraderMode = overview?.trader_mode ?? profile?.trader_mode ?? sessionMeta?.traderMode ?? null
   const effectiveExpiry = overview?.access_expires_at ?? sessionMeta?.accessExpiresAt ?? null
   const latestUploadReceipt = overview?.latest_upload_receipt ?? overview?.first_upload_receipt ?? null
+  const uploadReceiptHistory = overview?.upload_receipt_history ?? []
   const effectiveReadOnly = readOnly || effectiveCaseStatus === 'read_only'
   const effectiveDaysRemaining = getSessionDaysRemaining({
     ...sessionMeta,
@@ -515,6 +516,46 @@ export function WorkspacePage() {
               ) : (
                 <p className="text-muted" style={{ marginBottom: 0 }}>
                   No backend upload receipt yet. The first live upload should create one before the workspace claims account-specific proof.
+                </p>
+              )}
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)', gridColumn: '1 / -1' }}>
+              <h4 style={{ marginBottom: '0.35rem' }}>Append proof history</h4>
+              {uploadReceiptHistory.length ? (
+                <>
+                  <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
+                    Each row is a persisted backend receipt from an upload that generated or attempted an artifact for this account.
+                  </p>
+                  <div className="grid-responsive two" style={{ gap: '0.75rem' }}>
+                    {uploadReceiptHistory.slice(-5).map((receipt, index) => (
+                      <article
+                        key={`${receipt.request_id ?? receipt.report_snapshot_id ?? index}-${index}`}
+                        className="glass-panel"
+                        style={{
+                          background: 'rgba(255,255,255,0.02)',
+                          borderColor: receipt.report_snapshot_id ? 'rgba(16,185,129,0.22)' : 'rgba(245,158,11,0.24)',
+                        }}
+                      >
+                        <div className="flex items-center gap-2" style={{ justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                          <span className="badge">Append #{proofValue(receipt.append_count, String(index + 1))}</span>
+                          <span className="badge">{proofValue(receipt.artifact_status, 'unknown')}</span>
+                        </div>
+                        <p className="text-muted" style={{ marginBottom: '0.35rem' }}>
+                          {formatProofDate(receipt.completed_at)} · {proofValue(receipt.trades_uploaded, '0')} trades
+                        </p>
+                        <p className="text-muted" style={{ marginBottom: '0.35rem', overflowWrap: 'anywhere' }}>
+                          Snapshot: {proofValue(receipt.report_snapshot_id)}
+                        </p>
+                        <p className="text-muted" style={{ marginBottom: 0, overflowWrap: 'anywhere' }}>
+                          Request: {proofValue(receipt.request_id)}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  No append history yet. One live upload creates the first receipt; repeated uploads should stack here as proof of continuity.
                 </p>
               )}
             </article>

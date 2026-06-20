@@ -84,6 +84,28 @@ describe('WorkspacePage', () => {
         append_count: 1,
         request_id: 'req_live_123',
       },
+      upload_receipt_history: [
+        {
+          completed_at: '2026-06-19T09:15:00Z',
+          upload_transport: 'manual',
+          trades_uploaded: 12,
+          report_snapshot_id: 'snap_upload_012',
+          report_id: 'report_upload_012',
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_live_012',
+        },
+        {
+          completed_at: '2026-06-20T09:15:00Z',
+          upload_transport: 'api',
+          trades_uploaded: 24,
+          report_snapshot_id: 'snap_upload_024',
+          report_id: 'report_upload_024',
+          artifact_status: 'generated',
+          append_count: 2,
+          request_id: 'req_live_123',
+        },
+      ],
     })
   })
 
@@ -99,7 +121,12 @@ describe('WorkspacePage', () => {
     expect(screen.getByText('snap_upload_024')).toBeInTheDocument()
     expect(screen.getByText('report_upload_024')).toBeInTheDocument()
     expect(screen.getByText('24')).toBeInTheDocument()
-    expect(screen.getByText('generated')).toBeInTheDocument()
+    expect(screen.getAllByText('generated').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('req_live_123')).toBeInTheDocument()
+    expect(screen.getByText('Append proof history')).toBeInTheDocument()
+    expect(screen.getByText(/Each row is a persisted backend receipt/i)).toBeInTheDocument()
+    expect(screen.getByText('Snapshot: snap_upload_012')).toBeInTheDocument()
+    expect(screen.getByText('Request: req_live_012')).toBeInTheDocument()
+    expect(screen.getByText('Snapshot: snap_upload_024')).toBeInTheDocument()
   })
 })
