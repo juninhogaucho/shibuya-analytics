@@ -366,7 +366,8 @@ export default function PricingPage() {
           <div className="mb-10 text-center">
             <h2 className="mb-4 text-2xl font-bold uppercase text-white">How The Paid Loop Actually Works</h2>
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-neutral-400">
-              No fake demo logic. No conceptual jump after checkout. Just a direct path from payment into the live trader runtime.
+              Payment can open the account door. It does not prove the trader yet. The proof loop is activation,
+              first upload, generated artifacts, append history, and visible claim boundaries at every step.
             </p>
           </div>
 
@@ -380,17 +381,17 @@ export default function PricingPage() {
               {
                 step: '2',
                 title: 'Activate',
-                body: 'Pay, receive the order code, activate the workspace, and create your return password.',
+                body: 'Pay only after the locked insight context is carried, then verify the order code before the workspace can claim live access.',
               },
               {
                 step: '3',
                 title: 'Upload',
-                body: 'Bring in your broker or platform export and let Shibuya show what is costing the account.',
+                body: 'Bring in your broker or platform export so the backend can normalize history and generate account artifacts.',
               },
               {
                 step: '4',
                 title: 'Act',
-                body: 'Carry the next-session mandate, append the next session, and let Reset Pro review evidence instead of vibes.',
+                body: 'Carry the next-session mandate, append the next session, and let Reset Pro update the claim only when evidence changes.',
               },
             ].map((item) => (
               <article key={item.step} className="rounded-2xl border border-white/5 bg-[#080809] p-6">

@@ -30,6 +30,10 @@ describe('PricingPage', () => {
     expect(screen.getByText('Pricing route integrity')).toBeInTheDocument()
     expect(screen.getByText('Start paid intent from the report, not a cold checkout.')).toBeInTheDocument()
     expect(screen.getByText(/Generic pricing can explain the ladder/i)).toBeInTheDocument()
+    expect(screen.getByText(/Payment can open the account door/i)).toBeInTheDocument()
+    expect(screen.getByText(/It does not prove the trader yet/i)).toBeInTheDocument()
+    expect(screen.getByText(/first upload, generated artifacts, append history/i)).toBeInTheDocument()
+    expect(screen.queryByText(/direct path from payment into the live trader runtime/i)).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /^Start Reset Pro$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /^Start Psych Audit$/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Activate Live Trader Account/i })).toHaveAttribute('href', '/activate?market=global')
@@ -55,6 +59,9 @@ describe('PricingPage', () => {
     expect(screen.getByText(/Shibuya has to feel different before the first checkout click/i)).toBeInTheDocument()
     expect(screen.getByText('Checkout unlocks only after locked insight context.')).toBeInTheDocument()
     expect(screen.getByText(/carries report, archetype, dominant axis/i)).toBeInTheDocument()
+    expect(screen.getByText(/Pay only after the locked insight context is carried/i)).toBeInTheDocument()
+    expect(screen.getByText(/generate account artifacts/i)).toBeInTheDocument()
+    expect(screen.getByText(/update the claim only when evidence changes/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /^Start Reset Pro$/i })).toHaveAttribute(
       'href',
       `/checkout/reset-pro-live?${expectedQuery}`,
