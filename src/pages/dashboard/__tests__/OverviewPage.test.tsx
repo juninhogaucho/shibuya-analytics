@@ -177,6 +177,8 @@ describe('DashboardOverviewPage', () => {
         activationReportId: 'sample-free-report',
         activationArchetypeId: 'marco',
         activationAxisId: 'edge_decay',
+        activationReportArtifactStatus: 'sample_demo_only',
+        activationProductionArtifactProven: 'false',
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay'],
         activationVisitedSceneCount: 6,
@@ -214,6 +216,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/guided; scenes 6; axes Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText('Public signal markers')).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Public artifact status')).toBeInTheDocument()
+    expect(screen.getByText(/sample_demo_only; production artifact not proven/i)).toBeInTheDocument()
     expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
     expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
     expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()
@@ -245,6 +249,8 @@ describe('DashboardOverviewPage', () => {
         activationReportId: 'sample-free-report',
         activationArchetypeId: 'marco',
         activationAxisId: 'edge_decay',
+        activationReportArtifactStatus: 'sample_demo_only',
+        activationProductionArtifactProven: 'false',
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay'],
         activationVisitedSceneCount: 6,
@@ -276,6 +282,8 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
     expect(screen.getByText(/The backend is not loaded, so no account analytics are shown/i)).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Public artifact status')).toBeInTheDocument()
+    expect(screen.getByText(/sample_demo_only; production artifact not proven/i)).toBeInTheDocument()
     expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
     expect(screen.getByText('2 view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
     expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()

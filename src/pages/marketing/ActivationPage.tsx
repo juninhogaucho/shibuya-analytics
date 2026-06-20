@@ -158,6 +158,12 @@ export function ActivationPage() {
         const activationReportIdForStorage = carriedActivationIntent?.reportId ?? response.publicContextReportId ?? undefined
         const activationArchetypeIdForStorage = carriedActivationIntent?.archetypeId ?? response.publicContextArchetypeId ?? undefined
         const activationAxisIdForStorage = carriedActivationIntent?.axisId ?? response.publicContextAxisId ?? undefined
+        const activationReportArtifactStatusForStorage =
+          carriedActivationReportSession?.artifactStatus ?? response.publicContextArtifactStatus ?? undefined
+        const activationProductionArtifactProvenForStorage =
+          typeof carriedActivationReportSession?.productionArtifactProven === 'boolean'
+            ? String(carriedActivationReportSession.productionArtifactProven)
+            : response.publicContextProductionArtifactProven ?? undefined
         const activationStorySourceForStorage = activationStorySource ?? response.publicContextStorySource ?? undefined
         const activationSelectedPainAxisIdsForLiveStorage = activationSelectedPainAxisIdsForStorage ?? backendPainAxisIds
         const activationVisitedSceneCountForStorage = activationVisitedSceneCount ?? backendVisitedSceneCount
@@ -191,6 +197,8 @@ export function ActivationPage() {
           activationReportId: activationReportIdForStorage,
           activationArchetypeId: activationArchetypeIdForStorage,
           activationAxisId: activationAxisIdForStorage,
+          activationReportArtifactStatus: activationReportArtifactStatusForStorage,
+          activationProductionArtifactProven: activationProductionArtifactProvenForStorage,
           activationStorySource: activationStorySourceForStorage,
           activationSelectedPainAxisIds: activationSelectedPainAxisIdsForLiveStorage,
           activationVisitedSceneCount: activationVisitedSceneCountForStorage,
@@ -217,6 +225,8 @@ export function ActivationPage() {
             passwordRequired: response.passwordRequired ?? false,
             activationSource: activationSourceForStorage,
             activationReportId: activationReportIdForStorage,
+            activationReportArtifactStatus: activationReportArtifactStatusForStorage,
+            activationProductionArtifactProven: activationProductionArtifactProvenForStorage,
             activationStorySource: activationStorySourceForStorage,
             activationVisitedSceneCount: activationVisitedSceneCountForStorage,
             activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,

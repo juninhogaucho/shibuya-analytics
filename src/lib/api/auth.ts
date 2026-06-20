@@ -68,6 +68,8 @@ export async function verifyActivation(payload: ActivationPayload): Promise<Acti
       activationReportId: data.publicContextReportId ?? undefined,
       activationArchetypeId: data.publicContextArchetypeId ?? undefined,
       activationAxisId: data.publicContextAxisId ?? undefined,
+      activationReportArtifactStatus: data.publicContextArtifactStatus ?? undefined,
+      activationProductionArtifactProven: data.publicContextProductionArtifactProven ?? undefined,
       activationStorySource: data.publicContextStorySource ?? undefined,
       activationSelectedPainAxisIds: splitPublicContextList(data.publicContextPainAxes),
       activationVisitedSceneCount: parsePublicContextCount(data.publicContextStorySceneCount),

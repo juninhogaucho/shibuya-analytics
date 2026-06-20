@@ -23,6 +23,8 @@ export interface ActivationResponse {
   publicContextArchetypeId?: string | null
   publicContextAxisId?: string | null
   publicContextPacketSource?: string | null
+  publicContextArtifactStatus?: string | null
+  publicContextProductionArtifactProven?: string | null
   publicContextStorySource?: string | null
   publicContextStorySceneCount?: string | null
   publicContextPainAxes?: string | null

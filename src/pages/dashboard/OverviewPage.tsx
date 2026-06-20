@@ -138,6 +138,8 @@ export function DashboardOverviewPage() {
           ? `${getTraderArchetype(sessionMeta.activationArchetypeId).name}: ${getTraderArchetype(sessionMeta.activationArchetypeId).title}`
           : undefined,
         axisLabel: sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : undefined,
+        artifactStatus: sessionMeta.activationReportArtifactStatus,
+        productionArtifactProven: sessionMeta.activationProductionArtifactProven,
         storySource: sessionMeta.activationStorySource,
         selectedPainAxisLabels: sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label),
         visitedSceneCount: sessionMeta.activationVisitedSceneCount,
@@ -272,6 +274,14 @@ export function DashboardOverviewPage() {
                   {liveActivationOrigin.signalMarkerLabels?.length
                     ? liveActivationOrigin.signalMarkerLabels.join(', ')
                     : 'No public markers attached'}
+                </p>
+              </article>
+              <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <h4 style={{ marginBottom: '0.5rem' }}>Public artifact status</h4>
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  {liveActivationOrigin.artifactStatus
+                    ? `${liveActivationOrigin.artifactStatus}; production artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
+                    : 'No public artifact status attached'}
                 </p>
               </article>
               <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
@@ -631,6 +641,14 @@ export function DashboardOverviewPage() {
                 {liveActivationOrigin.signalMarkerLabels?.length
                   ? liveActivationOrigin.signalMarkerLabels.join(', ')
                   : 'No public markers attached'}
+              </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Public artifact status</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>
+                {liveActivationOrigin.artifactStatus
+                  ? `${liveActivationOrigin.artifactStatus}; production artifact ${liveActivationOrigin.productionArtifactProven === 'true' ? 'proven' : 'not proven'}`
+                  : 'No public artifact status attached'}
               </p>
             </article>
             <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)' }}>
