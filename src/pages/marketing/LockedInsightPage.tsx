@@ -55,6 +55,37 @@ const LOCKED_INSIGHT_PRESENTER_GUARDRAILS = [
   },
 ] as const
 
+const LOCKED_INSIGHT_DECISION_ROOM_SEQUENCE = [
+  {
+    timebox: '0:00',
+    label: 'Question lock',
+    title: 'Name the exact private question.',
+    body: 'The locked module exists to focus attention on one thing the live workspace must prove, not to open another feature menu.',
+    boundary: 'A precise question is still not a private answer.',
+  },
+  {
+    timebox: '0:35',
+    label: 'Proof wall',
+    title: 'Show what blocks the answer.',
+    body: 'Make activation, upload normalization, generated artifacts, and append history visible before offering a paid or presenter-gated path.',
+    boundary: 'Missing proof must be visible before any Reset Pro walkthrough.',
+  },
+  {
+    timebox: '1:15',
+    label: 'Demo route',
+    title: 'Carry the question into Reset Pro.',
+    body: 'The presenter gate should receive the report, module, archetype, axis, story context, and engagement receipt as routing context.',
+    boundary: 'Sample workspace context is not account evidence.',
+  },
+  {
+    timebox: '2:20',
+    label: 'Append close',
+    title: 'Close on proof, not persuasion.',
+    body: 'The demo should end by showing the append path that would confirm improvement or relapse after the next real session.',
+    boundary: 'The story is unfinished until repeat evidence exists.',
+  },
+] as const
+
 export default function LockedInsightPage() {
   const { section } = useParams()
   const location = useLocation()
@@ -238,6 +269,41 @@ export default function LockedInsightPage() {
             activeStage="insight"
             detail="The private insight page explains the locked module and proof contract before checkout or presenter-gated demo access."
           />
+
+          <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#070708]">
+            <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
+              <div className="border-b border-white/10 p-5 md:p-8 lg:border-b-0 lg:border-r">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-200">
+                  Locked insight decision-room sequence
+                </p>
+                <h2 className="mt-3 text-3xl font-black uppercase leading-[0.95] tracking-[-0.04em] text-white md:text-5xl">
+                  Treat this page like the door into Reset Pro, not another report card.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-neutral-300 md:text-base md:leading-8">
+                  This surface should finish the public story by reducing the next step to one question, one proof wall,
+                  one controlled demo route, and one append-proof close.
+                </p>
+                <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-xs leading-6 text-amber-50/75">
+                  Decision-room sequence rule: the locked insight may carry the question into Reset Pro; it may not answer the question before live evidence.
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2">
+                {LOCKED_INSIGHT_DECISION_ROOM_SEQUENCE.map((beat) => (
+                  <div key={beat.label} className="border-b border-white/10 p-5 last:border-b-0 md:border-r md:[&:nth-child(even)]:border-r-0 md:[&:nth-last-child(-n+2)]:border-b-0 md:p-6">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-sky-100">
+                      {beat.timebox} / {beat.label}
+                    </p>
+                    <h3 className="mt-3 text-lg font-semibold leading-tight text-white">{beat.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-neutral-400">{beat.body}</p>
+                    <p className="mt-4 rounded-2xl border border-white/8 bg-black/25 p-3 text-xs leading-5 text-neutral-400">
+                      Boundary: {beat.boundary}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </article>
 
           <article className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">
