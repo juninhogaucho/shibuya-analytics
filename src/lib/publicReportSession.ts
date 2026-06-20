@@ -243,7 +243,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
   const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
   const liveProofGap = buildLiveProofReadinessContract()
-  const backendTeaser = params.backendTeaser?.status === 'success'
+  const backendTeaser = params.source !== 'sample' && params.backendTeaser?.status === 'success'
     ? {
         reportId: params.backendTeaser.report_id,
         requestId: params.backendTeaser.request_id,

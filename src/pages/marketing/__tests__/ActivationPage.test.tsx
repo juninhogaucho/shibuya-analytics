@@ -56,6 +56,7 @@ describe('ActivationPage', () => {
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 6,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      // Deliberately supplied to prove sample sessions cannot smuggle backend teaser proof into activation.
       backendTeaser: {
         status: 'success',
         report_type: 'teaser',
@@ -131,7 +132,7 @@ describe('ActivationPage', () => {
       activationReportId: 'sample-free-report',
       activationArchetypeId: 'marco',
       activationAxisId: 'edge_decay',
-      activationReportArtifactStatus: 'backend_teaser_generated',
+      activationReportArtifactStatus: 'sample_demo_only',
       activationProductionArtifactProven: 'false',
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
@@ -145,16 +146,16 @@ describe('ActivationPage', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
-      activationTeaserRequestId: 'TEASER-route-123',
-      activationTeaserTradesAnalyzed: 10,
-      activationTeaserWorstPattern: 'Revenge Trading',
     })
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserRequestId')
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserTradesAnalyzed')
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserWorstPattern')
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
           activationSource: 'locked_insight',
           activationReportId: 'sample-free-report',
-          activationReportArtifactStatus: 'backend_teaser_generated',
+          activationReportArtifactStatus: 'sample_demo_only',
           activationProductionArtifactProven: 'false',
           activationStorySource: 'guided',
           activationVisitedSceneCount: 6,
@@ -165,12 +166,13 @@ describe('ActivationPage', () => {
           activationEngagementLockedSectionClickCount: 1,
           activationEngagementCurrentSectionClickCount: 1,
           activationEngagementPrivateDemoIntentCount: 1,
-          activationTeaserRequestId: 'TEASER-route-123',
-          activationTeaserTradesAnalyzed: 10,
-          activationTeaserWorstPattern: 'Revenge Trading',
         }),
       }),
     )
+    const lifecycleMetadata = apiMocks.logTraderLifecycleEvent.mock.calls[0][0].metadata
+    expect(lifecycleMetadata.activationTeaserRequestId).toBeUndefined()
+    expect(lifecycleMetadata.activationTeaserTradesAnalyzed).toBeUndefined()
+    expect(lifecycleMetadata.activationTeaserWorstPattern).toBeUndefined()
   })
 
   test('does not carry URL-only story context into live activation metadata', async () => {

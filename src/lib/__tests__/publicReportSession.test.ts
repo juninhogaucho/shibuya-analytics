@@ -157,6 +157,51 @@ describe('public report sessions', () => {
     expect(stored?.boundary).toContain('stores only the persisted backend teaser receipt')
   })
 
+  test('refuses to attach backend teaser receipts to sample report sessions', () => {
+    const session = buildPublicReportSession({
+      reportId: 'sample-report-backed-input',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'sample',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        report_id: 'public-teaser-should-not-attach',
+        request_id: 'TEASER-should-not-attach',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 's'.repeat(64),
+        trades_analyzed: 12,
+        headline: {
+          total_pnl: 420,
+          discipline_tax: 120,
+          win_rate: 60,
+          worst_pattern: 'Revenge Trading',
+          hook: '$120 discipline tax detected before activation.',
+        },
+      },
+    })
+
+    expect(session).toMatchObject({
+      reportId: 'sample-report-backed-input',
+      source: 'sample',
+      evidenceLabel: 'Sample history packet',
+      artifactStatus: 'sample_demo_only',
+      artifactStatusLabel: 'Sample demo only',
+      productionArtifactProven: false,
+      backendTeaser: null,
+    })
+    expect(session.validationSummary).toBe('Demo packet accepted. This proves the public journey transition, not live analytics.')
+    expect(session.validationFacts).toContain('Artifact status: sample demo only; no backend-generated production report exists for this packet.')
+    expect(session.validationFacts).not.toContain('Backend teaser persisted: report public-teaser-should-not-attach; request TEASER-should-not-attach; 12 trades analyzed.')
+    expect(session.boundary).toContain('not a production report artifact')
+  })
+
   test('builds an explicit demo launcher sample packet without raw upload claims', () => {
     expect(hasDemoLauncherSamplePacketRequest('?demo_packet=launcher_sample')).toBe(true)
     expect(hasDemoLauncherSamplePacketRequest('?demo_packet=sample')).toBe(false)
