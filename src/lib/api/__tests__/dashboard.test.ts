@@ -72,6 +72,9 @@ describe('dashboard API boundary', () => {
           locked_clicks: '1',
           current_section_clicks: '1',
           private_gate_attempts: '1',
+          teaser_request_id: 'TEASER-dashboard-123',
+          teaser_trades_analyzed: '10',
+          teaser_worst_pattern: 'Revenge Trading',
         },
         bql_state: 'Unknown',
         bql_score: 0,
@@ -130,6 +133,9 @@ describe('dashboard API boundary', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
+      activationTeaserRequestId: 'TEASER-dashboard-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
     })
   })
 })

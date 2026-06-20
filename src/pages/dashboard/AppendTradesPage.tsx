@@ -100,6 +100,9 @@ function formatAppendProofNotes(comparison: TradingReportComparisonResponse | nu
     `Baseline snapshot ${proof.baseline_snapshot_id ?? 'missing'} -> latest snapshot ${proof.latest_snapshot_id ?? 'missing'}.`,
     proof.latest_report_id ? `Latest report artifact: ${proof.latest_report_id}.` : 'Latest report artifact was not returned.',
     proof.latest_request_id ? `Latest append request receipt: ${proof.latest_request_id}.` : 'Latest append request receipt was not returned.',
+    proof.activation_teaser_request_id
+      ? `Activation teaser receipt: ${proof.activation_teaser_request_id}; ${proof.activation_teaser_trades_analyzed ?? 'unknown'} trades; ${proof.activation_teaser_worst_pattern ?? 'pattern not returned'}.`
+      : 'Activation teaser receipt was not returned in append proof.',
   ]
 }
 
@@ -155,6 +158,9 @@ function buildFirstUploadLifecycleMetadata(
     activationVisitedSceneCount: sessionMeta?.activationVisitedSceneCount,
     activationSignalMarkerIds: sessionMeta?.activationSignalMarkerIds,
     activationLockedSectionId: sessionMeta?.activationLockedSectionId,
+    activationTeaserRequestId: sessionMeta?.activationTeaserRequestId,
+    activationTeaserTradesAnalyzed: sessionMeta?.activationTeaserTradesAnalyzed,
+    activationTeaserWorstPattern: sessionMeta?.activationTeaserWorstPattern,
   }
 }
 
@@ -209,6 +215,9 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
     bridgeLiveProof: sessionMeta.activationBridgeLiveProof ?? [],
     engagementReceipt: engagementReceipt ?? 'No activation engagement receipt attached.',
     engagementBoundary: sessionMeta.activationEngagementBoundary,
+    teaserReceipt: sessionMeta.activationTeaserRequestId
+      ? `${sessionMeta.activationTeaserRequestId}; ${sessionMeta.activationTeaserTradesAnalyzed ?? 'unknown'} trades; ${sessionMeta.activationTeaserWorstPattern ?? 'pattern not returned'}`
+      : 'No backend teaser receipt attached.',
   }
 }
 
@@ -622,6 +631,7 @@ export function AppendTradesPage() {
               ['Public fingerprint', liveActivationProofTarget.fingerprint],
               ['Story handoff', liveActivationProofTarget.storyHandoff],
               ['Public signal markers', liveActivationProofTarget.signalMarkers],
+              ['Backend teaser receipt', liveActivationProofTarget.teaserReceipt],
               ['Activation engagement receipt', liveActivationProofTarget.engagementReceipt],
             ].map(([label, value]) => (
               <article key={label} className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>

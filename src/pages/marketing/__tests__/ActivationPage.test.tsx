@@ -56,6 +56,16 @@ describe('ActivationPage', () => {
       selectedPainAxisIds: ['edge_decay'],
       visitedSceneCount: 6,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        request_id: 'TEASER-route-123',
+        trades_analyzed: 10,
+        headline: {
+          discipline_tax: 420,
+          worst_pattern: 'Revenge Trading',
+        },
+      },
     }))
     recordPublicReportView('sample-free-report')
     recordLockedSectionIntent('sample-free-report', 'highest-cost-state')
@@ -121,8 +131,8 @@ describe('ActivationPage', () => {
       activationReportId: 'sample-free-report',
       activationArchetypeId: 'marco',
       activationAxisId: 'edge_decay',
-      activationReportArtifactStatus: 'sample_demo_only',
-      activationProductionArtifactProven: 'false',
+      activationReportArtifactStatus: 'backend_teaser_generated',
+      activationProductionArtifactProven: 'true',
       activationStorySource: 'guided',
       activationSelectedPainAxisIds: ['edge_decay'],
       activationVisitedSceneCount: 6,
@@ -135,14 +145,17 @@ describe('ActivationPage', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
+      activationTeaserRequestId: 'TEASER-route-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
     })
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
           activationSource: 'locked_insight',
           activationReportId: 'sample-free-report',
-          activationReportArtifactStatus: 'sample_demo_only',
-          activationProductionArtifactProven: 'false',
+          activationReportArtifactStatus: 'backend_teaser_generated',
+          activationProductionArtifactProven: 'true',
           activationStorySource: 'guided',
           activationVisitedSceneCount: 6,
           activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
@@ -152,6 +165,9 @@ describe('ActivationPage', () => {
           activationEngagementLockedSectionClickCount: 1,
           activationEngagementCurrentSectionClickCount: 1,
           activationEngagementPrivateDemoIntentCount: 1,
+          activationTeaserRequestId: 'TEASER-route-123',
+          activationTeaserTradesAnalyzed: 10,
+          activationTeaserWorstPattern: 'Revenge Trading',
         }),
       }),
     )
@@ -244,6 +260,9 @@ describe('ActivationPage', () => {
       publicContextLockedClicks: '1',
       publicContextCurrentSectionClicks: '1',
       publicContextPrivateGateAttempts: '1',
+      publicContextTeaserRequestId: 'TEASER-backend-456',
+      publicContextTeaserTradesAnalyzed: '12',
+      publicContextTeaserWorstPattern: 'Tilt Expansion',
     })
 
     render(
@@ -287,6 +306,9 @@ describe('ActivationPage', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
+      activationTeaserRequestId: 'TEASER-backend-456',
+      activationTeaserTradesAnalyzed: 12,
+      activationTeaserWorstPattern: 'Tilt Expansion',
     })
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -303,6 +325,9 @@ describe('ActivationPage', () => {
           activationEngagementLockedSectionClickCount: 1,
           activationEngagementCurrentSectionClickCount: 1,
           activationEngagementPrivateDemoIntentCount: 1,
+          activationTeaserRequestId: 'TEASER-backend-456',
+          activationTeaserTradesAnalyzed: 12,
+          activationTeaserWorstPattern: 'Tilt Expansion',
         }),
       }),
     )

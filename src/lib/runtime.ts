@@ -69,6 +69,9 @@ export interface ShibuyaSessionMeta {
   activationAxisId?: string
   activationReportArtifactStatus?: string
   activationProductionArtifactProven?: string
+  activationTeaserRequestId?: string
+  activationTeaserTradesAnalyzed?: number
+  activationTeaserWorstPattern?: string
   activationStorySource?: string
   activationSelectedPainAxisIds?: string[]
   activationVisitedSceneCount?: number

@@ -171,6 +171,9 @@ describe('AppendTradesPage', () => {
         latest_request_id: 'req_live_123',
         latest_artifact_status: 'generated',
         latest_trades_uploaded: 2,
+        activation_teaser_request_id: 'TEASER-route-123',
+        activation_teaser_trades_analyzed: 10,
+        activation_teaser_worst_pattern: 'Revenge Trading',
         activation_source: 'locked_insight',
         activation_report_id: 'sample-behavioral-leak-report',
         activation_locked_section_id: 'edge-decay-map',
@@ -282,6 +285,9 @@ describe('AppendTradesPage', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
+      activationTeaserRequestId: 'TEASER-route-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
     })
     submitParsedTradesMock.mockResolvedValue({
       status: 'ok',
@@ -306,6 +312,8 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Marco: Profitable refiner - Edge Decay')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6; axes Edge Decay')).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser receipt')).toBeInTheDocument()
+    expect(screen.getByText('TEASER-route-123; 10 trades; Revenge Trading')).toBeInTheDocument()
     expect(screen.getByText('Activation engagement receipt')).toBeInTheDocument()
     expect(screen.getByText('2 report view(s), 1 locked click(s), 1 gate attempt(s)')).toBeInTheDocument()
     expect(screen.getByText(/Engagement boundary: Report engagement is local route continuity only/i)).toBeInTheDocument()
@@ -340,6 +348,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Baseline snapshot snap_upload_001 -> latest snapshot snap_upload_003.')).toBeInTheDocument()
     expect(screen.getByText('Latest report artifact: report_upload_003.')).toBeInTheDocument()
     expect(screen.getByText('Latest append request receipt: req_live_123.')).toBeInTheDocument()
+    expect(screen.getByText('Activation teaser receipt: TEASER-route-123; 10 trades; Revenge Trading.')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(getTradePasteMemoryMock).toHaveBeenCalledTimes(1)
@@ -365,6 +374,9 @@ describe('AppendTradesPage', () => {
         activationVisitedSceneCount: 6,
         activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
         activationLockedSectionId: 'edge-decay-map',
+        activationTeaserRequestId: 'TEASER-route-123',
+        activationTeaserTradesAnalyzed: 10,
+        activationTeaserWorstPattern: 'Revenge Trading',
       },
     })
     expect(updateSessionMetaMock).toHaveBeenCalledWith({ caseStatus: 'baseline_ready' })

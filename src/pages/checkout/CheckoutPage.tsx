@@ -171,6 +171,12 @@ const CheckoutPage: React.FC = () => {
               typeof reportSession?.productionArtifactProven === 'boolean'
                 ? String(reportSession.productionArtifactProven)
                 : undefined,
+            public_context_teaser_request_id: reportSession?.backendTeaser?.requestId,
+            public_context_teaser_trades_analyzed:
+              typeof reportSession?.backendTeaser?.tradesAnalyzed === 'number'
+                ? String(reportSession.backendTeaser.tradesAnalyzed)
+                : undefined,
+            public_context_teaser_worst_pattern: reportSession?.backendTeaser?.worstPattern,
             public_context_story_source: enrichedCheckoutIntent.storySource,
             public_context_story_scene_count:
               typeof enrichedCheckoutIntent.visitedSceneCount === 'number'

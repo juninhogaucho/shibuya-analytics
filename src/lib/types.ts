@@ -25,6 +25,9 @@ export interface ActivationResponse {
   publicContextPacketSource?: string | null
   publicContextArtifactStatus?: string | null
   publicContextProductionArtifactProven?: string | null
+  publicContextTeaserRequestId?: string | null
+  publicContextTeaserTradesAnalyzed?: string | null
+  publicContextTeaserWorstPattern?: string | null
   publicContextStorySource?: string | null
   publicContextStorySceneCount?: string | null
   publicContextPainAxes?: string | null
@@ -274,6 +277,9 @@ export interface AppendProofSummary {
   activation_source?: string | null
   activation_report_id?: string | null
   activation_locked_section_id?: string | null
+  activation_teaser_request_id?: string | null
+  activation_teaser_trades_analyzed?: number | string | null
+  activation_teaser_worst_pattern?: string | null
   proof_boundary: string
 }
 
@@ -494,6 +500,9 @@ export interface UploadProofReceipt {
   activation_visited_scene_count?: number
   activation_signal_marker_ids?: string[]
   activation_locked_section_id?: string
+  activation_teaser_request_id?: string
+  activation_teaser_trades_analyzed?: number | string
+  activation_teaser_worst_pattern?: string
 }
 
 export interface DashboardActivationOrigin {
@@ -505,6 +514,9 @@ export interface DashboardActivationOrigin {
   packet_source?: string | null
   artifact_status?: string | null
   production_artifact_proven?: string | null
+  teaser_request_id?: string | null
+  teaser_trades_analyzed?: string | null
+  teaser_worst_pattern?: string | null
   story_source?: string | null
   story_scene_count?: string | null
   pain_axes?: string | null

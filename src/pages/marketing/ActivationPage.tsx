@@ -164,6 +164,14 @@ export function ActivationPage() {
           typeof carriedActivationReportSession?.productionArtifactProven === 'boolean'
             ? String(carriedActivationReportSession.productionArtifactProven)
             : response.publicContextProductionArtifactProven ?? undefined
+        const activationTeaserRequestIdForStorage =
+          carriedActivationReportSession?.backendTeaser?.requestId ?? response.publicContextTeaserRequestId ?? undefined
+        const activationTeaserTradesAnalyzedForStorage =
+          typeof carriedActivationReportSession?.backendTeaser?.tradesAnalyzed === 'number'
+            ? carriedActivationReportSession.backendTeaser.tradesAnalyzed
+            : parsePublicContextCount(response.publicContextTeaserTradesAnalyzed)
+        const activationTeaserWorstPatternForStorage =
+          carriedActivationReportSession?.backendTeaser?.worstPattern ?? response.publicContextTeaserWorstPattern ?? undefined
         const activationStorySourceForStorage = activationStorySource ?? response.publicContextStorySource ?? undefined
         const activationSelectedPainAxisIdsForLiveStorage = activationSelectedPainAxisIdsForStorage ?? backendPainAxisIds
         const activationVisitedSceneCountForStorage = activationVisitedSceneCount ?? backendVisitedSceneCount
@@ -199,6 +207,9 @@ export function ActivationPage() {
           activationAxisId: activationAxisIdForStorage,
           activationReportArtifactStatus: activationReportArtifactStatusForStorage,
           activationProductionArtifactProven: activationProductionArtifactProvenForStorage,
+          activationTeaserRequestId: activationTeaserRequestIdForStorage,
+          activationTeaserTradesAnalyzed: activationTeaserTradesAnalyzedForStorage,
+          activationTeaserWorstPattern: activationTeaserWorstPatternForStorage,
           activationStorySource: activationStorySourceForStorage,
           activationSelectedPainAxisIds: activationSelectedPainAxisIdsForLiveStorage,
           activationVisitedSceneCount: activationVisitedSceneCountForStorage,
@@ -227,6 +238,9 @@ export function ActivationPage() {
             activationReportId: activationReportIdForStorage,
             activationReportArtifactStatus: activationReportArtifactStatusForStorage,
             activationProductionArtifactProven: activationProductionArtifactProvenForStorage,
+            activationTeaserRequestId: activationTeaserRequestIdForStorage,
+            activationTeaserTradesAnalyzed: activationTeaserTradesAnalyzedForStorage,
+            activationTeaserWorstPattern: activationTeaserWorstPatternForStorage,
             activationStorySource: activationStorySourceForStorage,
             activationVisitedSceneCount: activationVisitedSceneCountForStorage,
             activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,

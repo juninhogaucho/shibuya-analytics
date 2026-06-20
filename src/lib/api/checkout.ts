@@ -16,6 +16,9 @@ export interface CheckoutSessionRequest {
   public_context_packet_source?: string
   public_context_artifact_status?: string
   public_context_production_artifact_proven?: string
+  public_context_teaser_request_id?: string
+  public_context_teaser_trades_analyzed?: string
+  public_context_teaser_worst_pattern?: string
   public_context_story_source?: string
   public_context_story_scene_count?: string
   public_context_pain_axes?: string
