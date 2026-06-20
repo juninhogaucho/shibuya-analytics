@@ -73,6 +73,37 @@ const PRIVATE_DEMO_CLAIM_SCRIPT = [
   },
 ] as const
 
+const PRIVATE_DEMO_GATE_SEQUENCE = [
+  {
+    timebox: '0:00',
+    label: 'Verify route',
+    title: 'Prove the private question arrived.',
+    body: 'Confirm locked insight intent, report id, section, archetype, dominant axis, story handoff, and engagement receipt before the code field matters.',
+    boundary: 'A valid route proves continuity only, not live account truth.',
+  },
+  {
+    timebox: '0:35',
+    label: 'Name boundary',
+    title: 'Separate demo structure from live proof.',
+    body: 'The presenter says the sample workspace can show the operating loop, but activation, upload, generated artifacts, and append history still have to prove the trader.',
+    boundary: 'No URL, presenter code, or sample packet can answer the private question.',
+  },
+  {
+    timebox: '1:10',
+    label: 'Store receipt',
+    title: 'Show what the unlock will carry.',
+    body: 'Preview the sample mode, market, report, archetype, axis, locked module, bridge question, signal markers, engagement counts, and checksum that Reset Pro receives.',
+    boundary: 'The receipt stores routing context. It does not store raw visitor trades.',
+  },
+  {
+    timebox: '1:50',
+    label: 'Open workspace',
+    title: 'Enter Reset Pro with one job.',
+    body: 'Unlock Mission HQ or the append-proof close, show one intervention surface, then end on the next evidence requirement instead of wandering through cards.',
+    boundary: 'The close is append proof, not a claim of improvement.',
+  },
+] as const
+
 export default function PrivateDemoPage() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -338,6 +369,41 @@ export default function PrivateDemoPage() {
               activeStage="demo"
               detail="This is the controlled sample workspace handoff. It demonstrates structure only; live proof still requires activation, upload, backend artifacts, and append history."
             />
+          </div>
+
+          <div className="mb-6 overflow-hidden rounded-[2rem] border border-white/10 bg-[#060608]">
+            <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
+              <div className="border-b border-white/10 p-5 md:p-8 lg:border-b-0 lg:border-r">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-200">
+                  Private demo gate sequence
+                </p>
+                <h2 className="mt-3 font-display text-3xl font-black uppercase leading-[0.95] tracking-[-0.04em] text-white md:text-5xl">
+                  Unlock Reset Pro like an evidence handoff, not a password wall.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-neutral-300 md:text-base md:leading-8">
+                  The code is deliberately boring. The experience is the controlled transfer from public recognition to
+                  private operating loop: verify the question, name the missing proof, store the receipt, and open one
+                  workspace path.
+                </p>
+                <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-xs leading-6 text-amber-50/75">
+                  Private gate sequence rule: the code may open a sample workspace only after route integrity and claim boundary are visible.
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2">
+                {PRIVATE_DEMO_GATE_SEQUENCE.map((beat) => (
+                  <div key={beat.label} className="border-b border-white/10 p-5 last:border-b-0 md:border-r md:last:border-r-0 md:[&:nth-last-child(-n+2)]:border-b-0">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-200">
+                      {beat.timebox} / {beat.label}
+                    </p>
+                    <h3 className="mt-3 text-lg font-semibold text-white">{beat.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-neutral-300">{beat.body}</p>
+                    <p className="mt-4 border-t border-white/10 pt-3 text-xs leading-5 text-neutral-500">
+                      {beat.boundary}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="mb-6 rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.06] p-5">

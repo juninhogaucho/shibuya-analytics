@@ -188,6 +188,13 @@ describe('public Shibuya journey pages', () => {
       privateDemoIntentCount: 1,
     })
     expect(screen.getByText('Public-to-private handoff')).toBeInTheDocument()
+    expect(screen.getByText('Private demo gate sequence')).toBeInTheDocument()
+    expect(screen.getByText('Unlock Reset Pro like an evidence handoff, not a password wall.')).toBeInTheDocument()
+    expect(screen.getByText('0:00 / Verify route')).toBeInTheDocument()
+    expect(screen.getByText('0:35 / Name boundary')).toBeInTheDocument()
+    expect(screen.getByText('1:10 / Store receipt')).toBeInTheDocument()
+    expect(screen.getByText('1:50 / Open workspace')).toBeInTheDocument()
+    expect(screen.getByText(/the code may open a sample workspace only after route integrity/i)).toBeInTheDocument()
     expect(screen.getAllByText(/sample-behavioral-leak-report/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Dominant axis:/i)).toHaveTextContent('Drawdown Pressure')
     expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
@@ -724,6 +731,8 @@ describe('public Shibuya journey pages', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('/private-demo')
     expect(screen.getByText('Locked insight intent')).toBeInTheDocument()
+    expect(screen.getByText('Private demo gate sequence')).toBeInTheDocument()
+    expect(screen.getByText('Unlock Reset Pro like an evidence handoff, not a password wall.')).toBeInTheDocument()
     expect(screen.getAllByText('Highest-cost state').length).toBeGreaterThan(0)
     expect(screen.getByText('Workspace handoff packet')).toBeInTheDocument()
     expect(screen.getByText('Private gate engagement receipt')).toBeInTheDocument()
