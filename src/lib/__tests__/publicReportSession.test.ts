@@ -57,6 +57,9 @@ describe('public report sessions', () => {
       reportId: 'free-report-1',
       source: 'mixed',
       evidenceLabel: 'Local CSV file plus pasted sample',
+      artifactStatus: 'local_preview_only',
+      artifactStatusLabel: 'Local preview only',
+      productionArtifactProven: false,
       storySource: 'guided',
       selectedPainAxisIds: ['drawdown_pressure'],
       visitedSceneCount: 15,
@@ -78,6 +81,9 @@ describe('public report sessions', () => {
     )
     expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
       'Website-level signal markers: Mirror selected, Evidence intent.',
+    )
+    expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
+      'Artifact status: local preview only; no backend-generated production report exists for this packet.',
     )
     expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
       'Pasted sample passed local structure check: date/time, instrument, direction, and result/price fields detected.',
@@ -103,6 +109,9 @@ describe('public report sessions', () => {
       reportId: 'sample-behavioral-leak-report',
       source: 'sample',
       evidenceLabel: 'Demo launcher sample packet',
+      artifactStatus: 'sample_demo_only',
+      artifactStatusLabel: 'Controlled launcher sample only',
+      productionArtifactProven: false,
       validationSummary: 'Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.',
       storySource: 'guided',
       selectedPainAxisIds: ['edge_decay'],
@@ -110,6 +119,7 @@ describe('public report sessions', () => {
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
     })
     expect(session.validationFacts).toContain('Demo launcher initialized this sample packet from an explicit shared-link flag.')
+    expect(session.validationFacts).toContain('Artifact status: sample demo only; no backend-generated production report exists for this packet.')
     expect(session.validationFacts).toContain('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')
     expect(session.boundary).toContain('sample demo artifact')
     expect(session.liveProofGap.rows.map((row) => row.label)).toEqual([

@@ -111,6 +111,7 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Pain axes: edge_decay')).toBeInTheDocument()
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
+    expect(screen.getByText(/Artifact status: Sample demo only \/ Production artifact: not proven/i)).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 5; axes 1/i)).toBeInTheDocument()
     expect(screen.getByText('Checkout engagement receipt')).toBeInTheDocument()
     expect(screen.getByText(/Views 1; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
@@ -144,6 +145,8 @@ describe('CheckoutPage', () => {
         public_context_archetype_id: 'marco',
         public_context_axis_id: 'edge_decay',
         public_context_packet_source: 'sample',
+        public_context_artifact_status: 'sample_demo_only',
+        public_context_production_artifact_proven: 'false',
         public_context_story_source: 'guided',
         public_context_story_scene_count: '5',
         public_context_pain_axes: 'edge_decay',
@@ -261,6 +264,9 @@ describe('CheckoutPage', () => {
           'http://localhost:3000/checkout/success?plan=shibuya_reset_pro_monthly&source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
         cancel_url:
           'http://localhost:3000/checkout/reset-pro-live?source=locked_insight&report=sample-behavioral-leak-report&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&demo_packet=launcher_sample&market=global',
+        public_context_packet_source: 'sample',
+        public_context_artifact_status: 'sample_demo_only',
+        public_context_production_artifact_proven: 'false',
       }),
     )
   })

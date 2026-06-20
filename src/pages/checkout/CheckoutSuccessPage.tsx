@@ -313,6 +313,9 @@ const CheckoutSuccessPage: React.FC = () => {
             <p className="font-semibold text-amber-100">
               {reportSession?.evidenceLabel ?? 'URL context only'}
             </p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-100">
+              Artifact status: {reportSession?.artifactStatusLabel ?? 'URL context only'} / Production artifact: {reportSession?.productionArtifactProven ? 'proven' : 'not proven'}
+            </p>
             <p className="mt-1 text-neutral-400">
               {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}
             </p>

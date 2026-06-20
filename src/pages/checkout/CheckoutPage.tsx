@@ -166,6 +166,11 @@ const CheckoutPage: React.FC = () => {
             public_context_archetype_id: enrichedCheckoutIntent.archetypeId,
             public_context_axis_id: enrichedCheckoutIntent.axisId,
             public_context_packet_source: reportSession?.source,
+            public_context_artifact_status: reportSession?.artifactStatus,
+            public_context_production_artifact_proven:
+              typeof reportSession?.productionArtifactProven === 'boolean'
+                ? String(reportSession.productionArtifactProven)
+                : undefined,
             public_context_story_source: enrichedCheckoutIntent.storySource,
             public_context_story_scene_count:
               typeof enrichedCheckoutIntent.visitedSceneCount === 'number'
@@ -323,6 +328,9 @@ const CheckoutPage: React.FC = () => {
             <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-neutral-300">
               <p className="font-semibold text-amber-100">
                 {reportSession?.evidenceLabel ?? 'URL context only'}
+              </p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-100">
+                Artifact status: {reportSession?.artifactStatusLabel ?? 'URL context only'} / Production artifact: {reportSession?.productionArtifactProven ? 'proven' : 'not proven'}
               </p>
               <p className="mt-1 text-neutral-400">
                 {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}

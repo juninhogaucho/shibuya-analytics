@@ -188,6 +188,24 @@ export default function FreeReportPage() {
               <h2 className="mt-2 text-xl font-semibold text-white">
                 {reportSession?.evidenceLabel ?? 'No local upload packet found'}
               </h2>
+              <div className="mt-4 grid gap-3 text-xs leading-5 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <span className="block font-mono uppercase tracking-[0.18em] text-emerald-100">Artifact status</span>
+                  <strong className="mt-1 block text-sm text-white">
+                    {reportSession?.artifactStatusLabel ?? 'URL context only'}
+                  </strong>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <span className="block font-mono uppercase tracking-[0.18em] text-emerald-100">Production artifact</span>
+                  <strong className="mt-1 block text-sm text-white">
+                    {reportSession?.productionArtifactProven ? 'Proven' : 'Not proven'}
+                  </strong>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <span className="block font-mono uppercase tracking-[0.18em] text-emerald-100">Proof boundary</span>
+                  <strong className="mt-1 block text-sm text-white">Backend required</strong>
+                </div>
+              </div>
               <p className="mt-3 text-sm leading-7 text-emerald-50/80">
                 {reportSession?.validationSummary ?? 'This report was opened directly. It can show the public fingerprint preview, but it does not have upload-step validation metadata in this browser.'}
               </p>
@@ -443,6 +461,9 @@ export default function FreeReportPage() {
             <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200">Local packet</p>
               <h3 className="mt-2 text-lg font-semibold text-white">{reportSession?.evidenceLabel ?? 'URL context only'}</h3>
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100">
+                Artifact status: {reportSession?.artifactStatusLabel ?? 'URL context only'}
+              </p>
               <p className="mt-3 text-sm leading-6 text-neutral-300">
                 {reportSession?.validationSummary ?? 'No local upload/sample validation packet was found. This page can explain the preview, but cannot prove the upload handoff.'}
               </p>

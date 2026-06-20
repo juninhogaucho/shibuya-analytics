@@ -14,6 +14,8 @@ export interface CheckoutSessionRequest {
   public_context_archetype_id?: string
   public_context_axis_id?: string
   public_context_packet_source?: string
+  public_context_artifact_status?: string
+  public_context_production_artifact_proven?: string
   public_context_story_source?: string
   public_context_story_scene_count?: string
   public_context_pain_axes?: string

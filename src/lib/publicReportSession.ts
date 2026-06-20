@@ -14,6 +14,7 @@ export const DEMO_LAUNCHER_SAMPLE_PACKET_PARAM = 'demo_packet'
 export const DEMO_LAUNCHER_SAMPLE_PACKET_VALUE = 'launcher_sample'
 
 export type PublicReportSource = 'file' | 'paste' | 'mixed' | 'sample'
+export type PublicReportArtifactStatus = 'local_preview_only' | 'sample_demo_only'
 
 export interface PublicReportValidationInput {
   reportId: string
@@ -37,6 +38,9 @@ export interface PublicReportSession {
   source: PublicReportSource
   createdAt: string
   evidenceLabel: string
+  artifactStatus: PublicReportArtifactStatus
+  artifactStatusLabel: string
+  productionArtifactProven: boolean
   validationSummary: string
   validationFacts: string[]
   boundary: string
@@ -229,17 +233,21 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         : source === 'file'
           ? `Local ${extension?.toUpperCase()} file selected`
           : 'Pasted trade sample'
+  const artifactStatus: PublicReportArtifactStatus = source === 'sample' ? 'sample_demo_only' : 'local_preview_only'
+  const artifactStatusLabel = source === 'sample' ? 'Sample demo only' : 'Local preview only'
 
   const validationFacts =
     source === 'sample'
       ? [
           ...storyFacts,
+          'Artifact status: sample demo only; no backend-generated production report exists for this packet.',
           'Sample packet selected for expo/demo flow.',
           'No production upload or account-specific analysis is claimed.',
           'The free report remains a public preview until live activation.',
         ]
       : [
           ...storyFacts,
+          'Artifact status: local preview only; no backend-generated production report exists for this packet.',
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
           pasteLength > 0 && !validatePublicPasteSample(params.pasteBody)
@@ -256,6 +264,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     source,
     createdAt: new Date().toISOString(),
     evidenceLabel,
+    artifactStatus,
+    artifactStatusLabel,
+    productionArtifactProven: false,
     validationSummary:
       source === 'sample'
         ? 'Demo packet accepted. This proves the public journey transition, not live analytics.'
@@ -316,6 +327,9 @@ export function buildDemoLauncherSampleReportSession(
   return {
     ...session,
     evidenceLabel: 'Demo launcher sample packet',
+    artifactStatus: 'sample_demo_only',
+    artifactStatusLabel: 'Controlled launcher sample only',
+    productionArtifactProven: false,
     validationSummary: 'Demo launcher packet accepted. This proves the shared demo path transition, not live analytics.',
     validationFacts: [
       ...session.validationFacts.filter((fact) => fact !== 'Sample packet selected for expo/demo flow.'),
