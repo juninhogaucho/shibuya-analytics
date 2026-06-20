@@ -12,6 +12,7 @@
     "demo:gate": "node scripts/shibuya_demo_readiness_gate.mjs",
     "proof:provenance": "node scripts/shibuya_public_to_live_provenance_gate.mjs",
     "proof:provenance:all": "node scripts/shibuya_public_to_live_provenance_gate.mjs --with-backend",
+    "proof:provenance:packet": "node scripts/shibuya_provenance_packet.mjs",
     "demo:build": "node scripts/build_private_demo_preview.mjs",
     "preview": "vite preview"
   },
