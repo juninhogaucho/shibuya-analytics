@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
+import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import {
   appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
@@ -21,6 +22,12 @@ import {
   type FingerprintAxisId,
   type StoryArchetypeId,
 } from '../../lib/storyExperience'
+
+const LIVE_PROOF_STATUS_LABELS = {
+  ready: 'READY',
+  blocked: 'BLOCKED',
+  required: 'REQUIRED',
+} as const
 
 export default function PublicUploadPage() {
   const location = useLocation()
@@ -46,6 +53,7 @@ export default function PublicUploadPage() {
 
   const archetype = useMemo(() => getTraderArchetype(archetypeId), [archetypeId])
   const axis = useMemo(() => getFingerprintAxis(axisId), [axisId])
+  const liveProofGap = useMemo(() => buildLiveProofReadinessContract(), [])
   const selectedPainAxes = useMemo(
     () => selectedPainAxisIds
       .map((candidate) => getFingerprintAxis(candidate))
@@ -389,6 +397,36 @@ export default function PublicUploadPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div className="mb-6 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-5">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-200">Live proof gap ledger</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{liveProofGap.headline}</h3>
+                </div>
+                <span className="w-fit rounded-full border border-amber-200/20 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100">
+                  {liveProofGap.statusLabel}
+                </span>
+              </div>
+              <p className="text-sm leading-6 text-amber-50/75">
+                This ledger is stored into the report packet, so the free report and private handoff can read the same
+                missing-evidence contract instead of relying on marketing copy.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {liveProofGap.rows.map((row) => (
+                  <article key={row.label} className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-amber-100">
+                      {LIVE_PROOF_STATUS_LABELS[row.status]}
+                    </span>
+                    <strong className="mt-2 block text-sm text-white">{row.label}</strong>
+                    <span className="mt-2 block text-xs leading-5 text-amber-50/65">{row.detail}</span>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-amber-50/60">
+                Live proof gap rule: a public report may carry this ledger forward; it may not mark any required stage complete until current backend evidence proves it.
+              </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">

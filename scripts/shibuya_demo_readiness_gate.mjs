@@ -40,17 +40,17 @@ const REQUIRED_SURFACES = [
   {
     label: 'public upload',
     file: 'src/pages/marketing/PublicUploadPage.tsx',
-    markers: ['Use Sample History', 'Generate Free Report', 'Upload route integrity', 'Cold upload is recovery-only.', 'Direct upload recovery route', 'Route rule: guided story can seed the question', 'Prediction survival test', 'What is allowed to survive from story to report.', 'Survival rule: if a claim requires account-specific proof', 'Sample handoff receipt', 'Report unlock path', 'No raw rows, no production normalization, no account-specific conclusion.'],
+    markers: ['Use Sample History', 'Generate Free Report', 'Upload route integrity', 'Cold upload is recovery-only.', 'Direct upload recovery route', 'Route rule: guided story can seed the question', 'Prediction survival test', 'What is allowed to survive from story to report.', 'Survival rule: if a claim requires account-specific proof', 'Live proof gap ledger', 'This ledger is stored into the report packet', 'Live proof gap rule: a public report may carry this ledger forward', 'Sample handoff receipt', 'Report unlock path', 'No raw rows, no production normalization, no account-specific conclusion.'],
   },
   {
     label: 'demo launcher sample packet',
     file: 'src/lib/publicReportSession.ts',
-    markers: ['DEMO_LAUNCHER_SAMPLE_PACKET_VALUE', 'buildDemoLauncherSampleReportSession', 'Demo launcher initialized this sample packet from an explicit shared-link flag.', 'sample demo artifact'],
+    markers: ['PublicReportLiveProofGap', 'liveProofGap', 'buildLiveProofReadinessContract', 'DEMO_LAUNCHER_SAMPLE_PACKET_VALUE', 'buildDemoLauncherSampleReportSession', 'Demo launcher initialized this sample packet from an explicit shared-link flag.', 'sample demo artifact'],
   },
   {
     label: 'locked free report',
     file: 'src/pages/marketing/FreeReportPage.tsx',
-    markers: ['REPORT_REVEAL_SEQUENCE', 'Report reveal sequence', 'Keep the report cinematic: one baseline, one packet, one private question.', 'Baseline reveal', 'Evidence receipt', 'Private question', 'Reset Pro bridge', 'Report reveal rule: do not let the report become a dashboard tour.', 'Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Report engagement ledger', 'Conversion intent is tracked locally. It is not trader evidence.', 'Engagement ledger rule: report views, locked-section clicks, and private-demo intent', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
+    markers: ['REPORT_REVEAL_SEQUENCE', 'Report reveal sequence', 'Keep the report cinematic: one baseline, one packet, one private question.', 'Baseline reveal', 'Evidence receipt', 'Private question', 'Reset Pro bridge', 'Report reveal rule: do not let the report become a dashboard tour.', 'Report live-proof gap', 'machine-readable proof gap', 'Gap ledger rule: the report may route the private question', 'Private insight contract', 'Locked until live workspace', 'report.storyHandoff.boundary', 'Report-to-private handoff receipt', 'The report can carry context. It cannot carry the answer.', 'Private question carried', 'Handoff receipt rule: the locked insight inherits the question and evidence status only', 'Report engagement ledger', 'Conversion intent is tracked locally. It is not trader evidence.', 'Engagement ledger rule: report views, locked-section clicks, and private-demo intent', 'Open Locked Insight First', 'Continue Via Locked Insight', 'Private Insight Gate'],
   },
   {
     label: 'report engagement model',

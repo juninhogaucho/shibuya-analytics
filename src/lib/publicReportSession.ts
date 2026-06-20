@@ -1,4 +1,5 @@
 import type { Market } from './market'
+import { buildLiveProofReadinessContract, type LiveProofReadinessRow } from './liveProofReadiness'
 import {
   getFingerprintAxis,
   getPublicStorySignalMarkers,
@@ -43,6 +44,14 @@ export interface PublicReportSession {
   selectedPainAxisIds: FingerprintAxisId[]
   visitedSceneCount: number
   signalMarkerIds: PublicStorySignalMarkerId[]
+  liveProofGap: PublicReportLiveProofGap
+}
+
+export interface PublicReportLiveProofGap {
+  statusLabel: string
+  headline: string
+  rows: LiveProofReadinessRow[]
+  boundary: string
 }
 
 interface PublicReportSessionStore {
@@ -198,6 +207,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const visitedSceneCount = normalizeVisitedSceneCount(params.visitedSceneCount)
   const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
   const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
+  const liveProofGap = buildLiveProofReadinessContract()
   const storyFacts =
     storySource === 'guided'
       ? [
@@ -256,6 +266,12 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     selectedPainAxisIds,
     visitedSceneCount,
     signalMarkerIds,
+    liveProofGap: {
+      statusLabel: liveProofGap.statusLabel,
+      headline: liveProofGap.headline,
+      rows: liveProofGap.rows,
+      boundary: liveProofGap.boundary,
+    },
   }
 }
 

@@ -61,7 +61,18 @@ describe('public report sessions', () => {
       selectedPainAxisIds: ['drawdown_pressure'],
       visitedSceneCount: 15,
       signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      liveProofGap: {
+        statusLabel: 'BACKEND TARGET PRESENT',
+        headline: 'Live proof has a backend target, but still needs evidence.',
+      },
     })
+    expect(getPublicReportSession('free-report-1')?.liveProofGap.rows.map((row) => row.label)).toEqual([
+      'Backend target',
+      'Activation',
+      'First meaningful upload',
+      'Append history',
+    ])
+    expect(getPublicReportSession('free-report-1')?.liveProofGap.boundary).toContain('They cannot prove payment')
     expect(getPublicReportSession('free-report-1')?.validationFacts).toContain(
       'Selected public pain axes: Drawdown Pressure.',
     )
@@ -101,6 +112,12 @@ describe('public report sessions', () => {
     expect(session.validationFacts).toContain('Demo launcher initialized this sample packet from an explicit shared-link flag.')
     expect(session.validationFacts).toContain('No visitor file, raw trade row, production upload, or account-specific analysis is claimed.')
     expect(session.boundary).toContain('sample demo artifact')
+    expect(session.liveProofGap.rows.map((row) => row.label)).toEqual([
+      'Backend target',
+      'Activation',
+      'First meaningful upload',
+      'Append history',
+    ])
 
     expect(appendDemoLauncherSamplePacketParam(new URLSearchParams('source=guided_report'), true).toString()).toBe(
       'source=guided_report&demo_packet=launcher_sample',

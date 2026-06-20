@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { BehavioralFingerprint } from '../../components/landing/BehavioralFingerprint'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getPlanForMarket, resolveMarket } from '../../lib/market'
+import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import {
   appendDemoLauncherSamplePacketParam,
@@ -26,6 +27,12 @@ import {
   getTraderArchetype,
   toReportSectionSlug,
 } from '../../lib/storyExperience'
+
+const LIVE_PROOF_STATUS_LABELS = {
+  ready: 'READY',
+  blocked: 'BLOCKED',
+  required: 'REQUIRED',
+} as const
 
 const REPORT_REVEAL_SEQUENCE = [
   {
@@ -128,6 +135,7 @@ export default function FreeReportPage() {
   const guidedInsightSearch = appendDemoLauncherSamplePacketParam(guidedInsightQuery, shouldCarryDemoLauncherPacket).toString()
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
   const reportEngagementRows = buildPublicReportEngagementRows(reportEngagement)
+  const reportLiveProofGap = reportSession?.liveProofGap ?? buildLiveProofReadinessContract()
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -223,6 +231,41 @@ export default function FreeReportPage() {
             detail="The report gives a useful baseline and names the private question. It still does not cross into account-specific truth without live evidence."
           />
         </div>
+
+        <section className="mb-8 min-w-0 rounded-[2rem] border border-amber-300/20 bg-amber-300/[0.055] p-5 md:p-8">
+          <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-200">
+                Report live-proof gap
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">{reportLiveProofGap.headline}</h2>
+            </div>
+            <div>
+              <span className="inline-flex rounded-full border border-amber-200/20 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100">
+                {reportLiveProofGap.statusLabel}
+              </span>
+              <p className="mt-3 text-sm leading-7 text-amber-50/75">
+                This ledger came from the upload/report packet when available. It is the machine-readable proof gap the
+                locked insight and private demo must keep visible.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-4">
+            {reportLiveProofGap.rows.map((row) => (
+              <article key={row.label} className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-amber-100">
+                  {LIVE_PROOF_STATUS_LABELS[row.status]}
+                </p>
+                <h3 className="mt-2 text-base font-semibold text-white">{row.label}</h3>
+                <p className="mt-3 text-sm leading-6 text-amber-50/70">{row.detail}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-amber-50/60">
+            Gap ledger rule: the report may route the private question, but required evidence stays incomplete until a live
+            account proves activation, first meaningful upload, generated artifacts, and append history.
+          </p>
+        </section>
 
         <section className="mb-8 min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-[#070708]">
           <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
