@@ -90,6 +90,21 @@ describe('paid Shibuya journey contract', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       passwordRequired: false,
+      publicContextSource: 'locked_insight',
+      publicContextReportId: 'sample-behavioral-leak-report',
+      publicContextSectionId: 'highest-cost-state',
+      publicContextArchetypeId: 'marco',
+      publicContextAxisId: 'edge_decay',
+      publicContextArtifactStatus: 'sample_demo_only',
+      publicContextProductionArtifactProven: 'false',
+      publicContextStorySource: 'guided',
+      publicContextStorySceneCount: '6',
+      publicContextPainAxes: 'edge_decay',
+      publicContextSignalMarkers: 'mirror_selected,upload_intent',
+      publicContextReportViews: '1',
+      publicContextLockedClicks: '1',
+      publicContextCurrentSectionClicks: '1',
+      publicContextPrivateGateAttempts: '0',
     })
     journeyMocks.logTraderLifecycleEvent.mockResolvedValue(undefined)
   })

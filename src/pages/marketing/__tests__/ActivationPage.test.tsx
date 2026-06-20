@@ -33,7 +33,7 @@ describe('ActivationPage', () => {
     apiMocks.logTraderLifecycleEvent.mockResolvedValue(undefined)
   })
 
-  test('preserves locked insight checkout intent into the live session metadata', async () => {
+  test('shows local locked insight context but does not write it without backend order metadata', async () => {
     const user = userEvent.setup()
     apiMocks.verifyActivation.mockResolvedValue({
       status: 'ready',
@@ -128,48 +128,35 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_123',
-      activationSource: 'locked_insight',
-      activationReportId: 'sample-free-report',
-      activationArchetypeId: 'marco',
-      activationAxisId: 'edge_decay',
-      activationReportArtifactStatus: 'sample_demo_only',
-      activationProductionArtifactProven: 'false',
-      activationStorySource: 'guided',
-      activationSelectedPainAxisIds: ['edge_decay'],
-      activationVisitedSceneCount: 6,
-      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-      activationLockedSectionId: 'highest-cost-state',
-      activationLockedSectionTitle: 'Highest-cost state',
-      activationBridgeHeadline: 'Reset Pro should separate real edge decay from normal variance.',
-      activationBridgeDecisionQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
-      activationEngagementReportViewCount: 1,
-      activationEngagementLockedSectionClickCount: 1,
-      activationEngagementCurrentSectionClickCount: 1,
-      activationEngagementPrivateDemoIntentCount: 1,
     })
-    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserRequestId')
-    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserTradesAnalyzed')
-    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).not.toHaveProperty('activationTeaserWorstPattern')
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).not.toHaveProperty('activationSource')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportArtifactStatus')
+    expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
+    expect(storedSessionMeta).not.toHaveProperty('activationSelectedPainAxisIds')
+    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
+    expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
+    expect(storedSessionMeta).not.toHaveProperty('activationEngagementReportViewCount')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserRequestId')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserTradesAnalyzed')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserWorstPattern')
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
-          activationSource: 'locked_insight',
-          activationReportId: 'sample-free-report',
-          activationReportArtifactStatus: 'sample_demo_only',
-          activationProductionArtifactProven: 'false',
-          activationStorySource: 'guided',
-          activationVisitedSceneCount: 6,
-          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-          activationLockedSectionId: 'highest-cost-state',
-          activationBridgeQuestion: 'Is the trader defending a setup that no longer deserves the same risk?',
-          activationEngagementReportViewCount: 1,
-          activationEngagementLockedSectionClickCount: 1,
-          activationEngagementCurrentSectionClickCount: 1,
-          activationEngagementPrivateDemoIntentCount: 1,
+          orderCode: 'order_123',
+          passwordRequired: false,
         }),
       }),
     )
     const lifecycleMetadata = apiMocks.logTraderLifecycleEvent.mock.calls[0][0].metadata
+    expect(lifecycleMetadata.activationSource).toBeUndefined()
+    expect(lifecycleMetadata.activationReportId).toBeUndefined()
+    expect(lifecycleMetadata.activationReportArtifactStatus).toBeUndefined()
+    expect(lifecycleMetadata.activationStorySource).toBeUndefined()
+    expect(lifecycleMetadata.activationLockedSectionId).toBeUndefined()
+    expect(lifecycleMetadata.activationBridgeQuestion).toBeUndefined()
+    expect(lifecycleMetadata.activationEngagementReportViewCount).toBeUndefined()
     expect(lifecycleMetadata.activationTeaserRequestId).toBeUndefined()
     expect(lifecycleMetadata.activationTeaserTradesAnalyzed).toBeUndefined()
     expect(lifecycleMetadata.activationTeaserWorstPattern).toBeUndefined()
@@ -345,6 +332,104 @@ describe('ActivationPage', () => {
         }),
       }),
     )
+  })
+
+  test('prefers backend activation context over stale browser report context', async () => {
+    const user = userEvent.setup()
+    apiMocks.verifyActivation.mockResolvedValue({
+      status: 'ready',
+      activationToken: 'live-token-authoritative',
+      customerId: 'customer-authoritative',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      passwordRequired: false,
+      publicContextSource: 'locked_insight',
+      publicContextReportId: 'backend-report-authoritative',
+      publicContextSectionId: 'edge-decay-map',
+      publicContextArchetypeId: 'marco',
+      publicContextAxisId: 'edge_decay',
+      publicContextArtifactStatus: 'backend_teaser_persisted',
+      publicContextProductionArtifactProven: 'false',
+      publicContextStorySource: 'guided',
+      publicContextStorySceneCount: '3',
+      publicContextPainAxes: 'edge_decay',
+      publicContextSignalMarkers: 'mirror_selected',
+      publicContextReportViews: '4',
+      publicContextLockedClicks: '2',
+      publicContextCurrentSectionClicks: '1',
+      publicContextPrivateGateAttempts: '0',
+      publicContextTeaserRequestId: 'TEASER-authoritative',
+      publicContextTeaserTradesAnalyzed: '18',
+      publicContextTeaserWorstPattern: 'Edge Decay',
+      publicContextTeaserVerified: 'true',
+      publicContextTeaserVerificationStatus: 'verified',
+      publicContextTeaserReceiptHash: 'receipt-hash-authoritative',
+      publicContextTeaserVerifiedAt: '2026-06-21T00:00:00Z',
+    })
+    persistPublicReportSession(buildPublicReportSession({
+      reportId: 'stale-local-report',
+      market: 'global',
+      archetypeId: 'priya',
+      axisId: 'drawdown_pressure',
+      source: 'sample',
+      storySource: 'guided',
+      selectedPainAxisIds: ['drawdown_pressure'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+    }))
+    recordPublicReportView('stale-local-report')
+    recordLockedSectionIntent('stale-local-report', 'highest-cost-state')
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/activate?source=locked_insight&report=stale-local-report&section=highest-cost-state&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=6&pain_axes=drawdown_pressure&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(/Report: stale-local-report \| Archetype: Priya \| Axis: Drawdown Pressure/i)).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
+    await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_authoritative')
+    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    })
+
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).toMatchObject({
+      customerId: 'customer-authoritative',
+      orderId: 'order_authoritative',
+      activationSource: 'locked_insight',
+      activationReportId: 'backend-report-authoritative',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationReportArtifactStatus: 'backend_teaser_persisted',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 3,
+      activationSignalMarkerIds: ['mirror_selected'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationTeaserRequestId: 'TEASER-authoritative',
+      activationTeaserTradesAnalyzed: 18,
+      activationTeaserWorstPattern: 'Edge Decay',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'receipt-hash-authoritative',
+    })
+    expect(storedSessionMeta.activationReportId).not.toBe('stale-local-report')
+    expect(storedSessionMeta.activationAxisId).not.toBe('drawdown_pressure')
+    expect(storedSessionMeta.activationLockedSectionId).not.toBe('highest-cost-state')
   })
 
   test('uses explicit demo launcher sample packet on direct activation links', async () => {

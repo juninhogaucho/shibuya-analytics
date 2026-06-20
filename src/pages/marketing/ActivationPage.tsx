@@ -97,11 +97,8 @@ export function ActivationPage() {
     ? findLockedReportSectionBySlug(activationReport, carriedActivationIntent?.lockedSectionId)
     : null
   const activationSelectedPainAxisIds = carriedActivationReportSession?.selectedPainAxisIds ?? carriedActivationIntent?.selectedPainAxisIds ?? []
-  const activationSelectedPainAxisIdsForStorage = activationSelectedPainAxisIds.length ? activationSelectedPainAxisIds : undefined
   const activationStorySource = carriedActivationReportSession?.storySource ?? carriedActivationIntent?.storySource
   const activationVisitedSceneCount = carriedActivationReportSession?.visitedSceneCount ?? carriedActivationIntent?.visitedSceneCount
-  const activationSignalMarkerIds = carriedActivationReportSession?.signalMarkerIds ?? carriedActivationIntent?.signalMarkerIds ?? []
-  const activationSignalMarkerIdsForStorage = activationSignalMarkerIds.length ? activationSignalMarkerIds : undefined
   const activationSignalMarkerLabels = activationReport?.storyHandoff.signalMarkers.map((marker) => marker.label) ?? []
   const activationPainAxisLabels = activationSelectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
@@ -154,45 +151,47 @@ export function ActivationPage() {
         const backendPainAxisIds = splitPublicContextList(response.publicContextPainAxes)
         const backendSignalMarkerIds = splitPublicContextList(response.publicContextSignalMarkers)
         const backendVisitedSceneCount = parsePublicContextCount(response.publicContextStorySceneCount)
-        const activationSourceForStorage = carriedActivationIntent?.source ?? response.publicContextSource ?? undefined
-        const activationReportIdForStorage = carriedActivationIntent?.reportId ?? response.publicContextReportId ?? undefined
-        const activationArchetypeIdForStorage = carriedActivationIntent?.archetypeId ?? response.publicContextArchetypeId ?? undefined
-        const activationAxisIdForStorage = carriedActivationIntent?.axisId ?? response.publicContextAxisId ?? undefined
-        const activationReportArtifactStatusForStorage =
-          carriedActivationReportSession?.artifactStatus ?? response.publicContextArtifactStatus ?? undefined
-        const activationProductionArtifactProvenForStorage =
-          typeof carriedActivationReportSession?.productionArtifactProven === 'boolean'
-            ? String(carriedActivationReportSession.productionArtifactProven)
-            : response.publicContextProductionArtifactProven ?? undefined
-        const activationTeaserRequestIdForStorage =
-          carriedActivationReportSession?.backendTeaser?.requestId ?? response.publicContextTeaserRequestId ?? undefined
-        const activationTeaserTradesAnalyzedForStorage =
-          typeof carriedActivationReportSession?.backendTeaser?.tradesAnalyzed === 'number'
-            ? carriedActivationReportSession.backendTeaser.tradesAnalyzed
-            : parsePublicContextCount(response.publicContextTeaserTradesAnalyzed)
-        const activationTeaserWorstPatternForStorage =
-          carriedActivationReportSession?.backendTeaser?.worstPattern ?? response.publicContextTeaserWorstPattern ?? undefined
-        const activationTeaserVerifiedForStorage = response.publicContextTeaserVerified ?? undefined
-        const activationTeaserVerificationStatusForStorage = response.publicContextTeaserVerificationStatus ?? undefined
-        const activationTeaserReceiptHashForStorage = response.publicContextTeaserReceiptHash ?? undefined
-        const activationTeaserVerifiedAtForStorage = response.publicContextTeaserVerifiedAt ?? undefined
-        const activationStorySourceForStorage = activationStorySource ?? response.publicContextStorySource ?? undefined
-        const activationSelectedPainAxisIdsForLiveStorage = activationSelectedPainAxisIdsForStorage ?? backendPainAxisIds
-        const activationVisitedSceneCountForStorage = activationVisitedSceneCount ?? backendVisitedSceneCount
-        const activationSignalMarkerIdsForLiveStorage = activationSignalMarkerIdsForStorage ?? backendSignalMarkerIds
-        const activationLockedSectionIdForStorage = carriedActivationIntent?.lockedSectionId ?? response.publicContextSectionId ?? undefined
-        const activationEngagementReportViewCountForStorage = carriedActivationIntent
-          ? activationEngagementSummary.reportViewCount
-          : parsePublicContextCount(response.publicContextReportViews)
-        const activationEngagementLockedSectionClickCountForStorage = carriedActivationIntent
-          ? activationEngagementSummary.lockedSectionClickCount
-          : parsePublicContextCount(response.publicContextLockedClicks)
-        const activationEngagementCurrentSectionClickCountForStorage = carriedActivationIntent
-          ? activationEngagementSummary.currentSectionClickCount
-          : parsePublicContextCount(response.publicContextCurrentSectionClicks)
-        const activationEngagementPrivateDemoIntentCountForStorage = carriedActivationIntent
-          ? activationEngagementSummary.privateDemoIntentCount
-          : parsePublicContextCount(response.publicContextPrivateGateAttempts)
+        const hasBackendActivationContext = Boolean(
+          response.publicContextSource || response.publicContextReportId || response.publicContextSectionId,
+        )
+        const backendActivationReport = hasBackendActivationContext
+          ? buildFreeReportPreview({
+              reportId: response.publicContextReportId ?? 'activation-origin',
+              archetypeId: response.publicContextArchetypeId,
+              axisId: response.publicContextAxisId,
+              storySource: response.publicContextStorySource,
+              selectedPainAxisIds: backendPainAxisIds,
+              visitedSceneCount: backendVisitedSceneCount,
+              signalMarkerIds: backendSignalMarkerIds,
+            })
+          : null
+        const backendActivationLockedSection = backendActivationReport
+          ? findLockedReportSectionBySlug(backendActivationReport, response.publicContextSectionId)
+          : null
+        const activationSourceForStorage = hasBackendActivationContext ? response.publicContextSource ?? undefined : undefined
+        const activationReportIdForStorage = hasBackendActivationContext ? response.publicContextReportId ?? undefined : undefined
+        const activationArchetypeIdForStorage = hasBackendActivationContext ? response.publicContextArchetypeId ?? undefined : undefined
+        const activationAxisIdForStorage = hasBackendActivationContext ? response.publicContextAxisId ?? undefined : undefined
+        const activationReportArtifactStatusForStorage = hasBackendActivationContext ? response.publicContextArtifactStatus ?? undefined : undefined
+        const activationProductionArtifactProvenForStorage = hasBackendActivationContext ? response.publicContextProductionArtifactProven ?? undefined : undefined
+        const activationTeaserRequestIdForStorage = hasBackendActivationContext ? response.publicContextTeaserRequestId ?? undefined : undefined
+        const activationTeaserTradesAnalyzedForStorage = hasBackendActivationContext
+          ? parsePublicContextCount(response.publicContextTeaserTradesAnalyzed)
+          : undefined
+        const activationTeaserWorstPatternForStorage = hasBackendActivationContext ? response.publicContextTeaserWorstPattern ?? undefined : undefined
+        const activationTeaserVerifiedForStorage = hasBackendActivationContext ? response.publicContextTeaserVerified ?? undefined : undefined
+        const activationTeaserVerificationStatusForStorage = hasBackendActivationContext ? response.publicContextTeaserVerificationStatus ?? undefined : undefined
+        const activationTeaserReceiptHashForStorage = hasBackendActivationContext ? response.publicContextTeaserReceiptHash ?? undefined : undefined
+        const activationTeaserVerifiedAtForStorage = hasBackendActivationContext ? response.publicContextTeaserVerifiedAt ?? undefined : undefined
+        const activationStorySourceForStorage = hasBackendActivationContext ? response.publicContextStorySource ?? undefined : undefined
+        const activationSelectedPainAxisIdsForLiveStorage = hasBackendActivationContext ? backendPainAxisIds : undefined
+        const activationVisitedSceneCountForStorage = hasBackendActivationContext ? backendVisitedSceneCount : undefined
+        const activationSignalMarkerIdsForLiveStorage = hasBackendActivationContext ? backendSignalMarkerIds : undefined
+        const activationLockedSectionIdForStorage = hasBackendActivationContext ? response.publicContextSectionId ?? undefined : undefined
+        const activationEngagementReportViewCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextReportViews) : undefined
+        const activationEngagementLockedSectionClickCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextLockedClicks) : undefined
+        const activationEngagementCurrentSectionClickCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextCurrentSectionClicks) : undefined
+        const activationEngagementPrivateDemoIntentCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextPrivateGateAttempts) : undefined
 
         // Store the activation token BEFORE redirect so AuthGuard recognises the session.
         setLiveApiKey(response.activationToken, {
@@ -223,16 +222,16 @@ export function ActivationPage() {
           activationVisitedSceneCount: activationVisitedSceneCountForStorage,
           activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,
           activationLockedSectionId: activationLockedSectionIdForStorage,
-          activationLockedSectionTitle: activationLockedSection?.title,
-          activationBridgeHeadline: activationReport?.resetProBridge.headline,
-          activationBridgeDecisionQuestion: activationReport?.resetProBridge.decisionQuestion,
-          activationBridgeWhyNow: activationReport?.resetProBridge.whyNow,
-          activationBridgeLiveProof: activationReport?.resetProBridge.liveWorkspaceMustProve,
+          activationLockedSectionTitle: backendActivationLockedSection?.title,
+          activationBridgeHeadline: backendActivationReport?.resetProBridge.headline,
+          activationBridgeDecisionQuestion: backendActivationReport?.resetProBridge.decisionQuestion,
+          activationBridgeWhyNow: backendActivationReport?.resetProBridge.whyNow,
+          activationBridgeLiveProof: backendActivationReport?.resetProBridge.liveWorkspaceMustProve,
           activationEngagementReportViewCount: activationEngagementReportViewCountForStorage,
           activationEngagementLockedSectionClickCount: activationEngagementLockedSectionClickCountForStorage,
           activationEngagementCurrentSectionClickCount: activationEngagementCurrentSectionClickCountForStorage,
           activationEngagementPrivateDemoIntentCount: activationEngagementPrivateDemoIntentCountForStorage,
-          activationEngagementBoundary: carriedActivationIntent ? activationEngagementSummary.boundary : undefined,
+          activationEngagementBoundary: hasBackendActivationContext ? 'Activation context came from verified backend order metadata.' : undefined,
         })
 
         await logTraderLifecycleEvent({
@@ -257,7 +256,7 @@ export function ActivationPage() {
             activationVisitedSceneCount: activationVisitedSceneCountForStorage,
             activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,
             activationLockedSectionId: activationLockedSectionIdForStorage,
-            activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
+            activationBridgeQuestion: backendActivationReport?.resetProBridge.decisionQuestion,
             activationEngagementReportViewCount: activationEngagementReportViewCountForStorage,
             activationEngagementLockedSectionClickCount: activationEngagementLockedSectionClickCountForStorage,
             activationEngagementCurrentSectionClickCount: activationEngagementCurrentSectionClickCountForStorage,
