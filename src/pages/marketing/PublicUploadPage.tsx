@@ -227,10 +227,19 @@ export default function PublicUploadPage() {
 
     setReportGenerating(true)
     const backendTeaserFile = source === 'upload' && !shouldUseDemoLauncherSamplePacket ? getBackendTeaserFile() : null
+    const backendTeaserFacts: string[] = []
+    let backendTeaser: Awaited<ReturnType<typeof generatePublicTeaserReport>> | null = null
+
+    if (backendTeaserFile) {
+      try {
+        backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
+      } catch (caughtError) {
+        const message = caughtError instanceof Error ? caughtError.message : 'Backend teaser generation failed.'
+        backendTeaserFacts.push(`Backend teaser attempted but failed: ${message}. Report created as local preview only.`)
+      }
+    }
 
     try {
-      const backendTeaser = backendTeaserFile ? await generatePublicTeaserReport(backendTeaserFile) : null
-
       persistPublicReportSession(
         source === 'sample' && shouldUseDemoLauncherSamplePacket
           ? buildDemoLauncherSampleReportSession({
@@ -249,7 +258,7 @@ export default function PublicUploadPage() {
               archetypeId: archetype.id,
               axisId: axis.id,
               fileName,
-              fileValidationFacts: fileValidation.facts,
+              fileValidationFacts: [...fileValidation.facts, ...backendTeaserFacts],
               pasteBody,
               source,
               storySource,
@@ -262,8 +271,8 @@ export default function PublicUploadPage() {
 
       navigate(`/report/${reportId}${buildReportSearch(source)}`)
     } catch (caughtError) {
-      const message = caughtError instanceof Error ? caughtError.message : 'Backend teaser generation failed.'
-      setError(`Backend teaser generation failed before the report was created: ${message}`)
+      const message = caughtError instanceof Error ? caughtError.message : 'Report creation failed.'
+      setError(`Report creation failed before navigation: ${message}`)
     } finally {
       setReportGenerating(false)
     }

@@ -387,6 +387,55 @@ describe('public Shibuya journey pages', () => {
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
   })
 
+  test('eligible public paste falls back to local-only report when backend teaser fails', async () => {
+    const user = userEvent.setup()
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const pnl = index % 2 === 0 ? 40 + index : -18 - index
+      return `2026-07-${String(10 + index).padStart(2, '0')},NQ,${index % 2 === 0 ? 'buy' : 'sell'},1,19000,19020,${pnl}`
+    })
+    const pasteBody = ['date,symbol,side,size,entry,exit,pnl', ...rows].join('\n')
+
+    publicReportMocks.generatePublicTeaserReport.mockRejectedValue(new Error('teaser backend unavailable'))
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    fireEvent.change(screen.getByLabelText(/Or paste a small trade sample/i), {
+      target: { value: pasteBody },
+    })
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+    })
+
+    expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
+    expect(screen.getAllByText(/Local preview only/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/Backend teaser attempted but failed: teaser backend unavailable/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
+
+    const reportId = screen.getByTestId('location').textContent?.match(/\/report\/([^?]+)/)?.[1] ?? ''
+    const stored = getPublicReportSession(reportId)
+    expect(stored).toMatchObject({
+      artifactStatus: 'local_preview_only',
+      artifactStatusLabel: 'Local preview only',
+      productionArtifactProven: false,
+      backendTeaser: null,
+    })
+    expect(stored?.validationFacts).toContain(
+      'Backend teaser attempted but failed: teaser backend unavailable. Report created as local preview only.',
+    )
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('NQ,buy')
+  })
+
   test('controlled launcher upload creates an explicit demo launcher sample report packet', async () => {
     const user = userEvent.setup()
 
