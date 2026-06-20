@@ -16,6 +16,8 @@ const FRONTEND_TEST_TARGETS = [
   'src/lib/api/__tests__/dashboard.test.ts',
   'src/pages/dashboard/__tests__/OverviewPage.test.tsx',
   'src/pages/dashboard/__tests__/AppendTradesPage.test.tsx',
+  'src/pages/dashboard/__tests__/WorkspacePage.test.tsx',
+  'src/pages/dashboard/__tests__/ReportsPage.test.tsx',
 ]
 
 const ESLINT_TARGETS = [
