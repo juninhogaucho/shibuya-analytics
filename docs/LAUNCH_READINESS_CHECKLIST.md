@@ -25,6 +25,7 @@ All items below must be true on the same commit and same environment.
 
 ### Engineering Discipline
 - `npm run demo:gate` passes before any controlled private Reset Pro demo is shared.
+- `npm run proof:frontend-env -- --target live` passes against the actual deployed frontend environment.
 - `npm run lint` passes.
 - `npm run test:run` passes.
 - `npm run build` passes.
