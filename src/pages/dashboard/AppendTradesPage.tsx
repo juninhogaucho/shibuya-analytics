@@ -111,6 +111,30 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   return notes
 }
 
+function buildFirstUploadLifecycleMetadata(
+  result: TradeUploadResponse,
+  sessionMeta: ShibuyaSessionMeta | null,
+  uploadTransport: 'paste' | 'csv',
+): Record<string, unknown> {
+  return {
+    uploadTransport,
+    tradesUploaded: result.trades_uploaded,
+    reportSnapshotId: result.report_snapshot_id ?? null,
+    reportId: result.report_id ?? null,
+    artifactStatus: result.artifact_status ?? null,
+    appendCount: result.append_count ?? null,
+    requestId: result.request_id ?? null,
+    activationSource: sessionMeta?.activationSource,
+    activationReportId: sessionMeta?.activationReportId,
+    activationArchetypeId: sessionMeta?.activationArchetypeId,
+    activationAxisId: sessionMeta?.activationAxisId,
+    activationStorySource: sessionMeta?.activationStorySource,
+    activationVisitedSceneCount: sessionMeta?.activationVisitedSceneCount,
+    activationSignalMarkerIds: sessionMeta?.activationSignalMarkerIds,
+    activationLockedSectionId: sessionMeta?.activationLockedSectionId,
+  }
+}
+
 function formatEngagementReceipt(
   reportViewCount?: number,
   lockedSectionClickCount?: number,
@@ -369,6 +393,9 @@ export function AppendTradesPage() {
         if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
           await logTraderLifecycleEvent({
             event_name: 'first_upload_completed',
+            market,
+            tier: sessionMeta?.tier,
+            metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'paste'),
           })
         }
         updateSessionMeta({ caseStatus: 'baseline_ready' })
@@ -454,6 +481,9 @@ export function AppendTradesPage() {
         if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
           await logTraderLifecycleEvent({
             event_name: 'first_upload_completed',
+            market,
+            tier: sessionMeta?.tier,
+            metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'csv'),
           })
         }
         updateSessionMeta({ caseStatus: 'baseline_ready' })

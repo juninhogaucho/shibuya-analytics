@@ -270,6 +270,28 @@ describe('AppendTradesPage', () => {
     await waitFor(() => {
       expect(getTradePasteMemoryMock).toHaveBeenCalledTimes(1)
     })
+    expect(logTraderLifecycleEventMock).toHaveBeenCalledWith({
+      event_name: 'first_upload_completed',
+      market: 'india',
+      tier: undefined,
+      metadata: {
+        uploadTransport: 'paste',
+        tradesUploaded: 2,
+        reportSnapshotId: 'snap_upload_003',
+        reportId: 'report_upload_003',
+        artifactStatus: 'generated',
+        appendCount: 3,
+        requestId: 'req_live_123',
+        activationSource: 'locked_insight',
+        activationReportId: 'sample-behavioral-leak-report',
+        activationArchetypeId: 'marco',
+        activationAxisId: 'edge_decay',
+        activationStorySource: 'guided',
+        activationVisitedSceneCount: 6,
+        activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+        activationLockedSectionId: 'edge-decay-map',
+      },
+    })
     expect(updateSessionMetaMock).toHaveBeenCalledWith({ caseStatus: 'baseline_ready' })
   }, 15000)
 })
