@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FileText, Clock3, Download } from 'lucide-react'
-import { getDashboardOverview, getTradingReportComparison, getTradingReports } from '../../lib/api/dashboard'
+import { getDashboardOverview, getTradingReport, getTradingReportComparison, getTradingReports } from '../../lib/api/dashboard'
 import { getTraderProfileContext } from '../../lib/api/trader'
 import { buildActionBrief } from '../../lib/actionBrief'
 import { buildTradingMandate } from '../../lib/decisionSupport'
@@ -27,6 +27,35 @@ function inferReportLabel(report: TradingReportRecord, premiumAccess: boolean): 
   return 'Baseline brief'
 }
 
+function archivedReportFilename(report: TradingReportRecord): string {
+  const date = report.created_at ? report.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10)
+  const slug = (report.name ?? 'shibuya-report')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80) || 'shibuya-report'
+  return `${slug}-${date}.json`
+}
+
+function downloadArchivedReport(report: TradingReportRecord, sampleMode: boolean): void {
+  const payload = {
+    artifact_type: sampleMode ? 'sample_trading_report_record' : 'live_trading_report_record',
+    boundary: sampleMode
+      ? 'Sample artifact only. It does not prove live upload, persistence, or account-specific analytics.'
+      : 'Backend trading report record fetched from the authenticated live report endpoint.',
+    report,
+  }
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = archivedReportFilename(report)
+  document.body.appendChild(anchor)
+  anchor.click()
+  document.body.removeChild(anchor)
+  URL.revokeObjectURL(url)
+}
+
 export function ReportsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,6 +63,8 @@ export function ReportsPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null)
   const [profile, setProfile] = useState<TraderProfileContext | null>(null)
   const [comparison, setComparison] = useState<TradingReportComparisonResponse | null>(null)
+  const [downloadingReportId, setDownloadingReportId] = useState<string | null>(null)
+  const [artifactError, setArtifactError] = useState<string | null>(null)
   const sessionMeta = getStoredSessionMeta()
   const market = sessionMeta?.market ?? 'india'
   const premiumAccess = hasPremiumAccess()
@@ -156,6 +187,19 @@ export function ReportsPage() {
       })
     : []
 
+  async function handleDownloadArchivedReport(reportId: string) {
+    try {
+      setArtifactError(null)
+      setDownloadingReportId(reportId)
+      const response = await getTradingReport(reportId)
+      downloadArchivedReport(response.report, sampleMode)
+    } catch (err) {
+      setArtifactError(err instanceof Error ? err.message : 'Could not fetch archived report artifact.')
+    } finally {
+      setDownloadingReportId(null)
+    }
+  }
+
   if (loading) {
     return (
       <div className="dashboard-stack">
@@ -212,6 +256,13 @@ export function ReportsPage() {
             <p className="text-muted" style={{ marginBottom: 0 }}>
               {overview.market_context_note ?? 'Behavioral analysis and delivery artifacts are real. Regime-style overlays stay approximate until OHLC is connected for the symbols you trade.'}
             </p>
+          </div>
+        ) : null}
+
+        {artifactError ? (
+          <div className="error-panel glass-panel" style={{ marginTop: '1rem' }}>
+            <strong style={{ display: 'block', marginBottom: '0.35rem' }}>Artifact fetch failed</strong>
+            <p style={{ marginBottom: 0 }}>{artifactError}</p>
           </div>
         ) : null}
 
@@ -467,10 +518,14 @@ export function ReportsPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2" style={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    <Link to="/dashboard" className="btn btn-sm btn-secondary">
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      disabled={downloadingReportId === report.id}
+                      onClick={() => void handleDownloadArchivedReport(report.id)}
+                    >
                       <Download className="w-4 h-4" />
-                      Open board export
-                    </Link>
+                      {downloadingReportId === report.id ? 'Fetching artifact...' : 'Download archived artifact'}
+                    </button>
                   </div>
                 </div>
 

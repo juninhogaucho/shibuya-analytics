@@ -95,6 +95,11 @@ export interface TradingReportsResponse {
   count: number
 }
 
+export interface TradingReportResponse {
+  status: string
+  report: TradingReportRecord
+}
+
 export type TraderMode =
   | 'retail_fn0_struggler'
   | 'prop_eval_survival'

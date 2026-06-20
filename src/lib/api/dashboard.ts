@@ -10,6 +10,7 @@ import type {
   TradeHistoryResponse,
   TradePasteMemoryResponse,
   TradePastePreview,
+  TradingReportResponse,
   TradingReportComparisonResponse,
   TradingReportsResponse,
 } from '../types'
@@ -110,6 +111,23 @@ export async function getTradingReports(limit = 20): Promise<TradingReportsRespo
     const { data } = await http.get<TradingReportsResponse>('/v1/trading-reports', {
       params: { limit },
     })
+    return data
+  })
+}
+
+export async function getTradingReport(reportId: string): Promise<TradingReportResponse> {
+  if (isSampleMode()) {
+    await wait(150)
+    const report = SAMPLE_WORKSPACE_DATA.reports.reports.find((item) => item.id === reportId)
+    if (!report) {
+      throw new Error('Sample report artifact not found.')
+    }
+    return { status: 'success', report }
+  }
+
+  assertDashboardBackendReady('Trading report artifact')
+  return withRetry(async () => {
+    const { data } = await http.get<TradingReportResponse>(`/v1/trading-reports/${encodeURIComponent(reportId)}`)
     return data
   })
 }
