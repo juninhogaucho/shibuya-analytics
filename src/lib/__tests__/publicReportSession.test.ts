@@ -92,6 +92,63 @@ describe('public report sessions', () => {
     )
   })
 
+  test('stores backend teaser receipt without raw trade rows', () => {
+    const session = buildPublicReportSession({
+      reportId: 'free-report-backed',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      pasteBody: 'date,symbol,side,size,entry,exit,pnl\n2026-06-18,XAUUSD,buy,1,2300,2315,150',
+      source: 'upload',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        request_id: 'TEASER-abc123',
+        trades_analyzed: 10,
+        headline: {
+          total_pnl: 420,
+          discipline_tax: 120,
+          win_rate: 60,
+          worst_pattern: 'Revenge Trading',
+          hook: '$120 discipline tax detected before activation.',
+        },
+        processing_time_seconds: 0.42,
+      },
+    })
+
+    persistPublicReportSession(session)
+
+    const raw = window.localStorage.getItem(PUBLIC_REPORT_SESSION_STORAGE_KEY) ?? ''
+    const stored = getPublicReportSession('free-report-backed')
+
+    expect(raw).not.toContain('XAUUSD')
+    expect(stored).toMatchObject({
+      reportId: 'free-report-backed',
+      source: 'paste',
+      artifactStatus: 'backend_teaser_generated',
+      artifactStatusLabel: 'Backend teaser generated',
+      productionArtifactProven: true,
+      backendTeaser: {
+        requestId: 'TEASER-abc123',
+        tradesAnalyzed: 10,
+        disciplineTax: 120,
+        totalPnl: 420,
+        winRate: 60,
+        worstPattern: 'Revenge Trading',
+        hook: '$120 discipline tax detected before activation.',
+        processingTimeSeconds: 0.42,
+      },
+    })
+    expect(stored?.validationSummary).toContain('Backend teaser report generated')
+    expect(stored?.validationFacts).toContain('Backend teaser generated: request TEASER-abc123; 10 trades analyzed.')
+    expect(stored?.validationFacts).toContain('Backend teaser hook: $120 discipline tax detected before activation.')
+    expect(stored?.boundary).toContain('stores only the backend teaser receipt')
+  })
+
   test('builds an explicit demo launcher sample packet without raw upload claims', () => {
     expect(hasDemoLauncherSamplePacketRequest('?demo_packet=launcher_sample')).toBe(true)
     expect(hasDemoLauncherSamplePacketRequest('?demo_packet=sample')).toBe(false)

@@ -1,4 +1,5 @@
 import type { Market } from './market'
+import type { PublicTeaserReportResponse } from './api/publicReport'
 import { buildLiveProofReadinessContract, type LiveProofReadinessRow } from './liveProofReadiness'
 import {
   getFingerprintAxis,
@@ -14,7 +15,7 @@ export const DEMO_LAUNCHER_SAMPLE_PACKET_PARAM = 'demo_packet'
 export const DEMO_LAUNCHER_SAMPLE_PACKET_VALUE = 'launcher_sample'
 
 export type PublicReportSource = 'file' | 'paste' | 'mixed' | 'sample'
-export type PublicReportArtifactStatus = 'local_preview_only' | 'sample_demo_only'
+export type PublicReportArtifactStatus = 'local_preview_only' | 'sample_demo_only' | 'backend_teaser_generated'
 
 export interface PublicReportValidationInput {
   reportId: string
@@ -29,6 +30,7 @@ export interface PublicReportValidationInput {
   selectedPainAxisIds?: string[]
   visitedSceneCount?: number
   signalMarkerIds?: string[]
+  backendTeaser?: PublicTeaserReportResponse | null
 }
 
 export interface PublicReportSession {
@@ -50,6 +52,18 @@ export interface PublicReportSession {
   visitedSceneCount: number
   signalMarkerIds: PublicStorySignalMarkerId[]
   liveProofGap: PublicReportLiveProofGap
+  backendTeaser?: PublicTeaserReportReceipt | null
+}
+
+export interface PublicTeaserReportReceipt {
+  requestId: string
+  tradesAnalyzed: number
+  disciplineTax?: number
+  totalPnl?: number
+  winRate?: number
+  worstPattern?: string
+  hook?: string
+  processingTimeSeconds?: number
 }
 
 export interface PublicReportLiveProofGap {
@@ -218,6 +232,18 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
   const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
   const liveProofGap = buildLiveProofReadinessContract()
+  const backendTeaser = params.backendTeaser?.status === 'success'
+    ? {
+        requestId: params.backendTeaser.request_id,
+        tradesAnalyzed: params.backendTeaser.trades_analyzed,
+        disciplineTax: params.backendTeaser.headline?.discipline_tax,
+        totalPnl: params.backendTeaser.headline?.total_pnl,
+        winRate: params.backendTeaser.headline?.win_rate,
+        worstPattern: params.backendTeaser.headline?.worst_pattern,
+        hook: params.backendTeaser.headline?.hook,
+        processingTimeSeconds: params.backendTeaser.processing_time_seconds,
+      }
+    : null
   const storyFacts =
     storySource === 'guided'
       ? [
@@ -239,8 +265,16 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         : source === 'file'
           ? `Local ${extension?.toUpperCase()} file selected`
           : 'Pasted trade sample'
-  const artifactStatus: PublicReportArtifactStatus = source === 'sample' ? 'sample_demo_only' : 'local_preview_only'
-  const artifactStatusLabel = source === 'sample' ? 'Sample demo only' : 'Local preview only'
+  const artifactStatus: PublicReportArtifactStatus = backendTeaser
+    ? 'backend_teaser_generated'
+    : source === 'sample'
+      ? 'sample_demo_only'
+      : 'local_preview_only'
+  const artifactStatusLabel = backendTeaser
+    ? 'Backend teaser generated'
+    : source === 'sample'
+      ? 'Sample demo only'
+      : 'Local preview only'
 
   const validationFacts =
     source === 'sample'
@@ -253,7 +287,10 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         ]
       : [
           ...storyFacts,
-          'Artifact status: local preview only; no backend-generated production report exists for this packet.',
+          backendTeaser
+            ? `Backend teaser generated: request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
+            : 'Artifact status: local preview only; no backend-generated production report exists for this packet.',
+          backendTeaser?.hook ? `Backend teaser hook: ${backendTeaser.hook}` : null,
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           ...(params.fileValidationFacts ?? []),
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
@@ -261,7 +298,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
             ? 'Pasted sample passed local structure check: date/time, instrument, direction, and result/price fields detected.'
             : 'No validated pasted table structure included.',
           'Raw file contents and pasted trade rows are not stored by this public preview.',
-        ]
+        ].filter((fact): fact is string => Boolean(fact))
 
   return {
     reportId: params.reportId,
@@ -273,13 +310,17 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
     evidenceLabel,
     artifactStatus,
     artifactStatusLabel,
-    productionArtifactProven: false,
+    productionArtifactProven: Boolean(backendTeaser),
     validationSummary:
       source === 'sample'
         ? 'Demo packet accepted. This proves the public journey transition, not live analytics.'
-        : 'Public preview validation passed. The full production report still requires backend normalization and generated artifacts.',
+        : backendTeaser
+          ? 'Backend teaser report generated. This proves public report processing, while private conclusions still require activation, live upload, and append history.'
+          : 'Public preview validation passed. The full production report still requires backend normalization and generated artifacts.',
     validationFacts,
-    boundary: 'This packet is stored locally in the browser and contains no raw trade rows. It is not a production report artifact.',
+    boundary: backendTeaser
+      ? 'This packet stores only the backend teaser receipt and secret-free handoff metadata. Raw trade rows are not stored in browser session state.'
+      : 'This packet is stored locally in the browser and contains no raw trade rows. It is not a production report artifact.',
     storySource,
     selectedPainAxisIds,
     visitedSceneCount,
@@ -290,6 +331,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
       rows: liveProofGap.rows,
       boundary: liveProofGap.boundary,
     },
+    backendTeaser,
   }
 }
 

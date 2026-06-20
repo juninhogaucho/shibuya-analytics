@@ -3,6 +3,7 @@ import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
+import { generatePublicTeaserReport } from '../../lib/api/publicReport'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import {
@@ -36,6 +37,7 @@ interface LocalFileValidationState {
   status: 'idle' | 'validating' | 'passed' | 'blocked'
   message: string
   facts: string[]
+  rowCount?: number
   error?: string | null
 }
 
@@ -48,6 +50,19 @@ const EMPTY_FILE_VALIDATION: LocalFileValidationState = {
 
 function getUploadFileExtension(fileName: string): string {
   return fileName.split('.').pop()?.trim().toLowerCase() ?? ''
+}
+
+function countTradeRowsFromTable(body: string): number {
+  const rows = body
+    .split(/\r?\n/)
+    .map((row) => row.trim())
+    .filter(Boolean)
+
+  return Math.max(0, rows.length - 1)
+}
+
+function buildPastedTradeFile(body: string): File {
+  return new File([body], 'public-teaser-upload.csv', { type: 'text/csv' })
 }
 
 export default function PublicUploadPage() {
@@ -69,9 +84,11 @@ export default function PublicUploadPage() {
   const [archetypeId, setArchetypeId] = useState<StoryArchetypeId>(initialArchetype.id)
   const [axisId, setAxisId] = useState<FingerprintAxisId>(initialAxis.id)
   const [fileName, setFileName] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileValidation, setFileValidation] = useState<LocalFileValidationState>(EMPTY_FILE_VALIDATION)
   const [pasteBody, setPasteBody] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [reportGenerating, setReportGenerating] = useState(false)
 
   const archetype = useMemo(() => getTraderArchetype(archetypeId), [archetypeId])
   const axis = useMemo(() => getFingerprintAxis(axisId), [axisId])
@@ -115,9 +132,9 @@ export default function PublicUploadPage() {
   ]
   const storyHomePath = getMarketHomePath(market)
   const reportPacketContract = [
-    'Creates a local report handoff with source, market, archetype, dominant pain, story source, scenes viewed, and selected public pain axes.',
+    'Creates a report handoff with source, market, archetype, dominant pain, story source, scenes viewed, and selected public pain axes.',
     'Stores no raw trade rows in this public preview surface.',
-    'Requires live backend normalization before any account-specific private claim.',
+    'Uses the backend teaser endpoint when the input has enough rows; still requires live activation before private claims.',
   ]
   const predictionSurvivalRows = [
     {
@@ -179,7 +196,21 @@ export default function PublicUploadPage() {
     return `?${reportSearchParams.toString()}`
   }
 
-  const generateReport = (source: 'upload' | 'sample') => {
+  const getBackendTeaserFile = (): File | null => {
+    const pastedTradeRowCount = countTradeRowsFromTable(pasteBody)
+
+    if (selectedFile && fileValidation.status === 'passed' && (fileValidation.rowCount ?? 0) >= 10) {
+      return selectedFile
+    }
+
+    if (pastedTradeRowCount >= 10 && !validatePublicPasteSample(pasteBody)) {
+      return buildPastedTradeFile(pasteBody)
+    }
+
+    return null
+  }
+
+  const generateReport = async (source: 'upload' | 'sample') => {
     const reportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
     const validationError = validatePublicReportInput({
       fileName,
@@ -194,40 +225,54 @@ export default function PublicUploadPage() {
       return
     }
 
-    persistPublicReportSession(
-      source === 'sample' && shouldUseDemoLauncherSamplePacket
-        ? buildDemoLauncherSampleReportSession({
-            reportId,
-            market,
-            archetypeId: archetype.id,
-            axisId: axis.id,
-            storySource,
-            selectedPainAxisIds,
-            visitedSceneCount,
-            signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
-          })
-        : buildPublicReportSession({
-            reportId,
-            market,
-            archetypeId: archetype.id,
-            axisId: axis.id,
-            fileName,
-            fileValidationFacts: fileValidation.facts,
-            pasteBody,
-            source,
-            storySource,
-            selectedPainAxisIds,
-            visitedSceneCount,
-            signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
-          }),
-    )
+    setReportGenerating(true)
+    const backendTeaserFile = source === 'upload' && !shouldUseDemoLauncherSamplePacket ? getBackendTeaserFile() : null
 
-    navigate(`/report/${reportId}${buildReportSearch(source)}`)
+    try {
+      const backendTeaser = backendTeaserFile ? await generatePublicTeaserReport(backendTeaserFile) : null
+
+      persistPublicReportSession(
+        source === 'sample' && shouldUseDemoLauncherSamplePacket
+          ? buildDemoLauncherSampleReportSession({
+              reportId,
+              market,
+              archetypeId: archetype.id,
+              axisId: axis.id,
+              storySource,
+              selectedPainAxisIds,
+              visitedSceneCount,
+              signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+            })
+          : buildPublicReportSession({
+              reportId,
+              market,
+              archetypeId: archetype.id,
+              axisId: axis.id,
+              fileName,
+              fileValidationFacts: fileValidation.facts,
+              pasteBody,
+              source,
+              storySource,
+              selectedPainAxisIds,
+              visitedSceneCount,
+              signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+              backendTeaser,
+            }),
+      )
+
+      navigate(`/report/${reportId}${buildReportSearch(source)}`)
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : 'Backend teaser generation failed.'
+      setError(`Backend teaser generation failed before the report was created: ${message}`)
+    } finally {
+      setReportGenerating(false)
+    }
   }
 
   const handleFileChange = async (file?: File | null) => {
     const nextFileName = file?.name ?? ''
     setFileName(nextFileName)
+    setSelectedFile(file ?? null)
     setError(null)
 
     if (!file) {
@@ -260,6 +305,7 @@ export default function PublicUploadPage() {
     try {
       const previewText = await file.slice(0, LOCAL_FILE_PREVIEW_BYTES).text()
       const structureError = validatePublicPasteSample(previewText)
+      const rowCount = countTradeRowsFromTable(previewText)
 
       if (structureError) {
         setFileValidation({
@@ -269,6 +315,7 @@ export default function PublicUploadPage() {
             `Selected local ${extension.toUpperCase()} file was inspected but did not pass the required public structure check.`,
             'Raw file contents were read only inside this browser session and were not stored in the report packet.',
           ],
+          rowCount,
           error: `Selected file did not pass the local public structure check: ${structureError}`,
         })
         return
@@ -279,9 +326,11 @@ export default function PublicUploadPage() {
         message: 'Selected file passed the local public structure check.',
         facts: [
           `Selected local ${extension.toUpperCase()} file passed local structure check: date/time, instrument, direction, and result/price fields detected.`,
+          `Trade rows detected in local preview: ${rowCount}.`,
           `Preview bytes inspected locally: ${Math.min(file.size, LOCAL_FILE_PREVIEW_BYTES)} of ${file.size}.`,
           'Raw file contents were read only inside this browser session and were not stored in the report packet.',
         ],
+        rowCount,
         error: null,
       })
     } catch {
@@ -301,7 +350,7 @@ export default function PublicUploadPage() {
     event.preventDefault()
     setError(null)
 
-    generateReport('upload')
+    void generateReport('upload')
   }
 
   return (
@@ -313,8 +362,8 @@ export default function PublicUploadPage() {
             Upload your trade history. See what the fingerprint gets right.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
-            The story page built a provisional mirror. This step is where Shibuya asks for evidence. In this public demo,
-            no file is sent to a production engine; the page shows the exact validation and report transition the live path must own.
+            The story page built a provisional mirror. This step is where Shibuya asks for evidence. Small previews stay
+            local; inputs with enough rows can generate a backend teaser receipt before the private answer remains locked.
           </p>
 
           <div className="mt-8 grid gap-3 text-sm text-neutral-300">
@@ -426,7 +475,10 @@ export default function PublicUploadPage() {
                 ) : null}
                 <button
                   type="button"
-                  onClick={() => generateReport('sample')}
+                  onClick={() => {
+                    void generateReport('sample')
+                  }}
+                  disabled={reportGenerating}
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
                 >
                   Generate Guided Sample Report
@@ -593,14 +645,18 @@ export default function PublicUploadPage() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 type="submit"
+                disabled={reportGenerating}
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-black transition hover:bg-indigo-200"
               >
-                Generate Free Report
+                {reportGenerating ? 'Generating Report' : 'Generate Free Report'}
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                onClick={() => generateReport('sample')}
+                onClick={() => {
+                  void generateReport('sample')
+                }}
+                disabled={reportGenerating}
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black"
               >
                 Use Sample History

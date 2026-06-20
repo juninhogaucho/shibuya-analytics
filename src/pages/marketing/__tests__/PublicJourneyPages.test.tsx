@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -12,6 +12,14 @@ import LockedInsightPage from '../LockedInsightPage'
 import PrivateDemoPage from '../PrivateDemoPage'
 import PublicUploadPage from '../PublicUploadPage'
 
+const publicReportMocks = vi.hoisted(() => ({
+  generatePublicTeaserReport: vi.fn(),
+}))
+
+vi.mock('../../../lib/api/publicReport', () => ({
+  generatePublicTeaserReport: publicReportMocks.generatePublicTeaserReport,
+}))
+
 function LocationProbe() {
   const location = useLocation()
   return <div data-testid="location">{`${location.pathname}${location.search}`}</div>
@@ -19,6 +27,7 @@ function LocationProbe() {
 
 afterEach(() => {
   window.localStorage.clear()
+  publicReportMocks.generatePublicTeaserReport.mockReset()
   vi.unstubAllEnvs()
 })
 
@@ -72,9 +81,9 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Survival rule: if a claim requires account-specific proof/i)).toBeInTheDocument()
     expect(screen.getByText('Report packet contract')).toBeInTheDocument()
     expect(screen.getByText('What this upload step is allowed to prove.')).toBeInTheDocument()
-    expect(screen.getByText(/Creates a local report handoff with source, market, archetype/i)).toBeInTheDocument()
+    expect(screen.getByText(/Creates a report handoff with source, market, archetype/i)).toBeInTheDocument()
     expect(screen.getByText(/Stores no raw trade rows in this public preview surface/i)).toBeInTheDocument()
-    expect(screen.getByText(/Requires live backend normalization before any account-specific private claim/i)).toBeInTheDocument()
+    expect(screen.getByText(/Uses the backend teaser endpoint when the input has enough rows/i)).toBeInTheDocument()
     expect(screen.getByText('Live proof gap ledger')).toBeInTheDocument()
     expect(screen.getByText('Live proof has a backend target, but still needs evidence.')).toBeInTheDocument()
     expect(screen.getByText(/This ledger is stored into the report packet/i)).toBeInTheDocument()
@@ -307,6 +316,75 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/insight/breach-sequence?source=guided_report&report=sample-behavioral-leak-report&archetype=priya&axis=drawdown_pressure&story=direct&scene_count=4&pain_axes=drawdown_pressure&market=india',
     )
+  })
+
+  test('eligible public paste generates a backend teaser receipt before free report', async () => {
+    const user = userEvent.setup()
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const pnl = index % 2 === 0 ? 35 + index : -20 - index
+      return `2026-06-${String(10 + index).padStart(2, '0')},XAUUSD,${index % 2 === 0 ? 'buy' : 'sell'},1,2300,2310,${pnl}`
+    })
+    const pasteBody = ['date,symbol,side,size,entry,exit,pnl', ...rows].join('\n')
+
+    publicReportMocks.generatePublicTeaserReport.mockImplementation(async (file: File) => {
+      expect(file).toBeInstanceOf(File)
+      expect(file.name).toBe('public-teaser-upload.csv')
+
+      return {
+        status: 'success',
+        report_type: 'teaser',
+        request_id: 'TEASER-route-123',
+        trades_analyzed: 10,
+        headline: {
+          total_pnl: 420,
+          discipline_tax: 120,
+          win_rate: 60,
+          worst_pattern: 'Revenge Trading',
+          hook: '$120 discipline tax detected before activation.',
+        },
+        processing_time_seconds: 0.42,
+      }
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    fireEvent.change(screen.getByLabelText(/Or paste a small trade sample/i), {
+      target: { value: pasteBody },
+    })
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+    })
+
+    expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
+    expect(screen.getAllByText('Backend teaser generated').length).toBeGreaterThan(0)
+    expect(screen.getByText('Proven')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser generated: request TEASER-route-123; 10 trades analyzed.')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser hook: $120 discipline tax detected before activation.')).toBeInTheDocument()
+    expect(screen.getAllByText(/Backend teaser report generated/i).length).toBeGreaterThan(0)
+
+    const reportId = screen.getByTestId('location').textContent?.match(/\/report\/([^?]+)/)?.[1]
+    const stored = getPublicReportSession(reportId)
+    expect(stored).toMatchObject({
+      artifactStatus: 'backend_teaser_generated',
+      artifactStatusLabel: 'Backend teaser generated',
+      productionArtifactProven: true,
+      backendTeaser: {
+        requestId: 'TEASER-route-123',
+        tradesAnalyzed: 10,
+        disciplineTax: 120,
+      },
+    })
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
   })
 
   test('controlled launcher upload creates an explicit demo launcher sample report packet', async () => {
