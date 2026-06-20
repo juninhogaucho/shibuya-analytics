@@ -115,6 +115,49 @@ const STORY_REEL_BEATS = [
   },
 ] as const
 
+const PUBLIC_FILM_SEQUENCE = [
+  {
+    timebox: '0:00',
+    label: 'Opening tension',
+    title: 'Start with the repeated state.',
+    presenterLine: 'The market did not break the trader; the same internal state kept showing up before damage.',
+    viewerFeeling: 'The trader should feel recognized before they feel sold to.',
+    productMove: 'Name the loop and make strategy feel secondary for the first thirty seconds.',
+    boundary: 'Recognition only. No account diagnosis.',
+    sceneIndex: 0,
+  },
+  {
+    timebox: '0:55',
+    label: 'Mirror choice',
+    title: 'Let the trader choose the wound.',
+    presenterLine: 'Do not list features. Ask which failure mode feels uncomfortably close.',
+    viewerFeeling: 'The interaction should feel like a mirror, not a questionnaire.',
+    productMove: 'One choice creates the public hypothesis that upload will later test.',
+    boundary: 'A selected mirror is routing context only.',
+    sceneIndex: 3,
+  },
+  {
+    timebox: '1:45',
+    label: 'Fingerprint reveal',
+    title: 'Reveal the provisional shape.',
+    presenterLine: 'The page can show what it thinks, but it must say why the answer is still unfinished.',
+    viewerFeeling: 'The reveal should create useful tension: this might be true, but it needs evidence.',
+    productMove: 'Show dominant axis, pressure band, and the exact claim boundary in one frame.',
+    boundary: 'Website-level signal, not private analytics.',
+    sceneIndex: 9,
+  },
+  {
+    timebox: '2:35',
+    label: 'Evidence handoff',
+    title: 'End the film by asking for proof.',
+    presenterLine: 'The conversion is not payment. The conversion is whether the trader wants the mirror tested.',
+    viewerFeeling: 'Upload should feel like the next scene, not a form.',
+    productMove: 'Carry story context into upload, report, locked insight, and private Reset Pro.',
+    boundary: 'Real claims wait for normalized history and append proof.',
+    sceneIndex: 10,
+  },
+] as const
+
 export default function StoryExperience() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -126,6 +169,10 @@ export default function StoryExperience() {
   const pressureIndex = buildBehavioralPressureIndex(scores)
   const pressureBand = getBehavioralPressureBand(pressureIndex)
   const activeScene = STORY_SCENES[activeSceneIndex]
+  const activeFilmBeat = PUBLIC_FILM_SEQUENCE.reduce(
+    (current, candidate) => (activeSceneIndex >= candidate.sceneIndex ? candidate : current),
+    PUBLIC_FILM_SEQUENCE[0],
+  )
   const progress = Math.round(((activeSceneIndex + 1) / STORY_SCENES.length) * 100)
   const selectedArchetype = TRADER_ARCHETYPES.find((archetype) => archetype.id === signal.archetypeId)
   const selectedPainAxisLabels = signal.selectedPainAxes
@@ -293,7 +340,51 @@ export default function StoryExperience() {
               <span>{activeScene.label} / {progress}% complete</span>
             </div>
 
-            <div className="grid gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.43fr)] lg:items-end">
+            <div className="mt-6 grid gap-4 rounded-[1.65rem] border border-white/10 bg-white/[0.035] p-4 backdrop-blur md:grid-cols-[0.72fr_1.28fr] md:p-5">
+              <div className="min-w-0">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-indigo-100/80">
+                  Three-minute public film
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold leading-tight text-white md:text-3xl">
+                  Run it like a film, not a feature tour.
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-neutral-300">
+                  {activeFilmBeat.presenterLine}
+                </p>
+                <p className="mt-3 rounded-2xl border border-amber-200/20 bg-amber-200/[0.06] p-3 text-xs leading-5 text-amber-50/80">
+                  Boundary: {activeFilmBeat.boundary}
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {PUBLIC_FILM_SEQUENCE.map((beat) => {
+                  const selected = beat.label === activeFilmBeat.label
+
+                  return (
+                    <button
+                      key={beat.label}
+                      type="button"
+                      onClick={() => inspectScene(beat.sceneIndex)}
+                      className={`rounded-2xl border p-4 text-left transition ${
+                        selected
+                          ? 'border-white/45 bg-white text-black'
+                          : 'border-white/10 bg-black/20 text-white hover:border-white/25 hover:bg-white/[0.07]'
+                      }`}
+                    >
+                      <span className={`font-mono text-[10px] uppercase tracking-[0.2em] ${selected ? 'text-black/55' : 'text-white/45'}`}>
+                        {beat.timebox} / {beat.label}
+                      </span>
+                      <span className="mt-3 block text-sm font-semibold leading-5">{beat.title}</span>
+                      <span className={`mt-2 block text-xs leading-5 ${selected ? 'text-black/62' : 'text-neutral-400'}`}>
+                        {beat.viewerFeeling}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.43fr)] lg:items-end">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeScene.id}
@@ -321,6 +412,16 @@ export default function StoryExperience() {
                       ? 'P&L is the last frame. Shibuya rewinds the film: pressure, hesitation, size, exit, re-entry, damage.'
                       : activeScene.body}
                   </p>
+                  <div className="mt-7 grid max-w-4xl gap-3 md:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">Product move</p>
+                      <p className="mt-2 text-sm leading-6 text-neutral-200">{activeFilmBeat.productMove}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">Viewer emotion</p>
+                      <p className="mt-2 text-sm leading-6 text-neutral-200">{activeFilmBeat.viewerFeeling}</p>
+                    </div>
+                  </div>
                 </motion.div>
               </AnimatePresence>
 

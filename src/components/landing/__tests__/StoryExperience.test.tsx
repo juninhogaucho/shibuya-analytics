@@ -24,6 +24,14 @@ describe('StoryExperience', () => {
     expect(screen.getByText('The market did not break you.')).toBeInTheDocument()
     expect(screen.getByText('Your state repeated.')).toBeInTheDocument()
     expect(screen.getByText('Choose the frame that stings')).toBeInTheDocument()
+    expect(screen.getByText('Three-minute public film')).toBeInTheDocument()
+    expect(screen.getByText('Run it like a film, not a feature tour.')).toBeInTheDocument()
+    expect(screen.getByText('0:00 / Opening tension')).toBeInTheDocument()
+    expect(screen.getByText('0:55 / Mirror choice')).toBeInTheDocument()
+    expect(screen.getByText('1:45 / Fingerprint reveal')).toBeInTheDocument()
+    expect(screen.getByText('2:35 / Evidence handoff')).toBeInTheDocument()
+    expect(screen.getAllByText('The trader should feel recognized before they feel sold to.').length).toBeGreaterThan(0)
+    expect(screen.getByText('Name the loop and make strategy feel secondary for the first thirty seconds.')).toBeInTheDocument()
     expect(screen.getByText('Public story contract')).toBeInTheDocument()
     expect(screen.getByText('Reel 1 / Cold open')).toBeInTheDocument()
     expect(screen.getByText('Reel 4 / Evidence door')).toBeInTheDocument()
@@ -46,6 +54,11 @@ describe('StoryExperience', () => {
     await user.click(screen.getByRole('button', { name: /Reel 4 \/ Evidence door/i }))
 
     expect(screen.getAllByText('Upload your trade history. See what the fingerprint gets right.').length).toBeGreaterThan(0)
+
+    await user.click(screen.getByRole('button', { name: /0:55 \/ Mirror choice/i }))
+
+    expect(screen.getAllByText('Which trader feels uncomfortably close?').length).toBeGreaterThan(0)
+    expect(screen.getByText('The interaction should feel like a mirror, not a questionnaire.')).toBeInTheDocument()
   })
 
   test('routes a selected public hypothesis into upload without claiming account evidence', async () => {
