@@ -84,6 +84,34 @@ function humanizeOfferKind(offerKind?: string | null): string {
   }
 }
 
+function formatProofDate(value?: string | null): string {
+  if (!value) {
+    return 'Not recorded'
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function proofValue(value: unknown, fallback = 'Not recorded'): string {
+  if (value == null || value === '') {
+    return fallback
+  }
+  if (Array.isArray(value)) {
+    return value.length ? value.join(', ') : fallback
+  }
+  return String(value)
+}
+
 function humanizeCapitalBand(value?: string | null): string {
   switch (value) {
     case 'under_50k_inr':
@@ -251,6 +279,7 @@ export function WorkspacePage() {
   const effectiveCaseStatus = overview?.case_status ?? sessionMeta?.caseStatus
   const effectiveTraderMode = overview?.trader_mode ?? profile?.trader_mode ?? sessionMeta?.traderMode ?? null
   const effectiveExpiry = overview?.access_expires_at ?? sessionMeta?.accessExpiresAt ?? null
+  const latestUploadReceipt = overview?.latest_upload_receipt ?? overview?.first_upload_receipt ?? null
   const effectiveReadOnly = readOnly || effectiveCaseStatus === 'read_only'
   const effectiveDaysRemaining = getSessionDaysRemaining({
     ...sessionMeta,
@@ -444,6 +473,50 @@ export function WorkspacePage() {
               <p className="text-muted" style={{ marginBottom: 0 }}>
                 {recentAccess?.orderCode ?? 'Not stored on this device'}
               </p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)', gridColumn: '1 / -1' }}>
+              <h4 style={{ marginBottom: '0.35rem' }}>Upload proof receipt</h4>
+              {latestUploadReceipt ? (
+                <>
+                  <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
+                    Backend persisted this receipt when the first live upload completed. This is the proof bridge between upload, report artifact, and workspace state.
+                  </p>
+                  <div className="grid-responsive two" style={{ gap: '0.75rem' }}>
+                    <div>
+                      <span className="badge">Snapshot</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{proofValue(latestUploadReceipt.report_snapshot_id)}</p>
+                    </div>
+                    <div>
+                      <span className="badge">Report</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{proofValue(latestUploadReceipt.report_id)}</p>
+                    </div>
+                    <div>
+                      <span className="badge">Trades</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{proofValue(latestUploadReceipt.trades_uploaded)}</p>
+                    </div>
+                    <div>
+                      <span className="badge">Append count</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{proofValue(latestUploadReceipt.append_count)}</p>
+                    </div>
+                    <div>
+                      <span className="badge">Artifact</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{proofValue(latestUploadReceipt.artifact_status)}</p>
+                    </div>
+                    <div>
+                      <span className="badge">Completed</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0' }}>{formatProofDate(latestUploadReceipt.completed_at)}</p>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <span className="badge">Request</span>
+                      <p className="text-muted" style={{ margin: '0.35rem 0 0', overflowWrap: 'anywhere' }}>{proofValue(latestUploadReceipt.request_id)}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-muted" style={{ marginBottom: 0 }}>
+                  No backend upload receipt yet. The first live upload should create one before the workspace claims account-specific proof.
+                </p>
+              )}
             </article>
             <article className="glass-panel" style={{ background: 'rgba(255,255,255,0.02)', gridColumn: '1 / -1' }}>
               <h4 style={{ marginBottom: '0.35rem' }}>Guided review</h4>

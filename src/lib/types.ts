@@ -428,6 +428,25 @@ export interface ShibuyaAffiliateReportResponse {
 }
 
 // Dashboard Types
+export interface UploadProofReceipt {
+  completed_at?: string
+  upload_transport?: string
+  trades_uploaded?: number
+  report_snapshot_id?: string
+  report_id?: string
+  artifact_status?: string
+  append_count?: number
+  request_id?: string
+  activation_source?: string
+  activation_report_id?: string
+  activation_archetype_id?: string
+  activation_axis_id?: string
+  activation_story_source?: string
+  activation_visited_scene_count?: number
+  activation_signal_marker_ids?: string[]
+  activation_locked_section_id?: string
+}
+
 export interface DashboardOverview {
   customer_id?: string
   access_tier?: string
@@ -453,6 +472,8 @@ export interface DashboardOverview {
   reports_ready?: number
   latest_report_at?: string | null
   last_report_snapshot_id?: string | null
+  first_upload_receipt?: UploadProofReceipt | null
+  latest_upload_receipt?: UploadProofReceipt | null
   analysis_summary?: AnalysisSummary | null
   market_context_source?: string | null
   market_context_status?: string | null
