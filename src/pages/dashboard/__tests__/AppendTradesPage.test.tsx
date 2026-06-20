@@ -214,7 +214,15 @@ describe('AppendTradesPage', () => {
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Report engagement is local route continuity only; it does not prove payment, backend normalization, raw trades, or account-specific improvement.',
     })
-    submitParsedTradesMock.mockResolvedValue({ status: 'ok', trades_uploaded: 2 })
+    submitParsedTradesMock.mockResolvedValue({
+      status: 'ok',
+      trades_uploaded: 2,
+      report_snapshot_id: 'snap_upload_003',
+      report_id: 'report_upload_003',
+      artifact_status: 'generated',
+      append_count: 3,
+      request_id: 'req_live_123',
+    })
     const user = userEvent.setup()
 
     renderPage()
@@ -248,6 +256,14 @@ describe('AppendTradesPage', () => {
     await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
 
     expect(await screen.findByText('Uploaded 2 trades to your live account.')).toBeInTheDocument()
+    expect(screen.getByText('LIVE APPEND PROOF RECEIPT')).toBeInTheDocument()
+    expect(screen.getByText('Backend artifact generated for this account.')).toBeInTheDocument()
+    expect(screen.getAllByText('snap_upload_003').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('report_upload_003').length).toBeGreaterThan(0)
+    expect(screen.getByText('Generated artifact snapshot: snap_upload_003.')).toBeInTheDocument()
+    expect(screen.getByText('Report artifact: report_upload_003.')).toBeInTheDocument()
+    expect(screen.getByText('Durable upload count for this account: 3.')).toBeInTheDocument()
+    expect(screen.getByText('Backend request receipt: req_live_123.')).toBeInTheDocument()
     expect(screen.getByText('Comparing upload #3 to #2')).toBeInTheDocument()
     expect(screen.getByText('Win Rate: 50.0% -> 55.0% (+5.0pp)')).toBeInTheDocument()
 

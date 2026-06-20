@@ -15,6 +15,18 @@ import type {
 } from '../types'
 import { http, withRetry } from './httpClient'
 
+export interface TradeUploadResponse {
+  status: string
+  trades_uploaded: number
+  message?: string
+  request_id?: string
+  report?: Record<string, unknown>
+  report_snapshot_id?: string | null
+  report_id?: string | null
+  artifact_status?: 'generated' | 'missing' | string
+  append_count?: number
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -190,7 +202,7 @@ export async function getShadowBoxing(): Promise<ShadowBoxingResponse> {
   })
 }
 
-export async function uploadTradesCSV(file: File): Promise<{ status: string; trades_uploaded: number; report: Record<string, unknown> }> {
+export async function uploadTradesCSV(file: File): Promise<TradeUploadResponse> {
   if (isSampleMode()) {
     await wait(1000)
     return { status: 'sample', trades_uploaded: 0, report: { message: 'Upload disabled in sample workspace' } }
@@ -205,7 +217,7 @@ export async function uploadTradesCSV(file: File): Promise<{ status: string; tra
   return data
 }
 
-export async function submitParsedTrades(payload: { trades: unknown[]; rawText: string }): Promise<{ status: string; trades_uploaded: number }> {
+export async function submitParsedTrades(payload: { trades: unknown[]; rawText: string }): Promise<TradeUploadResponse> {
   if (isSampleMode()) {
     await wait(800)
     const lineCount = payload.rawText.trim().split('\n').filter((line) => line.trim()).length

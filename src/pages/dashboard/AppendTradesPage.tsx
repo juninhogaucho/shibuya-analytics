@@ -10,6 +10,7 @@ import {
   submitParsedTrades,
   uploadTradesCSV,
 } from '../../lib/api/dashboard'
+import type { TradeUploadResponse } from '../../lib/api/dashboard'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
 import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
@@ -87,6 +88,29 @@ function buildSampleNotes(tradesUploaded: number): string[] {
   ]
 }
 
+function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
+  const notes = [
+    `${result.trades_uploaded} trades added to your account.`,
+    result.report_snapshot_id
+      ? `Generated artifact snapshot: ${result.report_snapshot_id}.`
+      : 'Generated artifact snapshot was not returned by the backend.',
+  ]
+
+  if (result.report_id) {
+    notes.push(`Report artifact: ${result.report_id}.`)
+  }
+
+  if (typeof result.append_count === 'number') {
+    notes.push(`Durable upload count for this account: ${result.append_count}.`)
+  }
+
+  if (result.request_id) {
+    notes.push(`Backend request receipt: ${result.request_id}.`)
+  }
+
+  return notes
+}
+
 function formatEngagementReceipt(
   reportViewCount?: number,
   lockedSectionClickCount?: number,
@@ -149,6 +173,7 @@ export function AppendTradesPage() {
   const [success, setSuccess] = useState<string | null>(null)
   const [parsedPreview, setParsedPreview] = useState<ParsePreview | null>(null)
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
+  const [liveUploadProof, setLiveUploadProof] = useState<TradeUploadResponse | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const runtimeContract = getShibuyaRuntimeContract()
   const sampleMode = runtimeContract.mode === 'sample'
@@ -254,7 +279,7 @@ export function AppendTradesPage() {
 
     const timeout = window.setTimeout(() => {
       navigate('/dashboard', { replace: true })
-    }, 1800)
+    }, 6000)
 
     return () => {
       window.clearTimeout(timeout)
@@ -293,6 +318,7 @@ export function AppendTradesPage() {
       setError(null)
       setSuccess(null)
       setParsedPreview(null)
+      setLiveUploadProof(null)
 
       const preview = await parseTradePaste({ body: paste })
       const feedbackNotes = [
@@ -337,6 +363,7 @@ export function AppendTradesPage() {
       if (sampleMode || result.status === 'sample') {
         setSuccess(`Sample workspace processed ${result.trades_uploaded} trades.`)
         setNotes(buildSampleNotes(result.trades_uploaded))
+        setLiveUploadProof(null)
       } else {
         const memory = await getTradePasteMemory().catch(() => null)
         if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
@@ -345,13 +372,15 @@ export function AppendTradesPage() {
           })
         }
         updateSessionMeta({ caseStatus: 'baseline_ready' })
+        setLiveUploadProof(result)
+        const proofNotes = formatLiveUploadProofNotes(result)
         setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
         setNotes(
           memory
-            ? [`${result.trades_uploaded} trades added to your account.`, ...formatMemoryDelta(memory)]
+            ? [...proofNotes, ...formatMemoryDelta(memory)]
             : [
-                `${result.trades_uploaded} trades added to your account.`,
-                'Analytics reran successfully.',
+                ...proofNotes,
+                'Analytics reran; artifact receipt above is the proof boundary for this append.',
                 'Trade Paste Memory is temporarily unavailable. Check back after your next session.',
               ],
         )
@@ -368,6 +397,7 @@ export function AppendTradesPage() {
 
   const handleCancelUpload = () => {
     setParsedPreview(null)
+    setLiveUploadProof(null)
     setNotes([])
   }
 
@@ -376,6 +406,7 @@ export function AppendTradesPage() {
     setError(null)
     setSuccess(null)
     setParsedPreview(null)
+    setLiveUploadProof(null)
     setNotes([
       'Reset Pro sample append packet loaded. Parse it to demonstrate the proof exit without claiming live persistence.',
       sessionMeta?.demoBridgeDecisionQuestion
@@ -413,6 +444,7 @@ export function AppendTradesPage() {
 
       if (sampleMode || result.status === 'sample') {
         setSuccess('Sample workspace accepted the file for preview only.')
+        setLiveUploadProof(null)
         setNotes([
           ...buildSampleNotes(Math.max(result.trades_uploaded, 1)),
           ...(rescued.applied ? rescued.notes : []),
@@ -425,18 +457,20 @@ export function AppendTradesPage() {
           })
         }
         updateSessionMeta({ caseStatus: 'baseline_ready' })
+        setLiveUploadProof(result)
+        const proofNotes = formatLiveUploadProofNotes(result)
         setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
         setNotes(
           memory
             ? [
-                `${result.trades_uploaded} trades processed from CSV.`,
+                ...proofNotes,
                 ...(rescued.applied ? rescued.notes : []),
                 ...formatMemoryDelta(memory),
               ]
             : [
-                `${result.trades_uploaded} trades processed from CSV.`,
+                ...proofNotes,
                 ...(rescued.applied ? rescued.notes : []),
-                'Analytics reran successfully.',
+                'Analytics reran; artifact receipt above is the proof boundary for this append.',
                 'Upload another batch to compare what actually changed between sessions.',
               ],
         )
@@ -759,6 +793,43 @@ export function AppendTradesPage() {
                 <Link to={addMarketToPath('/pricing?upgrade=reset-pro', market)} className="btn btn-sm btn-secondary">
                   Activate Live Reset Pro
                 </Link>
+              </div>
+            </div>
+          ) : null}
+          {!sampleMode && liveUploadProof ? (
+            <div
+              className="glass-panel"
+              style={{
+                marginTop: '1rem',
+                borderColor: liveUploadProof.report_snapshot_id ? 'rgba(16,185,129,0.24)' : 'rgba(245,158,11,0.32)',
+                background: liveUploadProof.report_snapshot_id ? 'rgba(16,185,129,0.07)' : 'rgba(245,158,11,0.08)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE APPEND PROOF RECEIPT</p>
+              <h3 style={{ marginBottom: '0.5rem' }}>
+                {liveUploadProof.report_snapshot_id
+                  ? 'Backend artifact generated for this account.'
+                  : 'Upload succeeded, but artifact proof is incomplete.'}
+              </h3>
+              <p className="text-muted" style={{ marginBottom: '1rem' }}>
+                This receipt comes from the Medallion upload response. It is the boundary between a live append and a private
+                Reset Pro conclusion: conclusions still require repeat append history, but this upload is no longer local-only.
+              </p>
+              <div className="grid-responsive three">
+                <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                  <h4 style={{ marginBottom: '0.5rem' }}>Snapshot</h4>
+                  <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadProof.report_snapshot_id ?? 'Missing from response'}</p>
+                </article>
+                <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                  <h4 style={{ marginBottom: '0.5rem' }}>Report artifact</h4>
+                  <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadProof.report_id ?? 'Not returned'}</p>
+                </article>
+                <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+                  <h4 style={{ marginBottom: '0.5rem' }}>Append count</h4>
+                  <p className="text-muted" style={{ marginBottom: 0 }}>
+                    {typeof liveUploadProof.append_count === 'number' ? liveUploadProof.append_count : 'Not returned'}
+                  </p>
+                </article>
               </div>
             </div>
           ) : null}
