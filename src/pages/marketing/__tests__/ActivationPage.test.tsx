@@ -213,6 +213,91 @@ describe('ActivationPage', () => {
     expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
   })
 
+  test('uses backend public checkout context when local report receipt is absent', async () => {
+    const user = userEvent.setup()
+    apiMocks.verifyActivation.mockResolvedValue({
+      status: 'ready',
+      activationToken: 'live-token-456',
+      customerId: 'customer-456',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      passwordRequired: false,
+      publicContextSource: 'locked_insight',
+      publicContextReportId: 'report_public_123',
+      publicContextSectionId: 'edge-decay-map',
+      publicContextArchetypeId: 'marco',
+      publicContextAxisId: 'edge_decay',
+      publicContextStorySource: 'guided',
+      publicContextStorySceneCount: '6',
+      publicContextPainAxes: 'edge_decay,revenge',
+      publicContextSignalMarkers: 'mirror_selected,upload_intent',
+      publicContextReportViews: '2',
+      publicContextLockedClicks: '1',
+      publicContextCurrentSectionClicks: '1',
+      publicContextPrivateGateAttempts: '1',
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/activate?market=global']}>
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
+    await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_456')
+    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    })
+
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      customerId: 'customer-456',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      orderId: 'order_456',
+      activationSource: 'locked_insight',
+      activationReportId: 'report_public_123',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay', 'revenge'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationEngagementReportViewCount: 2,
+      activationEngagementLockedSectionClickCount: 1,
+      activationEngagementCurrentSectionClickCount: 1,
+      activationEngagementPrivateDemoIntentCount: 1,
+    })
+    expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          activationSource: 'locked_insight',
+          activationReportId: 'report_public_123',
+          activationStorySource: 'guided',
+          activationVisitedSceneCount: 6,
+          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+          activationLockedSectionId: 'edge-decay-map',
+          activationEngagementReportViewCount: 2,
+          activationEngagementLockedSectionClickCount: 1,
+          activationEngagementCurrentSectionClickCount: 1,
+          activationEngagementPrivateDemoIntentCount: 1,
+        }),
+      }),
+    )
+  })
+
   test('uses explicit demo launcher sample packet on direct activation links', async () => {
     render(
       <MemoryRouter

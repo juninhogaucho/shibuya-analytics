@@ -21,6 +21,20 @@ import {
   getTraderArchetype,
 } from '../../lib/storyExperience'
 
+function splitPublicContextList(value?: string | null): string[] | undefined {
+  const items = value?.split(',').map((item) => item.trim()).filter(Boolean) ?? []
+  return items.length ? items : undefined
+}
+
+function parsePublicContextCount(value?: string | null): number | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 export function ActivationPage() {
   const recentAccess = readRecentOrderAccess()
   const recentPlan = getPlanByPlanId(recentAccess?.planId)
@@ -137,6 +151,31 @@ export function ActivationPage() {
       const response = await verifyActivation({ email, orderCode })
 
       if (response.status === 'ready' && response.activationToken) {
+        const backendPainAxisIds = splitPublicContextList(response.publicContextPainAxes)
+        const backendSignalMarkerIds = splitPublicContextList(response.publicContextSignalMarkers)
+        const backendVisitedSceneCount = parsePublicContextCount(response.publicContextStorySceneCount)
+        const activationSourceForStorage = carriedActivationIntent?.source ?? response.publicContextSource ?? undefined
+        const activationReportIdForStorage = carriedActivationIntent?.reportId ?? response.publicContextReportId ?? undefined
+        const activationArchetypeIdForStorage = carriedActivationIntent?.archetypeId ?? response.publicContextArchetypeId ?? undefined
+        const activationAxisIdForStorage = carriedActivationIntent?.axisId ?? response.publicContextAxisId ?? undefined
+        const activationStorySourceForStorage = activationStorySource ?? response.publicContextStorySource ?? undefined
+        const activationSelectedPainAxisIdsForLiveStorage = activationSelectedPainAxisIdsForStorage ?? backendPainAxisIds
+        const activationVisitedSceneCountForStorage = activationVisitedSceneCount ?? backendVisitedSceneCount
+        const activationSignalMarkerIdsForLiveStorage = activationSignalMarkerIdsForStorage ?? backendSignalMarkerIds
+        const activationLockedSectionIdForStorage = carriedActivationIntent?.lockedSectionId ?? response.publicContextSectionId ?? undefined
+        const activationEngagementReportViewCountForStorage = carriedActivationIntent
+          ? activationEngagementSummary.reportViewCount
+          : parsePublicContextCount(response.publicContextReportViews)
+        const activationEngagementLockedSectionClickCountForStorage = carriedActivationIntent
+          ? activationEngagementSummary.lockedSectionClickCount
+          : parsePublicContextCount(response.publicContextLockedClicks)
+        const activationEngagementCurrentSectionClickCountForStorage = carriedActivationIntent
+          ? activationEngagementSummary.currentSectionClickCount
+          : parsePublicContextCount(response.publicContextCurrentSectionClicks)
+        const activationEngagementPrivateDemoIntentCountForStorage = carriedActivationIntent
+          ? activationEngagementSummary.privateDemoIntentCount
+          : parsePublicContextCount(response.publicContextPrivateGateAttempts)
+
         // Store the activation token BEFORE redirect so AuthGuard recognises the session.
         setLiveApiKey(response.activationToken, {
           customerId: response.customerId ?? undefined,
@@ -148,24 +187,24 @@ export function ActivationPage() {
           accessExpiresAt: response.accessExpiresAt ?? undefined,
           dataSource: response.dataSource ?? undefined,
           orderId: orderCode,
-          activationSource: carriedActivationIntent?.source,
-          activationReportId: carriedActivationIntent?.reportId,
-          activationArchetypeId: carriedActivationIntent?.archetypeId,
-          activationAxisId: carriedActivationIntent?.axisId,
-          activationStorySource,
-          activationSelectedPainAxisIds: activationSelectedPainAxisIdsForStorage,
-          activationVisitedSceneCount,
-          activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
-          activationLockedSectionId: carriedActivationIntent?.lockedSectionId,
+          activationSource: activationSourceForStorage,
+          activationReportId: activationReportIdForStorage,
+          activationArchetypeId: activationArchetypeIdForStorage,
+          activationAxisId: activationAxisIdForStorage,
+          activationStorySource: activationStorySourceForStorage,
+          activationSelectedPainAxisIds: activationSelectedPainAxisIdsForLiveStorage,
+          activationVisitedSceneCount: activationVisitedSceneCountForStorage,
+          activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,
+          activationLockedSectionId: activationLockedSectionIdForStorage,
           activationLockedSectionTitle: activationLockedSection?.title,
           activationBridgeHeadline: activationReport?.resetProBridge.headline,
           activationBridgeDecisionQuestion: activationReport?.resetProBridge.decisionQuestion,
           activationBridgeWhyNow: activationReport?.resetProBridge.whyNow,
           activationBridgeLiveProof: activationReport?.resetProBridge.liveWorkspaceMustProve,
-          activationEngagementReportViewCount: carriedActivationIntent ? activationEngagementSummary.reportViewCount : undefined,
-          activationEngagementLockedSectionClickCount: carriedActivationIntent ? activationEngagementSummary.lockedSectionClickCount : undefined,
-          activationEngagementCurrentSectionClickCount: carriedActivationIntent ? activationEngagementSummary.currentSectionClickCount : undefined,
-          activationEngagementPrivateDemoIntentCount: carriedActivationIntent ? activationEngagementSummary.privateDemoIntentCount : undefined,
+          activationEngagementReportViewCount: activationEngagementReportViewCountForStorage,
+          activationEngagementLockedSectionClickCount: activationEngagementLockedSectionClickCountForStorage,
+          activationEngagementCurrentSectionClickCount: activationEngagementCurrentSectionClickCountForStorage,
+          activationEngagementPrivateDemoIntentCount: activationEngagementPrivateDemoIntentCountForStorage,
           activationEngagementBoundary: carriedActivationIntent ? activationEngagementSummary.boundary : undefined,
         })
 
@@ -176,17 +215,17 @@ export function ActivationPage() {
           metadata: {
             orderCode,
             passwordRequired: response.passwordRequired ?? false,
-            activationSource: carriedActivationIntent?.source,
-            activationReportId: carriedActivationIntent?.reportId,
-            activationStorySource,
-            activationVisitedSceneCount,
-            activationSignalMarkerIds: activationSignalMarkerIdsForStorage,
-            activationLockedSectionId: carriedActivationIntent?.lockedSectionId,
+            activationSource: activationSourceForStorage,
+            activationReportId: activationReportIdForStorage,
+            activationStorySource: activationStorySourceForStorage,
+            activationVisitedSceneCount: activationVisitedSceneCountForStorage,
+            activationSignalMarkerIds: activationSignalMarkerIdsForLiveStorage,
+            activationLockedSectionId: activationLockedSectionIdForStorage,
             activationBridgeQuestion: activationReport?.resetProBridge.decisionQuestion,
-            activationEngagementReportViewCount: carriedActivationIntent ? activationEngagementSummary.reportViewCount : undefined,
-            activationEngagementLockedSectionClickCount: carriedActivationIntent ? activationEngagementSummary.lockedSectionClickCount : undefined,
-            activationEngagementCurrentSectionClickCount: carriedActivationIntent ? activationEngagementSummary.currentSectionClickCount : undefined,
-            activationEngagementPrivateDemoIntentCount: carriedActivationIntent ? activationEngagementSummary.privateDemoIntentCount : undefined,
+            activationEngagementReportViewCount: activationEngagementReportViewCountForStorage,
+            activationEngagementLockedSectionClickCount: activationEngagementLockedSectionClickCountForStorage,
+            activationEngagementCurrentSectionClickCount: activationEngagementCurrentSectionClickCountForStorage,
+            activationEngagementPrivateDemoIntentCount: activationEngagementPrivateDemoIntentCountForStorage,
           },
         }).catch(() => undefined)
 

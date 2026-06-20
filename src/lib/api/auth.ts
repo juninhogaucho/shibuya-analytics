@@ -19,6 +19,20 @@ export interface LoginResponse {
   error?: string
 }
 
+function splitPublicContextList(value?: string | null): string[] | undefined {
+  const items = value?.split(',').map((item) => item.trim()).filter(Boolean) ?? []
+  return items.length ? items : undefined
+}
+
+function parsePublicContextCount(value?: string | null): number | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
   if (data.success && data.api_key) {
@@ -50,6 +64,19 @@ export async function verifyActivation(payload: ActivationPayload): Promise<Acti
       caseStatus: data.caseStatus,
       accessExpiresAt: data.accessExpiresAt ?? null,
       dataSource: data.dataSource ?? null,
+      activationSource: data.publicContextSource ?? undefined,
+      activationReportId: data.publicContextReportId ?? undefined,
+      activationArchetypeId: data.publicContextArchetypeId ?? undefined,
+      activationAxisId: data.publicContextAxisId ?? undefined,
+      activationStorySource: data.publicContextStorySource ?? undefined,
+      activationSelectedPainAxisIds: splitPublicContextList(data.publicContextPainAxes),
+      activationVisitedSceneCount: parsePublicContextCount(data.publicContextStorySceneCount),
+      activationSignalMarkerIds: splitPublicContextList(data.publicContextSignalMarkers),
+      activationLockedSectionId: data.publicContextSectionId ?? undefined,
+      activationEngagementReportViewCount: parsePublicContextCount(data.publicContextReportViews),
+      activationEngagementLockedSectionClickCount: parsePublicContextCount(data.publicContextLockedClicks),
+      activationEngagementCurrentSectionClickCount: parsePublicContextCount(data.publicContextCurrentSectionClicks),
+      activationEngagementPrivateDemoIntentCount: parsePublicContextCount(data.publicContextPrivateGateAttempts),
     })
   }
   return data
@@ -135,4 +162,3 @@ export function clearAllData(): void {
   clearShibuyaSession()
   window.location.href = '/'
 }
-

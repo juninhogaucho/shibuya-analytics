@@ -17,6 +17,20 @@ export interface ActivationResponse {
   caseStatus?: string
   accessExpiresAt?: string | null
   dataSource?: string | null
+  publicContextSource?: string | null
+  publicContextReportId?: string | null
+  publicContextSectionId?: string | null
+  publicContextArchetypeId?: string | null
+  publicContextAxisId?: string | null
+  publicContextPacketSource?: string | null
+  publicContextStorySource?: string | null
+  publicContextStorySceneCount?: string | null
+  publicContextPainAxes?: string | null
+  publicContextSignalMarkers?: string | null
+  publicContextReportViews?: string | null
+  publicContextLockedClicks?: string | null
+  publicContextCurrentSectionClicks?: string | null
+  publicContextPrivateGateAttempts?: string | null
 }
 
 export interface TradePastePreview {
