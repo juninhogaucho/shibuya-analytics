@@ -16,6 +16,20 @@ describe('Reset Pro demo script', () => {
     ])
     expect(script.showSequence[0].title).toBe('Start from the public recognition moment')
     expect(script.showSequence[3].show).toContain('Append proof flow')
+    expect(script.openingReel.map((beat) => beat.label)).toEqual([
+      'Receipt burn-in',
+      'Question becomes mission',
+      'One surface only',
+      'Exit through proof',
+    ])
+    expect(script.openingReel[0]).toMatchObject({
+      timebox: '0:00',
+      frame: 'Open on a cold sample warning before any metric appears.',
+      camera: 'No public story, report, upload packet, or locked module is attached.',
+      boundary: 'Receipt is not account proof.',
+    })
+    expect(script.openingReel[1].boundary).toBe('The question can be carried; the answer stays locked until live evidence exists.')
+    expect(script.openingReel[3].frame).toBe('End at append proof while the viewer still wants the answer.')
     expect(script.livingMirror.headline).toContain('Story became the product')
     expect(script.livingMirror.body).toContain('RESET PRO LIVING MIRROR')
     expect(script.livingMirror.publicFingerprintLabel).toBe('Direct Reset Pro sample fingerprint')
@@ -214,6 +228,15 @@ describe('Reset Pro demo script', () => {
     expect(script.showSequence[0].title).toBe('Connect the public pain to the private module')
     expect(script.showSequence[0].say).toContain('Does the trader become a different operator near the drawdown line?')
     expect(script.showSequence[0].boundary).toContain('not proof')
+    expect(script.openingReel[0]).toMatchObject({
+      label: 'Receipt burn-in',
+      frame: 'Open on the carried report packet before any metric appears.',
+      camera: 'Report free-report-123; evidence Sample history packet; market route preserved.',
+      proof: 'The workspace can prove route continuity from public recognition into the sample demo.',
+    })
+    expect(script.openingReel[1].frame).toBe('Put the private question on screen: Does the trader become a different operator near the drawdown line?')
+    expect(script.openingReel[1].camera).toBe('Bridge card first, Mission HQ second.')
+    expect(script.openingReel[2].camera).toBe('Choose the surface that best tests the carried question.')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.status).toBe('ready')
     expect(script.readinessChecklist.find((item) => item.label === 'Public context carried')?.detail).toContain('Report, archetype, axis')
     expect(script.presenterRoute[0].boundary).toBe('Use carried public context as the opening brief, not as account proof.')

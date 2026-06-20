@@ -34,6 +34,15 @@ export interface ResetProDemoShowMoment {
   boundary: string
 }
 
+export interface ResetProDemoOpeningReelBeat {
+  timebox: string
+  label: string
+  frame: string
+  camera: string
+  proof: string
+  boundary: string
+}
+
 export interface ResetProDemoOrigin {
   source?: string
   reportId?: string
@@ -152,6 +161,7 @@ export interface ResetProDemoScript {
   headline: string
   subline: string
   demoThesis: string
+  openingReel: ResetProDemoOpeningReelBeat[]
   presenterTalkTrack: string[]
   showSequence: ResetProDemoShowMoment[]
   livingMirror: ResetProDemoLivingMirror
@@ -192,6 +202,7 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     headline: 'Private Reset Pro command center',
     subline: 'A controlled presenter demo of the paid workspace: leak detection, next-session mandate, premium intervention, guided review, and proof loop.',
     demoThesis: 'Shibuya does not tell the trader what to buy or sell. It turns their trading history into a behavioral operating system that protects the next decision.',
+    openingReel: buildOpeningReel(origin, Boolean(originCard), Boolean(bridgeCard)),
     presenterTalkTrack: [
       'Start with the cost of the leak, not a generic dashboard.',
       currentEnemy,
@@ -318,6 +329,62 @@ export function buildResetProDemoScript(overview: DashboardOverview, origin?: Re
     bridgeCard,
     truthBoundary: 'This preview uses demo data only. Live Reset Pro requires payment, activation, first meaningful upload, generated backend artifacts, and account-specific review evidence.',
   }
+}
+
+function buildOpeningReel(
+  origin: ResetProDemoOrigin | undefined,
+  hasOriginCard: boolean,
+  hasBridgeCard: boolean,
+): ResetProDemoOpeningReelBeat[] {
+  const carriedQuestion = origin?.bridgeDecisionQuestion ?? origin?.lockedSectionTitle
+  const evidenceLabel = origin?.evidenceLabel ?? (hasOriginCard ? 'URL context only' : 'direct sample only')
+
+  return [
+    {
+      timebox: '0:00',
+      label: 'Receipt burn-in',
+      frame: hasOriginCard
+        ? 'Open on the carried report packet before any metric appears.'
+        : 'Open on a cold sample warning before any metric appears.',
+      camera: hasOriginCard
+        ? `Report ${origin?.reportId ?? 'attached'}; evidence ${evidenceLabel}; market route preserved.`
+        : 'No public story, report, upload packet, or locked module is attached.',
+      proof: hasOriginCard
+        ? 'The workspace can prove route continuity from public recognition into the sample demo.'
+        : 'The workspace can prove only generic product structure.',
+      boundary: 'Receipt is not account proof.',
+    },
+    {
+      timebox: '0:25',
+      label: 'Question becomes mission',
+      frame: carriedQuestion
+        ? `Put the private question on screen: ${carriedQuestion}`
+        : 'Put the missing private question on screen before showing the command center.',
+      camera: hasBridgeCard
+        ? 'Bridge card first, Mission HQ second.'
+        : 'Mission HQ first, with a direct warning that no locked answer exists.',
+      proof: 'Reset Pro should feel like the story became an operating mandate.',
+      boundary: 'The question can be carried; the answer stays locked until live evidence exists.',
+    },
+    {
+      timebox: '0:55',
+      label: 'One surface only',
+      frame: 'Show one intervention surface instead of touring every card.',
+      camera: hasBridgeCard
+        ? 'Choose the surface that best tests the carried question.'
+        : 'Choose Mission HQ, then one sample intervention surface.',
+      proof: 'The demo demonstrates control, constraint, and next-session behavior design.',
+      boundary: 'Sample intervention is workflow proof, not trader-specific diagnosis.',
+    },
+    {
+      timebox: '1:40',
+      label: 'Exit through proof',
+      frame: 'End at append proof while the viewer still wants the answer.',
+      camera: 'Upload/append is the final shot, not another dashboard stop.',
+      proof: 'The live product begins where the sample film ends: first meaningful upload and repeat append history.',
+      boundary: 'No performance, pass-rate, profit, or drawdown-improvement claim is allowed.',
+    },
+  ]
 }
 
 function buildLiveSignalLabel(overview: DashboardOverview): string {

@@ -115,6 +115,59 @@ export function ResetProDemoCommandCenter({ market, overview, origin }: ResetPro
         className="glass-panel"
         style={{
           marginTop: '1rem',
+          background: 'linear-gradient(135deg, rgba(0,0,0,0.28), rgba(129,140,248,0.1), rgba(16,185,129,0.06))',
+          borderColor: 'rgba(167,139,250,0.24)',
+          overflow: 'hidden',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>RESET PRO OPENING REEL</p>
+            <h4 style={{ marginBottom: '0.35rem' }}>Make the first private screen feel like a handoff film.</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              The workspace opens with receipt, question, one surface, and proof exit. Metrics come after the viewer
+              understands what is being carried and what remains unproven.
+            </p>
+          </div>
+        </div>
+        <div className="grid-responsive" style={{ marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {script.openingReel.map((beat, index) => (
+            <article
+              key={`${beat.timebox}-${beat.label}`}
+              className="glass-panel"
+              style={{
+                background: index === 0
+                  ? 'rgba(16,185,129,0.08)'
+                  : index === script.openingReel.length - 1
+                    ? 'rgba(245,158,11,0.08)'
+                    : 'rgba(99,102,241,0.07)',
+                borderColor: index === 0
+                  ? 'rgba(16,185,129,0.22)'
+                  : index === script.openingReel.length - 1
+                    ? 'rgba(245,158,11,0.22)'
+                    : 'rgba(129,140,248,0.2)',
+              }}
+            >
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>{beat.timebox} / {beat.label}</p>
+              <h4 style={{ marginBottom: '0.5rem' }}>{beat.frame}</h4>
+              <p className="text-muted" style={{ marginBottom: '0.65rem' }}>
+                <strong className="text-white">Camera:</strong> {beat.camera}
+              </p>
+              <p className="text-muted" style={{ marginBottom: '0.65rem' }}>
+                <strong className="text-white">Proof:</strong> {beat.proof}
+              </p>
+              <p className="text-muted" style={{ marginBottom: 0, fontSize: '0.8rem' }}>
+                <strong className="text-amber-100">Boundary:</strong> {beat.boundary}
+              </p>
+            </article>
+          ))}
+        </div>
+      </article>
+
+      <article
+        className="glass-panel"
+        style={{
+          marginTop: '1rem',
           background: 'rgba(34,211,238,0.07)',
           borderColor: 'rgba(34,211,238,0.22)',
         }}
