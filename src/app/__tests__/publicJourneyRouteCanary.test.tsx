@@ -11,6 +11,7 @@ import {
 } from '../../lib/runtime'
 
 vi.unmock('../../components/AuthGuard')
+vi.unmock('../../lib/runtime')
 vi.unmock('../../pages/marketing/HomePage')
 vi.unmock('../../pages/marketing/PublicUploadPage')
 vi.unmock('../../pages/marketing/FreeReportPage')

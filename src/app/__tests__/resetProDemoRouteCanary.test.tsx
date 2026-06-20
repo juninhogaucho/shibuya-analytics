@@ -6,8 +6,12 @@ import { AppRoutes } from '../routes'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../lib/runtime'
 
 vi.unmock('../../components/AuthGuard')
+vi.unmock('../../lib/runtime')
+vi.unmock('../../lib/api/dashboard')
+vi.unmock('../../lib/api/trader')
 vi.unmock('../../pages/marketing/DemoLauncherPage')
 vi.unmock('../../pages/marketing/PrivateDemoPage')
+vi.unmock('../../pages/dashboard/AppendTradesPage')
 
 function LocationProbe() {
   const location = useLocation()

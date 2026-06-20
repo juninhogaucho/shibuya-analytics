@@ -7,9 +7,15 @@ const ROOT = path.resolve(import.meta.dirname, '..')
 const DEFAULT_BACKEND_ROOT = path.resolve(ROOT, '..', 'medallion')
 
 const FRONTEND_TEST_TARGETS = [
+  'src/lib/__tests__/storyExperience.test.ts',
+  'src/lib/__tests__/publicJourneyContract.test.ts',
   'src/lib/__tests__/runtime.test.ts',
   'src/lib/__tests__/publicReportSession.test.ts',
+  'src/pages/marketing/__tests__/LaunchSignalPage.test.tsx',
+  'src/pages/marketing/__tests__/DemoLauncherPage.test.tsx',
+  'src/pages/marketing/__tests__/PrivateDemoPage.test.tsx',
   'src/pages/marketing/__tests__/PublicJourneyPages.test.tsx',
+  'src/pages/marketing/__tests__/PaidJourneyContract.test.tsx',
   'src/pages/checkout/__tests__/CheckoutPage.test.tsx',
   'src/pages/marketing/__tests__/ActivationPage.test.tsx',
   'src/pages/marketing/__tests__/PricingPage.test.tsx',
@@ -18,6 +24,8 @@ const FRONTEND_TEST_TARGETS = [
   'src/pages/dashboard/__tests__/AppendTradesPage.test.tsx',
   'src/pages/dashboard/__tests__/WorkspacePage.test.tsx',
   'src/pages/dashboard/__tests__/ReportsPage.test.tsx',
+  'src/app/__tests__/publicJourneyRouteCanary.test.tsx',
+  'src/app/__tests__/resetProDemoRouteCanary.test.tsx',
 ]
 
 const ESLINT_TARGETS = [
