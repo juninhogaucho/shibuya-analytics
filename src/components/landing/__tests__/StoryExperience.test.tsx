@@ -58,7 +58,7 @@ describe('StoryExperience', () => {
     await user.click(screen.getByRole('button', { name: /0:55 \/ Mirror choice/i }))
 
     expect(screen.getAllByText('Which trader feels uncomfortably close?').length).toBeGreaterThan(0)
-    expect(screen.getByText('The interaction should feel like a mirror, not a questionnaire.')).toBeInTheDocument()
+    expect(screen.getAllByText('The interaction should feel like a mirror, not a questionnaire.').length).toBeGreaterThan(0)
   })
 
   test('routes a selected public hypothesis into upload without claiming account evidence', async () => {

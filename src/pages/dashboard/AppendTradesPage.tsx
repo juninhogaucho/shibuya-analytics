@@ -246,14 +246,19 @@ function buildLiveUploadSessionPatch(
   uploadTransport: LiveUploadTransport,
 ): Partial<ShibuyaSessionMeta> {
   const receipt = buildLiveUploadReceipt(result, uploadTransport)
-
-  return {
-    caseStatus: 'baseline_ready',
-    lastReportSnapshotId: result.report_snapshot_id ?? null,
-    firstUploadReceipt: sessionMeta?.firstUploadReceipt ?? receipt,
+  const hasArtifactProof = hasGeneratedUploadArtifactProof(result)
+  const patch: Partial<ShibuyaSessionMeta> = {
+    caseStatus: hasArtifactProof ? 'baseline_ready' : 'processing',
     latestUploadReceipt: receipt,
     uploadReceiptHistory: appendLiveUploadReceiptHistory(sessionMeta?.uploadReceiptHistory, receipt),
   }
+
+  if (hasArtifactProof) {
+    patch.lastReportSnapshotId = result.report_snapshot_id ?? sessionMeta?.lastReportSnapshotId ?? null
+    patch.firstUploadReceipt = sessionMeta?.firstUploadReceipt ?? receipt
+  }
+
+  return patch
 }
 
 function buildFirstUploadLifecycleMetadata(
@@ -607,7 +612,9 @@ export function AppendTradesPage() {
         setLiveUploadProof(null)
       } else {
         setLiveUploadProof(result)
+        const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'paste')
         if (!hasGeneratedUploadArtifactProof(result)) {
+          updateSessionMeta(liveUploadSessionPatch)
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes(formatIncompleteUploadProofNotes(result))
         } else {
@@ -624,7 +631,7 @@ export function AppendTradesPage() {
               metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'paste'),
             })
           }
-          updateSessionMeta(buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'paste'))
+          updateSessionMeta(liveUploadSessionPatch)
           const proofNotes = formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(
@@ -705,7 +712,9 @@ export function AppendTradesPage() {
         ])
       } else {
         setLiveUploadProof(result)
+        const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'csv')
         if (!hasGeneratedUploadArtifactProof(result)) {
+          updateSessionMeta(liveUploadSessionPatch)
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes([
             ...formatIncompleteUploadProofNotes(result),
@@ -725,7 +734,7 @@ export function AppendTradesPage() {
               metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'csv'),
             })
           }
-          updateSessionMeta(buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'csv'))
+          updateSessionMeta(liveUploadSessionPatch)
           const proofNotes = formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(

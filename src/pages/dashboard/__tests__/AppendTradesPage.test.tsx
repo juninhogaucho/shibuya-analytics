@@ -621,6 +621,26 @@ describe('AppendTradesPage', () => {
     expect(getTradePasteMemoryMock).not.toHaveBeenCalled()
     expect(getTradingReportComparisonMock).not.toHaveBeenCalled()
     expect(logTraderLifecycleEventMock).not.toHaveBeenCalled()
-    expect(updateSessionMetaMock).not.toHaveBeenCalled()
+    expect(updateSessionMetaMock).toHaveBeenCalledWith({
+      caseStatus: 'processing',
+      latestUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 2,
+        artifact_status: 'missing',
+        append_count: 0,
+        request_id: 'req_missing_artifact',
+      },
+      uploadReceiptHistory: [
+        {
+          upload_transport: 'paste',
+          trades_uploaded: 2,
+          artifact_status: 'missing',
+          append_count: 0,
+          request_id: 'req_missing_artifact',
+        },
+      ],
+    })
+    expect(updateSessionMetaMock.mock.calls[0][0]).not.toHaveProperty('firstUploadReceipt')
+    expect(updateSessionMetaMock.mock.calls[0][0]).not.toHaveProperty('lastReportSnapshotId')
   }, 15000)
 })
