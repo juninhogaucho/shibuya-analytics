@@ -32,6 +32,21 @@ export interface TradeUploadResponse {
   report_id?: string | null
   artifact_status?: 'generated' | 'missing' | string
   append_count?: number
+  activation_source?: string
+  activation_report_id?: string
+  activation_archetype_id?: string
+  activation_axis_id?: string
+  activation_story_source?: string
+  activation_visited_scene_count?: number
+  activation_signal_marker_ids?: string[]
+  activation_locked_section_id?: string
+  activation_teaser_request_id?: string
+  activation_teaser_trades_analyzed?: number | string
+  activation_teaser_worst_pattern?: string
+  activation_teaser_verified?: string
+  activation_teaser_verification_status?: string
+  activation_teaser_receipt_hash?: string
+  activation_teaser_verified_at?: string
 }
 
 function wait(ms: number): Promise<void> {

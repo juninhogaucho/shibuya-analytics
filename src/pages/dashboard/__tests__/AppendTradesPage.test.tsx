@@ -311,6 +311,21 @@ describe('AppendTradesPage', () => {
       artifact_status: 'generated',
       append_count: 3,
       request_id: 'req_live_123',
+      activation_source: 'locked_insight',
+      activation_report_id: 'public-teaser-append',
+      activation_archetype_id: 'marco',
+      activation_axis_id: 'edge_decay',
+      activation_story_source: 'guided',
+      activation_visited_scene_count: 6,
+      activation_signal_marker_ids: ['mirror_selected', 'upload_intent'],
+      activation_locked_section_id: 'edge-decay-map',
+      activation_teaser_request_id: 'TEASER-route-123',
+      activation_teaser_trades_analyzed: 10,
+      activation_teaser_worst_pattern: 'Revenge Trading',
+      activation_teaser_verified: 'true',
+      activation_teaser_verification_status: 'verified',
+      activation_teaser_receipt_hash: 'e'.repeat(64),
+      activation_teaser_verified_at: '2026-06-20T00:03:00Z',
     })
     const user = userEvent.setup()
 
@@ -356,6 +371,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Durable upload count for this account: 3.')).toBeInTheDocument()
     expect(screen.getByText('Backend request receipt: req_live_123.')).toBeInTheDocument()
     expect(screen.getByText('Upload completed at: 2026-06-21T09:15:00Z.')).toBeInTheDocument()
+    expect(screen.getByText('Upload response carried activation teaser: TEASER-route-123; 10 trades; Revenge Trading; verification verified.')).toBeInTheDocument()
     expect(screen.getByText('Comparing upload #3 to #2')).toBeInTheDocument()
     expect(screen.getByText('Win Rate: 50.0% -> 55.0% (+5.0pp)')).toBeInTheDocument()
     expect(screen.getByText('Append proof comparison is ready.')).toBeInTheDocument()
@@ -407,6 +423,21 @@ describe('AppendTradesPage', () => {
       artifact_status: 'generated',
       append_count: 3,
       request_id: 'req_live_123',
+      activation_source: 'locked_insight',
+      activation_report_id: 'public-teaser-append',
+      activation_archetype_id: 'marco',
+      activation_axis_id: 'edge_decay',
+      activation_story_source: 'guided',
+      activation_visited_scene_count: 6,
+      activation_signal_marker_ids: ['mirror_selected', 'upload_intent'],
+      activation_locked_section_id: 'edge-decay-map',
+      activation_teaser_request_id: 'TEASER-route-123',
+      activation_teaser_trades_analyzed: 10,
+      activation_teaser_worst_pattern: 'Revenge Trading',
+      activation_teaser_verified: 'true',
+      activation_teaser_verification_status: 'verified',
+      activation_teaser_receipt_hash: 'e'.repeat(64),
+      activation_teaser_verified_at: '2026-06-20T00:03:00Z',
     }
     expect(updateSessionMetaMock).toHaveBeenCalledWith({
       caseStatus: 'baseline_ready',

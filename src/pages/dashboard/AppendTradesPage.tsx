@@ -169,6 +169,11 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   if (result.completed_at) {
     notes.push(`Upload completed at: ${result.completed_at}.`)
   }
+  if (result.activation_teaser_request_id) {
+    notes.push(
+      `Upload response carried activation teaser: ${result.activation_teaser_request_id}; ${result.activation_teaser_trades_analyzed ?? 'unknown'} trades; ${result.activation_teaser_worst_pattern ?? 'pattern not returned'}; verification ${result.activation_teaser_verification_status ?? 'not provided'}.`,
+    )
+  }
 
   return notes
 }
@@ -231,6 +236,51 @@ function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: Li
   if (result.request_id) {
     receipt.request_id = result.request_id
   }
+  if (result.activation_source) {
+    receipt.activation_source = result.activation_source
+  }
+  if (result.activation_report_id) {
+    receipt.activation_report_id = result.activation_report_id
+  }
+  if (result.activation_archetype_id) {
+    receipt.activation_archetype_id = result.activation_archetype_id
+  }
+  if (result.activation_axis_id) {
+    receipt.activation_axis_id = result.activation_axis_id
+  }
+  if (result.activation_story_source) {
+    receipt.activation_story_source = result.activation_story_source
+  }
+  if (typeof result.activation_visited_scene_count === 'number') {
+    receipt.activation_visited_scene_count = result.activation_visited_scene_count
+  }
+  if (Array.isArray(result.activation_signal_marker_ids) && result.activation_signal_marker_ids.length > 0) {
+    receipt.activation_signal_marker_ids = result.activation_signal_marker_ids
+  }
+  if (result.activation_locked_section_id) {
+    receipt.activation_locked_section_id = result.activation_locked_section_id
+  }
+  if (result.activation_teaser_request_id) {
+    receipt.activation_teaser_request_id = result.activation_teaser_request_id
+  }
+  if (result.activation_teaser_trades_analyzed !== undefined) {
+    receipt.activation_teaser_trades_analyzed = result.activation_teaser_trades_analyzed
+  }
+  if (result.activation_teaser_worst_pattern) {
+    receipt.activation_teaser_worst_pattern = result.activation_teaser_worst_pattern
+  }
+  if (result.activation_teaser_verified) {
+    receipt.activation_teaser_verified = result.activation_teaser_verified
+  }
+  if (result.activation_teaser_verification_status) {
+    receipt.activation_teaser_verification_status = result.activation_teaser_verification_status
+  }
+  if (result.activation_teaser_receipt_hash) {
+    receipt.activation_teaser_receipt_hash = result.activation_teaser_receipt_hash
+  }
+  if (result.activation_teaser_verified_at) {
+    receipt.activation_teaser_verified_at = result.activation_teaser_verified_at
+  }
 
   return receipt
 }
@@ -281,21 +331,21 @@ function buildFirstUploadLifecycleMetadata(
     artifactStatus: result.artifact_status ?? null,
     appendCount: result.append_count ?? null,
     requestId: result.request_id ?? null,
-    activationSource: sessionMeta?.activationSource,
-    activationReportId: sessionMeta?.activationReportId,
-    activationArchetypeId: sessionMeta?.activationArchetypeId,
-    activationAxisId: sessionMeta?.activationAxisId,
-    activationStorySource: sessionMeta?.activationStorySource,
-    activationVisitedSceneCount: sessionMeta?.activationVisitedSceneCount,
-    activationSignalMarkerIds: sessionMeta?.activationSignalMarkerIds,
-    activationLockedSectionId: sessionMeta?.activationLockedSectionId,
-    activationTeaserRequestId: sessionMeta?.activationTeaserRequestId,
-    activationTeaserTradesAnalyzed: sessionMeta?.activationTeaserTradesAnalyzed,
-    activationTeaserWorstPattern: sessionMeta?.activationTeaserWorstPattern,
-    activationTeaserVerified: sessionMeta?.activationTeaserVerified,
-    activationTeaserVerificationStatus: sessionMeta?.activationTeaserVerificationStatus,
-    activationTeaserReceiptHash: sessionMeta?.activationTeaserReceiptHash,
-    activationTeaserVerifiedAt: sessionMeta?.activationTeaserVerifiedAt,
+    activationSource: result.activation_source ?? sessionMeta?.activationSource,
+    activationReportId: result.activation_report_id ?? sessionMeta?.activationReportId,
+    activationArchetypeId: result.activation_archetype_id ?? sessionMeta?.activationArchetypeId,
+    activationAxisId: result.activation_axis_id ?? sessionMeta?.activationAxisId,
+    activationStorySource: result.activation_story_source ?? sessionMeta?.activationStorySource,
+    activationVisitedSceneCount: result.activation_visited_scene_count ?? sessionMeta?.activationVisitedSceneCount,
+    activationSignalMarkerIds: result.activation_signal_marker_ids ?? sessionMeta?.activationSignalMarkerIds,
+    activationLockedSectionId: result.activation_locked_section_id ?? sessionMeta?.activationLockedSectionId,
+    activationTeaserRequestId: result.activation_teaser_request_id ?? sessionMeta?.activationTeaserRequestId,
+    activationTeaserTradesAnalyzed: result.activation_teaser_trades_analyzed ?? sessionMeta?.activationTeaserTradesAnalyzed,
+    activationTeaserWorstPattern: result.activation_teaser_worst_pattern ?? sessionMeta?.activationTeaserWorstPattern,
+    activationTeaserVerified: result.activation_teaser_verified ?? sessionMeta?.activationTeaserVerified,
+    activationTeaserVerificationStatus: result.activation_teaser_verification_status ?? sessionMeta?.activationTeaserVerificationStatus,
+    activationTeaserReceiptHash: result.activation_teaser_receipt_hash ?? sessionMeta?.activationTeaserReceiptHash,
+    activationTeaserVerifiedAt: result.activation_teaser_verified_at ?? sessionMeta?.activationTeaserVerifiedAt,
   }
 }
 
