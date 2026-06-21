@@ -90,8 +90,9 @@ describe('ActivationPage', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT DETECTED')).toBeInTheDocument()
-    expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
+    expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT REQUEST ATTACHED')).toBeInTheDocument()
+    expect(screen.getByText(/Activation will request "Highest-cost state"/i)).toBeInTheDocument()
+    expect(screen.getByText(/stored after submit only if the backend order verifies a persisted teaser receipt/i)).toBeInTheDocument()
     expect(screen.getByText(/Report: sample-free-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
@@ -104,8 +105,8 @@ describe('ActivationPage', () => {
     expect(screen.getByText('Before activation can become live proof.')).toBeInTheDocument()
     expect(screen.getByText('Backend target')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload')).toBeInTheDocument()
-    expect(screen.getByText(/what payment can carry, what first upload can evidence, and what append history must still prove/i)).toBeInTheDocument()
-    expect(screen.getByText('Payment context carried')).toBeInTheDocument()
+    expect(screen.getByText(/requested payment context, backend-verified activation context, first upload evidence, and append history/i)).toBeInTheDocument()
+    expect(screen.getByText('Payment context requested')).toBeInTheDocument()
     expect(screen.getByText('Activation pending')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload required')).toBeInTheDocument()
     expect(screen.getByText('Append proof close required')).toBeInTheDocument()

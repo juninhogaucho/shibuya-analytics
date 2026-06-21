@@ -92,10 +92,10 @@ export function ActivationPage() {
     .map((axis) => axis.label)
   const activationProofLadder = [
     {
-      label: 'Payment context carried',
-      status: 'ready',
+      label: 'Payment context requested',
+      status: 'pending',
       detail: carriedActivationIntent
-        ? describeCheckoutIntent(carriedActivationIntent)
+        ? `${describeCheckoutIntent(carriedActivationIntent)} is attached to this route; backend order metadata must verify it before live storage.`
         : checkoutIntent
           ? 'URL-only checkout context is attached, but activation will not carry it without verified backend teaser metadata from the order.'
         : 'No checkout context is attached to this activation route.',
@@ -317,14 +317,17 @@ export function ActivationPage() {
               <div className="terminal-status terminal-status-success" style={{ marginTop: '1rem' }}>
                 <span className="status-icon">CTX</span>
                 <div>
-                  <p>{describeCheckoutIntent(carriedActivationIntent).toUpperCase()} CONTEXT DETECTED</p>
+                  <p>{describeCheckoutIntent(carriedActivationIntent).toUpperCase()} CONTEXT REQUEST ATTACHED</p>
                   <p className="terminal-muted">
                     {activationLockedSection?.title
-                      ? `Activation will carry "${activationLockedSection.title}" into the live workspace as requested context.`
-                      : 'Activation will carry this public-story context into the live workspace.'}
+                      ? `Activation will request "${activationLockedSection.title}" as live workspace context.`
+                      : 'Activation will request this public-story context for the live workspace.'}
                   </p>
                   <p className="terminal-muted">
-                    This is routing context only. The private claim still requires live activation, upload proof, and generated workspace evidence.
+                    This is routing context only. It is stored after submit only if the backend order verifies a persisted teaser receipt.
+                  </p>
+                  <p className="terminal-muted">
+                    Private claims still require live activation, upload proof, generated workspace evidence, and append history.
                   </p>
                   <p className="terminal-muted">
                     Report: {carriedActivationIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
@@ -363,7 +366,7 @@ export function ActivationPage() {
                     <div>
                       <p>LIVE ACTIVATION PROOF LADDER</p>
                       <p className="terminal-muted">
-                        This ladder separates what payment can carry, what first upload can evidence, and what append history must still prove.
+                        This ladder separates requested payment context, backend-verified activation context, first upload evidence, and append history.
                       </p>
                       <p className="terminal-muted">
                         APPEND PROOF CLOSE: activation is access control, not the conclusion; repeated account history must confirm or reject the carried question.
