@@ -97,7 +97,7 @@ export function ActivationPage() {
       detail: carriedActivationIntent
         ? describeCheckoutIntent(carriedActivationIntent)
         : checkoutIntent
-          ? 'URL-only checkout context is attached, but activation will not carry it without a local locked-section receipt or controlled launcher packet.'
+          ? 'URL-only checkout context is attached, but activation will not carry it without verified backend teaser metadata from the order.'
         : 'No checkout context is attached to this activation route.',
     },
     {
@@ -387,7 +387,7 @@ export function ActivationPage() {
                 <div>
                   <p>ACTIVATION CONTEXT NOT CARRIED</p>
                   <p className="terminal-muted">
-                    URL-only activation context is visible on this link, but it will not be written into the live workspace without a local locked-section intent receipt or controlled launcher packet.
+                    URL-only activation context is visible on this link, but it will not be written into the live workspace without verified backend teaser metadata from the order.
                   </p>
                   <p className="terminal-muted">
                     Activation can still verify the email and order code. It will create a live workspace without inheriting this public question.

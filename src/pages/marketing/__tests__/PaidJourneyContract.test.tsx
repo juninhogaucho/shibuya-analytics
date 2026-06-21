@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -121,12 +121,10 @@ describe('paid Shibuya journey contract', () => {
     vi.resetModules()
   })
 
-  test('sample public story context reaches checkout but does not become live activation metadata', async () => {
+  test('sample public story context reaches checkout boundary but cannot create paid handoff', async () => {
     const user = userEvent.setup()
     const {
       CheckoutPage,
-      CheckoutSuccessPage,
-      ActivationPage,
       FreeReportPage,
       LockedInsightPage,
       PublicUploadPage,
@@ -169,119 +167,27 @@ describe('paid Shibuya journey contract', () => {
 
     await user.click(screen.getByRole('link', { name: /Unlock with Reset Pro/i }))
     expect(screen.getByText('Checkout intent')).toBeInTheDocument()
+    expect(screen.getByText('Persisted backend teaser receipt required before payment.')).toBeInTheDocument()
+    expect(screen.getByText(/Local sample packets, URL context, and presenter demo packets cannot create paid live context/i)).toBeInTheDocument()
     expect(screen.getByText('Locked private insight')).toBeInTheDocument()
     expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
     expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
     expect(screen.getByText(/Story handoff: guided; scenes 6; axes 1/i)).toBeInTheDocument()
+    expect(screen.getByText('Checkout-grade receipt: missing')).toBeInTheDocument()
+    expect(screen.getByText(/shown for continuity only/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
     await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
     await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
 
-    await waitFor(() => {
-      expect(journeyMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
-    })
-    expect(journeyMocks.createCheckoutSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        plan_id: 'shibuya_reset_pro_monthly',
-        email: 'founder@shibuya.test',
-        name: 'Luis Shibuya',
-        public_context_source: 'locked_insight',
-        public_context_report_id: 'sample-behavioral-leak-report',
-        public_context_section_id: 'highest-cost-state',
-        public_context_archetype_id: 'marco',
-        public_context_axis_id: 'edge_decay',
-        public_context_packet_source: 'sample',
-        public_context_story_source: 'guided',
-        public_context_story_scene_count: '6',
-        public_context_pain_axes: 'edge_decay',
-        public_context_signal_markers: 'mirror_selected,upload_intent',
-      }),
-    )
-    expect(journeyMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
-    expect(JSON.parse(window.localStorage.getItem('shibuya_order') ?? '{}')).toMatchObject({
-      email: 'founder@shibuya.test',
-      orderId: 'order_123',
-      sessionId: 'cs_test_123',
-      checkoutIntent: {
-        source: 'locked_insight',
-        reportId: 'sample-behavioral-leak-report',
-        lockedSectionId: 'highest-cost-state',
-        archetypeId: 'marco',
-        axisId: 'edge_decay',
-        storySource: 'guided',
-        visitedSceneCount: 6,
-        selectedPainAxisIds: ['edge_decay'],
-        signalMarkerIds: ['mirror_selected', 'upload_intent'],
-      },
-    })
+    expect(journeyMocks.createCheckoutSession).not.toHaveBeenCalled()
+    expect(journeyMocks.redirectBrowser).not.toHaveBeenCalled()
+    expect(window.localStorage.getItem('shibuya_order')).toBeNull()
+    expect(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY)).toBeNull()
+    expect(journeyMocks.verifyActivation).not.toHaveBeenCalled()
+    expect(journeyMocks.logTraderLifecycleEvent).not.toHaveBeenCalled()
 
     firstRender.unmount()
-
-    render(
-      <MemoryRouter initialEntries={['/checkout/success?market=global']}>
-        <Routes>
-          <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-          <Route path="/activate" element={<ActivationPage />} />
-          <Route path="/dashboard" element={<div>Live dashboard route</div>} />
-        </Routes>
-        <LocationProbe />
-      </MemoryRouter>,
-    )
-
-    expect(screen.getByText('Carried into activation')).toBeInTheDocument()
-    expect(screen.getByText('Report: sample-behavioral-leak-report')).toBeInTheDocument()
-    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
-    expect(screen.getByText('Sample history packet')).toBeInTheDocument()
-    expect(screen.getByText(/Story handoff: guided; scenes 6; pain axes Edge Decay/i)).toBeInTheDocument()
-    expect(screen.getByText(/Activation boundary: payment can carry this context forward/i)).toBeInTheDocument()
-
-    await user.click(screen.getByRole('link', { name: /Activate Live Account/i }))
-    expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT DETECTED')).toBeInTheDocument()
-    expect(screen.getByText(/Activation will carry "Highest-cost state"/i)).toBeInTheDocument()
-    expect(screen.getByText(/Report: sample-behavioral-leak-report \| Archetype: Marco \| Axis: Edge Decay/i)).toBeInTheDocument()
-    expect(screen.getByText(/Public packet: Sample history packet \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay/i)).toBeInTheDocument()
-    expect(screen.getByText(/Public signal markers: Mirror selected, Evidence intent/i)).toBeInTheDocument()
-    expect(screen.getByText('Append proof close required')).toBeInTheDocument()
-    expect(screen.getByText(/activation is access control, not the conclusion/i)).toBeInTheDocument()
-
-    await user.clear(screen.getByLabelText(/EMAIL_ADDRESS/i))
-    await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
-    await user.clear(screen.getByLabelText(/ORDER_CODE/i))
-    await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_123')
-    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
-    })
-    expect(screen.getByText('Live dashboard route')).toBeInTheDocument()
-    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
-      customerId: 'customer-123',
-      tier: 'reset_pro',
-      planId: 'shibuya_reset_pro_monthly',
-      market: 'global',
-      offerKind: 'reset_pro_live',
-      caseStatus: 'awaiting_upload',
-      orderId: 'order_123',
-    })
-    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
-    expect(storedSessionMeta).not.toHaveProperty('activationSource')
-    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
-    expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
-    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
-    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionTitle')
-    expect(journeyMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        event_name: 'workspace_activated',
-        metadata: expect.objectContaining({
-          activationSource: undefined,
-          activationReportId: undefined,
-          activationStorySource: undefined,
-          activationVisitedSceneCount: undefined,
-          activationSignalMarkerIds: undefined,
-          activationLockedSectionId: undefined,
-        }),
-      }),
-    )
   })
 })

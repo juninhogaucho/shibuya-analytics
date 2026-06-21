@@ -81,6 +81,25 @@ export interface PublicReportLiveProofGap {
   boundary: string
 }
 
+const RECEIPT_HASH_PATTERN = /^[a-f0-9]{64}$/i
+
+export function hasCheckoutGradePublicReportSession(session?: PublicReportSession | null): boolean {
+  const receipt = session?.backendTeaser
+  return Boolean(
+    session?.source === 'backend_teaser' &&
+      session.artifactStatus === 'backend_teaser_persisted' &&
+      session.productionArtifactProven === false &&
+      receipt?.reportId &&
+      receipt.reportId === session.reportId &&
+      receipt.requestId &&
+      receipt.artifactStatus === 'backend_teaser_persisted' &&
+      typeof receipt.tradesAnalyzed === 'number' &&
+      receipt.tradesAnalyzed >= 10 &&
+      receipt.receiptHash &&
+      RECEIPT_HASH_PATTERN.test(receipt.receiptHash),
+  )
+}
+
 export interface PublicReportInputValidationState {
   fileValidationPassed?: boolean
   fileValidationError?: string | null

@@ -17,6 +17,7 @@ import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMark
 import {
   appendDemoLauncherSamplePacketToPath,
   getPublicReportSession,
+  hasCheckoutGradePublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
 } from '../../lib/publicReportSession'
@@ -54,9 +55,11 @@ const CheckoutPage: React.FC = () => {
     enrichedCheckoutIntent?.source === 'locked_insight' &&
     Boolean(enrichedCheckoutIntent.reportId && enrichedCheckoutIntent.lockedSectionId)
   const hasLockedSectionIntentProof = checkoutEngagementSummary.currentSectionClickCount > 0
+  const hasVerifiedBackendTeaserReceipt = hasCheckoutGradePublicReportSession(reportSession)
   const checkoutRouteReady =
     hasLockedInsightCheckoutIntent &&
-    (hasLockedSectionIntentProof || shouldCarryDemoLauncherPacket)
+    hasLockedSectionIntentProof &&
+    hasVerifiedBackendTeaserReceipt
   const pricingBackPath = addMarketToPath(appendCheckoutIntentToPath('/pricing', enrichedCheckoutIntent), market)
   const reportFirstPath = addMarketToPath('/upload', market)
   const isSubscription = currentPlan.type === 'subscription'
@@ -64,7 +67,7 @@ const CheckoutPage: React.FC = () => {
   const checkoutHandoffContractRows = [
     {
       label: 'Payment can carry',
-      body: 'Plan, market, public context, report id, locked module, story route, selected public pain axes, and signal markers.',
+      body: 'Plan, market, locked module, story route, public pain axes, signal markers, and the persisted backend teaser receipt.',
     },
     {
       label: 'Payment cannot prove',
@@ -142,7 +145,7 @@ const CheckoutPage: React.FC = () => {
     event.preventDefault()
 
     if (!checkoutRouteReady) {
-      setCheckoutError('Open a locked private insight from the report before checkout so payment carries a verified local intent receipt.')
+      setCheckoutError('Open a locked private insight from a persisted backend teaser report before checkout. Local sample packets and URL-only context cannot create a paid live handoff.')
       return
     }
 
@@ -158,7 +161,7 @@ const CheckoutPage: React.FC = () => {
       const cancelPath = appendCheckoutIntentToPath(`/checkout/${currentPlan.checkoutSlug}`, enrichedCheckoutIntent)
       const successUrl = `${origin}${addMarketToPath(appendDemoLauncherSamplePacketToPath(successPath, shouldCarryDemoLauncherPacket), market)}`
       const cancelUrl = `${origin}${addMarketToPath(appendDemoLauncherSamplePacketToPath(cancelPath, shouldCarryDemoLauncherPacket), market)}`
-      const publicContextPayload = enrichedCheckoutIntent
+      const publicContextPayload = enrichedCheckoutIntent && hasVerifiedBackendTeaserReceipt
         ? {
             public_context_source: enrichedCheckoutIntent.source,
             public_context_report_id: enrichedCheckoutIntent.reportId,
@@ -266,13 +269,13 @@ const CheckoutPage: React.FC = () => {
           </p>
           <h2 className="mt-2 text-lg font-semibold text-white">
             {checkoutRouteReady
-              ? 'Locked insight intent verified.'
-              : 'Locked insight intent required before payment.'}
+              ? 'Persisted public report receipt verified.'
+              : 'Persisted backend teaser receipt required before payment.'}
           </h2>
           <p className={`mt-2 text-sm leading-6 ${checkoutRouteReady ? 'text-sky-50/75' : 'text-rose-50/75'}`}>
             {checkoutRouteReady
-              ? 'This payment path includes report, locked module, archetype, axis, public-story handoff context, and a local locked-section intent receipt or controlled launcher packet.'
-              : 'Checkout requires a local locked-section intent receipt or controlled launcher packet. A URL alone cannot start payment. Generate a report and open a locked private insight before checkout so activation receives a real question.'}
+              ? 'This payment path includes report, locked module, archetype, axis, public-story handoff context, local locked-section intent, and a Medallion-persisted teaser receipt.'
+              : 'Checkout now requires a locked insight backed by a persisted Medallion teaser receipt. Local sample packets, URL context, and presenter demo packets cannot create paid live context.'}
           </p>
           {!checkoutRouteReady ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -319,7 +322,9 @@ const CheckoutPage: React.FC = () => {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-200">Checkout intent</p>
             <h3 className="mt-2 text-lg font-semibold text-white">{describeCheckoutIntent(enrichedCheckoutIntent)}</h3>
             <p className="mt-2 text-sm leading-relaxed text-neutral-300">
-              We will carry this public-story context into activation so the private workspace starts from the module you tried to unlock.
+              {checkoutRouteReady
+                ? 'We will carry this backend-verified public-story context into activation so the private workspace starts from the module you tried to unlock.'
+                : 'This context is shown for continuity only. It will not be sent to checkout until the report has a persisted backend teaser receipt.'}
             </p>
             <div className="mt-4 grid gap-2 text-xs text-neutral-400 md:grid-cols-2">
               {enrichedCheckoutIntent.lockedSectionId && <span>Module: {enrichedCheckoutIntent.lockedSectionId}</span>}
@@ -340,6 +345,9 @@ const CheckoutPage: React.FC = () => {
               </p>
               <p className="mt-1 text-neutral-400">
                 {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}
+              </p>
+              <p className={`mt-2 font-semibold ${hasVerifiedBackendTeaserReceipt ? 'text-emerald-200' : 'text-rose-200'}`}>
+                Checkout-grade receipt: {hasVerifiedBackendTeaserReceipt ? 'verified persisted backend teaser' : 'missing'}
               </p>
               {reportSession?.storySource ? (
                 <p className="mt-2 text-neutral-500">
