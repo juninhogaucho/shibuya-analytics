@@ -836,7 +836,14 @@ export function AppendTradesPage() {
       </section>
 
       <div aria-label="LIVE PROOF READINESS append contract">
-        <LiveProofReadinessCard title="Before this upload can become live proof." />
+        <LiveProofReadinessCard
+          title="Before this upload can become live proof."
+          overview={sampleMode ? null : dashboardOverview}
+          sessionMeta={effectiveSessionMeta}
+          profileCompleted={profileContext?.completed ?? dashboardOverview?.profile_completed ?? null}
+          market={market}
+          mode={runtimeContract.mode}
+        />
       </div>
 
       {liveActivationProofTarget ? (

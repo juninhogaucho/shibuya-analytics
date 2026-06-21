@@ -1,7 +1,10 @@
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
+import type { BuildLiveProofPhaseOptions } from '../../lib/liveProofPhase'
 
-interface LiveProofReadinessCardProps {
+interface LiveProofReadinessCardProps extends BuildLiveProofPhaseOptions {
   title?: string
+  apiBaseUrl?: string
+  backendConfigured?: boolean
 }
 
 const STATUS_LABELS = {
@@ -10,14 +13,31 @@ const STATUS_LABELS = {
   required: 'REQUIRED',
 } as const
 
-export function LiveProofReadinessCard({ title = 'Live proof readiness contract' }: LiveProofReadinessCardProps) {
-  const contract = buildLiveProofReadinessContract()
+export function LiveProofReadinessCard({
+  title = 'Live proof readiness contract',
+  apiBaseUrl,
+  backendConfigured,
+  overview,
+  sessionMeta,
+  profileCompleted,
+  market,
+  mode,
+}: LiveProofReadinessCardProps) {
+  const contract = buildLiveProofReadinessContract({
+    apiBaseUrl,
+    backendConfigured,
+    overview,
+    sessionMeta,
+    profileCompleted,
+    market,
+    mode,
+  })
 
   return (
     <section
       className="glass-panel"
       aria-label="LIVE PROOF READINESS"
-      data-proof-rows="Backend target; First meaningful upload; Append history"
+      data-proof-rows="Backend target; Activation; First meaningful upload; Append history"
       style={{
         marginBottom: '1.5rem',
         borderColor: contract.statusLabel === 'LIVE BACKEND BLOCKED' ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.24)',
