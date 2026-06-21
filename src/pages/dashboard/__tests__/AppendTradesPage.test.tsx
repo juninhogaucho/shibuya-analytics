@@ -53,6 +53,7 @@ describe('AppendTradesPage', () => {
   }
 
   beforeEach(() => {
+    vi.clearAllMocks()
     parseTradePasteMock.mockResolvedValue({
       rowsParsed: 2,
       symbols: ['NIFTY24JAN22500CE', 'BANKNIFTY24JAN48200PE'],
@@ -408,5 +409,73 @@ describe('AppendTradesPage', () => {
       latestUploadReceipt: expectedReceipt,
       uploadReceiptHistory: [expectedReceipt],
     })
+  }, 15000)
+
+  test('does not mark live upload complete when backend artifact proof is missing', async () => {
+    isSampleModeMock.mockReturnValue(false)
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'live',
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    })
+    getStoredSessionMetaMock.mockReturnValue({
+      caseStatus: 'awaiting_upload',
+      market: 'india',
+      offerKind: 'psych_audit',
+      activationSource: 'locked_insight',
+      activationReportId: 'public-teaser-append',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationLockedSectionTitle: 'Edge Decay Map',
+      activationTeaserRequestId: 'TEASER-route-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'e'.repeat(64),
+      activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
+    })
+    submitParsedTradesMock.mockResolvedValue({
+      status: 'ok',
+      trades_uploaded: 2,
+      report_snapshot_id: null,
+      report_id: null,
+      artifact_status: 'missing',
+      append_count: 0,
+      request_id: 'req_missing_artifact',
+    })
+    const user = userEvent.setup()
+
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Trades'), {
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
+
+    expect(await screen.findByText('Upload received, but artifact proof is still pending.')).toBeInTheDocument()
+    expect(screen.getByText('Upload succeeded, but artifact proof is incomplete.')).toBeInTheDocument()
+    expect(screen.getByText('2 trades were received by the live upload endpoint.')).toBeInTheDocument()
+    expect(screen.getByText('Shibuya did not receive generated artifact proof from the backend, so this upload is not baseline proof yet.')).toBeInTheDocument()
+    expect(screen.getByText('Generated artifact snapshot was not returned by the backend.')).toBeInTheDocument()
+    expect(screen.getByText('Artifact status: missing.')).toBeInTheDocument()
+    expect(screen.getByText('Durable upload count returned: 0.')).toBeInTheDocument()
+    expect(screen.getByText('Backend request receipt: req_missing_artifact.')).toBeInTheDocument()
+    expect(screen.getByText('The workspace stays in processing until Medallion returns a generated artifact snapshot.')).toBeInTheDocument()
+    expect(screen.queryByText('Uploaded 2 trades to your live account.')).not.toBeInTheDocument()
+    expect(getTradePasteMemoryMock).not.toHaveBeenCalled()
+    expect(getTradingReportComparisonMock).not.toHaveBeenCalled()
+    expect(logTraderLifecycleEventMock).not.toHaveBeenCalled()
+    expect(updateSessionMetaMock).not.toHaveBeenCalled()
   }, 15000)
 })

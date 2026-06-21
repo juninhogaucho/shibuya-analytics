@@ -129,9 +129,24 @@ function buildSampleNotes(tradesUploaded: number): string[] {
   ]
 }
 
+function hasText(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function hasGeneratedUploadArtifactProof(result: TradeUploadResponse): boolean {
+  return Boolean(
+    result.status !== 'sample'
+    && result.artifact_status === 'generated'
+    && hasText(result.report_snapshot_id)
+    && hasText(result.request_id)
+    && typeof result.append_count === 'number'
+    && result.append_count >= 1,
+  )
+}
+
 function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   const notes = [
-    `${result.trades_uploaded} trades added to your account.`,
+    `${result.trades_uploaded} trades generated a backend account artifact.`,
     result.report_snapshot_id
       ? `Generated artifact snapshot: ${result.report_snapshot_id}.`
       : 'Generated artifact snapshot was not returned by the backend.',
@@ -148,6 +163,38 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   if (result.request_id) {
     notes.push(`Backend request receipt: ${result.request_id}.`)
   }
+
+  return notes
+}
+
+function formatIncompleteUploadProofNotes(result: TradeUploadResponse): string[] {
+  const notes = [
+    `${result.trades_uploaded} trades were received by the live upload endpoint.`,
+    'Shibuya did not receive generated artifact proof from the backend, so this upload is not baseline proof yet.',
+    result.report_snapshot_id
+      ? `Snapshot candidate returned: ${result.report_snapshot_id}.`
+      : 'Generated artifact snapshot was not returned by the backend.',
+  ]
+
+  if (result.report_id) {
+    notes.push(`Report candidate returned: ${result.report_id}.`)
+  }
+
+  if (result.artifact_status) {
+    notes.push(`Artifact status: ${result.artifact_status}.`)
+  }
+
+  if (typeof result.append_count === 'number') {
+    notes.push(`Durable upload count returned: ${result.append_count}.`)
+  }
+
+  if (result.request_id) {
+    notes.push(`Backend request receipt: ${result.request_id}.`)
+  } else {
+    notes.push('Backend request receipt was not returned.')
+  }
+
+  notes.push('The workspace stays in processing until Medallion returns a generated artifact snapshot.')
 
   return notes
 }
@@ -318,6 +365,7 @@ export function AppendTradesPage() {
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
   const traderMode = profileContext?.trader_mode ?? sessionMeta?.traderMode
   const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(sessionMeta)
+  const liveUploadHasGeneratedArtifactProof = liveUploadProof ? hasGeneratedUploadArtifactProof(liveUploadProof) : false
   const resetProEngagementReceipt = formatEngagementReceipt(
     sessionMeta?.demoEngagementReportViewCount,
     sessionMeta?.demoEngagementLockedSectionClickCount,
@@ -495,33 +543,38 @@ export function AppendTradesPage() {
         setNotes(buildSampleNotes(result.trades_uploaded))
         setLiveUploadProof(null)
       } else {
-        const memory = await getTradePasteMemory().catch(() => null)
-        const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
-        const comparison = appendProofExpected
-          ? await getTradingReportComparison().catch(() => null)
-          : null
-        if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
-          await logTraderLifecycleEvent({
-            event_name: 'first_upload_completed',
-            market,
-            tier: sessionMeta?.tier,
-            metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'paste'),
-          })
-        }
-        updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'paste'))
         setLiveUploadProof(result)
-        const proofNotes = formatLiveUploadProofNotes(result)
-        setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
-        setNotes(
-          memory
-            ? [...proofNotes, ...formatMemoryDelta(memory), ...(appendProofExpected ? formatAppendProofNotes(comparison) : [])]
-            : [
-                ...proofNotes,
-                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
-                'Analytics reran; artifact receipt above is the proof boundary for this append.',
-                'Trade Paste Memory is temporarily unavailable. Check back after your next session.',
-              ],
-        )
+        if (!hasGeneratedUploadArtifactProof(result)) {
+          setSuccess('Upload received, but artifact proof is still pending.')
+          setNotes(formatIncompleteUploadProofNotes(result))
+        } else {
+          const memory = await getTradePasteMemory().catch(() => null)
+          const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
+          const comparison = appendProofExpected
+            ? await getTradingReportComparison().catch(() => null)
+            : null
+          if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
+            await logTraderLifecycleEvent({
+              event_name: 'first_upload_completed',
+              market,
+              tier: sessionMeta?.tier,
+              metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'paste'),
+            })
+          }
+          updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'paste'))
+          const proofNotes = formatLiveUploadProofNotes(result)
+          setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
+          setNotes(
+            memory
+              ? [...proofNotes, ...formatMemoryDelta(memory), ...(appendProofExpected ? formatAppendProofNotes(comparison) : [])]
+              : [
+                  ...proofNotes,
+                  ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
+                  'Analytics reran; artifact receipt above is the proof boundary for this append.',
+                  'Trade Paste Memory is temporarily unavailable. Check back after your next session.',
+                ],
+          )
+        }
       }
 
       setPaste('')
@@ -588,39 +641,47 @@ export function AppendTradesPage() {
           ...(rescued.applied ? rescued.notes : []),
         ])
       } else {
-        const memory = await getTradePasteMemory().catch(() => null)
-        const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
-        const comparison = appendProofExpected
-          ? await getTradingReportComparison().catch(() => null)
-          : null
-        if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
-          await logTraderLifecycleEvent({
-            event_name: 'first_upload_completed',
-            market,
-            tier: sessionMeta?.tier,
-            metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'csv'),
-          })
-        }
-        updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'csv'))
         setLiveUploadProof(result)
-        const proofNotes = formatLiveUploadProofNotes(result)
-        setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
-        setNotes(
-          memory
-            ? [
-                ...proofNotes,
-                ...(rescued.applied ? rescued.notes : []),
-                ...formatMemoryDelta(memory),
-                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
-              ]
-            : [
-                ...proofNotes,
-                ...(rescued.applied ? rescued.notes : []),
-                ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
-                'Analytics reran; artifact receipt above is the proof boundary for this append.',
-                'Upload another batch to compare what actually changed between sessions.',
-              ],
-        )
+        if (!hasGeneratedUploadArtifactProof(result)) {
+          setSuccess('Upload received, but artifact proof is still pending.')
+          setNotes([
+            ...formatIncompleteUploadProofNotes(result),
+            ...(rescued.applied ? rescued.notes : []),
+          ])
+        } else {
+          const memory = await getTradePasteMemory().catch(() => null)
+          const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
+          const comparison = appendProofExpected
+            ? await getTradingReportComparison().catch(() => null)
+            : null
+          if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
+            await logTraderLifecycleEvent({
+              event_name: 'first_upload_completed',
+              market,
+              tier: sessionMeta?.tier,
+              metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'csv'),
+            })
+          }
+          updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'csv'))
+          const proofNotes = formatLiveUploadProofNotes(result)
+          setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
+          setNotes(
+            memory
+              ? [
+                  ...proofNotes,
+                  ...(rescued.applied ? rescued.notes : []),
+                  ...formatMemoryDelta(memory),
+                  ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
+                ]
+              : [
+                  ...proofNotes,
+                  ...(rescued.applied ? rescued.notes : []),
+                  ...(appendProofExpected ? formatAppendProofNotes(comparison) : []),
+                  'Analytics reran; artifact receipt above is the proof boundary for this append.',
+                  'Upload another batch to compare what actually changed between sessions.',
+                ],
+          )
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload file')
@@ -949,19 +1010,19 @@ export function AppendTradesPage() {
               className="glass-panel"
               style={{
                 marginTop: '1rem',
-                borderColor: liveUploadProof.report_snapshot_id ? 'rgba(16,185,129,0.24)' : 'rgba(245,158,11,0.32)',
-                background: liveUploadProof.report_snapshot_id ? 'rgba(16,185,129,0.07)' : 'rgba(245,158,11,0.08)',
+                borderColor: liveUploadHasGeneratedArtifactProof ? 'rgba(16,185,129,0.24)' : 'rgba(245,158,11,0.32)',
+                background: liveUploadHasGeneratedArtifactProof ? 'rgba(16,185,129,0.07)' : 'rgba(245,158,11,0.08)',
               }}
             >
               <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE APPEND PROOF RECEIPT</p>
               <h3 style={{ marginBottom: '0.5rem' }}>
-                {liveUploadProof.report_snapshot_id
+                {liveUploadHasGeneratedArtifactProof
                   ? 'Backend artifact generated for this account.'
                   : 'Upload succeeded, but artifact proof is incomplete.'}
               </h3>
               <p className="text-muted" style={{ marginBottom: '1rem' }}>
-                This receipt comes from the Medallion upload response. It is the boundary between a live append and a private
-                Reset Pro conclusion: conclusions still require repeat append history, but this upload is no longer local-only.
+                This receipt comes from the Medallion upload response. A live baseline is only claimed after a generated artifact
+                snapshot, request receipt, and durable append count are all present.
               </p>
               <div className="grid-responsive three">
                 <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
