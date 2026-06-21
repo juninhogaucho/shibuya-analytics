@@ -9,8 +9,16 @@ afterEach(() => {
 })
 
 describe('AuthGuard', () => {
-  test('renders children for live users', () => {
+  test('renders children for backend-verified live users', () => {
     window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token')
+    window.localStorage.setItem(
+      SHIBUYA_SESSION_META_STORAGE_KEY,
+      JSON.stringify({
+        customerId: 'customer-live-123',
+        tier: 'reset_pro',
+        market: 'global',
+      }),
+    )
 
     render(
       <MemoryRouter initialEntries={['/dashboard']}>
@@ -64,6 +72,29 @@ describe('AuthGuard', () => {
     )
 
     expect(screen.getByText('Protected workspace')).toBeInTheDocument()
+  })
+
+  test('redirects local-only live tokens back to activation', () => {
+    window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token')
+
+    render(
+      <MemoryRouter initialEntries={['/dashboard']}>
+        <Routes>
+          <Route
+            path="/dashboard"
+            element={
+              <AuthGuard>
+                <div>Protected workspace</div>
+              </AuthGuard>
+            }
+          />
+          <Route path="/activate" element={<div>Activation page</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Activation page')).toBeInTheDocument()
+    expect(screen.queryByText('Protected workspace')).not.toBeInTheDocument()
   })
 
   test('redirects anonymous users to activation', () => {

@@ -4,7 +4,13 @@ import {
   buildDashboardActivationOriginMeta,
   hasVerifiedDashboardActivationOrigin,
 } from '../activationOrigin'
-import { getStoredSessionMeta, getShibuyaRuntimeContract, isSampleMode, updateSessionMeta } from '../runtime'
+import {
+  getStoredSessionMeta,
+  getShibuyaRuntimeContract,
+  hasBackendVerifiedLiveSession,
+  isSampleMode,
+  updateSessionMeta,
+} from '../runtime'
 import { SAMPLE_WORKSPACE_DATA, getSampleWorkspaceOverview } from '../sampleWorkspace'
 import type {
   AlertsResponse,
@@ -63,6 +69,12 @@ export function assertDashboardBackendReady(featureName: string): void {
   if (contract.requiresBackend && !isApiBaseConfiguredForLive()) {
     throw new Error(
       `${featureName} requires a configured Shibuya backend. VITE_API_BASE is missing, so live account data cannot be loaded truthfully.`,
+    )
+  }
+
+  if (contract.mode === 'live' && !hasBackendVerifiedLiveSession()) {
+    throw new Error(
+      `${featureName} requires backend-verified live session identity. Re-activate or sign in before using account persistence.`,
     )
   }
 }

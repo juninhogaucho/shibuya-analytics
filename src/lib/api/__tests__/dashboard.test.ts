@@ -96,6 +96,25 @@ describe('dashboard API boundary', () => {
     )
   })
 
+  test('rejects live persistence when backend is configured but session identity is local-only', async () => {
+    vi.doMock('../../constants', () => ({
+      API_BASE_URL: 'https://api.shibuya.example',
+      isApiBaseConfiguredForLive: () => true,
+    }))
+
+    const { setLiveApiKey } = await import('../../runtime')
+    const { getDashboardOverview, submitParsedTrades, uploadTradesCSV } = await import('../dashboard')
+
+    setLiveApiKey('live_local_only', { tier: 'reset_pro', market: 'global' })
+
+    const unverifiedSessionError = /backend-verified live session identity/
+    await expect(getDashboardOverview()).rejects.toThrow(unverifiedSessionError)
+    await expect(uploadTradesCSV(new File(['date,symbol,pnl\n2024-01-01,NIFTY,100'], 'trades.csv'))).rejects.toThrow(
+      unverifiedSessionError,
+    )
+    await expect(submitParsedTrades({ trades: [], rawText: 'row' })).rejects.toThrow(unverifiedSessionError)
+  })
+
   test('recovers persisted activation origin from live dashboard overview', async () => {
     const httpGet = vi.fn().mockResolvedValue({
       data: {
@@ -200,6 +219,7 @@ describe('dashboard API boundary', () => {
     const { getDashboardOverview } = await import('../dashboard')
 
     setLiveApiKey('live-token-123', {
+      customerId: 'cust_live_123',
       tier: 'reset_pro',
       market: 'global',
       offerKind: 'reset_pro_live',
@@ -297,6 +317,7 @@ describe('dashboard API boundary', () => {
     const { getDashboardOverview } = await import('../dashboard')
 
     setLiveApiKey('live-token-weak', {
+      customerId: 'cust_live_weak',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
@@ -362,6 +383,7 @@ describe('dashboard API boundary', () => {
     const { getDashboardOverview } = await import('../dashboard')
 
     setLiveApiKey('live-token-456', {
+      customerId: 'cust_live_456',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',

@@ -9,7 +9,12 @@ export type ShibuyaRuntimeMode = 'anonymous' | 'sample' | 'live'
 export type ShibuyaRuntimePersistence = 'none' | 'local_only' | 'backend'
 export type ShibuyaSamplePreview = 'core' | 'reset_pro'
 export type ShibuyaDemoEntryMode = 'mission_hq' | 'append_proof_shortcut'
-export type ShibuyaWorkspaceAccessReason = 'anonymous' | 'live_session' | 'private_demo_receipt' | 'sample_without_private_gate'
+export type ShibuyaWorkspaceAccessReason =
+  | 'anonymous'
+  | 'live_session'
+  | 'live_without_verified_session'
+  | 'private_demo_receipt'
+  | 'sample_without_private_gate'
 
 export interface ShibuyaRuntimeContract {
   mode: ShibuyaRuntimeMode
@@ -226,13 +231,27 @@ export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = 
   )
 }
 
+export function hasBackendVerifiedLiveSession(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
+  return Boolean(meta?.customerId?.trim())
+}
+
 export function getWorkspaceAccessState(): ShibuyaWorkspaceAccessState {
   const mode = getShibuyaRuntimeMode()
   const meta = getStoredSessionMeta()
   const market = meta?.market ?? 'india'
 
   if (mode === 'live') {
-    return { ok: true, mode, market, reason: 'live_session' }
+    if (hasBackendVerifiedLiveSession(meta)) {
+      return { ok: true, mode, market, reason: 'live_session' }
+    }
+
+    return {
+      ok: false,
+      mode,
+      market,
+      reason: 'live_without_verified_session',
+      redirectPath: `/activate?market=${market}&reason=verify-live-session`,
+    }
   }
 
   if (mode === 'sample' && hasPrivateResetProDemoReceipt(meta)) {
@@ -307,14 +326,18 @@ export function getShibuyaRuntimeContract(): ShibuyaRuntimeContract {
   const mode = getShibuyaRuntimeMode()
 
   if (mode === 'live') {
+    const verifiedSession = hasBackendVerifiedLiveSession()
+
     return {
       mode,
-      label: 'Live trader account',
+      label: verifiedSession ? 'Live trader account' : 'Unverified live token',
       canUseSampleData: false,
-      canPersistTrades: true,
-      persistence: 'backend',
+      canPersistTrades: verifiedSession,
+      persistence: verifiedSession ? 'backend' : 'none',
       requiresBackend: true,
-      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+      proofBoundary: verifiedSession
+        ? 'Live account data must come from the Medallion API and durable account records.'
+        : 'A local token exists, but no backend-derived customer identity is stored. Re-activate or sign in before treating this as a live workspace.',
     }
   }
 
@@ -346,6 +369,10 @@ export function requireLiveRuntime(featureName: string): void {
 
   if (contract.mode !== 'live') {
     throw new Error(`${featureName} requires a live trader account. Current runtime: ${contract.label}.`)
+  }
+
+  if (!hasBackendVerifiedLiveSession()) {
+    throw new Error(`${featureName} requires a backend-verified live trader session. Current runtime: ${contract.label}.`)
   }
 }
 
