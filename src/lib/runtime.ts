@@ -1,5 +1,5 @@
 import type { Market } from './market'
-import type { TraderMode } from './types'
+import type { TraderMode, UploadProofReceipt } from './types'
 
 export const SHIBUYA_API_KEY_STORAGE_KEY = 'shibuya_api_key'
 export const SHIBUYA_SESSION_META_STORAGE_KEY = 'shibuya_session_meta'
@@ -33,6 +33,10 @@ export interface ShibuyaSessionMeta {
   nextAction?: string
   accessExpiresAt?: string | null
   dataSource?: string | null
+  lastReportSnapshotId?: string | null
+  firstUploadReceipt?: UploadProofReceipt | null
+  latestUploadReceipt?: UploadProofReceipt | null
+  uploadReceiptHistory?: UploadProofReceipt[]
   affiliateSlug?: string
   refCode?: string
   samplePreview?: ShibuyaSamplePreview
@@ -144,6 +148,10 @@ const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'nextAction',
   'accessExpiresAt',
   'dataSource',
+  'lastReportSnapshotId',
+  'firstUploadReceipt',
+  'latestUploadReceipt',
+  'uploadReceiptHistory',
   'activationSource',
   'activationReportId',
   'activationArchetypeId',

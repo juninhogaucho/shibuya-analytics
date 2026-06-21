@@ -254,6 +254,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByRole('link', { name: /Return To Mission HQ/i })).toHaveAttribute('href', '/dashboard?market=india')
     expect(screen.getByRole('link', { name: /Activate Live Reset Pro/i })).toHaveAttribute('href', '/pricing?upgrade=reset-pro&market=india')
     expect(getTradePasteMemoryMock).not.toHaveBeenCalled()
+    expect(updateSessionMetaMock).not.toHaveBeenCalled()
   }, 15000)
 
   test('shows real trade-paste-memory deltas in live mode', async () => {
@@ -391,6 +392,21 @@ describe('AppendTradesPage', () => {
         activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
       },
     })
-    expect(updateSessionMetaMock).toHaveBeenCalledWith({ caseStatus: 'baseline_ready' })
+    const expectedReceipt = {
+      upload_transport: 'paste',
+      trades_uploaded: 2,
+      report_snapshot_id: 'snap_upload_003',
+      report_id: 'report_upload_003',
+      artifact_status: 'generated',
+      append_count: 3,
+      request_id: 'req_live_123',
+    }
+    expect(updateSessionMetaMock).toHaveBeenCalledWith({
+      caseStatus: 'baseline_ready',
+      lastReportSnapshotId: 'snap_upload_003',
+      firstUploadReceipt: expectedReceipt,
+      latestUploadReceipt: expectedReceipt,
+      uploadReceiptHistory: [expectedReceipt],
+    })
   }, 15000)
 })

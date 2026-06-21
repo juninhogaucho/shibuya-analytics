@@ -107,6 +107,49 @@ describe('dashboard API boundary', () => {
         next_action: 'upload_first_history',
         access_expires_at: null,
         data_source: 'backend',
+        last_report_snapshot_id: 'snap_dashboard_002',
+        first_upload_receipt: {
+          completed_at: '2026-06-20T09:00:00Z',
+          upload_transport: 'api',
+          trades_uploaded: 10,
+          report_snapshot_id: 'snap_dashboard_001',
+          report_id: 'report_dashboard_001',
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_dashboard_001',
+        },
+        latest_upload_receipt: {
+          completed_at: '2026-06-21T09:00:00Z',
+          upload_transport: 'api',
+          trades_uploaded: 14,
+          report_snapshot_id: 'snap_dashboard_002',
+          report_id: 'report_dashboard_002',
+          artifact_status: 'generated',
+          append_count: 2,
+          request_id: 'req_dashboard_002',
+        },
+        upload_receipt_history: [
+          {
+            completed_at: '2026-06-20T09:00:00Z',
+            upload_transport: 'api',
+            trades_uploaded: 10,
+            report_snapshot_id: 'snap_dashboard_001',
+            report_id: 'report_dashboard_001',
+            artifact_status: 'generated',
+            append_count: 1,
+            request_id: 'req_dashboard_001',
+          },
+          {
+            completed_at: '2026-06-21T09:00:00Z',
+            upload_transport: 'api',
+            trades_uploaded: 14,
+            report_snapshot_id: 'snap_dashboard_002',
+            report_id: 'report_dashboard_002',
+            artifact_status: 'generated',
+            append_count: 2,
+            request_id: 'req_dashboard_002',
+          },
+        ],
         activation_origin: {
           source: 'locked_insight',
           report_id: 'public_report_123',
@@ -173,6 +216,19 @@ describe('dashboard API boundary', () => {
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'cust_live_123',
       tier: 'reset_pro',
+      lastReportSnapshotId: 'snap_dashboard_002',
+      firstUploadReceipt: {
+        request_id: 'req_dashboard_001',
+        report_snapshot_id: 'snap_dashboard_001',
+      },
+      latestUploadReceipt: {
+        request_id: 'req_dashboard_002',
+        report_snapshot_id: 'snap_dashboard_002',
+      },
+      uploadReceiptHistory: [
+        expect.objectContaining({ request_id: 'req_dashboard_001' }),
+        expect.objectContaining({ request_id: 'req_dashboard_002' }),
+      ],
       activationSource: 'locked_insight',
       activationReportId: 'public_report_123',
       activationArchetypeId: 'marco',
@@ -263,6 +319,10 @@ describe('dashboard API boundary', () => {
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Old route continuity only.',
+      lastReportSnapshotId: 'old-snapshot',
+      firstUploadReceipt: { report_snapshot_id: 'old-first', request_id: 'old-first-req' },
+      latestUploadReceipt: { report_snapshot_id: 'old-latest', request_id: 'old-latest-req' },
+      uploadReceiptHistory: [{ report_snapshot_id: 'old-latest', request_id: 'old-latest-req' }],
     })
 
     await expect(getDashboardOverview()).resolves.toMatchObject({
@@ -287,5 +347,9 @@ describe('dashboard API boundary', () => {
     expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
     expect(session?.activationEngagementReportViewCount).toBeUndefined()
     expect(session?.activationEngagementBoundary).toBeUndefined()
+    expect(session?.lastReportSnapshotId).toBeNull()
+    expect(session?.firstUploadReceipt).toBeNull()
+    expect(session?.latestUploadReceipt).toBeNull()
+    expect(session?.uploadReceiptHistory).toEqual([])
   })
 })

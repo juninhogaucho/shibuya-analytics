@@ -24,7 +24,7 @@ import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
 import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
 import type { ShibuyaSessionMeta } from '../../lib/runtime'
-import type { TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse } from '../../lib/types'
+import type { TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse, UploadProofReceipt } from '../../lib/types'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 
 interface ParsedTrade {
@@ -137,10 +137,65 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   return notes
 }
 
+type LiveUploadTransport = 'paste' | 'csv'
+
+function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: LiveUploadTransport): UploadProofReceipt {
+  const receipt: UploadProofReceipt = {
+    upload_transport: uploadTransport,
+    trades_uploaded: result.trades_uploaded,
+  }
+
+  if (result.report_snapshot_id) {
+    receipt.report_snapshot_id = result.report_snapshot_id
+  }
+  if (result.report_id) {
+    receipt.report_id = result.report_id
+  }
+  if (result.artifact_status) {
+    receipt.artifact_status = result.artifact_status
+  }
+  if (typeof result.append_count === 'number') {
+    receipt.append_count = result.append_count
+  }
+  if (result.request_id) {
+    receipt.request_id = result.request_id
+  }
+
+  return receipt
+}
+
+function appendLiveUploadReceiptHistory(
+  existingHistory: UploadProofReceipt[] | undefined,
+  receipt: UploadProofReceipt,
+): UploadProofReceipt[] {
+  const receiptKey = receipt.request_id ?? receipt.report_snapshot_id
+  const history = receiptKey
+    ? (existingHistory ?? []).filter((item) => (item.request_id ?? item.report_snapshot_id) !== receiptKey)
+    : existingHistory ?? []
+
+  return [...history, receipt].slice(-5)
+}
+
+function buildLiveUploadSessionPatch(
+  result: TradeUploadResponse,
+  sessionMeta: ShibuyaSessionMeta | null,
+  uploadTransport: LiveUploadTransport,
+): Partial<ShibuyaSessionMeta> {
+  const receipt = buildLiveUploadReceipt(result, uploadTransport)
+
+  return {
+    caseStatus: 'baseline_ready',
+    lastReportSnapshotId: result.report_snapshot_id ?? null,
+    firstUploadReceipt: sessionMeta?.firstUploadReceipt ?? receipt,
+    latestUploadReceipt: receipt,
+    uploadReceiptHistory: appendLiveUploadReceiptHistory(sessionMeta?.uploadReceiptHistory, receipt),
+  }
+}
+
 function buildFirstUploadLifecycleMetadata(
   result: TradeUploadResponse,
   sessionMeta: ShibuyaSessionMeta | null,
-  uploadTransport: 'paste' | 'csv',
+  uploadTransport: LiveUploadTransport,
 ): Record<string, unknown> {
   return {
     uploadTransport,
@@ -438,7 +493,7 @@ export function AppendTradesPage() {
             metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'paste'),
           })
         }
-        updateSessionMeta({ caseStatus: 'baseline_ready' })
+        updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'paste'))
         setLiveUploadProof(result)
         const proofNotes = formatLiveUploadProofNotes(result)
         setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
@@ -531,7 +586,7 @@ export function AppendTradesPage() {
             metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'csv'),
           })
         }
-        updateSessionMeta({ caseStatus: 'baseline_ready' })
+        updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'csv'))
         setLiveUploadProof(result)
         const proofNotes = formatLiveUploadProofNotes(result)
         setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)

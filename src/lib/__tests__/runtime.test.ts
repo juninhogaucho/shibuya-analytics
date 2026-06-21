@@ -228,6 +228,10 @@ describe('shibuya runtime', () => {
       nextAction: 'upload_first_history',
       accessExpiresAt: '2026-07-01T00:00:00Z',
       dataSource: 'backend',
+      lastReportSnapshotId: 'old-snapshot',
+      firstUploadReceipt: { report_snapshot_id: 'old-first-snapshot', request_id: 'old-first-request' },
+      latestUploadReceipt: { report_snapshot_id: 'old-latest-snapshot', request_id: 'old-latest-request' },
+      uploadReceiptHistory: [{ report_snapshot_id: 'old-latest-snapshot', request_id: 'old-latest-request' }],
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
       activationArchetypeId: 'marco',
@@ -268,6 +272,10 @@ describe('shibuya runtime', () => {
     expect(session?.orderId).toBeUndefined()
     expect(session?.offerKind).toBeUndefined()
     expect(session?.caseStatus).toBeUndefined()
+    expect(session?.lastReportSnapshotId).toBeUndefined()
+    expect(session?.firstUploadReceipt).toBeUndefined()
+    expect(session?.latestUploadReceipt).toBeUndefined()
+    expect(session?.uploadReceiptHistory).toBeUndefined()
     expect(session?.activationSource).toBeUndefined()
     expect(session?.activationReportId).toBeUndefined()
     expect(session?.activationTeaserRequestId).toBeUndefined()
@@ -284,6 +292,8 @@ describe('shibuya runtime', () => {
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
       activationBridgeDecisionQuestion: 'Is the trader defending a setup?',
+      lastReportSnapshotId: 'snap_live_123',
+      latestUploadReceipt: { report_snapshot_id: 'snap_live_123', request_id: 'req_live_123' },
     })
 
     setLiveApiKey('live_refreshed')
@@ -295,6 +305,8 @@ describe('shibuya runtime', () => {
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
       activationBridgeDecisionQuestion: 'Is the trader defending a setup?',
+      lastReportSnapshotId: 'snap_live_123',
+      latestUploadReceipt: { report_snapshot_id: 'snap_live_123', request_id: 'req_live_123' },
     })
   })
 

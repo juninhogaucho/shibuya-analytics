@@ -279,8 +279,13 @@ export function WorkspacePage() {
   const effectiveCaseStatus = overview?.case_status ?? sessionMeta?.caseStatus
   const effectiveTraderMode = overview?.trader_mode ?? profile?.trader_mode ?? sessionMeta?.traderMode ?? null
   const effectiveExpiry = overview?.access_expires_at ?? sessionMeta?.accessExpiresAt ?? null
-  const latestUploadReceipt = overview?.latest_upload_receipt ?? overview?.first_upload_receipt ?? null
-  const uploadReceiptHistory = overview?.upload_receipt_history ?? []
+  const overviewUploadReceipt = overview?.latest_upload_receipt ?? overview?.first_upload_receipt ?? null
+  const sessionUploadReceipt = sessionMeta?.latestUploadReceipt ?? sessionMeta?.firstUploadReceipt ?? null
+  const latestUploadReceipt = overviewUploadReceipt ?? sessionUploadReceipt
+  const uploadReceiptSource = overviewUploadReceipt ? 'overview' : sessionUploadReceipt ? 'upload_response' : null
+  const uploadReceiptHistory = overview?.upload_receipt_history?.length
+    ? overview.upload_receipt_history
+    : sessionMeta?.uploadReceiptHistory ?? []
   const effectiveReadOnly = readOnly || effectiveCaseStatus === 'read_only'
   const effectiveDaysRemaining = getSessionDaysRemaining({
     ...sessionMeta,
@@ -480,7 +485,9 @@ export function WorkspacePage() {
               {latestUploadReceipt ? (
                 <>
                   <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
-                    Backend persisted this receipt when the first live upload completed. This is the proof bridge between upload, report artifact, and workspace state.
+                    {uploadReceiptSource === 'overview'
+                      ? 'Backend overview returned this persisted receipt. This is the proof bridge between upload, report artifact, and workspace state.'
+                      : 'This device carries the latest Medallion upload response receipt while dashboard overview sync catches up. Refresh should replace it with overview state.'}
                   </p>
                   <div className="grid-responsive two" style={{ gap: '0.75rem' }}>
                     <div>
@@ -524,7 +531,7 @@ export function WorkspacePage() {
               {uploadReceiptHistory.length ? (
                 <>
                   <p className="text-muted" style={{ marginBottom: '0.75rem' }}>
-                    Each row is a persisted backend receipt from an upload that generated or attempted an artifact for this account.
+                    Each row is a backend receipt from dashboard overview or the latest upload response that generated or attempted an artifact for this account.
                   </p>
                   <div className="grid-responsive two" style={{ gap: '0.75rem' }}>
                     {uploadReceiptHistory.slice(-5).map((receipt, index) => (

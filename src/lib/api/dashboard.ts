@@ -212,6 +212,10 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
       nextAction: data.next_action,
       accessExpiresAt: data.access_expires_at ?? null,
       dataSource: data.data_source ?? null,
+      lastReportSnapshotId: data.last_report_snapshot_id ?? null,
+      firstUploadReceipt: data.first_upload_receipt ?? null,
+      latestUploadReceipt: data.latest_upload_receipt ?? null,
+      uploadReceiptHistory: Array.isArray(data.upload_receipt_history) ? data.upload_receipt_history : [],
     }
 
     if (data.activation_origin) {

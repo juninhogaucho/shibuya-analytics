@@ -117,16 +117,68 @@ describe('WorkspacePage', () => {
     )
 
     expect(await screen.findByText('Upload proof receipt')).toBeInTheDocument()
-    expect(screen.getByText(/Backend persisted this receipt/i)).toBeInTheDocument()
+    expect(screen.getByText(/Backend overview returned this persisted receipt/i)).toBeInTheDocument()
     expect(screen.getByText('snap_upload_024')).toBeInTheDocument()
     expect(screen.getByText('report_upload_024')).toBeInTheDocument()
     expect(screen.getByText('24')).toBeInTheDocument()
     expect(screen.getAllByText('generated').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('req_live_123')).toBeInTheDocument()
     expect(screen.getByText('Append proof history')).toBeInTheDocument()
-    expect(screen.getByText(/Each row is a persisted backend receipt/i)).toBeInTheDocument()
+    expect(screen.getByText(/Each row is a backend receipt from dashboard overview/i)).toBeInTheDocument()
     expect(screen.getByText('Snapshot: snap_upload_012')).toBeInTheDocument()
     expect(screen.getByText('Request: req_live_012')).toBeInTheDocument()
     expect(screen.getByText('Snapshot: snap_upload_024')).toBeInTheDocument()
+  })
+
+  test('falls back to the latest upload response receipt while overview sync catches up', async () => {
+    runtimeMocks.getStoredSessionMeta.mockReturnValue({
+      tier: 'reset_pro',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'baseline_ready',
+      latestUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 19,
+        report_snapshot_id: 'snap_session_019',
+        report_id: 'report_session_019',
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_session_019',
+      },
+      uploadReceiptHistory: [
+        {
+          upload_transport: 'paste',
+          trades_uploaded: 19,
+          report_snapshot_id: 'snap_session_019',
+          report_id: 'report_session_019',
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_session_019',
+        },
+      ],
+    })
+    apiMocks.getDashboardOverview.mockResolvedValue({
+      ...getSampleWorkspaceOverview('reset_pro'),
+      customer_id: 'cust_1',
+      access_tier: 'reset_pro',
+      offer_kind: 'reset_pro_live',
+      case_status: 'baseline_ready',
+      latest_upload_receipt: null,
+      first_upload_receipt: null,
+      upload_receipt_history: [],
+    })
+
+    render(
+      <MemoryRouter>
+        <WorkspacePage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Upload proof receipt')).toBeInTheDocument()
+    expect(screen.getByText(/latest Medallion upload response receipt/i)).toBeInTheDocument()
+    expect(screen.getByText('snap_session_019')).toBeInTheDocument()
+    expect(screen.getByText('report_session_019')).toBeInTheDocument()
+    expect(screen.getByText('req_session_019')).toBeInTheDocument()
+    expect(screen.getByText('Snapshot: snap_session_019')).toBeInTheDocument()
   })
 })
