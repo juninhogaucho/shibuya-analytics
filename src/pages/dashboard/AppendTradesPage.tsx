@@ -447,6 +447,7 @@ export function AppendTradesPage() {
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
   const [dashboardOverview, setDashboardOverview] = useState<DashboardOverview | null>(null)
   const [liveUploadProof, setLiveUploadProof] = useState<TradeUploadResponse | null>(null)
+  const [tradingReportComparison, setTradingReportComparison] = useState<TradingReportComparisonResponse | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const runtimeContract = readRuntimeContract()
   const sampleMode = runtimeContract.mode === 'sample'
@@ -648,11 +649,13 @@ export function AppendTradesPage() {
         setSuccess(`Sample workspace processed ${result.trades_uploaded} trades.`)
         setNotes(buildSampleNotes(result.trades_uploaded))
         setLiveUploadProof(null)
+        setTradingReportComparison(null)
       } else {
         setLiveUploadProof(result)
         const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'paste')
         if (!hasGeneratedUploadArtifactProof(result)) {
           updateSessionMeta(liveUploadSessionPatch)
+          setTradingReportComparison(null)
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes(formatIncompleteUploadProofNotes(result))
         } else {
@@ -663,6 +666,7 @@ export function AppendTradesPage() {
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
+          setTradingReportComparison(comparison)
           const proofNotes = lifecycleWarning
             ? [...formatLiveUploadProofNotes(result), lifecycleWarning]
             : formatLiveUploadProofNotes(result)
@@ -692,6 +696,7 @@ export function AppendTradesPage() {
   const handleCancelUpload = () => {
     setParsedPreview(null)
     setLiveUploadProof(null)
+    setTradingReportComparison(null)
     setNotes([])
   }
 
@@ -739,6 +744,7 @@ export function AppendTradesPage() {
       if (sampleMode || result.status === 'sample') {
         setSuccess('Sample workspace accepted the file for preview only.')
         setLiveUploadProof(null)
+        setTradingReportComparison(null)
         setNotes([
           ...buildSampleNotes(Math.max(result.trades_uploaded, 1)),
           ...(rescued.applied ? rescued.notes : []),
@@ -748,6 +754,7 @@ export function AppendTradesPage() {
         const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'csv')
         if (!hasGeneratedUploadArtifactProof(result)) {
           updateSessionMeta(liveUploadSessionPatch)
+          setTradingReportComparison(null)
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes([
             ...formatIncompleteUploadProofNotes(result),
@@ -761,6 +768,7 @@ export function AppendTradesPage() {
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
+          setTradingReportComparison(comparison)
           const proofNotes = lifecycleWarning
             ? [...formatLiveUploadProofNotes(result), lifecycleWarning]
             : formatLiveUploadProofNotes(result)
@@ -843,6 +851,7 @@ export function AppendTradesPage() {
           profileCompleted={profileContext?.completed ?? dashboardOverview?.profile_completed ?? null}
           market={market}
           mode={runtimeContract.mode}
+          appendProof={sampleMode ? null : tradingReportComparison?.append_proof ?? null}
         />
       </div>
 

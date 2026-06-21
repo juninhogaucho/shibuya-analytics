@@ -11,6 +11,19 @@ const generatedReceipt = {
   request_id: 'req_live_018',
 }
 
+const backendAppendProof = {
+  status: 'comparison_ready',
+  upload_count: 2,
+  baseline_snapshot_id: 'snap_live_018',
+  latest_snapshot_id: 'snap_live_019',
+  latest_report_id: 'report_live_019',
+  latest_append_count: 2,
+  latest_request_id: 'req_live_019',
+  latest_artifact_status: 'generated',
+  latest_trades_uploaded: 21,
+  proof_boundary: 'Two durable generated upload snapshots are required before append proof can be claimed.',
+}
+
 describe('live proof readiness', () => {
   test('blocks live proof claims when the production API target is missing', () => {
     const contract = buildLiveProofReadinessContract({
@@ -196,5 +209,27 @@ describe('live proof readiness', () => {
       ['Append history', 'ready'],
     ])
     expect(appendContract.rows[3].detail).toContain('2 generated receipt')
+  })
+
+  test('accepts backend append proof as the authoritative comparison-ready source', () => {
+    const contract = buildLiveProofReadinessContract({
+      apiBaseUrl: 'https://api.shibuya.test',
+      backendConfigured: true,
+      mode: 'live',
+      appendProof: backendAppendProof,
+      profileCompleted: true,
+    })
+
+    expect(contract.statusLabel).toBe('APPEND PROOF READY')
+    expect(contract.headline).toBe('Append proof is available from generated upload evidence.')
+    expect(contract.rows.map((row) => [row.label, row.status])).toEqual([
+      ['Backend target', 'ready'],
+      ['Activation', 'ready'],
+      ['First meaningful upload', 'ready'],
+      ['Append history', 'ready'],
+    ])
+    expect(contract.rows[2].detail).toContain('backend append proof returned generated artifact snap_live_019')
+    expect(contract.rows[2].detail).toContain('req_live_019')
+    expect(contract.rows[3].detail).toContain('2 generated receipt')
   })
 })

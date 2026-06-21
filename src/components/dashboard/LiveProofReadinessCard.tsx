@@ -22,6 +22,7 @@ export function LiveProofReadinessCard({
   profileCompleted,
   market,
   mode,
+  appendProof,
 }: LiveProofReadinessCardProps) {
   const contract = buildLiveProofReadinessContract({
     apiBaseUrl,
@@ -31,6 +32,7 @@ export function LiveProofReadinessCard({
     profileCompleted,
     market,
     mode,
+    appendProof,
   })
 
   return (

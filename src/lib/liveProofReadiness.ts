@@ -33,7 +33,7 @@ function describeBackendTarget(apiBaseUrl: string, backendConfigured: boolean): 
 }
 
 function shouldUseRuntimeEvidence(options: LiveProofReadinessOptions): boolean {
-  return Boolean(options.mode || options.overview || options.sessionMeta || options.profileCompleted != null)
+  return Boolean(options.mode || options.overview || options.sessionMeta || options.profileCompleted != null || options.appendProof)
 }
 
 function sourceLabel(phase: LiveProofPhaseState): string {
@@ -44,6 +44,8 @@ function sourceLabel(phase: LiveProofPhaseState): string {
       return 'latest upload response'
     case 'mixed':
       return 'backend overview plus this device'
+    case 'append_proof':
+      return 'backend append proof'
     case 'sample':
       return 'sample receipt'
     default:

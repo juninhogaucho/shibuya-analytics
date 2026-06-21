@@ -1,4 +1,4 @@
-import type { DashboardOverview, UploadProofReceipt } from './types'
+import type { AppendProofSummary, DashboardOverview, UploadProofReceipt } from './types'
 import type { Market } from './market'
 import type { ShibuyaRuntimeMode, ShibuyaSessionMeta } from './runtime'
 
@@ -11,7 +11,7 @@ export type LiveProofPhaseKey =
   | 'append_proof_ready'
   | 'read_only'
 
-export type LiveProofEvidenceSource = 'none' | 'sample' | 'session' | 'overview' | 'mixed'
+export type LiveProofEvidenceSource = 'none' | 'sample' | 'session' | 'overview' | 'mixed' | 'append_proof'
 
 export interface LiveProofPhaseState {
   phase: LiveProofPhaseKey
@@ -37,6 +37,7 @@ export interface BuildLiveProofPhaseOptions {
   profileCompleted?: boolean | null
   market?: Market
   mode?: ShibuyaRuntimeMode
+  appendProof?: AppendProofSummary | null
 }
 
 function hasText(value: unknown): value is string {
@@ -125,6 +126,73 @@ function hasAppendProof(receipts: UploadProofReceipt[]): boolean {
   return latestAppendCount !== null && latestAppendCount >= 2
 }
 
+function hasGeneratedAppendProofSummary(proof?: AppendProofSummary | null): proof is AppendProofSummary {
+  const uploadCount = toInt(proof?.upload_count)
+  return Boolean(
+    proof &&
+      proof.status === 'comparison_ready' &&
+      uploadCount !== null &&
+      uploadCount >= 2 &&
+      proof.latest_artifact_status === 'generated' &&
+      hasText(proof.baseline_snapshot_id) &&
+      hasText(proof.latest_snapshot_id) &&
+      hasText(proof.latest_request_id),
+  )
+}
+
+function appendProofUploadReceipt(proof: AppendProofSummary): UploadProofReceipt {
+  const appendCount = toInt(proof.latest_append_count) ?? toInt(proof.upload_count) ?? 2
+  const latestTradesUploaded = toInt(proof.latest_trades_uploaded)
+  const receipt: UploadProofReceipt = {
+    artifact_status: 'generated',
+    report_snapshot_id: proof.latest_snapshot_id?.trim(),
+    request_id: proof.latest_request_id?.trim(),
+    append_count: appendCount,
+  }
+
+  if (hasText(proof.latest_report_id)) {
+    receipt.report_id = proof.latest_report_id.trim()
+  }
+  if (hasText(proof.latest_upload_completed_at)) {
+    receipt.completed_at = proof.latest_upload_completed_at.trim()
+  }
+  if (latestTradesUploaded !== null) {
+    receipt.trades_uploaded = latestTradesUploaded
+  }
+  if (hasText(proof.activation_source)) {
+    receipt.activation_source = proof.activation_source.trim()
+  }
+  if (hasText(proof.activation_report_id)) {
+    receipt.activation_report_id = proof.activation_report_id.trim()
+  }
+  if (hasText(proof.activation_locked_section_id)) {
+    receipt.activation_locked_section_id = proof.activation_locked_section_id.trim()
+  }
+  if (hasText(proof.activation_teaser_request_id)) {
+    receipt.activation_teaser_request_id = proof.activation_teaser_request_id.trim()
+  }
+  if (typeof proof.activation_teaser_trades_analyzed === 'number' || hasText(proof.activation_teaser_trades_analyzed)) {
+    receipt.activation_teaser_trades_analyzed = proof.activation_teaser_trades_analyzed
+  }
+  if (hasText(proof.activation_teaser_worst_pattern)) {
+    receipt.activation_teaser_worst_pattern = proof.activation_teaser_worst_pattern.trim()
+  }
+  if (hasText(proof.activation_teaser_verified)) {
+    receipt.activation_teaser_verified = proof.activation_teaser_verified.trim()
+  }
+  if (hasText(proof.activation_teaser_verification_status)) {
+    receipt.activation_teaser_verification_status = proof.activation_teaser_verification_status.trim()
+  }
+  if (hasText(proof.activation_teaser_receipt_hash)) {
+    receipt.activation_teaser_receipt_hash = proof.activation_teaser_receipt_hash.trim()
+  }
+  if (hasText(proof.activation_teaser_verified_at)) {
+    receipt.activation_teaser_verified_at = proof.activation_teaser_verified_at.trim()
+  }
+
+  return receipt
+}
+
 function hasPrivateSampleReceipt(meta?: ShibuyaSessionMeta | null): boolean {
   return Boolean(
     meta?.samplePreview === 'reset_pro' &&
@@ -144,6 +212,8 @@ function sourceLabel(source: LiveProofEvidenceSource): string {
       return 'Latest upload response'
     case 'mixed':
       return 'Backend overview plus this device'
+    case 'append_proof':
+      return 'Backend append proof'
     case 'sample':
       return 'Sample receipt'
     default:
@@ -156,10 +226,19 @@ export function buildLiveProofPhase(options: BuildLiveProofPhaseOptions = {}): L
   const market = options.market ?? options.sessionMeta?.market ?? 'india'
   const caseStatus = options.overview?.case_status ?? options.sessionMeta?.caseStatus ?? null
   const profileCompleted = options.profileCompleted ?? options.overview?.profile_completed ?? null
-  const { receipts, source } = collectGeneratedReceipts(options.overview, options.sessionMeta)
-  const latestGeneratedReceipt = receipts[receipts.length - 1] ?? null
+  const collectedProof = collectGeneratedReceipts(options.overview, options.sessionMeta)
+  const appendProof = hasGeneratedAppendProofSummary(options.appendProof) ? options.appendProof : null
+  const appendProofReceipt = appendProof ? appendProofUploadReceipt(appendProof) : null
+  const receipts = appendProofReceipt
+    ? generatedReceipts([...collectedProof.receipts, appendProofReceipt])
+    : collectedProof.receipts
+  const source: LiveProofEvidenceSource = appendProof ? 'append_proof' : collectedProof.source
+  const latestGeneratedReceipt = appendProofReceipt ?? receipts[receipts.length - 1] ?? null
   const canClaimBaselineProof = Boolean(latestGeneratedReceipt)
-  const canClaimAppendProof = canClaimBaselineProof && hasAppendProof(receipts)
+  const provenGeneratedReceiptCount = appendProof
+    ? Math.max(receipts.length, toInt(appendProof.upload_count) ?? 2)
+    : receipts.length
+  const canClaimAppendProof = Boolean(appendProof) || (canClaimBaselineProof && hasAppendProof(receipts))
   const canClaimLiveActivation = mode === 'live'
   const commonBoundary = 'Live product claims require current backend evidence. Activation, upload proof, and append proof are separate states.'
 
@@ -212,7 +291,7 @@ export function buildLiveProofPhase(options: BuildLiveProofPhaseOptions = {}): L
       canClaimBaselineProof,
       canClaimAppendProof,
       evidenceSource: source,
-      generatedUploadReceiptCount: receipts.length,
+      generatedUploadReceiptCount: provenGeneratedReceiptCount,
       latestGeneratedReceipt,
     }
   }
@@ -231,7 +310,7 @@ export function buildLiveProofPhase(options: BuildLiveProofPhaseOptions = {}): L
       canClaimBaselineProof,
       canClaimAppendProof: false,
       evidenceSource: source,
-      generatedUploadReceiptCount: receipts.length,
+      generatedUploadReceiptCount: provenGeneratedReceiptCount,
       latestGeneratedReceipt,
     }
   }
@@ -248,7 +327,7 @@ export function buildLiveProofPhase(options: BuildLiveProofPhaseOptions = {}): L
       canClaimBaselineProof,
       canClaimAppendProof: false,
       evidenceSource: source,
-      generatedUploadReceiptCount: receipts.length,
+      generatedUploadReceiptCount: provenGeneratedReceiptCount,
       latestGeneratedReceipt,
     }
   }

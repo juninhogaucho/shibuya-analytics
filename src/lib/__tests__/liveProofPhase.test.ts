@@ -11,6 +11,31 @@ const generatedReceipt = {
   request_id: 'req_live_018',
 }
 
+const backendAppendProof = {
+  status: 'comparison_ready',
+  upload_count: 2,
+  baseline_snapshot_id: 'snap_live_018',
+  latest_snapshot_id: 'snap_live_019',
+  baseline_report_id: 'report_live_018',
+  latest_report_id: 'report_live_019',
+  latest_append_count: 2,
+  latest_request_id: 'req_live_019',
+  latest_artifact_status: 'generated',
+  latest_upload_completed_at: '2026-06-21T10:00:00Z',
+  latest_trades_uploaded: 21,
+  activation_source: 'locked_insight',
+  activation_report_id: 'free_report_123',
+  activation_locked_section_id: 'edge-decay-map',
+  activation_teaser_request_id: 'teaser_req_123',
+  activation_teaser_trades_analyzed: 42,
+  activation_teaser_worst_pattern: 'Edge decay',
+  activation_teaser_verified: 'true',
+  activation_teaser_verification_status: 'verified',
+  activation_teaser_receipt_hash: 'a'.repeat(64),
+  activation_teaser_verified_at: '2026-06-21T09:00:00Z',
+  proof_boundary: 'Two durable generated upload snapshots are required before append proof can be claimed.',
+}
+
 describe('live proof phase', () => {
   test('keeps public visitors outside live proof states', () => {
     const phase = buildLiveProofPhase({ mode: 'anonymous', market: 'global' })
@@ -141,5 +166,65 @@ describe('live proof phase', () => {
     expect(phase.evidenceSource).toBe('overview')
     expect(phase.generatedUploadReceiptCount).toBe(2)
     expect(phase.latestGeneratedReceipt?.request_id).toBe('req_live_019')
+  })
+
+  test('promotes backend append proof packets even when local receipt history is absent', () => {
+    const phase = buildLiveProofPhase({
+      mode: 'live',
+      appendProof: backendAppendProof,
+      profileCompleted: true,
+    })
+
+    expect(phase.phase).toBe('append_proof_ready')
+    expect(phase.canClaimBaselineProof).toBe(true)
+    expect(phase.canClaimAppendProof).toBe(true)
+    expect(phase.evidenceSource).toBe('append_proof')
+    expect(phase.generatedUploadReceiptCount).toBe(2)
+    expect(phase.latestGeneratedReceipt).toMatchObject({
+      artifact_status: 'generated',
+      report_snapshot_id: 'snap_live_019',
+      report_id: 'report_live_019',
+      append_count: 2,
+      request_id: 'req_live_019',
+      activation_teaser_request_id: 'teaser_req_123',
+      activation_teaser_verification_status: 'verified',
+    })
+  })
+
+  test('does not promote incomplete backend append proof packets', () => {
+    const phase = buildLiveProofPhase({
+      mode: 'live',
+      appendProof: {
+        ...backendAppendProof,
+        latest_artifact_status: 'pending',
+      },
+      profileCompleted: true,
+    })
+
+    expect(phase.phase).toBe('activated_awaiting_upload')
+    expect(phase.canClaimBaselineProof).toBe(false)
+    expect(phase.canClaimAppendProof).toBe(false)
+    expect(phase.evidenceSource).toBe('none')
+  })
+
+  test('keeps backend-looking append proof out of sample mode', () => {
+    const phase = buildLiveProofPhase({
+      mode: 'sample',
+      appendProof: backendAppendProof,
+      sessionMeta: {
+        market: 'global',
+        samplePreview: 'reset_pro',
+        demoSource: 'locked_insight',
+        demoReportId: 'sample-report',
+        demoPrivateGateChecksum: 'sample gate checksum',
+        demoUnlockReceiptId: 'reset-pro-demo:sample-report',
+        demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only.',
+      },
+    })
+
+    expect(phase.phase).toBe('sample_preview')
+    expect(phase.canClaimBaselineProof).toBe(false)
+    expect(phase.canClaimAppendProof).toBe(false)
+    expect(phase.evidenceSource).toBe('sample')
   })
 })

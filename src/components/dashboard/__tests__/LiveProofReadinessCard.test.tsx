@@ -60,4 +60,32 @@ describe('LiveProofReadinessCard', () => {
     expect(screen.getByText(/latest upload response returned generated artifact snap_live_019/i)).toBeInTheDocument()
     expect(screen.getByText(/2 generated receipt\(s\) are available/i)).toBeInTheDocument()
   })
+
+  test('renders backend append proof when comparison evidence is returned', () => {
+    render(
+      <LiveProofReadinessCard
+        title="Workspace proof state"
+        apiBaseUrl="https://api.shibuya.test"
+        backendConfigured
+        mode="live"
+        profileCompleted
+        appendProof={{
+          status: 'comparison_ready',
+          upload_count: 2,
+          baseline_snapshot_id: 'snap_live_018',
+          latest_snapshot_id: 'snap_live_019',
+          latest_report_id: 'report_live_019',
+          latest_append_count: 2,
+          latest_request_id: 'req_live_019',
+          latest_artifact_status: 'generated',
+          latest_trades_uploaded: 21,
+          proof_boundary: 'Two durable generated upload snapshots are required before append proof can be claimed.',
+        }}
+      />,
+    )
+
+    expect(screen.getByText('APPEND PROOF READY')).toBeInTheDocument()
+    expect(screen.getByText(/backend append proof returned generated artifact snap_live_019/i)).toBeInTheDocument()
+    expect(screen.getByText(/2 generated receipt\(s\) are available/i)).toBeInTheDocument()
+  })
 })
