@@ -1,9 +1,13 @@
 import { isApiBaseConfiguredForLive } from '../constants'
+import {
+  EMPTY_ACTIVATION_ORIGIN_META,
+  buildDashboardActivationOriginMeta,
+  hasVerifiedDashboardActivationOrigin,
+} from '../dashboardActivationOrigin'
 import { getStoredSessionMeta, getShibuyaRuntimeContract, isSampleMode, updateSessionMeta } from '../runtime'
 import { SAMPLE_WORKSPACE_DATA, getSampleWorkspaceOverview } from '../sampleWorkspace'
 import type {
   AlertsResponse,
-  DashboardActivationOrigin,
   DashboardOverview,
   EdgePortfolioResponse,
   ShadowBoxingResponse,
@@ -29,37 +33,6 @@ export interface TradeUploadResponse {
   append_count?: number
 }
 
-const EMPTY_ACTIVATION_ORIGIN_META = {
-  activationSource: undefined,
-  activationReportId: undefined,
-  activationArchetypeId: undefined,
-  activationAxisId: undefined,
-  activationReportArtifactStatus: undefined,
-  activationProductionArtifactProven: undefined,
-  activationTeaserRequestId: undefined,
-  activationTeaserTradesAnalyzed: undefined,
-  activationTeaserWorstPattern: undefined,
-  activationTeaserVerified: undefined,
-  activationTeaserVerificationStatus: undefined,
-  activationTeaserReceiptHash: undefined,
-  activationTeaserVerifiedAt: undefined,
-  activationStorySource: undefined,
-  activationSelectedPainAxisIds: undefined,
-  activationVisitedSceneCount: undefined,
-  activationSignalMarkerIds: undefined,
-  activationLockedSectionId: undefined,
-  activationLockedSectionTitle: undefined,
-  activationBridgeHeadline: undefined,
-  activationBridgeDecisionQuestion: undefined,
-  activationBridgeWhyNow: undefined,
-  activationBridgeLiveProof: undefined,
-  activationEngagementReportViewCount: undefined,
-  activationEngagementLockedSectionClickCount: undefined,
-  activationEngagementCurrentSectionClickCount: undefined,
-  activationEngagementPrivateDemoIntentCount: undefined,
-  activationEngagementBoundary: undefined,
-}
-
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -76,46 +49,6 @@ export function assertDashboardBackendReady(featureName: string): void {
       `${featureName} requires a configured Shibuya backend. VITE_API_BASE is missing, so live account data cannot be loaded truthfully.`,
     )
   }
-}
-
-function splitOverviewContextList(value?: string | null): string[] | undefined {
-  const items = value
-    ?.split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-  return items && items.length > 0 ? items : undefined
-}
-
-function parseOverviewContextCount(value?: string | null): number | undefined {
-  if (!value) {
-    return undefined
-  }
-
-  const parsed = Number.parseInt(value, 10)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-function hasVerifiedOverviewActivationOrigin(origin?: DashboardActivationOrigin | null): origin is DashboardActivationOrigin {
-  const tradesAnalyzed = parseOverviewContextCount(origin?.teaser_trades_analyzed)
-
-  return Boolean(
-    origin?.source === 'locked_insight' &&
-      origin.packet_source === 'backend_teaser' &&
-      origin.artifact_status === 'backend_teaser_persisted' &&
-      origin.production_artifact_proven === 'false' &&
-      origin.report_id?.trim() &&
-      origin.section_id?.trim() &&
-      origin.archetype_id?.trim() &&
-      origin.axis_id?.trim() &&
-      origin.teaser_request_id?.trim() &&
-      Number.isFinite(tradesAnalyzed) &&
-      (tradesAnalyzed ?? 0) >= 10 &&
-      origin.teaser_verified === 'true' &&
-      origin.teaser_verification_status === 'verified' &&
-      Boolean(origin.teaser_receipt_hash && /^[a-f0-9]{64}$/i.test(origin.teaser_receipt_hash.trim())) &&
-      origin.teaser_verified_at?.trim(),
-  )
 }
 
 function buildSampleTradePastePreview(body: string): TradePastePreview {
@@ -241,31 +174,8 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
       uploadReceiptHistory: Array.isArray(data.upload_receipt_history) ? data.upload_receipt_history : [],
     }
 
-    if (hasVerifiedOverviewActivationOrigin(data.activation_origin)) {
-      Object.assign(nextSessionMeta, {
-        activationSource: data.activation_origin.source ?? undefined,
-        activationReportId: data.activation_origin.report_id ?? undefined,
-        activationArchetypeId: data.activation_origin.archetype_id ?? undefined,
-        activationAxisId: data.activation_origin.axis_id ?? undefined,
-        activationReportArtifactStatus: data.activation_origin.artifact_status ?? undefined,
-        activationProductionArtifactProven: data.activation_origin.production_artifact_proven ?? undefined,
-        activationTeaserRequestId: data.activation_origin.teaser_request_id ?? undefined,
-        activationTeaserTradesAnalyzed: parseOverviewContextCount(data.activation_origin.teaser_trades_analyzed),
-        activationTeaserWorstPattern: data.activation_origin.teaser_worst_pattern ?? undefined,
-        activationTeaserVerified: data.activation_origin.teaser_verified ?? undefined,
-        activationTeaserVerificationStatus: data.activation_origin.teaser_verification_status ?? undefined,
-        activationTeaserReceiptHash: data.activation_origin.teaser_receipt_hash ?? undefined,
-        activationTeaserVerifiedAt: data.activation_origin.teaser_verified_at ?? undefined,
-        activationStorySource: data.activation_origin.story_source ?? undefined,
-        activationSelectedPainAxisIds: splitOverviewContextList(data.activation_origin.pain_axes),
-        activationVisitedSceneCount: parseOverviewContextCount(data.activation_origin.story_scene_count),
-        activationSignalMarkerIds: splitOverviewContextList(data.activation_origin.signal_markers),
-        activationLockedSectionId: data.activation_origin.section_id ?? undefined,
-        activationEngagementReportViewCount: parseOverviewContextCount(data.activation_origin.report_views),
-        activationEngagementLockedSectionClickCount: parseOverviewContextCount(data.activation_origin.locked_clicks),
-        activationEngagementCurrentSectionClickCount: parseOverviewContextCount(data.activation_origin.current_section_clicks),
-        activationEngagementPrivateDemoIntentCount: parseOverviewContextCount(data.activation_origin.private_gate_attempts),
-      })
+    if (hasVerifiedDashboardActivationOrigin(data.activation_origin)) {
+      Object.assign(nextSessionMeta, buildDashboardActivationOriginMeta(data.activation_origin))
     } else {
       Object.assign(nextSessionMeta, EMPTY_ACTIVATION_ORIGIN_META)
     }

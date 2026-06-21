@@ -5,6 +5,7 @@ import {
   logTraderLifecycleEvent,
 } from '../../lib/api/trader'
 import {
+  getDashboardOverview,
   getTradePasteMemory,
   getTradingReportComparison,
   parseTradePaste,
@@ -18,13 +19,14 @@ import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofRead
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
+import { EMPTY_ACTIVATION_ORIGIN_META, buildDashboardActivationOriginMeta, hasVerifiedDashboardActivationOrigin } from '../../lib/dashboardActivationOrigin'
 import { addMarketToPath } from '../../lib/market'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
-import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
+import { buildFreeReportPreview, findLockedReportSectionBySlug, getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
 import type { ShibuyaRuntimeContract, ShibuyaSessionMeta } from '../../lib/runtime'
-import type { TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse, UploadProofReceipt } from '../../lib/types'
+import type { DashboardOverview, TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse, UploadProofReceipt } from '../../lib/types'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 
 interface ParsedTrade {
@@ -285,6 +287,42 @@ function buildFirstUploadLifecycleMetadata(
   }
 }
 
+function buildSessionMetaFromOverview(
+  sessionMeta: ShibuyaSessionMeta | null,
+  overview: DashboardOverview | null,
+): ShibuyaSessionMeta | null {
+  if (!overview) {
+    return sessionMeta
+  }
+
+  const nextMeta: ShibuyaSessionMeta = {
+    ...(sessionMeta ?? {}),
+    customerId: overview.customer_id ?? sessionMeta?.customerId,
+    tier: overview.access_tier ?? sessionMeta?.tier,
+    offerKind: overview.offer_kind ?? sessionMeta?.offerKind,
+    caseStatus: overview.case_status ?? sessionMeta?.caseStatus,
+    traderMode: overview.trader_mode ?? sessionMeta?.traderMode,
+    nextAction: overview.next_action ?? sessionMeta?.nextAction,
+    accessExpiresAt: overview.access_expires_at ?? sessionMeta?.accessExpiresAt,
+    dataSource: overview.data_source ?? sessionMeta?.dataSource,
+    lastReportSnapshotId: overview.last_report_snapshot_id ?? sessionMeta?.lastReportSnapshotId,
+    firstUploadReceipt: overview.first_upload_receipt ?? sessionMeta?.firstUploadReceipt,
+    latestUploadReceipt: overview.latest_upload_receipt ?? sessionMeta?.latestUploadReceipt,
+    uploadReceiptHistory: overview.upload_receipt_history?.length
+      ? overview.upload_receipt_history
+      : sessionMeta?.uploadReceiptHistory,
+  }
+
+  Object.assign(
+    nextMeta,
+    hasVerifiedDashboardActivationOrigin(overview.activation_origin)
+      ? buildDashboardActivationOriginMeta(overview.activation_origin)
+      : EMPTY_ACTIVATION_ORIGIN_META,
+  )
+
+  return nextMeta
+}
+
 function formatEngagementReceipt(
   reportViewCount?: number,
   lockedSectionClickCount?: number,
@@ -302,6 +340,20 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
     return null
   }
 
+  const activationReport = sessionMeta.activationReportId
+    ? buildFreeReportPreview({
+      reportId: sessionMeta.activationReportId,
+      archetypeId: sessionMeta.activationArchetypeId,
+      axisId: sessionMeta.activationAxisId,
+      storySource: sessionMeta.activationStorySource,
+      selectedPainAxisIds: sessionMeta.activationSelectedPainAxisIds,
+      visitedSceneCount: sessionMeta.activationVisitedSceneCount,
+      signalMarkerIds: sessionMeta.activationSignalMarkerIds,
+    })
+    : null
+  const activationLockedSection = activationReport
+    ? findLockedReportSectionBySlug(activationReport, sessionMeta.activationLockedSectionId)
+    : null
   const archetype = sessionMeta.activationArchetypeId ? getTraderArchetype(sessionMeta.activationArchetypeId) : null
   const selectedPainAxisLabels = sessionMeta.activationSelectedPainAxisIds?.map((axisId) => getFingerprintAxis(axisId).label) ?? []
   const signalMarkerLabels = getPublicStorySignalMarkers(sessionMeta.activationSignalMarkerIds).map((marker) => marker.label)
@@ -321,7 +373,7 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
   return {
     activationTitle,
     reportId: sessionMeta.activationReportId ?? 'Direct activation',
-    lockedSection: sessionMeta.activationLockedSectionTitle ?? sessionMeta.activationLockedSectionId ?? 'Not provided',
+    lockedSection: sessionMeta.activationLockedSectionTitle ?? activationLockedSection?.title ?? sessionMeta.activationLockedSectionId ?? 'Not provided',
     fingerprint: [
       archetype ? `${archetype.name}: ${archetype.title}` : null,
       sessionMeta.activationAxisId ? getFingerprintAxis(sessionMeta.activationAxisId).label : null,
@@ -330,10 +382,10 @@ function buildLiveActivationProofTarget(sessionMeta: ShibuyaSessionMeta | null) 
       ? `${storySource}; scenes ${visitedSceneCount}; axes ${selectedPainAxisLabels.join(', ') || 'none captured'}`
       : 'No guided story packet attached.',
     signalMarkers: signalMarkerLabels.length ? signalMarkerLabels.join(', ') : 'No public markers attached.',
-    bridgeHeadline: sessionMeta.activationBridgeHeadline,
-    bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion,
-    bridgeWhyNow: sessionMeta.activationBridgeWhyNow,
-    bridgeLiveProof: sessionMeta.activationBridgeLiveProof ?? [],
+    bridgeHeadline: sessionMeta.activationBridgeHeadline ?? activationReport?.resetProBridge.headline,
+    bridgeDecisionQuestion: sessionMeta.activationBridgeDecisionQuestion ?? activationReport?.resetProBridge.decisionQuestion,
+    bridgeWhyNow: sessionMeta.activationBridgeWhyNow ?? activationReport?.resetProBridge.whyNow,
+    bridgeLiveProof: sessionMeta.activationBridgeLiveProof ?? activationReport?.resetProBridge.liveWorkspaceMustProve ?? [],
     engagementReceipt: engagementReceipt ?? 'No activation engagement receipt attached.',
     engagementBoundary: sessionMeta.activationEngagementBoundary,
     teaserReceipt: sessionMeta.activationTeaserRequestId
@@ -350,38 +402,43 @@ export function AppendTradesPage() {
   const [success, setSuccess] = useState<string | null>(null)
   const [parsedPreview, setParsedPreview] = useState<ParsePreview | null>(null)
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
+  const [dashboardOverview, setDashboardOverview] = useState<DashboardOverview | null>(null)
   const [liveUploadProof, setLiveUploadProof] = useState<TradeUploadResponse | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const runtimeContract = readRuntimeContract()
   const sampleMode = runtimeContract.mode === 'sample'
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
-  const resetProPreview = sampleMode && sessionMeta?.samplePreview === 'reset_pro'
-  const resetProAppendShortcut = resetProPreview && sessionMeta?.demoEntryMode === 'append_proof_shortcut'
-  const market = sessionMeta?.market ?? 'india'
-  const readOnlyAccess = isReadOnlySession(sessionMeta)
-  const premiumAccess = sessionMeta?.tier === 'reset_pro'
-  const journeyState = buildJourneyState({ overview: null, profile: null, sessionMeta, market })
+  const effectiveSessionMeta = useMemo(
+    () => buildSessionMetaFromOverview(sessionMeta, sampleMode ? null : dashboardOverview),
+    [dashboardOverview, sampleMode, sessionMeta],
+  )
+  const resetProPreview = sampleMode && effectiveSessionMeta?.samplePreview === 'reset_pro'
+  const resetProAppendShortcut = resetProPreview && effectiveSessionMeta?.demoEntryMode === 'append_proof_shortcut'
+  const market = effectiveSessionMeta?.market ?? 'india'
+  const readOnlyAccess = isReadOnlySession(effectiveSessionMeta)
+  const premiumAccess = effectiveSessionMeta?.tier === 'reset_pro'
+  const journeyState = buildJourneyState({ overview: dashboardOverview, profile: profileContext, sessionMeta: effectiveSessionMeta, market })
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
-  const traderMode = profileContext?.trader_mode ?? sessionMeta?.traderMode
-  const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(sessionMeta)
+  const traderMode = profileContext?.trader_mode ?? effectiveSessionMeta?.traderMode
+  const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(effectiveSessionMeta)
   const liveUploadHasGeneratedArtifactProof = liveUploadProof ? hasGeneratedUploadArtifactProof(liveUploadProof) : false
   const resetProEngagementReceipt = formatEngagementReceipt(
-    sessionMeta?.demoEngagementReportViewCount,
-    sessionMeta?.demoEngagementLockedSectionClickCount,
-    sessionMeta?.demoEngagementPrivateDemoIntentCount,
+    effectiveSessionMeta?.demoEngagementReportViewCount,
+    effectiveSessionMeta?.demoEngagementLockedSectionClickCount,
+    effectiveSessionMeta?.demoEngagementPrivateDemoIntentCount,
   )
   const resetProProofReceiptRows = [
     {
       label: 'Unlock receipt carried',
-      body: sessionMeta?.demoUnlockReceiptId
-        ? `${sessionMeta.demoUnlockReceiptId}. ${sessionMeta.demoUnlockBoundary ?? 'Presenter gate receipt was attached without exposing the presenter code.'}`
+      body: effectiveSessionMeta?.demoUnlockReceiptId
+        ? `${effectiveSessionMeta.demoUnlockReceiptId}. ${effectiveSessionMeta.demoUnlockBoundary ?? 'Presenter gate receipt was attached without exposing the presenter code.'}`
         : 'No private demo unlock receipt was attached to this sample append.',
     },
     {
       label: 'Engagement receipt carried',
       body: resetProEngagementReceipt
-        ? `${resetProEngagementReceipt}. ${sessionMeta?.demoEngagementBoundary ?? 'Route continuity only; not trader evidence.'}`
+        ? `${resetProEngagementReceipt}. ${effectiveSessionMeta?.demoEngagementBoundary ?? 'Route continuity only; not trader evidence.'}`
         : 'No report engagement receipt was attached to this append close.',
     },
     {
@@ -390,8 +447,8 @@ export function AppendTradesPage() {
     },
     {
       label: 'Private question preserved',
-      body: sessionMeta?.demoBridgeDecisionQuestion
-        ?? sessionMeta?.demoLockedSectionTitle
+      body: effectiveSessionMeta?.demoBridgeDecisionQuestion
+        ?? effectiveSessionMeta?.demoLockedSectionTitle
         ?? 'No locked private question was attached to this sample run.',
     },
     {
@@ -402,10 +459,10 @@ export function AppendTradesPage() {
   const resetProCloseChecklistRows = [
     {
       label: 'Context carried',
-      body: sessionMeta?.demoBridgeDecisionQuestion
-        ? `Close with the carried question: ${sessionMeta.demoBridgeDecisionQuestion}`
-        : sessionMeta?.demoLockedSectionTitle
-          ? `Close with the locked module: ${sessionMeta.demoLockedSectionTitle}`
+      body: effectiveSessionMeta?.demoBridgeDecisionQuestion
+        ? `Close with the carried question: ${effectiveSessionMeta.demoBridgeDecisionQuestion}`
+        : effectiveSessionMeta?.demoLockedSectionTitle
+          ? `Close with the locked module: ${effectiveSessionMeta.demoLockedSectionTitle}`
           : 'No private question was attached; call this a cold sample append.',
     },
     {
@@ -429,22 +486,28 @@ export function AppendTradesPage() {
 
     let active = true
 
-    async function loadProfile() {
-      try {
-        const profile = await getTraderProfileContext()
-        if (!active) {
-          return
-        }
-        setProfileContext(profile)
-      } catch {
-        if (!active) {
-          return
-        }
+    async function loadLiveContext() {
+      const [profileResult, overviewResult] = await Promise.allSettled([
+        getTraderProfileContext(),
+        getDashboardOverview(),
+      ])
+
+      if (!active) {
+        return
+      }
+
+      if (profileResult.status === 'fulfilled') {
+        setProfileContext(profileResult.value)
+      } else {
         setProfileContext(null)
+      }
+
+      if (overviewResult.status === 'fulfilled') {
+        setDashboardOverview(overviewResult.value)
       }
     }
 
-    void loadProfile()
+    void loadLiveContext()
     return () => {
       active = false
     }
@@ -553,15 +616,15 @@ export function AppendTradesPage() {
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
-          if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
+          if (effectiveSessionMeta?.caseStatus === 'awaiting_upload' || effectiveSessionMeta?.caseStatus === 'awaiting_onboarding' || !effectiveSessionMeta?.caseStatus) {
             await logTraderLifecycleEvent({
               event_name: 'first_upload_completed',
               market,
-              tier: sessionMeta?.tier,
-              metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'paste'),
+              tier: effectiveSessionMeta?.tier,
+              metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'paste'),
             })
           }
-          updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'paste'))
+          updateSessionMeta(buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'paste'))
           const proofNotes = formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(
@@ -600,8 +663,8 @@ export function AppendTradesPage() {
     setLiveUploadProof(null)
     setNotes([
       'Reset Pro sample append packet loaded. Parse it to demonstrate the proof exit without claiming live persistence.',
-      sessionMeta?.demoBridgeDecisionQuestion
-        ? `Question being preserved: ${sessionMeta.demoBridgeDecisionQuestion}`
+      effectiveSessionMeta?.demoBridgeDecisionQuestion
+        ? `Question being preserved: ${effectiveSessionMeta.demoBridgeDecisionQuestion}`
         : 'No carried private question was attached to this sample append.',
     ])
   }
@@ -654,15 +717,15 @@ export function AppendTradesPage() {
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
-          if (sessionMeta?.caseStatus === 'awaiting_upload' || sessionMeta?.caseStatus === 'awaiting_onboarding' || !sessionMeta?.caseStatus) {
+          if (effectiveSessionMeta?.caseStatus === 'awaiting_upload' || effectiveSessionMeta?.caseStatus === 'awaiting_onboarding' || !effectiveSessionMeta?.caseStatus) {
             await logTraderLifecycleEvent({
               event_name: 'first_upload_completed',
               market,
-              tier: sessionMeta?.tier,
-              metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, 'csv'),
+              tier: effectiveSessionMeta?.tier,
+              metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'csv'),
             })
           }
-          updateSessionMeta(buildLiveUploadSessionPatch(result, sessionMeta, 'csv'))
+          updateSessionMeta(buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'csv'))
           const proofNotes = formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(

@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 const parseTradePasteMock = vi.fn()
 const submitParsedTradesMock = vi.fn()
 const uploadTradesCSVMock = vi.fn()
+const getDashboardOverviewMock = vi.fn()
 const getTradePasteMemoryMock = vi.fn()
 const getTradingReportComparisonMock = vi.fn()
 const logTraderLifecycleEventMock = vi.fn()
@@ -23,6 +24,7 @@ vi.mock('../../../lib/api/trader', () => ({
 }))
 
 vi.mock('../../../lib/api/dashboard', () => ({
+  getDashboardOverview: (...args: unknown[]) => getDashboardOverviewMock(...args),
   parseTradePaste: (...args: unknown[]) => parseTradePasteMock(...args),
   submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
   uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
@@ -59,6 +61,7 @@ describe('AppendTradesPage', () => {
       symbols: ['NIFTY24JAN22500CE', 'BANKNIFTY24JAN48200PE'],
       trades: [{ symbol: 'NIFTY24JAN22500CE' }, { symbol: 'BANKNIFTY24JAN48200PE' }],
     })
+    getDashboardOverviewMock.mockRejectedValue(new Error('Dashboard overview unavailable in this focused test.'))
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
     getTradingReportComparisonMock.mockResolvedValue({
@@ -408,6 +411,148 @@ describe('AppendTradesPage', () => {
       firstUploadReceipt: expectedReceipt,
       latestUploadReceipt: expectedReceipt,
       uploadReceiptHistory: [expectedReceipt],
+    })
+  }, 15000)
+
+  test('hydrates backend activation origin before first live upload when local session metadata is missing it', async () => {
+    isSampleModeMock.mockReturnValue(false)
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'live',
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    })
+    getStoredSessionMetaMock.mockReturnValue({
+      caseStatus: 'awaiting_upload',
+      market: 'india',
+      offerKind: 'reset_pro_live',
+      tier: 'reset_pro',
+    })
+    getDashboardOverviewMock.mockResolvedValue({
+      customer_id: 'cust_from_overview',
+      access_tier: 'reset_pro',
+      offer_kind: 'reset_pro_live',
+      case_status: 'awaiting_upload',
+      data_source: 'backend',
+      profile_completed: true,
+      upload_count: 0,
+      reports_ready: 0,
+      activation_origin: {
+        source: 'locked_insight',
+        report_id: 'public-teaser-overview',
+        section_id: 'edge-decay-map',
+        archetype_id: 'marco',
+        axis_id: 'edge_decay',
+        packet_source: 'backend_teaser',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: 'false',
+        story_source: 'guided',
+        story_scene_count: '6',
+        pain_axes: 'edge_decay',
+        signal_markers: 'mirror_selected,upload_intent',
+        report_views: '2',
+        locked_clicks: '1',
+        current_section_clicks: '1',
+        private_gate_attempts: '1',
+        teaser_request_id: 'TEASER-overview',
+        teaser_trades_analyzed: '14',
+        teaser_worst_pattern: 'Tilt Spiral',
+        teaser_verified: 'true',
+        teaser_verification_status: 'verified',
+        teaser_receipt_hash: 'd'.repeat(64),
+        teaser_verified_at: '2026-06-21T08:00:00Z',
+      },
+    })
+    submitParsedTradesMock.mockResolvedValue({
+      status: 'ok',
+      trades_uploaded: 2,
+      report_snapshot_id: 'snap_upload_overview_001',
+      report_id: 'report_upload_overview_001',
+      artifact_status: 'generated',
+      append_count: 1,
+      request_id: 'req_overview_001',
+    })
+    const user = userEvent.setup()
+
+    renderPage()
+
+    expect(await screen.findByText('LIVE ACTIVATION PROOF TARGET')).toBeInTheDocument()
+    expect(screen.getByText('public-teaser-overview')).toBeInTheDocument()
+    expect(screen.getByText('Edge decay map')).toBeInTheDocument()
+    expect(screen.getByText('TEASER-overview; 14 trades; Tilt Spiral; verification verified')).toBeInTheDocument()
+    expect(screen.getByText('Is the trader defending a setup that no longer deserves the same risk?')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Trades'), {
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
+
+    expect(await screen.findByText('Uploaded 2 trades to your live account.')).toBeInTheDocument()
+    expect(logTraderLifecycleEventMock).toHaveBeenCalledWith({
+      event_name: 'first_upload_completed',
+      market: 'india',
+      tier: 'reset_pro',
+      metadata: {
+        uploadTransport: 'paste',
+        tradesUploaded: 2,
+        reportSnapshotId: 'snap_upload_overview_001',
+        reportId: 'report_upload_overview_001',
+        artifactStatus: 'generated',
+        appendCount: 1,
+        requestId: 'req_overview_001',
+        activationSource: 'locked_insight',
+        activationReportId: 'public-teaser-overview',
+        activationArchetypeId: 'marco',
+        activationAxisId: 'edge_decay',
+        activationStorySource: 'guided',
+        activationVisitedSceneCount: 6,
+        activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+        activationLockedSectionId: 'edge-decay-map',
+        activationTeaserRequestId: 'TEASER-overview',
+        activationTeaserTradesAnalyzed: 14,
+        activationTeaserWorstPattern: 'Tilt Spiral',
+        activationTeaserVerified: 'true',
+        activationTeaserVerificationStatus: 'verified',
+        activationTeaserReceiptHash: 'd'.repeat(64),
+        activationTeaserVerifiedAt: '2026-06-21T08:00:00Z',
+      },
+    })
+    expect(updateSessionMetaMock).toHaveBeenCalledWith({
+      caseStatus: 'baseline_ready',
+      lastReportSnapshotId: 'snap_upload_overview_001',
+      firstUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 2,
+        report_snapshot_id: 'snap_upload_overview_001',
+        report_id: 'report_upload_overview_001',
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_overview_001',
+      },
+      latestUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 2,
+        report_snapshot_id: 'snap_upload_overview_001',
+        report_id: 'report_upload_overview_001',
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_overview_001',
+      },
+      uploadReceiptHistory: [
+        {
+          upload_transport: 'paste',
+          trades_uploaded: 2,
+          report_snapshot_id: 'snap_upload_overview_001',
+          report_id: 'report_upload_overview_001',
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_overview_001',
+        },
+      ],
     })
   }, 15000)
 
