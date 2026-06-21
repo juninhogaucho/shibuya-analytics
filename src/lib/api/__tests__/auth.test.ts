@@ -58,6 +58,7 @@ describe('activation API boundary', () => {
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
+      orderId: 'order_weak',
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
     })
@@ -110,6 +111,7 @@ describe('activation API boundary', () => {
 
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'customer-verified',
+      orderId: 'order_verified',
       activationSource: 'locked_insight',
       activationReportId: 'public-teaser-verified',
       activationArchetypeId: 'marco',

@@ -60,6 +60,7 @@ export async function verifyActivation(payload: ActivationPayload): Promise<Acti
       tier: data.tier,
       planId: data.planId,
       market: data.market,
+      orderId: payload.orderCode,
       offerKind: data.offerKind,
       caseStatus: data.caseStatus,
       accessExpiresAt: data.accessExpiresAt ?? null,
