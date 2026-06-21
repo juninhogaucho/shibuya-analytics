@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
 import { getPublicReportEngagement } from '../../../lib/publicReportEngagement'
-import { getPublicReportSession } from '../../../lib/publicReportSession'
+import { getPublicReportSession, hasCheckoutGradePublicReportSession } from '../../../lib/publicReportSession'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SAMPLE_API_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { DemoLauncherPage } from '../DemoLauncherPage'
 import FreeReportPage from '../FreeReportPage'
@@ -385,6 +385,8 @@ describe('public Shibuya journey pages', () => {
     const stored = getPublicReportSession(reportId)
     expect(stored).toMatchObject({
       reportId: 'public-teaser-route-123',
+      source: 'backend_teaser',
+      evidenceLabel: 'Persisted backend teaser receipt',
       artifactStatus: 'backend_teaser_persisted',
       artifactStatusLabel: 'Backend teaser persisted',
       productionArtifactProven: false,
@@ -397,6 +399,7 @@ describe('public Shibuya journey pages', () => {
         disciplineTax: 120,
       },
     })
+    expect(hasCheckoutGradePublicReportSession(stored)).toBe(true)
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
   })
 
@@ -840,6 +843,41 @@ describe('public Shibuya journey pages', () => {
       },
     })
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
+  })
+
+  test('free report refuses weak backend teaser recovery before storing report session', async () => {
+    publicReportMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-weak-123',
+      request_id: 'TEASER-weak-123',
+      artifact_status: 'backend_teaser_generated',
+      production_artifact_proven: false,
+      receipt_hash: 'f'.repeat(64),
+      trades_analyzed: 10,
+      headline: {
+        hook: 'This should not become checkout-grade evidence.',
+      },
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/report/public-teaser-weak-123?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(publicReportMocks.getPublicTeaserReport).toHaveBeenCalledWith('public-teaser-weak-123')
+      expect(screen.getByText(/Backend teaser recovery failed: Medallion did not return a persisted teaser receipt/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('No local upload packet found')).toBeInTheDocument()
+    expect(screen.getAllByText('URL context only').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Persisted backend teaser receipt')).not.toBeInTheDocument()
+    expect(screen.queryByText('This should not become checkout-grade evidence.')).not.toBeInTheDocument()
+    expect(getPublicReportSession('public-teaser-weak-123')).toBeNull()
   })
 
   test('demo launcher report link seeds an explicit sample packet without claiming live upload', async () => {

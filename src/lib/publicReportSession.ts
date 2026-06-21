@@ -82,6 +82,43 @@ export interface PublicReportLiveProofGap {
 }
 
 const RECEIPT_HASH_PATTERN = /^[a-f0-9]{64}$/i
+const MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES = 10
+
+export function validatePublicTeaserReportResponse(response: PublicTeaserReportResponse): string | null {
+  if (response.status !== 'success') {
+    return 'Medallion did not accept the teaser report request. No report packet was created.'
+  }
+
+  if (response.report_type !== 'teaser') {
+    return 'Medallion returned the wrong public report type. No report packet was created.'
+  }
+
+  if (!response.report_id?.trim()) {
+    return 'Medallion did not return a public teaser report id. No report packet was created.'
+  }
+
+  if (!response.request_id?.trim()) {
+    return 'Medallion did not return a public teaser request id. No report packet was created.'
+  }
+
+  if (response.artifact_status !== 'backend_teaser_persisted') {
+    return 'Medallion did not return a persisted teaser receipt. No report packet was created.'
+  }
+
+  if (!Number.isFinite(response.trades_analyzed) || response.trades_analyzed < MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES) {
+    return `Medallion analyzed fewer than ${MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES} trades, so the public report remains blocked.`
+  }
+
+  if (!response.receipt_hash || !RECEIPT_HASH_PATTERN.test(response.receipt_hash)) {
+    return 'Medallion did not return a valid secret-free teaser receipt hash. No report packet was created.'
+  }
+
+  if (response.production_artifact_proven === true) {
+    return 'Public teaser reports cannot claim private production artifact proof. No report packet was created.'
+  }
+
+  return null
+}
 
 export function hasCheckoutGradePublicReportSession(session?: PublicReportSession | null): boolean {
   const receipt = session?.backendTeaser
@@ -94,7 +131,7 @@ export function hasCheckoutGradePublicReportSession(session?: PublicReportSessio
       receipt.requestId &&
       receipt.artifactStatus === 'backend_teaser_persisted' &&
       typeof receipt.tradesAnalyzed === 'number' &&
-      receipt.tradesAnalyzed >= 10 &&
+      receipt.tradesAnalyzed >= MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES &&
       receipt.receiptHash &&
       RECEIPT_HASH_PATTERN.test(receipt.receiptHash),
   )
@@ -254,7 +291,6 @@ export function validatePublicPasteSample(pasteBody?: string): string | null {
 
 export function buildPublicReportSession(params: PublicReportValidationInput): PublicReportSession {
   const pasteLength = params.pasteBody?.trim().length ?? 0
-  const source = getSource(params)
   const extension = params.fileName ? getFileExtension(params.fileName) : null
   const storySource = params.storySource === 'guided' ? 'guided' : 'direct'
   const selectedPainAxisIds = normalizePainAxes(params.selectedPainAxisIds)
@@ -262,7 +298,11 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
   const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
   const liveProofGap = buildLiveProofReadinessContract()
-  const backendTeaser = params.source !== 'sample' && params.backendTeaser?.status === 'success'
+  const hasCheckoutGradeBackendTeaser =
+    params.source !== 'sample' &&
+    Boolean(params.backendTeaser && !validatePublicTeaserReportResponse(params.backendTeaser))
+  const source: PublicReportSource = hasCheckoutGradeBackendTeaser ? 'backend_teaser' : getSource(params)
+  const backendTeaser = hasCheckoutGradeBackendTeaser && params.backendTeaser
     ? {
         reportId: params.backendTeaser.report_id,
         requestId: params.backendTeaser.request_id,
@@ -279,6 +319,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
       }
     : null
   const backendTeaserPersisted = backendTeaser?.artifactStatus === 'backend_teaser_persisted'
+  const backendTeaserRecovered = params.source === 'backend_teaser'
   const storyFacts =
     storySource === 'guided'
       ? [
@@ -331,14 +372,16 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
             ...storyFacts,
             backendTeaser
               ? backendTeaserPersisted && backendTeaser.reportId
-                ? `Backend teaser recovered: report ${backendTeaser.reportId}; request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
-                : `Backend teaser recovered: request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
+                ? `Backend teaser ${backendTeaserRecovered ? 'recovered' : 'persisted'}: report ${backendTeaser.reportId}; request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
+                : `Backend teaser ${backendTeaserRecovered ? 'recovered' : 'generated'}: request ${backendTeaser.requestId}; ${backendTeaser.tradesAnalyzed} trades analyzed.`
               : 'Backend teaser recovery failed; no backend report receipt is attached.',
             backendTeaserPersisted && backendTeaser?.receiptHash
               ? `Backend teaser receipt hash: ${backendTeaser.receiptHash}.`
               : null,
             backendTeaser?.hook ? `Backend teaser hook: ${backendTeaser.hook}` : null,
-            'Recovered from Medallion by report id/request id; no raw trade rows or local file metadata are stored in this browser packet.',
+            backendTeaserRecovered
+              ? 'Recovered from Medallion by report id/request id; no raw trade rows or local file metadata are stored in this browser packet.'
+              : 'Persisted by Medallion from this public upload; no raw trade rows or local file metadata are stored in this browser packet.',
             'Private conclusions still require activation, live upload, generated artifacts, and append history.',
           ].filter((fact): fact is string => Boolean(fact))
       : [
@@ -377,7 +420,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         ? 'Demo packet accepted. This proves the public journey transition, not live analytics.'
         : backendTeaser
           ? source === 'backend_teaser'
-            ? 'Backend teaser receipt recovered from Medallion. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
+            ? backendTeaserRecovered
+              ? 'Backend teaser receipt recovered from Medallion. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
+              : 'Backend teaser receipt persisted. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
             : backendTeaserPersisted
             ? 'Backend teaser receipt persisted. This proves public report processing and retrieval identity, while private conclusions still require activation, live upload, and append history.'
             : 'Backend teaser report generated. This proves public report processing, while private conclusions still require activation, live upload, and append history.'

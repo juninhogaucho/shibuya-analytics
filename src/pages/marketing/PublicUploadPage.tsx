@@ -3,7 +3,7 @@ import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
-import { generatePublicTeaserReport, type PublicTeaserReportResponse } from '../../lib/api/publicReport'
+import { generatePublicTeaserReport } from '../../lib/api/publicReport'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import {
@@ -14,6 +14,7 @@ import {
   persistPublicReportSession,
   validatePublicPasteSample,
   validatePublicReportInput,
+  validatePublicTeaserReportResponse,
 } from '../../lib/publicReportSession'
 import {
   FINGERPRINT_AXES,
@@ -64,42 +65,6 @@ function countTradeRowsFromTable(body: string): number {
 
 function buildPastedTradeFile(body: string): File {
   return new File([body], 'public-teaser-upload.csv', { type: 'text/csv' })
-}
-
-function validateBackendTeaserReceipt(response: PublicTeaserReportResponse): string | null {
-  if (response.status !== 'success') {
-    return 'Medallion did not accept the teaser report request. No report packet was created.'
-  }
-
-  if (response.report_type !== 'teaser') {
-    return 'Medallion returned the wrong public report type. No report packet was created.'
-  }
-
-  if (!response.report_id?.trim()) {
-    return 'Medallion did not return a public teaser report id. No report packet was created.'
-  }
-
-  if (!response.request_id?.trim()) {
-    return 'Medallion did not return a public teaser request id. No report packet was created.'
-  }
-
-  if (response.artifact_status !== 'backend_teaser_persisted') {
-    return 'Medallion did not return a persisted teaser receipt. No report packet was created.'
-  }
-
-  if (!Number.isFinite(response.trades_analyzed) || response.trades_analyzed < MIN_BACKEND_TEASER_TRADE_ROWS) {
-    return `Medallion analyzed fewer than ${MIN_BACKEND_TEASER_TRADE_ROWS} trades, so the public report remains blocked.`
-  }
-
-  if (!response.receipt_hash || !/^[a-f0-9]{64}$/i.test(response.receipt_hash)) {
-    return 'Medallion did not return a valid secret-free teaser receipt hash. No report packet was created.'
-  }
-
-  if (response.production_artifact_proven === true) {
-    return 'Public teaser reports cannot claim private production artifact proof. No report packet was created.'
-  }
-
-  return null
 }
 
 export default function PublicUploadPage() {
@@ -276,7 +241,7 @@ export default function PublicUploadPage() {
 
       try {
         const backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
-        const receiptError = validateBackendTeaserReceipt(backendTeaser)
+        const receiptError = validatePublicTeaserReportResponse(backendTeaser)
 
         if (receiptError) {
           setError(receiptError)

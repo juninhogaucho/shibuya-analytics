@@ -6,10 +6,12 @@ import {
   buildDemoLauncherSampleReportSession,
   buildPublicReportSession,
   getPublicReportSession,
+  hasCheckoutGradePublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   persistPublicReportSession,
   validatePublicPasteSample,
   validatePublicReportInput,
+  validatePublicTeaserReportResponse,
 } from '../publicReportSession'
 
 afterEach(() => {
@@ -94,7 +96,7 @@ describe('public report sessions', () => {
 
   test('stores backend teaser receipt without raw trade rows', () => {
     const session = buildPublicReportSession({
-      reportId: 'free-report-backed',
+      reportId: 'public-teaser-backed',
       market: 'global',
       archetypeId: 'marco',
       axisId: 'edge_decay',
@@ -127,12 +129,13 @@ describe('public report sessions', () => {
     persistPublicReportSession(session)
 
     const raw = window.localStorage.getItem(PUBLIC_REPORT_SESSION_STORAGE_KEY) ?? ''
-    const stored = getPublicReportSession('free-report-backed')
+    const stored = getPublicReportSession('public-teaser-backed')
 
     expect(raw).not.toContain('XAUUSD')
     expect(stored).toMatchObject({
-      reportId: 'free-report-backed',
-      source: 'paste',
+      reportId: 'public-teaser-backed',
+      source: 'backend_teaser',
+      evidenceLabel: 'Persisted backend teaser receipt',
       artifactStatus: 'backend_teaser_persisted',
       artifactStatusLabel: 'Backend teaser persisted',
       productionArtifactProven: false,
@@ -150,11 +153,31 @@ describe('public report sessions', () => {
         processingTimeSeconds: 0.42,
       },
     })
+    expect(hasCheckoutGradePublicReportSession(stored)).toBe(true)
     expect(stored?.validationSummary).toContain('Backend teaser receipt persisted')
     expect(stored?.validationFacts).toContain('Backend teaser persisted: report public-teaser-backed; request TEASER-abc123; 10 trades analyzed.')
     expect(stored?.validationFacts).toContain(`Backend teaser receipt hash: ${'a'.repeat(64)}.`)
     expect(stored?.validationFacts).toContain('Backend teaser hook: $120 discipline tax detected before activation.')
     expect(stored?.boundary).toContain('stores only the persisted backend teaser receipt')
+  })
+
+  test('validates checkout-grade backend teaser responses before session persistence', () => {
+    const validResponse = {
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-valid',
+      request_id: 'TEASER-valid',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'b'.repeat(64),
+      trades_analyzed: 10,
+    }
+
+    expect(validatePublicTeaserReportResponse(validResponse)).toBeNull()
+    expect(validatePublicTeaserReportResponse({ ...validResponse, artifact_status: 'backend_teaser_generated' })).toContain('persisted teaser receipt')
+    expect(validatePublicTeaserReportResponse({ ...validResponse, trades_analyzed: 9 })).toContain('fewer than 10 trades')
+    expect(validatePublicTeaserReportResponse({ ...validResponse, receipt_hash: 'not-a-receipt' })).toContain('valid secret-free teaser receipt hash')
+    expect(validatePublicTeaserReportResponse({ ...validResponse, production_artifact_proven: true })).toContain('cannot claim private production artifact proof')
   })
 
   test('refuses to attach backend teaser receipts to sample report sessions', () => {

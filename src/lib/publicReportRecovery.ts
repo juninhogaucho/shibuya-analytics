@@ -5,6 +5,7 @@ import {
   buildPublicReportSession,
   getPublicReportSession,
   persistPublicReportSession,
+  validatePublicTeaserReportResponse,
   type PublicReportSession,
 } from './publicReportSession'
 import type { FingerprintAxisId, StoryArchetypeId } from './storyExperience'
@@ -82,6 +83,18 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
     getPublicTeaserReport(input.reportId)
       .then((backendTeaser) => {
         if (cancelled) {
+          return
+        }
+
+        const receiptError = validatePublicTeaserReportResponse(backendTeaser)
+        if (receiptError) {
+          setState({
+            reportId: input.reportId,
+            session: null,
+            status: 'failed',
+            error: receiptError,
+            attemptedBackendRecovery: true,
+          })
           return
         }
 
