@@ -116,6 +116,12 @@ describe('WorkspacePage', () => {
       </MemoryRouter>,
     )
 
+    expect(await screen.findByTestId('live-proof-phase')).toBeInTheDocument()
+    expect(screen.getByText('Append proof ready')).toBeInTheDocument()
+    expect(screen.getByText('APPEND PROOF')).toBeInTheDocument()
+    expect(screen.getByText(/Backend overview shows repeated generated upload receipts/i)).toBeInTheDocument()
+    expect(screen.getByText(/Source: Backend overview. Generated receipts: 2/i)).toBeInTheDocument()
+    expect(screen.getByText(/Latest snapshot: snap_upload_024/i)).toBeInTheDocument()
     expect(await screen.findByText('Upload proof receipt')).toBeInTheDocument()
     expect(screen.getByText(/Backend overview returned this persisted receipt/i)).toBeInTheDocument()
     expect(screen.getByText('snap_upload_024')).toBeInTheDocument()
@@ -174,6 +180,11 @@ describe('WorkspacePage', () => {
       </MemoryRouter>,
     )
 
+    expect(await screen.findByTestId('live-proof-phase')).toBeInTheDocument()
+    expect(screen.getByText('Baseline artifact ready')).toBeInTheDocument()
+    expect(screen.getByText('BASELINE PROOF')).toBeInTheDocument()
+    expect(screen.getByText(/Latest upload response returned a generated artifact receipt/i)).toBeInTheDocument()
+    expect(screen.getByText(/Source: Latest upload response. Generated receipts: 1/i)).toBeInTheDocument()
     expect(await screen.findByText('Upload proof receipt')).toBeInTheDocument()
     expect(screen.getByText(/latest Medallion upload response receipt/i)).toBeInTheDocument()
     expect(screen.getByText('snap_session_019')).toBeInTheDocument()

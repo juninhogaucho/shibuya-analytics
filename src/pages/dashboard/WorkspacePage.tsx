@@ -5,6 +5,7 @@ import { getTraderProfileContext } from '../../lib/api/trader'
 import { getDashboardOverview } from '../../lib/api/dashboard'
 import { formatMoney, humanizeFocus, humanizeInstrument } from '../../lib/display'
 import { buildJourneyState } from '../../lib/journeyState'
+import { buildLiveProofPhase } from '../../lib/liveProofPhase'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 import { getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isSampleMode } from '../../lib/runtime'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
@@ -110,6 +111,21 @@ function proofValue(value: unknown, fallback = 'Not recorded'): string {
     return value.length ? value.join(', ') : fallback
   }
   return String(value)
+}
+
+function humanizeEvidenceSource(source: string): string {
+  switch (source) {
+    case 'overview':
+      return 'Backend overview'
+    case 'session':
+      return 'Latest upload response'
+    case 'mixed':
+      return 'Backend overview plus this device'
+    case 'sample':
+      return 'Sample receipt'
+    default:
+      return 'No generated receipt'
+  }
 }
 
 function humanizeCapitalBand(value?: string | null): string {
@@ -303,6 +319,13 @@ export function WorkspacePage() {
     sessionMeta,
     market,
   })
+  const liveProofPhase = buildLiveProofPhase({
+    overview,
+    sessionMeta,
+    profileCompleted: profile?.completed ?? overview?.profile_completed ?? null,
+    market,
+    mode: sampleMode ? 'sample' : 'live',
+  })
 
   if (loading) {
     return (
@@ -332,6 +355,81 @@ export function WorkspacePage() {
   return (
     <div className="dashboard-stack">
       <JourneyProgressCard state={journeyState} />
+
+      <section
+        className="glass-panel"
+        data-testid="live-proof-phase"
+        style={{
+          borderColor: liveProofPhase.canClaimAppendProof
+            ? 'rgba(16,185,129,0.28)'
+            : liveProofPhase.canClaimBaselineProof
+              ? 'rgba(125,211,252,0.28)'
+              : 'rgba(251,191,36,0.28)',
+          background: liveProofPhase.canClaimAppendProof
+            ? 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(255,255,255,0.025))'
+            : liveProofPhase.canClaimBaselineProof
+              ? 'linear-gradient(135deg, rgba(14,165,233,0.08), rgba(255,255,255,0.025))'
+              : 'linear-gradient(135deg, rgba(251,191,36,0.08), rgba(255,255,255,0.025))',
+        }}
+      >
+        <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+          <div>
+            <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE PRODUCT PHASE</p>
+            <h1 style={{ marginBottom: '0.5rem' }}>{liveProofPhase.label}</h1>
+            <p className="text-muted" style={{ maxWidth: '58rem', marginBottom: 0 }}>
+              {liveProofPhase.summary}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <span className="badge">{liveProofPhase.statusLabel}</span>
+            <Link to={liveProofPhase.nextAction.to} className="btn btn-sm btn-primary">
+              {liveProofPhase.nextAction.label}
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid-responsive three" style={{ marginTop: '1rem' }}>
+          <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+            <span className="badge">{liveProofPhase.canClaimLiveActivation ? 'COMPLETE' : 'LOCKED'}</span>
+            <h4 style={{ margin: '0.5rem 0' }}>Activation boundary</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              {liveProofPhase.canClaimLiveActivation
+                ? 'A live token is present. This proves access only, not account behavior.'
+                : 'No live activation token is present in this runtime.'}
+            </p>
+          </article>
+          <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+            <span className="badge">{liveProofPhase.canClaimBaselineProof ? 'COMPLETE' : 'REQUIRED'}</span>
+            <h4 style={{ margin: '0.5rem 0' }}>Baseline artifact</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              {liveProofPhase.canClaimBaselineProof
+                ? `Generated receipt source: ${humanizeEvidenceSource(liveProofPhase.evidenceSource)}.`
+                : 'The first upload must return a generated artifact receipt before the workspace can claim baseline proof.'}
+            </p>
+          </article>
+          <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.16)', borderColor: 'rgba(255,255,255,0.08)' }}>
+            <span className="badge">{liveProofPhase.canClaimAppendProof ? 'COMPLETE' : 'REQUIRED'}</span>
+            <h4 style={{ margin: '0.5rem 0' }}>Append proof</h4>
+            <p className="text-muted" style={{ marginBottom: 0 }}>
+              {liveProofPhase.canClaimAppendProof
+                ? `${liveProofPhase.generatedUploadReceiptCount} generated receipt(s) are available for continuity.`
+                : 'A later generated upload must confirm, reject, or update the carried question.'}
+            </p>
+          </article>
+        </div>
+
+        <div className="glass-panel" style={{ marginTop: '1rem', background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+          <p className="badge" style={{ marginBottom: '0.5rem' }}>PHASE EVIDENCE</p>
+          <p className="text-muted" style={{ marginBottom: '0.5rem' }}>
+            Source: {humanizeEvidenceSource(liveProofPhase.evidenceSource)}. Generated receipts: {liveProofPhase.generatedUploadReceiptCount}.
+          </p>
+          <p className="text-muted" style={{ marginBottom: 0 }}>
+            Latest snapshot: {proofValue(liveProofPhase.latestGeneratedReceipt?.report_snapshot_id)}.
+            {' '}Latest request: {proofValue(liveProofPhase.latestGeneratedReceipt?.request_id)}.
+            {' '}Boundary: {liveProofPhase.boundary}
+          </p>
+        </div>
+      </section>
 
       <section className="glass-panel">
         <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
