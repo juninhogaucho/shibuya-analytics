@@ -245,6 +245,7 @@ describe('dashboard API boundary', () => {
       activationEngagementLockedSectionClickCount: 1,
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
+      activationEngagementBoundary: 'Activation context came from verified backend dashboard metadata.',
       activationTeaserRequestId: 'TEASER-dashboard-123',
       activationTeaserTradesAnalyzed: 10,
       activationTeaserWorstPattern: 'Revenge Trading',

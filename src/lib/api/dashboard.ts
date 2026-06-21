@@ -3,7 +3,7 @@ import {
   EMPTY_ACTIVATION_ORIGIN_META,
   buildDashboardActivationOriginMeta,
   hasVerifiedDashboardActivationOrigin,
-} from '../dashboardActivationOrigin'
+} from '../activationOrigin'
 import { getStoredSessionMeta, getShibuyaRuntimeContract, isSampleMode, updateSessionMeta } from '../runtime'
 import { SAMPLE_WORKSPACE_DATA, getSampleWorkspaceOverview } from '../sampleWorkspace'
 import type {

@@ -218,7 +218,7 @@ export function ActivationPage() {
           activationEngagementLockedSectionClickCount: activationEngagementLockedSectionClickCountForStorage,
           activationEngagementCurrentSectionClickCount: activationEngagementCurrentSectionClickCountForStorage,
           activationEngagementPrivateDemoIntentCount: activationEngagementPrivateDemoIntentCountForStorage,
-          activationEngagementBoundary: hasBackendActivationContext ? 'Activation context came from verified backend order metadata.' : undefined,
+          activationEngagementBoundary: hasBackendActivationContext ? verifiedActivationContext.activationEngagementBoundary : undefined,
         })
 
         await logTraderLifecycleEvent({

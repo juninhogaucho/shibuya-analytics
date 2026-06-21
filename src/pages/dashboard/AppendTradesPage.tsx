@@ -19,7 +19,7 @@ import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofRead
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
-import { EMPTY_ACTIVATION_ORIGIN_META, buildDashboardActivationOriginMeta, hasVerifiedDashboardActivationOrigin } from '../../lib/dashboardActivationOrigin'
+import { EMPTY_ACTIVATION_ORIGIN_META, buildDashboardActivationOriginMeta, hasVerifiedDashboardActivationOrigin } from '../../lib/activationOrigin'
 import { addMarketToPath } from '../../lib/market'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
