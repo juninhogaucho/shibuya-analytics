@@ -1,4 +1,4 @@
-import { clearShibuyaSession, getStoredApiKey, setLiveApiKey } from '../runtime'
+import { clearShibuyaSession, getStoredApiKey, setLiveApiKey, type ShibuyaSessionMeta } from '../runtime'
 import type { ActivationPayload, ActivationResponse } from '../types'
 import { http } from './httpClient'
 
@@ -33,6 +33,71 @@ function parsePublicContextCount(value?: string | null): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+function isTrueString(value?: string | null): boolean {
+  return value?.trim().toLowerCase() === 'true'
+}
+
+function isFalseString(value?: string | null): boolean {
+  return value?.trim().toLowerCase() === 'false'
+}
+
+function hasValidReceiptHash(value?: string | null): boolean {
+  return Boolean(value && /^[a-f0-9]{64}$/i.test(value.trim()))
+}
+
+export function hasVerifiedActivationPublicContext(data: ActivationResponse): boolean {
+  const tradesAnalyzed = parsePublicContextCount(data.publicContextTeaserTradesAnalyzed)
+
+  return Boolean(
+    data.publicContextSource === 'locked_insight' &&
+      data.publicContextPacketSource === 'backend_teaser' &&
+      data.publicContextArtifactStatus === 'backend_teaser_persisted' &&
+      isFalseString(data.publicContextProductionArtifactProven) &&
+      data.publicContextReportId?.trim() &&
+      data.publicContextSectionId?.trim() &&
+      data.publicContextArchetypeId?.trim() &&
+      data.publicContextAxisId?.trim() &&
+      data.publicContextTeaserRequestId?.trim() &&
+      Number.isFinite(tradesAnalyzed) &&
+      (tradesAnalyzed ?? 0) >= 10 &&
+      isTrueString(data.publicContextTeaserVerified) &&
+      data.publicContextTeaserVerificationStatus === 'verified' &&
+      hasValidReceiptHash(data.publicContextTeaserReceiptHash) &&
+      data.publicContextTeaserVerifiedAt?.trim(),
+  )
+}
+
+export function buildVerifiedActivationPublicContextMeta(data: ActivationResponse): Partial<ShibuyaSessionMeta> {
+  if (!hasVerifiedActivationPublicContext(data)) {
+    return {}
+  }
+
+  return {
+    activationSource: data.publicContextSource ?? undefined,
+    activationReportId: data.publicContextReportId ?? undefined,
+    activationArchetypeId: data.publicContextArchetypeId ?? undefined,
+    activationAxisId: data.publicContextAxisId ?? undefined,
+    activationReportArtifactStatus: data.publicContextArtifactStatus ?? undefined,
+    activationProductionArtifactProven: data.publicContextProductionArtifactProven ?? undefined,
+    activationTeaserRequestId: data.publicContextTeaserRequestId ?? undefined,
+    activationTeaserTradesAnalyzed: parsePublicContextCount(data.publicContextTeaserTradesAnalyzed),
+    activationTeaserWorstPattern: data.publicContextTeaserWorstPattern ?? undefined,
+    activationTeaserVerified: data.publicContextTeaserVerified ?? undefined,
+    activationTeaserVerificationStatus: data.publicContextTeaserVerificationStatus ?? undefined,
+    activationTeaserReceiptHash: data.publicContextTeaserReceiptHash ?? undefined,
+    activationTeaserVerifiedAt: data.publicContextTeaserVerifiedAt ?? undefined,
+    activationStorySource: data.publicContextStorySource ?? undefined,
+    activationSelectedPainAxisIds: splitPublicContextList(data.publicContextPainAxes),
+    activationVisitedSceneCount: parsePublicContextCount(data.publicContextStorySceneCount),
+    activationSignalMarkerIds: splitPublicContextList(data.publicContextSignalMarkers),
+    activationLockedSectionId: data.publicContextSectionId ?? undefined,
+    activationEngagementReportViewCount: parsePublicContextCount(data.publicContextReportViews),
+    activationEngagementLockedSectionClickCount: parsePublicContextCount(data.publicContextLockedClicks),
+    activationEngagementCurrentSectionClickCount: parsePublicContextCount(data.publicContextCurrentSectionClicks),
+    activationEngagementPrivateDemoIntentCount: parsePublicContextCount(data.publicContextPrivateGateAttempts),
+  }
+}
+
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
   if (data.success && data.api_key) {
@@ -55,6 +120,8 @@ export async function register(payload: LoginRequest & { name?: string }): Promi
 export async function verifyActivation(payload: ActivationPayload): Promise<ActivationResponse> {
   const { data } = await http.post<ActivationResponse>('/v1/trader/activations/verify', payload)
   if (data.activationToken) {
+    const verifiedActivationContext = buildVerifiedActivationPublicContextMeta(data)
+
     setLiveApiKey(data.activationToken, {
       customerId: data.customerId,
       tier: data.tier,
@@ -64,28 +131,7 @@ export async function verifyActivation(payload: ActivationPayload): Promise<Acti
       caseStatus: data.caseStatus,
       accessExpiresAt: data.accessExpiresAt ?? null,
       dataSource: data.dataSource ?? null,
-      activationSource: data.publicContextSource ?? undefined,
-      activationReportId: data.publicContextReportId ?? undefined,
-      activationArchetypeId: data.publicContextArchetypeId ?? undefined,
-      activationAxisId: data.publicContextAxisId ?? undefined,
-      activationReportArtifactStatus: data.publicContextArtifactStatus ?? undefined,
-      activationProductionArtifactProven: data.publicContextProductionArtifactProven ?? undefined,
-      activationTeaserRequestId: data.publicContextTeaserRequestId ?? undefined,
-      activationTeaserTradesAnalyzed: parsePublicContextCount(data.publicContextTeaserTradesAnalyzed),
-      activationTeaserWorstPattern: data.publicContextTeaserWorstPattern ?? undefined,
-      activationTeaserVerified: data.publicContextTeaserVerified ?? undefined,
-      activationTeaserVerificationStatus: data.publicContextTeaserVerificationStatus ?? undefined,
-      activationTeaserReceiptHash: data.publicContextTeaserReceiptHash ?? undefined,
-      activationTeaserVerifiedAt: data.publicContextTeaserVerifiedAt ?? undefined,
-      activationStorySource: data.publicContextStorySource ?? undefined,
-      activationSelectedPainAxisIds: splitPublicContextList(data.publicContextPainAxes),
-      activationVisitedSceneCount: parsePublicContextCount(data.publicContextStorySceneCount),
-      activationSignalMarkerIds: splitPublicContextList(data.publicContextSignalMarkers),
-      activationLockedSectionId: data.publicContextSectionId ?? undefined,
-      activationEngagementReportViewCount: parsePublicContextCount(data.publicContextReportViews),
-      activationEngagementLockedSectionClickCount: parsePublicContextCount(data.publicContextLockedClicks),
-      activationEngagementCurrentSectionClickCount: parsePublicContextCount(data.publicContextCurrentSectionClicks),
-      activationEngagementPrivateDemoIntentCount: parsePublicContextCount(data.publicContextPrivateGateAttempts),
+      ...verifiedActivationContext,
     })
   }
   return data

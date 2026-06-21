@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
 import { logTraderLifecycleEvent } from '../../lib/api/trader'
-import { verifyActivation } from '../../lib/api/auth'
+import { buildVerifiedActivationPublicContextMeta, verifyActivation } from '../../lib/api/auth'
 import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
 import {
@@ -20,20 +20,6 @@ import {
   getFingerprintAxis,
   getTraderArchetype,
 } from '../../lib/storyExperience'
-
-function splitPublicContextList(value?: string | null): string[] | undefined {
-  const items = value?.split(',').map((item) => item.trim()).filter(Boolean) ?? []
-  return items.length ? items : undefined
-}
-
-function parsePublicContextCount(value?: string | null): number | undefined {
-  if (!value) {
-    return undefined
-  }
-
-  const parsed = Number.parseInt(value, 10)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
 
 export function ActivationPage() {
   const recentAccess = readRecentOrderAccess()
@@ -148,50 +134,51 @@ export function ActivationPage() {
       const response = await verifyActivation({ email, orderCode })
 
       if (response.status === 'ready' && response.activationToken) {
-        const backendPainAxisIds = splitPublicContextList(response.publicContextPainAxes)
-        const backendSignalMarkerIds = splitPublicContextList(response.publicContextSignalMarkers)
-        const backendVisitedSceneCount = parsePublicContextCount(response.publicContextStorySceneCount)
+        const verifiedActivationContext = buildVerifiedActivationPublicContextMeta(response)
+        const backendPainAxisIds = verifiedActivationContext.activationSelectedPainAxisIds
+        const backendSignalMarkerIds = verifiedActivationContext.activationSignalMarkerIds
+        const backendVisitedSceneCount = verifiedActivationContext.activationVisitedSceneCount
         const hasBackendActivationContext = Boolean(
-          response.publicContextSource || response.publicContextReportId || response.publicContextSectionId,
+          verifiedActivationContext.activationSource &&
+          verifiedActivationContext.activationReportId &&
+          verifiedActivationContext.activationLockedSectionId,
         )
         const backendActivationReport = hasBackendActivationContext
           ? buildFreeReportPreview({
-              reportId: response.publicContextReportId ?? 'activation-origin',
-              archetypeId: response.publicContextArchetypeId,
-              axisId: response.publicContextAxisId,
-              storySource: response.publicContextStorySource,
+              reportId: verifiedActivationContext.activationReportId ?? 'activation-origin',
+              archetypeId: verifiedActivationContext.activationArchetypeId,
+              axisId: verifiedActivationContext.activationAxisId,
+              storySource: verifiedActivationContext.activationStorySource,
               selectedPainAxisIds: backendPainAxisIds,
               visitedSceneCount: backendVisitedSceneCount,
               signalMarkerIds: backendSignalMarkerIds,
             })
           : null
         const backendActivationLockedSection = backendActivationReport
-          ? findLockedReportSectionBySlug(backendActivationReport, response.publicContextSectionId)
+          ? findLockedReportSectionBySlug(backendActivationReport, verifiedActivationContext.activationLockedSectionId)
           : null
-        const activationSourceForStorage = hasBackendActivationContext ? response.publicContextSource ?? undefined : undefined
-        const activationReportIdForStorage = hasBackendActivationContext ? response.publicContextReportId ?? undefined : undefined
-        const activationArchetypeIdForStorage = hasBackendActivationContext ? response.publicContextArchetypeId ?? undefined : undefined
-        const activationAxisIdForStorage = hasBackendActivationContext ? response.publicContextAxisId ?? undefined : undefined
-        const activationReportArtifactStatusForStorage = hasBackendActivationContext ? response.publicContextArtifactStatus ?? undefined : undefined
-        const activationProductionArtifactProvenForStorage = hasBackendActivationContext ? response.publicContextProductionArtifactProven ?? undefined : undefined
-        const activationTeaserRequestIdForStorage = hasBackendActivationContext ? response.publicContextTeaserRequestId ?? undefined : undefined
-        const activationTeaserTradesAnalyzedForStorage = hasBackendActivationContext
-          ? parsePublicContextCount(response.publicContextTeaserTradesAnalyzed)
-          : undefined
-        const activationTeaserWorstPatternForStorage = hasBackendActivationContext ? response.publicContextTeaserWorstPattern ?? undefined : undefined
-        const activationTeaserVerifiedForStorage = hasBackendActivationContext ? response.publicContextTeaserVerified ?? undefined : undefined
-        const activationTeaserVerificationStatusForStorage = hasBackendActivationContext ? response.publicContextTeaserVerificationStatus ?? undefined : undefined
-        const activationTeaserReceiptHashForStorage = hasBackendActivationContext ? response.publicContextTeaserReceiptHash ?? undefined : undefined
-        const activationTeaserVerifiedAtForStorage = hasBackendActivationContext ? response.publicContextTeaserVerifiedAt ?? undefined : undefined
-        const activationStorySourceForStorage = hasBackendActivationContext ? response.publicContextStorySource ?? undefined : undefined
+        const activationSourceForStorage = hasBackendActivationContext ? verifiedActivationContext.activationSource : undefined
+        const activationReportIdForStorage = hasBackendActivationContext ? verifiedActivationContext.activationReportId : undefined
+        const activationArchetypeIdForStorage = hasBackendActivationContext ? verifiedActivationContext.activationArchetypeId : undefined
+        const activationAxisIdForStorage = hasBackendActivationContext ? verifiedActivationContext.activationAxisId : undefined
+        const activationReportArtifactStatusForStorage = hasBackendActivationContext ? verifiedActivationContext.activationReportArtifactStatus : undefined
+        const activationProductionArtifactProvenForStorage = hasBackendActivationContext ? verifiedActivationContext.activationProductionArtifactProven : undefined
+        const activationTeaserRequestIdForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserRequestId : undefined
+        const activationTeaserTradesAnalyzedForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserTradesAnalyzed : undefined
+        const activationTeaserWorstPatternForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserWorstPattern : undefined
+        const activationTeaserVerifiedForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserVerified : undefined
+        const activationTeaserVerificationStatusForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserVerificationStatus : undefined
+        const activationTeaserReceiptHashForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserReceiptHash : undefined
+        const activationTeaserVerifiedAtForStorage = hasBackendActivationContext ? verifiedActivationContext.activationTeaserVerifiedAt : undefined
+        const activationStorySourceForStorage = hasBackendActivationContext ? verifiedActivationContext.activationStorySource : undefined
         const activationSelectedPainAxisIdsForLiveStorage = hasBackendActivationContext ? backendPainAxisIds : undefined
         const activationVisitedSceneCountForStorage = hasBackendActivationContext ? backendVisitedSceneCount : undefined
         const activationSignalMarkerIdsForLiveStorage = hasBackendActivationContext ? backendSignalMarkerIds : undefined
-        const activationLockedSectionIdForStorage = hasBackendActivationContext ? response.publicContextSectionId ?? undefined : undefined
-        const activationEngagementReportViewCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextReportViews) : undefined
-        const activationEngagementLockedSectionClickCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextLockedClicks) : undefined
-        const activationEngagementCurrentSectionClickCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextCurrentSectionClicks) : undefined
-        const activationEngagementPrivateDemoIntentCountForStorage = hasBackendActivationContext ? parsePublicContextCount(response.publicContextPrivateGateAttempts) : undefined
+        const activationLockedSectionIdForStorage = hasBackendActivationContext ? verifiedActivationContext.activationLockedSectionId : undefined
+        const activationEngagementReportViewCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementReportViewCount : undefined
+        const activationEngagementLockedSectionClickCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementLockedSectionClickCount : undefined
+        const activationEngagementCurrentSectionClickCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementCurrentSectionClickCount : undefined
+        const activationEngagementPrivateDemoIntentCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementPrivateDemoIntentCount : undefined
 
         // Store the activation token BEFORE redirect so AuthGuard recognises the session.
         setLiveApiKey(response.activationToken, {

@@ -176,10 +176,10 @@ describe('AppendTradesPage', () => {
         activation_teaser_worst_pattern: 'Revenge Trading',
         activation_teaser_verified: 'true',
         activation_teaser_verification_status: 'verified',
-        activation_teaser_receipt_hash: 'receipt-hash-append',
+        activation_teaser_receipt_hash: 'e'.repeat(64),
         activation_teaser_verified_at: '2026-06-20T00:03:00Z',
         activation_source: 'locked_insight',
-        activation_report_id: 'sample-behavioral-leak-report',
+        activation_report_id: 'public-teaser-append',
         activation_locked_section_id: 'edge-decay-map',
         proof_boundary: 'Append proof is backed by at least two durable upload snapshots and the latest upload receipt.',
       },
@@ -273,7 +273,7 @@ describe('AppendTradesPage', () => {
       market: 'india',
       offerKind: 'psych_audit',
       activationSource: 'locked_insight',
-      activationReportId: 'sample-behavioral-leak-report',
+      activationReportId: 'public-teaser-append',
       activationArchetypeId: 'marco',
       activationAxisId: 'edge_decay',
       activationStorySource: 'guided',
@@ -295,7 +295,7 @@ describe('AppendTradesPage', () => {
       activationTeaserWorstPattern: 'Revenge Trading',
       activationTeaserVerified: 'true',
       activationTeaserVerificationStatus: 'verified',
-      activationTeaserReceiptHash: 'receipt-hash-append',
+      activationTeaserReceiptHash: 'e'.repeat(64),
       activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
     })
     submitParsedTradesMock.mockResolvedValue({
@@ -316,7 +316,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Before this upload can become live proof.')).toBeInTheDocument()
     expect(screen.getByText('First meaningful upload turns this from carried context into account evidence.')).toBeInTheDocument()
     expect(screen.getByText('Activated from locked report module')).toBeInTheDocument()
-    expect(screen.getByText('sample-behavioral-leak-report')).toBeInTheDocument()
+    expect(screen.getByText('public-teaser-append')).toBeInTheDocument()
     expect(screen.getByText('Edge Decay Map')).toBeInTheDocument()
     expect(screen.getByText('Marco: Profitable refiner - Edge Decay')).toBeInTheDocument()
     expect(screen.getByText('guided; scenes 6; axes Edge Decay')).toBeInTheDocument()
@@ -376,7 +376,7 @@ describe('AppendTradesPage', () => {
         appendCount: 3,
         requestId: 'req_live_123',
         activationSource: 'locked_insight',
-        activationReportId: 'sample-behavioral-leak-report',
+        activationReportId: 'public-teaser-append',
         activationArchetypeId: 'marco',
         activationAxisId: 'edge_decay',
         activationStorySource: 'guided',
@@ -388,7 +388,7 @@ describe('AppendTradesPage', () => {
         activationTeaserWorstPattern: 'Revenge Trading',
         activationTeaserVerified: 'true',
         activationTeaserVerificationStatus: 'verified',
-        activationTeaserReceiptHash: 'receipt-hash-append',
+        activationTeaserReceiptHash: 'e'.repeat(64),
         activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
       },
     })

@@ -30,9 +30,13 @@ async function importJourneyPages() {
   vi.doMock('../../../lib/browserNavigation', () => ({
     redirectBrowser: (...args: unknown[]) => journeyMocks.redirectBrowser(...args),
   }))
-  vi.doMock('../../../lib/api/auth', () => ({
-    verifyActivation: (...args: unknown[]) => journeyMocks.verifyActivation(...args),
-  }))
+  vi.doMock('../../../lib/api/auth', async () => {
+    const actual = await vi.importActual<typeof import('../../../lib/api/auth')>('../../../lib/api/auth')
+    return {
+      ...actual,
+      verifyActivation: (...args: unknown[]) => journeyMocks.verifyActivation(...args),
+    }
+  })
   vi.doMock('../../../lib/api/trader', () => ({
     logTraderLifecycleEvent: (...args: unknown[]) => journeyMocks.logTraderLifecycleEvent(...args),
   }))
@@ -117,7 +121,7 @@ describe('paid Shibuya journey contract', () => {
     vi.resetModules()
   })
 
-  test('public story context survives paid checkout success and live activation', async () => {
+  test('sample public story context reaches checkout but does not become live activation metadata', async () => {
     const user = userEvent.setup()
     const {
       CheckoutPage,
@@ -259,27 +263,23 @@ describe('paid Shibuya journey contract', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_123',
-      activationSource: 'locked_insight',
-      activationReportId: 'sample-behavioral-leak-report',
-      activationArchetypeId: 'marco',
-      activationAxisId: 'edge_decay',
-      activationStorySource: 'guided',
-      activationSelectedPainAxisIds: ['edge_decay'],
-      activationVisitedSceneCount: 6,
-      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-      activationLockedSectionId: 'highest-cost-state',
-      activationLockedSectionTitle: 'Highest-cost state',
     })
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).not.toHaveProperty('activationSource')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
+    expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
+    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
+    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionTitle')
     expect(journeyMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         event_name: 'workspace_activated',
         metadata: expect.objectContaining({
-          activationSource: 'locked_insight',
-          activationReportId: 'sample-behavioral-leak-report',
-          activationStorySource: 'guided',
-          activationVisitedSceneCount: 6,
-          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-          activationLockedSectionId: 'highest-cost-state',
+          activationSource: undefined,
+          activationReportId: undefined,
+          activationStorySource: undefined,
+          activationVisitedSceneCount: undefined,
+          activationSignalMarkerIds: undefined,
+          activationLockedSectionId: undefined,
         }),
       }),
     )

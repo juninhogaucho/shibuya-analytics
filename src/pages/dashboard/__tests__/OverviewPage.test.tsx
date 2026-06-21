@@ -247,14 +247,14 @@ describe('DashboardOverviewPage', () => {
         nextAction: 'upload_first_history',
         dataSource: 'backend',
         activationSource: 'locked_insight',
-        activationReportId: 'public_report_123',
+        activationReportId: 'public-teaser-overview',
         activationArchetypeId: 'marco',
         activationAxisId: 'edge_decay',
-        activationReportArtifactStatus: 'local_preview_only',
+        activationReportArtifactStatus: 'backend_teaser_persisted',
         activationProductionArtifactProven: 'false',
         activationTeaserVerified: 'true',
         activationTeaserVerificationStatus: 'verified',
-        activationTeaserReceiptHash: 'receipt-hash-overview',
+        activationTeaserReceiptHash: 'f'.repeat(64),
         activationTeaserVerifiedAt: '2026-06-20T00:02:00Z',
         activationStorySource: 'guided',
         activationSelectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
@@ -272,15 +272,16 @@ describe('DashboardOverviewPage', () => {
         data_source: 'backend',
         activation_origin: {
           source: 'locked_insight',
-          report_id: 'public_report_123',
+          report_id: 'public-teaser-overview',
           section_id: 'edge-decay-map',
           archetype_id: 'marco',
           axis_id: 'edge_decay',
-          artifact_status: 'local_preview_only',
+          packet_source: 'backend_teaser',
+          artifact_status: 'backend_teaser_persisted',
           production_artifact_proven: 'false',
           teaser_verified: 'true',
           teaser_verification_status: 'verified',
-          teaser_receipt_hash: 'receipt-hash-overview',
+          teaser_receipt_hash: 'f'.repeat(64),
           teaser_verified_at: '2026-06-20T00:02:00Z',
           story_source: 'guided',
           story_scene_count: '6',
@@ -312,13 +313,13 @@ describe('DashboardOverviewPage', () => {
 
     expect(await screen.findByText('LIVE ACTIVATION ORIGIN')).toBeInTheDocument()
     expect(screen.getByText('Activated from locked private insight')).toBeInTheDocument()
-    expect(screen.getByText('public_report_123')).toBeInTheDocument()
+    expect(screen.getByText('public-teaser-overview')).toBeInTheDocument()
     expect(screen.getByText(/Marco: Profitable refiner - Edge Decay/i)).toBeInTheDocument()
     expect(screen.getByText(/guided; scenes 6; axes Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
     expect(screen.getByText('Mirror selected, Evidence intent')).toBeInTheDocument()
     expect(screen.getByText(/2 view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/)).toBeInTheDocument()
     expect(screen.getByText('Teaser verification')).toBeInTheDocument()
-    expect(screen.getByText('verified; verified true; receipt receipt-hash-overview')).toBeInTheDocument()
+    expect(screen.getByText(`verified; verified true; receipt ${'f'.repeat(64)}`)).toBeInTheDocument()
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 

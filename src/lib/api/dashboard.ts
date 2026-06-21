@@ -3,6 +3,7 @@ import { getStoredSessionMeta, getShibuyaRuntimeContract, isSampleMode, updateSe
 import { SAMPLE_WORKSPACE_DATA, getSampleWorkspaceOverview } from '../sampleWorkspace'
 import type {
   AlertsResponse,
+  DashboardActivationOrigin,
   DashboardOverview,
   EdgePortfolioResponse,
   ShadowBoxingResponse,
@@ -93,6 +94,28 @@ function parseOverviewContextCount(value?: string | null): number | undefined {
 
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : undefined
+}
+
+function hasVerifiedOverviewActivationOrigin(origin?: DashboardActivationOrigin | null): origin is DashboardActivationOrigin {
+  const tradesAnalyzed = parseOverviewContextCount(origin?.teaser_trades_analyzed)
+
+  return Boolean(
+    origin?.source === 'locked_insight' &&
+      origin.packet_source === 'backend_teaser' &&
+      origin.artifact_status === 'backend_teaser_persisted' &&
+      origin.production_artifact_proven === 'false' &&
+      origin.report_id?.trim() &&
+      origin.section_id?.trim() &&
+      origin.archetype_id?.trim() &&
+      origin.axis_id?.trim() &&
+      origin.teaser_request_id?.trim() &&
+      Number.isFinite(tradesAnalyzed) &&
+      (tradesAnalyzed ?? 0) >= 10 &&
+      origin.teaser_verified === 'true' &&
+      origin.teaser_verification_status === 'verified' &&
+      Boolean(origin.teaser_receipt_hash && /^[a-f0-9]{64}$/i.test(origin.teaser_receipt_hash.trim())) &&
+      origin.teaser_verified_at?.trim(),
+  )
 }
 
 function buildSampleTradePastePreview(body: string): TradePastePreview {
@@ -218,7 +241,7 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
       uploadReceiptHistory: Array.isArray(data.upload_receipt_history) ? data.upload_receipt_history : [],
     }
 
-    if (data.activation_origin) {
+    if (hasVerifiedOverviewActivationOrigin(data.activation_origin)) {
       Object.assign(nextSessionMeta, {
         activationSource: data.activation_origin.source ?? undefined,
         activationReportId: data.activation_origin.report_id ?? undefined,

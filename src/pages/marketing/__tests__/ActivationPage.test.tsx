@@ -12,9 +12,13 @@ const apiMocks = vi.hoisted(() => ({
   logTraderLifecycleEvent: vi.fn(),
 }))
 
-vi.mock('../../../lib/api/auth', () => ({
-  verifyActivation: (...args: unknown[]) => apiMocks.verifyActivation(...args),
-}))
+vi.mock('../../../lib/api/auth', async () => {
+  const actual = await vi.importActual<typeof import('../../../lib/api/auth')>('../../../lib/api/auth')
+  return {
+    ...actual,
+    verifyActivation: (...args: unknown[]) => apiMocks.verifyActivation(...args),
+  }
+})
 
 vi.mock('../../../lib/api/trader', () => ({
   logTraderLifecycleEvent: (...args: unknown[]) => apiMocks.logTraderLifecycleEvent(...args),
@@ -222,7 +226,7 @@ describe('ActivationPage', () => {
     expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
   })
 
-  test('uses backend public checkout context when local report receipt is absent', async () => {
+  test('drops unverified backend public checkout context when local report receipt is absent', async () => {
     const user = userEvent.setup()
     apiMocks.verifyActivation.mockResolvedValue({
       status: 'ready',
@@ -284,51 +288,28 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_456',
-      activationSource: 'locked_insight',
-      activationReportId: 'report_public_123',
-      activationArchetypeId: 'marco',
-      activationAxisId: 'edge_decay',
-      activationReportArtifactStatus: 'local_preview_only',
-      activationProductionArtifactProven: 'false',
-      activationStorySource: 'guided',
-      activationSelectedPainAxisIds: ['edge_decay', 'revenge'],
-      activationVisitedSceneCount: 6,
-      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-      activationLockedSectionId: 'edge-decay-map',
-      activationEngagementReportViewCount: 2,
-      activationEngagementLockedSectionClickCount: 1,
-      activationEngagementCurrentSectionClickCount: 1,
-      activationEngagementPrivateDemoIntentCount: 1,
-      activationTeaserRequestId: 'TEASER-backend-456',
-      activationTeaserTradesAnalyzed: 12,
-      activationTeaserWorstPattern: 'Tilt Expansion',
-      activationTeaserVerified: 'true',
-      activationTeaserVerificationStatus: 'verified',
-      activationTeaserReceiptHash: 'receipt-hash-456',
-      activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
     })
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).not.toHaveProperty('activationSource')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportArtifactStatus')
+    expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
+    expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserRequestId')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserVerificationStatus')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserReceiptHash')
     expect(apiMocks.logTraderLifecycleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
-          activationSource: 'locked_insight',
-          activationReportId: 'report_public_123',
-          activationReportArtifactStatus: 'local_preview_only',
-          activationProductionArtifactProven: 'false',
-          activationStorySource: 'guided',
-          activationVisitedSceneCount: 6,
-          activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
-          activationLockedSectionId: 'edge-decay-map',
-          activationEngagementReportViewCount: 2,
-          activationEngagementLockedSectionClickCount: 1,
-          activationEngagementCurrentSectionClickCount: 1,
-          activationEngagementPrivateDemoIntentCount: 1,
-          activationTeaserRequestId: 'TEASER-backend-456',
-          activationTeaserTradesAnalyzed: 12,
-          activationTeaserWorstPattern: 'Tilt Expansion',
-          activationTeaserVerified: 'true',
-          activationTeaserVerificationStatus: 'verified',
-          activationTeaserReceiptHash: 'receipt-hash-456',
-          activationTeaserVerifiedAt: '2026-06-20T00:00:00Z',
+          orderCode: 'order_456',
+          activationSource: undefined,
+          activationReportId: undefined,
+          activationReportArtifactStatus: undefined,
+          activationStorySource: undefined,
+          activationLockedSectionId: undefined,
+          activationTeaserRequestId: undefined,
+          activationTeaserVerificationStatus: undefined,
+          activationTeaserReceiptHash: undefined,
         }),
       }),
     )
@@ -351,6 +332,7 @@ describe('ActivationPage', () => {
       publicContextSectionId: 'edge-decay-map',
       publicContextArchetypeId: 'marco',
       publicContextAxisId: 'edge_decay',
+      publicContextPacketSource: 'backend_teaser',
       publicContextArtifactStatus: 'backend_teaser_persisted',
       publicContextProductionArtifactProven: 'false',
       publicContextStorySource: 'guided',
@@ -366,7 +348,7 @@ describe('ActivationPage', () => {
       publicContextTeaserWorstPattern: 'Edge Decay',
       publicContextTeaserVerified: 'true',
       publicContextTeaserVerificationStatus: 'verified',
-      publicContextTeaserReceiptHash: 'receipt-hash-authoritative',
+      publicContextTeaserReceiptHash: 'd'.repeat(64),
       publicContextTeaserVerifiedAt: '2026-06-21T00:00:00Z',
     })
     persistPublicReportSession(buildPublicReportSession({
@@ -424,8 +406,9 @@ describe('ActivationPage', () => {
       activationTeaserRequestId: 'TEASER-authoritative',
       activationTeaserTradesAnalyzed: 18,
       activationTeaserWorstPattern: 'Edge Decay',
+      activationTeaserVerified: 'true',
       activationTeaserVerificationStatus: 'verified',
-      activationTeaserReceiptHash: 'receipt-hash-authoritative',
+      activationTeaserReceiptHash: 'd'.repeat(64),
     })
     expect(storedSessionMeta.activationReportId).not.toBe('stale-local-report')
     expect(storedSessionMeta.activationAxisId).not.toBe('drawdown_pressure')

@@ -103,14 +103,15 @@ describe('Reset Pro demo route canary', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('PRESENTER-GATED APPEND SHORTCUT')).toBeInTheDocument()
+    expect(await screen.findByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/dashboard/upload?market=global')
     expect(screen.getAllByText('RESET PRO PREVIEW').length).toBeGreaterThan(0)
-    expect(screen.getByText('RESET PRO PROOF EXIT')).toBeInTheDocument()
     expect(screen.getByText('RESET PRO SAMPLE APPEND PACKET')).toBeInTheDocument()
-    expect(screen.getByText('Presenter code accepted; sample context attached.')).toBeInTheDocument()
     expect(screen.getByText(/Sample mode does not persist uploads/i)).toBeInTheDocument()
     expect(screen.getByText(/Activation, real upload, generated artifacts, and repeat append packets/i)).toBeInTheDocument()
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe(SHIBUYA_SAMPLE_API_KEY)
+    expect(JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')).toMatchObject({
+      demoEntryMode: 'append_proof_shortcut',
+    })
   })
 })
