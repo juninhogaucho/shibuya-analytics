@@ -12,6 +12,7 @@ import {
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
+  type PublicTeaserReportReceipt,
 } from '../../lib/publicReportSession'
 import { usePublicReportSessionRecovery } from '../../lib/publicReportRecovery'
 import {
@@ -64,6 +65,76 @@ const REPORT_REVEAL_SEQUENCE = [
     boundary: 'Account-specific claims wait for activation, upload, generated artifacts, and append history.',
   },
 ] as const
+
+function hasNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value)
+}
+
+function formatTeaserNumber(value?: number): string {
+  if (!hasNumber(value)) {
+    return 'not returned'
+  }
+
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: Number.isInteger(value) ? 0 : 2,
+  }).format(value)
+}
+
+function formatTeaserPercent(value?: number): string {
+  return hasNumber(value) ? `${formatTeaserNumber(value)}%` : 'not returned'
+}
+
+function buildBackendTeaserEvidenceRows(teaser: PublicTeaserReportReceipt) {
+  return [
+    {
+      label: 'Trades analyzed',
+      value: formatTeaserNumber(teaser.tradesAnalyzed),
+      body: 'Accepted by Medallion public teaser processing before this report route opened.',
+    },
+    hasNumber(teaser.totalPnl)
+      ? {
+          label: 'Total P&L',
+          value: `${formatTeaserNumber(teaser.totalPnl)} P&L units`,
+          body: 'Aggregate public teaser number only. Currency and account-specific conclusions wait for live upload.',
+        }
+      : null,
+    hasNumber(teaser.disciplineTax)
+      ? {
+          label: 'Discipline tax estimate',
+          value: `${formatTeaserNumber(teaser.disciplineTax)} P&L units`,
+          body: 'Public loss-cluster estimate. Reset Pro still has to prove whether it repeats from live account history.',
+        }
+      : null,
+    hasNumber(teaser.winRate)
+      ? {
+          label: 'Win rate',
+          value: formatTeaserPercent(teaser.winRate),
+          body: 'Computed from the uploaded public teaser rows, not from a persistent live workspace.',
+        }
+      : null,
+    hasNumber(teaser.winners) && hasNumber(teaser.losers)
+      ? {
+          label: 'Winner / loser split',
+          value: `${formatTeaserNumber(teaser.winners)} / ${formatTeaserNumber(teaser.losers)}`,
+          body: 'Aggregate count only. Raw trade rows are not stored in the browser report packet.',
+        }
+      : null,
+    hasNumber(teaser.avgWin) && hasNumber(teaser.avgLoss)
+      ? {
+          label: 'Average win / loss',
+          value: `${formatTeaserNumber(teaser.avgWin)} / ${formatTeaserNumber(teaser.avgLoss)}`,
+          body: 'Backend teaser aggregate used to frame the private question, not to close it.',
+        }
+      : null,
+    hasNumber(teaser.maxLossStreak)
+      ? {
+          label: 'Max loss streak',
+          value: formatTeaserNumber(teaser.maxLossStreak),
+          body: 'Sequence signal from the teaser. Append history must prove whether the state changed.',
+        }
+      : null,
+  ].filter((row): row is { label: string; value: string; body: string } => Boolean(row))
+}
 
 export default function FreeReportPage() {
   const { id } = useParams()
@@ -149,6 +220,8 @@ export default function FreeReportPage() {
   const guidedInsightPath = addMarketToPath(`/insight/${guidedLockedSectionSlug}?${guidedInsightSearch}`, market)
   const reportEngagementRows = buildPublicReportEngagementRows(reportEngagement)
   const reportLiveProofGap = reportSession?.liveProofGap ?? buildLiveProofReadinessContract()
+  const backendTeaser = reportSession?.backendTeaser ?? null
+  const backendTeaserEvidenceRows = backendTeaser ? buildBackendTeaserEvidenceRows(backendTeaser) : []
   const reportPacketFallbackLabel =
     reportSessionRecovery.status === 'loading'
       ? 'Checking backend teaser receipt'
@@ -280,6 +353,63 @@ export default function FreeReportPage() {
             detail="The report gives a useful baseline and names the private question. It still does not cross into account-specific truth without live evidence."
           />
         </div>
+
+        {backendTeaser ? (
+          <section className="mb-8 min-w-0 rounded-[2rem] border border-emerald-300/20 bg-emerald-300/[0.055] p-5 md:p-8">
+            <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-200">
+                  Backend teaser evidence
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">Medallion returned aggregate proof for this public report.</h2>
+              </div>
+              <p className="text-sm leading-7 text-emerald-50/75">
+                This is the strongest public-side evidence currently attached to the report. It is still a teaser receipt:
+                no raw rows, no payment proof, no live workspace artifact, and no private conclusion.
+              </p>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {backendTeaserEvidenceRows.map((row) => (
+                <article key={row.label} className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100">{row.label}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{row.value}</h3>
+                  <p className="mt-3 text-sm leading-6 text-emerald-50/70">{row.body}</p>
+                </article>
+              ))}
+            </div>
+            <div className="mt-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+              <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100">Worst pattern</p>
+                <h3 className="mt-2 text-lg font-semibold text-white">{backendTeaser.worstPattern ?? 'not returned'}</h3>
+                <p className="mt-3 text-sm leading-6 text-emerald-50/70">
+                  {backendTeaser.hook ?? 'Medallion did not return a public hook for this teaser receipt.'}
+                </p>
+              </article>
+              <article className="rounded-3xl border border-white/10 bg-black/25 p-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100">Pattern flags</p>
+                {backendTeaser.patternsDetected?.length ? (
+                  <ul className="mt-3 space-y-3 text-sm leading-6 text-emerald-50/75">
+                    {backendTeaser.patternsDetected.map((pattern) => (
+                      <li key={`${pattern.pattern}-${pattern.count ?? 'x'}-${pattern.cost ?? 'x'}`} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                        <span className="font-semibold text-white">{pattern.pattern}</span>
+                        <span className="block text-xs text-emerald-50/60">
+                          Count {formatTeaserNumber(pattern.count)}; cost {formatTeaserNumber(pattern.cost)} P&L units.
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-3 text-sm leading-6 text-emerald-50/70">
+                    No heuristic pattern flags were returned by the public teaser. The private workspace still has to test the carried question from live uploads.
+                  </p>
+                )}
+              </article>
+            </div>
+            <p className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-emerald-50/60">
+              Backend teaser rule: these aggregates can route the private question, but they cannot prove account-specific behavior improvement.
+            </p>
+          </section>
+        ) : null}
 
         <section className="mb-8 min-w-0 rounded-[2rem] border border-amber-300/20 bg-amber-300/[0.055] p-5 md:p-8">
           <div className="mb-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">

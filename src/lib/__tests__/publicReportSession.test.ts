@@ -122,6 +122,17 @@ describe('public report sessions', () => {
           worst_pattern: 'Revenge Trading',
           hook: '$120 discipline tax detected before activation.',
         },
+        metrics: {
+          winners: 6,
+          losers: 4,
+          avg_win: 85,
+          avg_loss: -42.5,
+          max_loss_streak: 3,
+        },
+        patterns_detected: [
+          { pattern: 'Revenge Trading', count: 2, cost: 84 },
+          { pattern: 'Overtrading', count: 1, cost: 0 },
+        ],
         processing_time_seconds: 0.42,
       },
     })
@@ -148,8 +159,17 @@ describe('public report sessions', () => {
         disciplineTax: 120,
         totalPnl: 420,
         winRate: 60,
+        winners: 6,
+        losers: 4,
+        avgWin: 85,
+        avgLoss: -42.5,
+        maxLossStreak: 3,
         worstPattern: 'Revenge Trading',
         hook: '$120 discipline tax detected before activation.',
+        patternsDetected: [
+          { pattern: 'Revenge Trading', count: 2, cost: 84 },
+          { pattern: 'Overtrading', count: 1, cost: 0 },
+        ],
         processingTimeSeconds: 0.42,
       },
     })
@@ -158,6 +178,9 @@ describe('public report sessions', () => {
     expect(stored?.validationFacts).toContain('Backend teaser persisted: report public-teaser-backed; request TEASER-abc123; 10 trades analyzed.')
     expect(stored?.validationFacts).toContain(`Backend teaser receipt hash: ${'a'.repeat(64)}.`)
     expect(stored?.validationFacts).toContain('Backend teaser hook: $120 discipline tax detected before activation.')
+    expect(stored?.validationFacts).toContain('Backend teaser aggregate split: 6 winners / 4 losers.')
+    expect(stored?.validationFacts).toContain('Backend teaser average win/loss: 85 / -42.5.')
+    expect(stored?.validationFacts).toContain('Backend teaser detected patterns: Revenge Trading, Overtrading.')
     expect(stored?.boundary).toContain('stores only the persisted backend teaser receipt')
   })
 
@@ -207,6 +230,13 @@ describe('public report sessions', () => {
           worst_pattern: 'Revenge Trading',
           hook: '$120 discipline tax detected before activation.',
         },
+        metrics: {
+          winners: 6,
+          losers: 6,
+        },
+        patterns_detected: [
+          { pattern: 'Revenge Trading', count: 2, cost: 84 },
+        ],
       },
     })
 
@@ -222,6 +252,8 @@ describe('public report sessions', () => {
     expect(session.validationSummary).toBe('Demo packet accepted. This proves the public journey transition, not live analytics.')
     expect(session.validationFacts).toContain('Artifact status: sample demo only; no backend-generated production report exists for this packet.')
     expect(session.validationFacts).not.toContain('Backend teaser persisted: report public-teaser-should-not-attach; request TEASER-should-not-attach; 12 trades analyzed.')
+    expect(session.validationFacts).not.toContain('Backend teaser aggregate split: 6 winners / 6 losers.')
+    expect(session.validationFacts).not.toContain('Backend teaser detected patterns: Revenge Trading.')
     expect(session.boundary).toContain('not a production report artifact')
   })
 

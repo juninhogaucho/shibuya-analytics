@@ -349,6 +349,17 @@ describe('public Shibuya journey pages', () => {
           worst_pattern: 'Revenge Trading',
           hook: '$120 discipline tax detected before activation.',
         },
+        metrics: {
+          winners: 6,
+          losers: 4,
+          avg_win: 85,
+          avg_loss: -42.5,
+          max_loss_streak: 3,
+        },
+        patterns_detected: [
+          { pattern: 'Revenge Trading', count: 2, cost: 84 },
+          { pattern: 'Overtrading', count: 1, cost: 0 },
+        ],
         processing_time_seconds: 0.42,
       }
     })
@@ -378,6 +389,16 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Backend teaser persisted: report public-teaser-route-123; request TEASER-route-123; 10 trades analyzed.')).toBeInTheDocument()
     expect(screen.getByText(`Backend teaser receipt hash: ${'b'.repeat(64)}.`)).toBeInTheDocument()
     expect(screen.getByText('Backend teaser hook: $120 discipline tax detected before activation.')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser evidence')).toBeInTheDocument()
+    expect(screen.getByText('Medallion returned aggregate proof for this public report.')).toBeInTheDocument()
+    expect(screen.getByText('Trades analyzed')).toBeInTheDocument()
+    expect(screen.getAllByText('Discipline tax estimate').length).toBeGreaterThan(0)
+    expect(screen.getByText('120 P&L units')).toBeInTheDocument()
+    expect(screen.getByText('Winner / loser split')).toBeInTheDocument()
+    expect(screen.getByText('6 / 4')).toBeInTheDocument()
+    expect(screen.getByText('Max loss streak')).toBeInTheDocument()
+    expect(screen.getAllByText('Revenge Trading').length).toBeGreaterThan(0)
+    expect(screen.getByText(/Count 2; cost 84 P&L units/i)).toBeInTheDocument()
     expect(screen.getAllByText(/Backend teaser receipt persisted/i).length).toBeGreaterThan(0)
 
     const reportId = screen.getByTestId('location').textContent?.match(/\/report\/([^?]+)/)?.[1]
@@ -397,6 +418,15 @@ describe('public Shibuya journey pages', () => {
         receiptHash: 'b'.repeat(64),
         tradesAnalyzed: 10,
         disciplineTax: 120,
+        winners: 6,
+        losers: 4,
+        avgWin: 85,
+        avgLoss: -42.5,
+        maxLossStreak: 3,
+        patternsDetected: [
+          { pattern: 'Revenge Trading', count: 2, cost: 84 },
+          { pattern: 'Overtrading', count: 1, cost: 0 },
+        ],
       },
     })
     expect(hasCheckoutGradePublicReportSession(stored)).toBe(true)
@@ -801,6 +831,16 @@ describe('public Shibuya journey pages', () => {
         worst_pattern: 'Revenge Trading',
         hook: '$95 discipline tax recovered from the persisted teaser.',
       },
+      metrics: {
+        winners: 6,
+        losers: 4,
+        avg_win: 72,
+        avg_loss: -30,
+        max_loss_streak: 2,
+      },
+      patterns_detected: [
+        { pattern: 'Revenge Trading', count: 1, cost: 30 },
+      ],
       processing_time_seconds: 0.31,
       created_at: '2026-06-20T22:00:00Z',
     })
@@ -822,6 +862,10 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Backend teaser recovered: report public-teaser-share-123; request TEASER-share-123; 10 trades analyzed.')).toBeInTheDocument()
     expect(screen.getByText(`Backend teaser receipt hash: ${'c'.repeat(64)}.`)).toBeInTheDocument()
     expect(screen.getByText('Backend teaser hook: $95 discipline tax recovered from the persisted teaser.')).toBeInTheDocument()
+    expect(screen.getByText('Backend teaser evidence')).toBeInTheDocument()
+    expect(screen.getByText('95 P&L units')).toBeInTheDocument()
+    expect(screen.getByText('6 / 4')).toBeInTheDocument()
+    expect(screen.getByText(/Count 1; cost 30 P&L units/i)).toBeInTheDocument()
     expect(screen.getByText(/Recovered from Medallion by report id\/request id/i)).toBeInTheDocument()
     expect(screen.getAllByText(/Backend teaser receipt recovered from Medallion/i).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
@@ -840,6 +884,11 @@ describe('public Shibuya journey pages', () => {
         requestId: 'TEASER-share-123',
         receiptHash: 'c'.repeat(64),
         tradesAnalyzed: 10,
+        winners: 6,
+        losers: 4,
+        patternsDetected: [
+          { pattern: 'Revenge Trading', count: 1, cost: 30 },
+        ],
       },
     })
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')

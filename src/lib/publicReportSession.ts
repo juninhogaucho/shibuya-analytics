@@ -59,6 +59,12 @@ export interface PublicReportSession {
   backendTeaser?: PublicTeaserReportReceipt | null
 }
 
+export interface PublicTeaserDetectedPattern {
+  pattern: string
+  count?: number
+  cost?: number
+}
+
 export interface PublicTeaserReportReceipt {
   reportId?: string
   requestId: string
@@ -68,8 +74,14 @@ export interface PublicTeaserReportReceipt {
   disciplineTax?: number
   totalPnl?: number
   winRate?: number
+  winners?: number
+  losers?: number
+  avgWin?: number
+  avgLoss?: number
+  maxLossStreak?: number
   worstPattern?: string
   hook?: string
+  patternsDetected?: PublicTeaserDetectedPattern[]
   processingTimeSeconds?: number
   createdAt?: string
 }
@@ -223,6 +235,51 @@ function normalizePainAxes(axisIds?: string[]): FingerprintAxisId[] {
   return [...seen]
 }
 
+function toFiniteNumber(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : undefined
+  }
+  return undefined
+}
+
+function readBackendMetricNumber(metrics: Record<string, unknown> | undefined, key: string): number | undefined {
+  return toFiniteNumber(metrics?.[key])
+}
+
+function sanitizeBackendTeaserPatterns(patterns?: Array<Record<string, unknown>>): PublicTeaserDetectedPattern[] {
+  const sanitized: PublicTeaserDetectedPattern[] = []
+
+  for (const item of patterns ?? []) {
+    const pattern = typeof item.pattern === 'string' ? item.pattern.trim() : ''
+    if (!pattern) {
+      continue
+    }
+
+    const nextPattern: PublicTeaserDetectedPattern = { pattern }
+    const count = toFiniteNumber(item.count)
+    const cost = toFiniteNumber(item.cost)
+
+    if (count !== undefined) {
+      nextPattern.count = count
+    }
+    if (cost !== undefined) {
+      nextPattern.cost = cost
+    }
+
+    sanitized.push(nextPattern)
+
+    if (sanitized.length >= 3) {
+      break
+    }
+  }
+
+  return sanitized
+}
+
 function getPasteRows(pasteBody?: string): string[] {
   return (pasteBody ?? '')
     .split(/\r?\n/)
@@ -312,8 +369,14 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         disciplineTax: params.backendTeaser.headline?.discipline_tax,
         totalPnl: params.backendTeaser.headline?.total_pnl,
         winRate: params.backendTeaser.headline?.win_rate,
+        winners: readBackendMetricNumber(params.backendTeaser.metrics, 'winners'),
+        losers: readBackendMetricNumber(params.backendTeaser.metrics, 'losers'),
+        avgWin: readBackendMetricNumber(params.backendTeaser.metrics, 'avg_win'),
+        avgLoss: readBackendMetricNumber(params.backendTeaser.metrics, 'avg_loss'),
+        maxLossStreak: readBackendMetricNumber(params.backendTeaser.metrics, 'max_loss_streak'),
         worstPattern: params.backendTeaser.headline?.worst_pattern,
         hook: params.backendTeaser.headline?.hook,
+        patternsDetected: sanitizeBackendTeaserPatterns(params.backendTeaser.patterns_detected),
         processingTimeSeconds: params.backendTeaser.processing_time_seconds,
         createdAt: params.backendTeaser.created_at,
       }
@@ -379,6 +442,15 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
               ? `Backend teaser receipt hash: ${backendTeaser.receiptHash}.`
               : null,
             backendTeaser?.hook ? `Backend teaser hook: ${backendTeaser.hook}` : null,
+            typeof backendTeaser?.winners === 'number' && typeof backendTeaser.losers === 'number'
+              ? `Backend teaser aggregate split: ${backendTeaser.winners} winners / ${backendTeaser.losers} losers.`
+              : null,
+            typeof backendTeaser?.avgWin === 'number' && typeof backendTeaser.avgLoss === 'number'
+              ? `Backend teaser average win/loss: ${backendTeaser.avgWin} / ${backendTeaser.avgLoss}.`
+              : null,
+            backendTeaser?.patternsDetected?.length
+              ? `Backend teaser detected patterns: ${backendTeaser.patternsDetected.map((pattern) => pattern.pattern).join(', ')}.`
+              : null,
             backendTeaserRecovered
               ? 'Recovered from Medallion by report id/request id; no raw trade rows or local file metadata are stored in this browser packet.'
               : 'Persisted by Medallion from this public upload; no raw trade rows or local file metadata are stored in this browser packet.',
@@ -395,6 +467,12 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
             ? `Backend teaser receipt hash: ${backendTeaser.receiptHash}.`
             : null,
           backendTeaser?.hook ? `Backend teaser hook: ${backendTeaser.hook}` : null,
+          typeof backendTeaser?.winners === 'number' && typeof backendTeaser.losers === 'number'
+            ? `Backend teaser aggregate split: ${backendTeaser.winners} winners / ${backendTeaser.losers} losers.`
+            : null,
+          backendTeaser?.patternsDetected?.length
+            ? `Backend teaser detected patterns: ${backendTeaser.patternsDetected.map((pattern) => pattern.pattern).join(', ')}.`
+            : null,
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           ...(params.fileValidationFacts ?? []),
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
