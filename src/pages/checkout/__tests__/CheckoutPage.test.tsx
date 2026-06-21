@@ -8,6 +8,7 @@ import CheckoutPage from '../CheckoutPage'
 
 const checkoutMocks = vi.hoisted(() => ({
   createCheckoutSession: vi.fn(),
+  getPublicTeaserReport: vi.fn(),
   redirectBrowser: vi.fn(),
   trackAffiliateClick: vi.fn(),
   validatePromoCode: vi.fn(),
@@ -23,10 +24,15 @@ vi.mock('../../../lib/browserNavigation', () => ({
   redirectBrowser: (...args: unknown[]) => checkoutMocks.redirectBrowser(...args),
 }))
 
+vi.mock('../../../lib/api/publicReport', () => ({
+  getPublicTeaserReport: (...args: unknown[]) => checkoutMocks.getPublicTeaserReport(...args),
+}))
+
 describe('CheckoutPage', () => {
   beforeEach(() => {
     window.localStorage.clear()
     checkoutMocks.createCheckoutSession.mockReset()
+    checkoutMocks.getPublicTeaserReport.mockReset()
     checkoutMocks.redirectBrowser.mockReset()
     checkoutMocks.trackAffiliateClick.mockReset()
     checkoutMocks.validatePromoCode.mockReset()
@@ -229,6 +235,80 @@ describe('CheckoutPage', () => {
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
   })
 
+  test('recovers a persisted backend teaser receipt before checkout when local report storage is missing', async () => {
+    const user = userEvent.setup()
+    checkoutMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-cross-device-123',
+      request_id: 'TEASER-cross-device-123',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'c'.repeat(64),
+      trades_analyzed: 16,
+      headline: {
+        discipline_tax: 630,
+        worst_pattern: 'Edge Decay',
+      },
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?source=locked_insight&section=edge-decay-map&report=public-teaser-cross-device-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay,revenge_reentry&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Persisted backend teaser receipt required before payment.')).toBeInTheDocument()
+    expect(screen.getByText(/No local public report packet was found in this browser/i)).toBeInTheDocument()
+
+    expect(await screen.findByText('Persisted public report receipt verified.')).toBeInTheDocument()
+    expect(screen.getByText(/Recovered persisted backend teaser receipt from Medallion/i)).toBeInTheDocument()
+    expect(screen.getByText('Checkout-grade receipt: verified persisted backend teaser')).toBeInTheDocument()
+    expect(checkoutMocks.getPublicTeaserReport).toHaveBeenCalledWith('public-teaser-cross-device-123')
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    await waitFor(() => {
+      expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
+    })
+
+    const checkoutPayload = checkoutMocks.createCheckoutSession.mock.calls[0][0]
+    expect(checkoutPayload).toMatchObject({
+      plan_id: 'shibuya_reset_pro_monthly',
+      email: 'founder@shibuya.test',
+      name: 'Luis Shibuya',
+      public_context_source: 'locked_insight',
+      public_context_report_id: 'public-teaser-cross-device-123',
+      public_context_section_id: 'edge-decay-map',
+      public_context_archetype_id: 'marco',
+      public_context_axis_id: 'edge_decay',
+      public_context_packet_source: 'backend_teaser',
+      public_context_artifact_status: 'backend_teaser_persisted',
+      public_context_production_artifact_proven: 'false',
+      public_context_teaser_request_id: 'TEASER-cross-device-123',
+      public_context_teaser_trades_analyzed: '16',
+      public_context_teaser_worst_pattern: 'Edge Decay',
+      public_context_story_source: 'guided',
+      public_context_story_scene_count: '6',
+      public_context_pain_axes: 'edge_decay,revenge_reentry',
+      public_context_signal_markers: 'mirror_selected,upload_intent',
+      public_context_report_views: '0',
+      public_context_locked_clicks: '0',
+      public_context_current_section_clicks: '0',
+      public_context_private_gate_attempts: '0',
+    })
+    expect(checkoutPayload).not.toHaveProperty('public_context_teaser_receipt_hash')
+    expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
+  })
+
   test('blocks URL-only locked insight checkout without a persisted teaser receipt', async () => {
     const user = userEvent.setup()
     render(
@@ -255,6 +335,7 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('Checkout handoff contract')).toBeInTheDocument()
     expect(screen.getByText(/Payment cannot prove/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
+    expect(checkoutMocks.getPublicTeaserReport).not.toHaveBeenCalled()
 
     await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
     await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
@@ -300,5 +381,6 @@ describe('CheckoutPage', () => {
     expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
     expect(checkoutMocks.createCheckoutSession).not.toHaveBeenCalled()
     expect(checkoutMocks.redirectBrowser).not.toHaveBeenCalled()
+    expect(checkoutMocks.getPublicTeaserReport).not.toHaveBeenCalled()
   })
 })

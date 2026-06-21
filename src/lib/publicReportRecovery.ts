@@ -80,7 +80,8 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
 
     let cancelled = false
 
-    getPublicTeaserReport(input.reportId)
+    Promise.resolve()
+      .then(() => getPublicTeaserReport(input.reportId))
       .then((backendTeaser) => {
         if (cancelled) {
           return

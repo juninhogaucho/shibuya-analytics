@@ -16,13 +16,14 @@ import { appendCheckoutIntentToPath, describeCheckoutIntent, enrichCheckoutInten
 import { addMarketToPath, formatPrice, getMarketPricing, getPlanKey, persistMarket, resolveMarket } from '../../lib/market'
 import {
   appendDemoLauncherSamplePacketToPath,
-  getPublicReportSession,
   hasCheckoutGradePublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
 } from '../../lib/publicReportSession'
+import { usePublicReportSessionRecovery } from '../../lib/publicReportRecovery'
 import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
+import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 
 interface CheckoutForm {
   name: string
@@ -38,7 +39,20 @@ const CheckoutPage: React.FC = () => {
   const planKey = getPlanKey(plan)
   const currentPlan = getMarketPricing(market)[planKey]
   const checkoutIntent = readCheckoutIntent(location.search)
-  const reportSession = getPublicReportSession(checkoutIntent?.reportId)
+  const recoveryArchetype = getTraderArchetype(checkoutIntent?.archetypeId)
+  const recoveryAxis = getFingerprintAxis(checkoutIntent?.axisId)
+  const reportSessionRecovery = usePublicReportSessionRecovery({
+    reportId: checkoutIntent?.reportId ?? '',
+    market,
+    archetypeId: recoveryArchetype.id,
+    axisId: recoveryAxis.id,
+    storySource: checkoutIntent?.storySource,
+    selectedPainAxisIds: checkoutIntent?.selectedPainAxisIds,
+    visitedSceneCount: checkoutIntent?.visitedSceneCount,
+    signalMarkerIds: checkoutIntent?.signalMarkerIds,
+    disabled: !checkoutIntent?.reportId || hasDemoLauncherSamplePacketRequest(location.search),
+  })
+  const reportSession = reportSessionRecovery.session
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
   const enrichedCheckoutIntent = enrichCheckoutIntent(checkoutIntent, {
@@ -54,12 +68,23 @@ const CheckoutPage: React.FC = () => {
   const hasLockedInsightCheckoutIntent =
     enrichedCheckoutIntent?.source === 'locked_insight' &&
     Boolean(enrichedCheckoutIntent.reportId && enrichedCheckoutIntent.lockedSectionId)
-  const hasLockedSectionIntentProof = checkoutEngagementSummary.currentSectionClickCount > 0
   const hasVerifiedBackendTeaserReceipt = hasCheckoutGradePublicReportSession(reportSession)
+  const hasRecoveredBackendTeaserReceipt =
+    reportSessionRecovery.status === 'recovered' && hasVerifiedBackendTeaserReceipt
+  const hasLockedSectionIntentProof =
+    checkoutEngagementSummary.currentSectionClickCount > 0 || hasRecoveredBackendTeaserReceipt
   const checkoutRouteReady =
     hasLockedInsightCheckoutIntent &&
     hasLockedSectionIntentProof &&
     hasVerifiedBackendTeaserReceipt
+  const checkoutReceiptStatusCopy =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking Medallion for a persisted public teaser receipt before payment can start.'
+      : reportSessionRecovery.status === 'failed'
+        ? `Medallion public teaser recovery failed: ${reportSessionRecovery.error}.`
+        : hasRecoveredBackendTeaserReceipt
+          ? 'Recovered persisted backend teaser receipt from Medallion. This browser may not have local engagement counts, so checkout will carry zero-count engagement truthfully.'
+          : reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'
   const pricingBackPath = addMarketToPath(appendCheckoutIntentToPath('/pricing', enrichedCheckoutIntent), market)
   const reportFirstPath = addMarketToPath('/upload', market)
   const isSubscription = currentPlan.type === 'subscription'
@@ -274,7 +299,9 @@ const CheckoutPage: React.FC = () => {
           </h2>
           <p className={`mt-2 text-sm leading-6 ${checkoutRouteReady ? 'text-sky-50/75' : 'text-rose-50/75'}`}>
             {checkoutRouteReady
-              ? 'This payment path includes report, locked module, archetype, axis, public-story handoff context, local locked-section intent, and a Medallion-persisted teaser receipt.'
+              ? hasRecoveredBackendTeaserReceipt
+                ? 'This payment path includes report, locked module, archetype, axis, public-story handoff context, and a Medallion-recovered teaser receipt. Local engagement counts stay zero unless this browser recorded them.'
+                : 'This payment path includes report, locked module, archetype, axis, public-story handoff context, local locked-section intent, and a Medallion-persisted teaser receipt.'
               : 'Checkout now requires a locked insight backed by a persisted Medallion teaser receipt. Local sample packets, URL context, and presenter demo packets cannot create paid live context.'}
           </p>
           {!checkoutRouteReady ? (
@@ -344,7 +371,7 @@ const CheckoutPage: React.FC = () => {
                 Artifact status: {reportSession?.artifactStatusLabel ?? 'URL context only'} / Live/private artifact: {reportSession?.productionArtifactProven ? 'proven' : 'not proven'}
               </p>
               <p className="mt-1 text-neutral-400">
-                {reportSession?.validationSummary ?? 'No local public report packet was found in this browser. Activation can preserve the route context, but not upload-step evidence.'}
+                {checkoutReceiptStatusCopy}
               </p>
               <p className={`mt-2 font-semibold ${hasVerifiedBackendTeaserReceipt ? 'text-emerald-200' : 'text-rose-200'}`}>
                 Checkout-grade receipt: {hasVerifiedBackendTeaserReceipt ? 'verified persisted backend teaser' : 'missing'}

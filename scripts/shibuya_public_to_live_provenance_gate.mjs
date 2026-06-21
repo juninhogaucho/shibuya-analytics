@@ -163,7 +163,7 @@ function runFrontendGate() {
   const vite = nodeTool('vite')
 
   const steps = [
-    runStep('vitest public-to-live provenance contract', vitest.command, [...vitest.args, 'run', ...FRONTEND_TEST_TARGETS]),
+    runStep('vitest public-to-live provenance contract', vitest.command, [...vitest.args, 'run', '--isolate', ...FRONTEND_TEST_TARGETS]),
     runStep('typecheck frontend provenance surface', tsc.command, [...tsc.args, '-b']),
     runStep('eslint frontend provenance surface', eslint.command, [...eslint.args, ...ESLINT_TARGETS]),
   ]
