@@ -1,5 +1,6 @@
 import { ArrowRight, BarChart3, Handshake, LineChart, ShieldCheck, Split, Target, TimerReset } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { getActorStoriesForSurface } from '../../lib/actorStories'
 import {
   DEFAULT_PARTNER_ECONOMICS,
   TVA_LEDGER_SOURCES,
@@ -11,20 +12,7 @@ import {
 
 export function PartnersPage() {
   const economics = calculatePartnerEconomics(DEFAULT_PARTNER_ECONOMICS)
-  const audiences = [
-    {
-      title: 'Prop firms',
-      body: 'Find the traders whose edge is real, whose behavior is expensive, and whose next account should be treated differently.',
-    },
-    {
-      title: 'Brokers',
-      body: 'Turn trading history into retention, education, and account-development signals without pretending every trader has the same problem.',
-    },
-    {
-      title: 'Tech providers',
-      body: 'Keep your platform stack. Add Shibuya as the intelligence layer that explains what the trader is actually doing inside it.',
-    },
-  ]
+  const audiences = getActorStoriesForSurface('partners')
 
   const dealModels = [
     {
@@ -121,12 +109,37 @@ export function PartnersPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="mb-10 max-w-3xl">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.22em] text-indigo-300">Actor-specific stories</p>
+          <h2 className="text-4xl font-black uppercase tracking-[-0.04em] text-white">
+            Every buyer gets a different truthful contract.
+          </h2>
+          <p className="mt-5 text-sm leading-relaxed text-neutral-400">
+            Partners, firms, traders, agencies, and research collaborators should not hear the same generic pitch.
+            The page answers what Shibuya can do for them, what they must provide, what they pay for, and what proof is still required.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {audiences.map((audience) => (
-            <article key={audience.title} className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
+            <article key={audience.id} className="rounded-[1.5rem] border border-white/10 bg-[#0A0A0B] p-6">
               <Target className="mb-5 h-6 w-6 text-indigo-300" />
-              <h3 className="text-xl font-bold text-white">{audience.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-400">{audience.body}</p>
+              <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-neutral-500">{audience.audienceLabel}</p>
+              <h3 className="text-xl font-bold text-white">{audience.label}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-400">{audience.headline}</p>
+              <div className="mt-5 space-y-3 text-xs leading-relaxed text-neutral-400">
+                <p>
+                  <span className="font-semibold text-indigo-100">Question:</span> {audience.theirQuestion}
+                </p>
+                <p>
+                  <span className="font-semibold text-emerald-100">We can do:</span> {audience.whatShibuyaCanDo[0]}
+                </p>
+                <p>
+                  <span className="font-semibold text-amber-100">They provide:</span> {audience.whatTheyGiveUs[0]}
+                </p>
+              </div>
+              <p className="mt-5 rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-xs leading-relaxed text-neutral-400">
+                {audience.truthBoundary}
+              </p>
             </article>
           ))}
         </div>

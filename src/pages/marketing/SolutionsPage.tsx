@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { Link, useLocation } from 'react-router-dom'
+import { getActorStoriesForSurface } from '../../lib/actorStories'
 import { addMarketToPath, resolveMarket } from '../../lib/market'
 
 const productSurfaces = [
@@ -53,6 +54,7 @@ const differentiation = [
 export function SolutionsPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
+  const traderStories = getActorStoriesForSurface('solutions')
 
   return (
     <div className="min-h-screen bg-[#020204] text-white selection:bg-blue-500/30">
@@ -70,6 +72,51 @@ export function SolutionsPage() {
               Shibuya exists to answer three questions fast: is this an edge problem or a behavior problem, what is the process cost, and what changes next session.
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="mb-10 max-w-3xl">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-blue-300">Actor stories</p>
+          <h2 className="text-4xl font-bold uppercase tracking-tight text-white">
+            Same product loop. Different trader truth.
+          </h2>
+          <p className="mt-5 text-sm leading-relaxed text-neutral-400">
+            Shibuya is B2C first, but traders arrive through different lives: direct retail, prop-firm pressure,
+            and broker account context. The display can change. The proof contract cannot.
+          </p>
+        </div>
+        <div className="grid gap-5 lg:grid-cols-3">
+          {traderStories.map((story) => (
+            <motion.article
+              key={story.id}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-[1.5rem] border border-white/8 bg-[#0A0A0B] p-6"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-neutral-500">{story.audienceLabel}</p>
+              <h3 className="mt-3 text-2xl font-semibold text-white">{story.label}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-300">{story.headline}</p>
+              <div className="mt-5 rounded-2xl border border-blue-300/20 bg-blue-300/[0.06] p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Question</p>
+                <p className="mt-2 text-sm leading-relaxed text-blue-50/80">{story.theirQuestion}</p>
+              </div>
+              <div className="mt-5 space-y-3">
+                <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">What we can do</p>
+                  <p className="mt-2 text-sm leading-relaxed text-neutral-300">{story.whatShibuyaCanDo[0]}</p>
+                </div>
+                <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-200">What we need</p>
+                  <p className="mt-2 text-sm leading-relaxed text-neutral-300">{story.whatTheyGiveUs[0]}</p>
+                </div>
+              </div>
+              <p className="mt-5 rounded-2xl border border-white/8 bg-white/[0.03] p-4 text-xs leading-relaxed text-neutral-400">
+                {story.truthBoundary}
+              </p>
+            </motion.article>
+          ))}
         </div>
       </section>
 
