@@ -99,6 +99,29 @@ export interface CheckoutSessionStatus {
   order_id?: string
   customer_name?: string
   plan_id?: string
+  public_context_source?: string | null
+  public_context_report_id?: string | null
+  public_context_section_id?: string | null
+  public_context_archetype_id?: string | null
+  public_context_axis_id?: string | null
+  public_context_packet_source?: string | null
+  public_context_artifact_status?: string | null
+  public_context_production_artifact_proven?: string | null
+  public_context_teaser_request_id?: string | null
+  public_context_teaser_trades_analyzed?: string | null
+  public_context_teaser_worst_pattern?: string | null
+  public_context_teaser_verified?: string | null
+  public_context_teaser_verification_status?: string | null
+  public_context_teaser_receipt_hash?: string | null
+  public_context_teaser_verified_at?: string | null
+  public_context_story_source?: 'guided' | 'direct' | string | null
+  public_context_story_scene_count?: string | null
+  public_context_pain_axes?: string | null
+  public_context_signal_markers?: string | null
+  public_context_report_views?: string | null
+  public_context_locked_clicks?: string | null
+  public_context_current_section_clicks?: string | null
+  public_context_private_gate_attempts?: string | null
 }
 
 export async function getCheckoutSession(sessionId: string): Promise<CheckoutSessionStatus> {
