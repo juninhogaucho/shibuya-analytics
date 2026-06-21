@@ -86,7 +86,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('What this upload step is allowed to prove.')).toBeInTheDocument()
     expect(screen.getByText(/Creates a report handoff with source, market, archetype/i)).toBeInTheDocument()
     expect(screen.getByText(/Stores no raw trade rows in this public preview surface/i)).toBeInTheDocument()
-    expect(screen.getByText(/Uses the backend teaser endpoint when the input has enough rows/i)).toBeInTheDocument()
+    expect(screen.getByText(/Generate Free Report requires a persisted backend teaser receipt/i)).toBeInTheDocument()
     expect(screen.getByText('Live proof gap ledger')).toBeInTheDocument()
     expect(screen.getByText('Live proof has a backend target, but still needs evidence.')).toBeInTheDocument()
     expect(screen.getByText(/This ledger is stored into the report packet/i)).toBeInTheDocument()
@@ -400,7 +400,54 @@ describe('public Shibuya journey pages', () => {
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
   })
 
-  test('eligible public paste falls back to local-only report when backend teaser fails', async () => {
+  test('eligible public paste requires a persisted backend teaser receipt shape', async () => {
+    const user = userEvent.setup()
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const pnl = index % 2 === 0 ? 35 + index : -20 - index
+      return `2026-06-${String(10 + index).padStart(2, '0')},XAUUSD,${index % 2 === 0 ? 'buy' : 'sell'},1,2300,2310,${pnl}`
+    })
+    const pasteBody = ['date,symbol,side,size,entry,exit,pnl', ...rows].join('\n')
+
+    publicReportMocks.generatePublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-weak-123',
+      request_id: 'TEASER-weak-123',
+      artifact_status: 'backend_teaser_generated',
+      production_artifact_proven: false,
+      receipt_hash: 'c'.repeat(64),
+      trades_analyzed: 10,
+      headline: {
+        discipline_tax: 120,
+      },
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    fireEvent.change(screen.getByLabelText(/Or paste a small trade sample/i), {
+      target: { value: pasteBody },
+    })
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Medallion did not return a persisted teaser receipt/i)).toBeInTheDocument()
+    })
+
+    expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
+  })
+
+  test('eligible public paste blocks report creation when backend teaser fails', async () => {
     const user = userEvent.setup()
     const rows = Array.from({ length: 10 }, (_, index) => {
       const pnl = index % 2 === 0 ? 40 + index : -18 - index
@@ -426,26 +473,13 @@ describe('public Shibuya journey pages', () => {
     await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
+      expect(screen.getByText(/Medallion teaser generation failed: teaser backend unavailable/i)).toBeInTheDocument()
     })
 
     expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
-    expect(screen.getAllByText(/Local preview only/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/Backend teaser attempted but failed: teaser backend unavailable/i)).toBeInTheDocument()
-    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
-
-    const reportId = screen.getByTestId('location').textContent?.match(/\/report\/([^?]+)/)?.[1] ?? ''
-    const stored = getPublicReportSession(reportId)
-    expect(stored).toMatchObject({
-      artifactStatus: 'local_preview_only',
-      artifactStatusLabel: 'Local preview only',
-      productionArtifactProven: false,
-      backendTeaser: null,
-    })
-    expect(stored?.validationFacts).toContain(
-      'Backend teaser attempted but failed: teaser backend unavailable. Report created as local preview only.',
-    )
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('NQ,buy')
   })
 
@@ -561,7 +595,7 @@ describe('public Shibuya journey pages', () => {
     })
   })
 
-  test('upload paste validation rejects prose and accepts a trade table', async () => {
+  test('upload paste validation rejects prose and blocks thin trade tables', async () => {
     const user = userEvent.setup()
 
     render(
@@ -588,17 +622,15 @@ describe('public Shibuya journey pages', () => {
     await user.type(sampleInput, 'date,symbol,side,size,entry,exit,pnl\n2026-06-18,NIFTY,buy,1,100,101,50')
     await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
-    expect(screen.getByText('Public report packet')).toBeInTheDocument()
-    expect(screen.getAllByText(/Local preview only/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Live/private artifact').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Not proven').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Pasted trade sample').length).toBeGreaterThan(0)
-    expect(screen.getByText(/Pasted sample passed local structure check/i)).toBeInTheDocument()
-    expect(screen.getByText(/Raw file contents and pasted trade rows are not stored/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=india&archetype=priya&axis=drawdown_pressure')
+    expect(screen.getByText(/A real free report now requires at least 10 validated trade rows/i)).toBeInTheDocument()
+    expect(screen.getByText(/Current validated rows: 1/i)).toBeInTheDocument()
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(publicReportMocks.generatePublicTeaserReport).not.toHaveBeenCalled()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
   })
 
-  test('upload file validation reads CSV structure before creating a report packet', async () => {
+  test('upload file validation reads CSV structure before blocking a thin report packet', async () => {
     const user = userEvent.setup()
 
     render(
@@ -626,12 +658,12 @@ describe('public Shibuya journey pages', () => {
 
     await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
 
-    expect(screen.getByTestId('location')).toHaveTextContent('/report/free-report-')
-    expect(screen.getByText('Public report packet')).toBeInTheDocument()
-    expect(screen.getAllByText('Local CSV file selected').length).toBeGreaterThan(0)
-    expect(screen.getByText(/Selected local CSV file passed local structure check/i)).toBeInTheDocument()
-    expect(screen.getByText(/Preview bytes inspected locally/i)).toBeInTheDocument()
-    expect(screen.getByText(/Raw file contents were read only inside this browser session and were not stored/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay')
+    expect(screen.getByText(/A real free report now requires at least 10 validated trade rows/i)).toBeInTheDocument()
+    expect(screen.getByText(/Current validated rows: 1/i)).toBeInTheDocument()
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(publicReportMocks.generatePublicTeaserReport).not.toHaveBeenCalled()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
   })
 
   test('upload file validation blocks unsupported spreadsheet files without a pasted table', async () => {

@@ -3,7 +3,7 @@ import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
-import { generatePublicTeaserReport } from '../../lib/api/publicReport'
+import { generatePublicTeaserReport, type PublicTeaserReportResponse } from '../../lib/api/publicReport'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import {
@@ -32,6 +32,7 @@ const LIVE_PROOF_STATUS_LABELS = {
 } as const
 
 const LOCAL_FILE_PREVIEW_BYTES = 32 * 1024
+const MIN_BACKEND_TEASER_TRADE_ROWS = 10
 
 interface LocalFileValidationState {
   status: 'idle' | 'validating' | 'passed' | 'blocked'
@@ -63,6 +64,42 @@ function countTradeRowsFromTable(body: string): number {
 
 function buildPastedTradeFile(body: string): File {
   return new File([body], 'public-teaser-upload.csv', { type: 'text/csv' })
+}
+
+function validateBackendTeaserReceipt(response: PublicTeaserReportResponse): string | null {
+  if (response.status !== 'success') {
+    return 'Medallion did not accept the teaser report request. No report packet was created.'
+  }
+
+  if (response.report_type !== 'teaser') {
+    return 'Medallion returned the wrong public report type. No report packet was created.'
+  }
+
+  if (!response.report_id?.trim()) {
+    return 'Medallion did not return a public teaser report id. No report packet was created.'
+  }
+
+  if (!response.request_id?.trim()) {
+    return 'Medallion did not return a public teaser request id. No report packet was created.'
+  }
+
+  if (response.artifact_status !== 'backend_teaser_persisted') {
+    return 'Medallion did not return a persisted teaser receipt. No report packet was created.'
+  }
+
+  if (!Number.isFinite(response.trades_analyzed) || response.trades_analyzed < MIN_BACKEND_TEASER_TRADE_ROWS) {
+    return `Medallion analyzed fewer than ${MIN_BACKEND_TEASER_TRADE_ROWS} trades, so the public report remains blocked.`
+  }
+
+  if (!response.receipt_hash || !/^[a-f0-9]{64}$/i.test(response.receipt_hash)) {
+    return 'Medallion did not return a valid secret-free teaser receipt hash. No report packet was created.'
+  }
+
+  if (response.production_artifact_proven === true) {
+    return 'Public teaser reports cannot claim private production artifact proof. No report packet was created.'
+  }
+
+  return null
 }
 
 export default function PublicUploadPage() {
@@ -113,7 +150,7 @@ export default function PublicUploadPage() {
         ? 'The public story selected the provisional archetype, pain axis, scene count, and website-level markers before this upload step.'
         : shouldUseDemoLauncherSamplePacket
           ? 'The demo launcher explicitly marks this path as a sample packet for continuity, not visitor analytics evidence.'
-          : 'No guided public story packet is attached. This route can create a report preview, but it must be treated as a weaker recovery path.',
+          : 'No guided public story packet is attached. This route can create a real public report only after Medallion persists a teaser receipt.',
     },
     {
       label: 'Report source label',
@@ -124,17 +161,17 @@ export default function PublicUploadPage() {
     },
     {
       label: 'Safe next click',
-      value: hasGuidedStoryHandoff ? 'Generate Guided Sample Report' : 'Run story or use recovery sample',
+      value: hasGuidedStoryHandoff ? 'Generate Guided Sample Report' : `Run story or attach ${MIN_BACKEND_TEASER_TRADE_ROWS}+ rows`,
       body: hasGuidedStoryHandoff
         ? 'Use the guided sample when demo speed matters and the route already carries story context.'
-        : 'For a cleaner public demo, return to the story first. The sample button remains available for recovery only.',
+        : 'For a cleaner public demo, return to the story first. The real submit button needs a persisted backend teaser receipt.',
     },
   ]
   const storyHomePath = getMarketHomePath(market)
   const reportPacketContract = [
     'Creates a report handoff with source, market, archetype, dominant pain, story source, scenes viewed, and selected public pain axes.',
     'Stores no raw trade rows in this public preview surface.',
-    'Uses the backend teaser endpoint when the input has enough rows; still requires live activation before private claims.',
+    'Generate Free Report requires a persisted backend teaser receipt; thin/local inputs are blocked instead of becoming report routes.',
   ]
   const predictionSurvivalRows = [
     {
@@ -199,11 +236,11 @@ export default function PublicUploadPage() {
   const getBackendTeaserFile = (): File | null => {
     const pastedTradeRowCount = countTradeRowsFromTable(pasteBody)
 
-    if (selectedFile && fileValidation.status === 'passed' && (fileValidation.rowCount ?? 0) >= 10) {
+    if (selectedFile && fileValidation.status === 'passed' && (fileValidation.rowCount ?? 0) >= MIN_BACKEND_TEASER_TRADE_ROWS) {
       return selectedFile
     }
 
-    if (pastedTradeRowCount >= 10 && !validatePublicPasteSample(pasteBody)) {
+    if (pastedTradeRowCount >= MIN_BACKEND_TEASER_TRADE_ROWS && !validatePublicPasteSample(pasteBody)) {
       return buildPastedTradeFile(pasteBody)
     }
 
@@ -211,7 +248,6 @@ export default function PublicUploadPage() {
   }
 
   const generateReport = async (source: 'upload' | 'sample') => {
-    const fallbackReportId = source === 'sample' ? 'sample-behavioral-leak-report' : `free-report-${Date.now()}`
     const validationError = validatePublicReportInput({
       fileName,
       fileValidationError: fileValidation.status === 'blocked' ? fileValidation.error : null,
@@ -225,20 +261,60 @@ export default function PublicUploadPage() {
       return
     }
 
-    setReportGenerating(true)
-    const backendTeaserFile = source === 'upload' && !shouldUseDemoLauncherSamplePacket ? getBackendTeaserFile() : null
-    const backendTeaserFacts: string[] = []
-    let backendTeaser: Awaited<ReturnType<typeof generatePublicTeaserReport>> | null = null
+    if (source === 'upload') {
+      const backendTeaserFile = getBackendTeaserFile()
 
-    if (backendTeaserFile) {
+      if (!backendTeaserFile) {
+        const validatedRows = Math.max(fileValidation.rowCount ?? 0, countTradeRowsFromTable(pasteBody))
+        setError(
+          `A real free report now requires at least ${MIN_BACKEND_TEASER_TRADE_ROWS} validated trade rows so Medallion can create a persisted backend teaser receipt. Current validated rows: ${validatedRows}. Use Sample History only for a non-product walkthrough.`,
+        )
+        return
+      }
+
+      setReportGenerating(true)
+
       try {
-        backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
+        const backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
+        const receiptError = validateBackendTeaserReceipt(backendTeaser)
+
+        if (receiptError) {
+          setError(receiptError)
+          return
+        }
+
+        const reportId = backendTeaser.report_id as string
+        persistPublicReportSession(
+          buildPublicReportSession({
+            reportId,
+            market,
+            archetypeId: archetype.id,
+            axisId: axis.id,
+            fileName,
+            fileValidationFacts: fileValidation.facts,
+            pasteBody,
+            source,
+            storySource,
+            selectedPainAxisIds,
+            visitedSceneCount,
+            signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+            backendTeaser,
+          }),
+        )
+
+        navigate(`/report/${reportId}${buildReportSearch(source)}`)
       } catch (caughtError) {
         const message = caughtError instanceof Error ? caughtError.message : 'Backend teaser generation failed.'
-        backendTeaserFacts.push(`Backend teaser attempted but failed: ${message}. Report created as local preview only.`)
+        setError(`Medallion teaser generation failed: ${message}. No report packet was created; use Sample History only for a non-product walkthrough.`)
+      } finally {
+        setReportGenerating(false)
       }
+
+      return
     }
-    const reportId = backendTeaser?.status === 'success' && backendTeaser.report_id ? backendTeaser.report_id : fallbackReportId
+
+    setReportGenerating(true)
+    const reportId = 'sample-behavioral-leak-report'
 
     try {
       persistPublicReportSession(
@@ -258,15 +334,11 @@ export default function PublicUploadPage() {
               market,
               archetypeId: archetype.id,
               axisId: axis.id,
-              fileName,
-              fileValidationFacts: [...fileValidation.facts, ...backendTeaserFacts],
-              pasteBody,
               source,
               storySource,
               selectedPainAxisIds,
               visitedSceneCount,
               signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
-              backendTeaser,
             }),
       )
 
@@ -372,8 +444,8 @@ export default function PublicUploadPage() {
             Upload your trade history. See what the fingerprint gets right.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-300">
-            The story page built a provisional mirror. This step is where Shibuya asks for evidence. Small previews stay
-            local; inputs with enough rows can generate a backend teaser receipt before the private answer remains locked.
+            The story page built a provisional mirror. This step is where Shibuya asks for evidence. The real free report
+            button now requires enough rows for Medallion to persist a backend teaser receipt before the private answer remains locked.
           </p>
 
           <div className="mt-8 grid gap-3 text-sm text-neutral-300">
@@ -393,7 +465,7 @@ export default function PublicUploadPage() {
         <div className="min-w-0 space-y-6">
           <PublicJourneySpine
             activeStage="upload"
-            detail="This step turns the public hypothesis into a report packet. In preview mode, it stores only local handoff metadata and never raw trade rows."
+            detail="This step turns the public hypothesis into either a persisted backend teaser receipt or an explicitly labelled sample packet. It never stores raw trade rows in browser state."
           />
 
           <form onSubmit={handleSubmit} className="min-w-0 rounded-[2rem] border border-white/10 bg-[#09090B] p-5 md:p-8">
@@ -435,7 +507,7 @@ export default function PublicUploadPage() {
                 </Link>
               ) : null}
               <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-sky-50/60">
-                Route rule: guided story can seed the question; direct upload can only create a local recovery packet.
+                Route rule: guided story can seed the question; direct upload must earn a persisted backend teaser receipt before it becomes a report route.
                 Neither route proves private analytics until live activation, normalization, generated artifacts, and append history exist.
               </p>
             </div>
@@ -527,7 +599,7 @@ export default function PublicUploadPage() {
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200">Prediction survival test</p>
               <h3 className="mt-2 text-lg font-semibold text-white">What is allowed to survive from story to report.</h3>
               <p className="mt-3 text-sm leading-6 text-cyan-50/75">
-                The upload step should not pretend the public story was analysis. It carries a hypothesis into a local report packet,
+                The upload step should not pretend the public story was analysis. It carries a hypothesis into a backend teaser or sample report packet,
                 then forces the private answer to wait for real account evidence.
               </p>
               <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -676,7 +748,7 @@ export default function PublicUploadPage() {
 
           <div className="rounded-[2rem] border border-amber-500/20 bg-amber-500/[0.05] p-5 text-sm leading-7 text-amber-100/90 md:p-6">
             <strong className="text-amber-100">Boundary:</strong> this public preview is designed to prove the journey.
-            The production report must come from normalized trade history and backend-generated artifacts before we claim account-specific analytics.
+            The real public report starts only after a persisted Medallion teaser receipt. The production report still requires normalized trade history and backend-generated artifacts before we claim account-specific analytics.
           </div>
 
           <div className="flex flex-wrap gap-3 text-sm">

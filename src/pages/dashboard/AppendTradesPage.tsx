@@ -23,7 +23,7 @@ import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
 import { getFingerprintAxis, getPublicStorySignalMarkers, getTraderArchetype } from '../../lib/storyExperience'
-import type { ShibuyaSessionMeta } from '../../lib/runtime'
+import type { ShibuyaRuntimeContract, ShibuyaSessionMeta } from '../../lib/runtime'
 import type { TradePasteMemoryResponse, TraderProfileContext, TradingReportComparisonResponse, UploadProofReceipt } from '../../lib/types'
 import { InfoTooltip } from '../../components/ui/Tooltip'
 
@@ -66,6 +66,21 @@ const INDIA_EXPORT_PRESETS = [
     body: 'Closed-trade CSV is enough for V1. EA and direct connectors stay future lanes; the point now is getting the leak on screen fast.',
   },
 ]
+
+const ANONYMOUS_RUNTIME_CONTRACT: ShibuyaRuntimeContract = {
+  mode: 'anonymous',
+  label: 'Public visitor',
+  canUseSampleData: false,
+  canPersistTrades: false,
+  persistence: 'none',
+  requiresBackend: false,
+  proofBoundary: 'Anonymous visitors can inspect the public product story but cannot access account analytics.',
+}
+
+function readRuntimeContract(): ShibuyaRuntimeContract {
+  const runtimeContract: ShibuyaRuntimeContract | undefined = getShibuyaRuntimeContract()
+  return runtimeContract ?? ANONYMOUS_RUNTIME_CONTRACT
+}
 
 function formatMemoryDelta(memory: TradePasteMemoryResponse): string[] {
   if (!memory.has_previous || memory.deltas.length === 0) {
@@ -290,7 +305,7 @@ export function AppendTradesPage() {
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
   const [liveUploadProof, setLiveUploadProof] = useState<TradeUploadResponse | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const runtimeContract = getShibuyaRuntimeContract()
+  const runtimeContract = readRuntimeContract()
   const sampleMode = runtimeContract.mode === 'sample'
   const navigate = useNavigate()
   const sessionMeta = getStoredSessionMeta()
