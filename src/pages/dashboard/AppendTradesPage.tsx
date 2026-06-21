@@ -20,7 +20,7 @@ import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { getShibuyaRuntimeContract, getStoredSessionMeta, isReadOnlySession, updateSessionMeta } from '../../lib/runtime'
 import { buildJourneyState } from '../../lib/journeyState'
 import { EMPTY_ACTIVATION_ORIGIN_META, buildDashboardActivationOriginMeta, hasVerifiedDashboardActivationOrigin } from '../../lib/activationOrigin'
-import { addMarketToPath } from '../../lib/market'
+import { addMarketToPath, type Market } from '../../lib/market'
 import { buildUploadPlaybook } from '../../lib/uploadPlaybook'
 import { rescueCsvForUpload } from '../../lib/csvRescue'
 import { humanizeTraderMode } from '../../lib/traderMode'
@@ -166,6 +166,10 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
     notes.push(`Backend request receipt: ${result.request_id}.`)
   }
 
+  if (result.completed_at) {
+    notes.push(`Upload completed at: ${result.completed_at}.`)
+  }
+
   return notes
 }
 
@@ -209,6 +213,9 @@ function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: Li
     trades_uploaded: result.trades_uploaded,
   }
 
+  if (result.completed_at) {
+    receipt.completed_at = result.completed_at
+  }
   if (result.report_snapshot_id) {
     receipt.report_snapshot_id = result.report_snapshot_id
   }
@@ -289,6 +296,37 @@ function buildFirstUploadLifecycleMetadata(
     activationTeaserVerificationStatus: sessionMeta?.activationTeaserVerificationStatus,
     activationTeaserReceiptHash: sessionMeta?.activationTeaserReceiptHash,
     activationTeaserVerifiedAt: sessionMeta?.activationTeaserVerifiedAt,
+  }
+}
+
+function shouldLogFirstUploadLifecycle(sessionMeta: ShibuyaSessionMeta | null): boolean {
+  return (
+    sessionMeta?.caseStatus === 'awaiting_upload'
+    || sessionMeta?.caseStatus === 'awaiting_onboarding'
+    || !sessionMeta?.caseStatus
+  )
+}
+
+async function tryLogFirstUploadLifecycleReceipt(
+  result: TradeUploadResponse,
+  sessionMeta: ShibuyaSessionMeta | null,
+  uploadTransport: LiveUploadTransport,
+  market: Market,
+): Promise<string | null> {
+  if (!shouldLogFirstUploadLifecycle(sessionMeta)) {
+    return null
+  }
+
+  try {
+    await logTraderLifecycleEvent({
+      event_name: 'first_upload_completed',
+      market,
+      tier: sessionMeta?.tier,
+      metadata: buildFirstUploadLifecycleMetadata(result, sessionMeta, uploadTransport),
+    })
+    return null
+  } catch {
+    return 'Lifecycle receipt sync failed after upload; the generated Medallion artifact receipt remains the proof boundary. Dashboard overview should refresh the authoritative account state on the next load.'
   }
 }
 
@@ -618,21 +656,16 @@ export function AppendTradesPage() {
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes(formatIncompleteUploadProofNotes(result))
         } else {
+          updateSessionMeta(liveUploadSessionPatch)
+          const lifecycleWarning = await tryLogFirstUploadLifecycleReceipt(result, effectiveSessionMeta, 'paste', market)
           const memory = await getTradePasteMemory().catch(() => null)
           const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
-          if (effectiveSessionMeta?.caseStatus === 'awaiting_upload' || effectiveSessionMeta?.caseStatus === 'awaiting_onboarding' || !effectiveSessionMeta?.caseStatus) {
-            await logTraderLifecycleEvent({
-              event_name: 'first_upload_completed',
-              market,
-              tier: effectiveSessionMeta?.tier,
-              metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'paste'),
-            })
-          }
-          updateSessionMeta(liveUploadSessionPatch)
-          const proofNotes = formatLiveUploadProofNotes(result)
+          const proofNotes = lifecycleWarning
+            ? [...formatLiveUploadProofNotes(result), lifecycleWarning]
+            : formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(
             memory
@@ -721,21 +754,16 @@ export function AppendTradesPage() {
             ...(rescued.applied ? rescued.notes : []),
           ])
         } else {
+          updateSessionMeta(liveUploadSessionPatch)
+          const lifecycleWarning = await tryLogFirstUploadLifecycleReceipt(result, effectiveSessionMeta, 'csv', market)
           const memory = await getTradePasteMemory().catch(() => null)
           const appendProofExpected = typeof result.append_count === 'number' && result.append_count >= 2
           const comparison = appendProofExpected
             ? await getTradingReportComparison().catch(() => null)
             : null
-          if (effectiveSessionMeta?.caseStatus === 'awaiting_upload' || effectiveSessionMeta?.caseStatus === 'awaiting_onboarding' || !effectiveSessionMeta?.caseStatus) {
-            await logTraderLifecycleEvent({
-              event_name: 'first_upload_completed',
-              market,
-              tier: effectiveSessionMeta?.tier,
-              metadata: buildFirstUploadLifecycleMetadata(result, effectiveSessionMeta, 'csv'),
-            })
-          }
-          updateSessionMeta(liveUploadSessionPatch)
-          const proofNotes = formatLiveUploadProofNotes(result)
+          const proofNotes = lifecycleWarning
+            ? [...formatLiveUploadProofNotes(result), lifecycleWarning]
+            : formatLiveUploadProofNotes(result)
           setSuccess(`Uploaded ${result.trades_uploaded} trades to your live account.`)
           setNotes(
             memory

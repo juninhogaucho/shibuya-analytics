@@ -26,6 +26,7 @@ export interface TradeUploadResponse {
   trades_uploaded: number
   message?: string
   request_id?: string
+  completed_at?: string
   report?: Record<string, unknown>
   report_snapshot_id?: string | null
   report_id?: string | null

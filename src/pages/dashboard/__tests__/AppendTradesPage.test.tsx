@@ -305,6 +305,7 @@ describe('AppendTradesPage', () => {
     submitParsedTradesMock.mockResolvedValue({
       status: 'ok',
       trades_uploaded: 2,
+      completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_003',
       report_id: 'report_upload_003',
       artifact_status: 'generated',
@@ -354,6 +355,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Report artifact: report_upload_003.')).toBeInTheDocument()
     expect(screen.getByText('Durable upload count for this account: 3.')).toBeInTheDocument()
     expect(screen.getByText('Backend request receipt: req_live_123.')).toBeInTheDocument()
+    expect(screen.getByText('Upload completed at: 2026-06-21T09:15:00Z.')).toBeInTheDocument()
     expect(screen.getByText('Comparing upload #3 to #2')).toBeInTheDocument()
     expect(screen.getByText('Win Rate: 50.0% -> 55.0% (+5.0pp)')).toBeInTheDocument()
     expect(screen.getByText('Append proof comparison is ready.')).toBeInTheDocument()
@@ -399,6 +401,7 @@ describe('AppendTradesPage', () => {
     const expectedReceipt = {
       upload_transport: 'paste',
       trades_uploaded: 2,
+      completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_003',
       report_id: 'report_upload_003',
       artifact_status: 'generated',
@@ -411,6 +414,105 @@ describe('AppendTradesPage', () => {
       firstUploadReceipt: expectedReceipt,
       latestUploadReceipt: expectedReceipt,
       uploadReceiptHistory: [expectedReceipt],
+    })
+  }, 15000)
+
+  test('keeps generated upload proof visible when lifecycle sync fails after upload', async () => {
+    isSampleModeMock.mockReturnValue(false)
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'live',
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    })
+    getStoredSessionMetaMock.mockReturnValue({
+      caseStatus: 'awaiting_upload',
+      market: 'india',
+      offerKind: 'psych_audit',
+      activationSource: 'locked_insight',
+      activationReportId: 'public-teaser-append',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationTeaserRequestId: 'TEASER-route-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'e'.repeat(64),
+      activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
+    })
+    submitParsedTradesMock.mockResolvedValue({
+      status: 'ok',
+      trades_uploaded: 2,
+      completed_at: '2026-06-21T09:15:00Z',
+      report_snapshot_id: 'snap_upload_lifecycle_001',
+      report_id: 'report_upload_lifecycle_001',
+      artifact_status: 'generated',
+      append_count: 1,
+      request_id: 'req_lifecycle_failed',
+    })
+    logTraderLifecycleEventMock.mockRejectedValue(new Error('lifecycle unavailable'))
+    const user = userEvent.setup()
+
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Trades'), {
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
+
+    expect(await screen.findByText('Uploaded 2 trades to your live account.')).toBeInTheDocument()
+    expect(screen.getByText('Backend artifact generated for this account.')).toBeInTheDocument()
+    expect(screen.getByText('Generated artifact snapshot: snap_upload_lifecycle_001.')).toBeInTheDocument()
+    expect(screen.getByText('Report artifact: report_upload_lifecycle_001.')).toBeInTheDocument()
+    expect(screen.getByText('Upload completed at: 2026-06-21T09:15:00Z.')).toBeInTheDocument()
+    expect(screen.getByText(/Lifecycle receipt sync failed after upload/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Failed to upload trades/i)).not.toBeInTheDocument()
+    expect(getTradePasteMemoryMock).toHaveBeenCalledTimes(1)
+    expect(logTraderLifecycleEventMock).toHaveBeenCalledTimes(1)
+    expect(updateSessionMetaMock).toHaveBeenCalledWith({
+      caseStatus: 'baseline_ready',
+      lastReportSnapshotId: 'snap_upload_lifecycle_001',
+      firstUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 2,
+        completed_at: '2026-06-21T09:15:00Z',
+        report_snapshot_id: 'snap_upload_lifecycle_001',
+        report_id: 'report_upload_lifecycle_001',
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_lifecycle_failed',
+      },
+      latestUploadReceipt: {
+        upload_transport: 'paste',
+        trades_uploaded: 2,
+        completed_at: '2026-06-21T09:15:00Z',
+        report_snapshot_id: 'snap_upload_lifecycle_001',
+        report_id: 'report_upload_lifecycle_001',
+        artifact_status: 'generated',
+        append_count: 1,
+        request_id: 'req_lifecycle_failed',
+      },
+      uploadReceiptHistory: [
+        {
+          upload_transport: 'paste',
+          trades_uploaded: 2,
+          completed_at: '2026-06-21T09:15:00Z',
+          report_snapshot_id: 'snap_upload_lifecycle_001',
+          report_id: 'report_upload_lifecycle_001',
+          artifact_status: 'generated',
+          append_count: 1,
+          request_id: 'req_lifecycle_failed',
+        },
+      ],
     })
   }, 15000)
 
@@ -469,6 +571,7 @@ describe('AppendTradesPage', () => {
     submitParsedTradesMock.mockResolvedValue({
       status: 'ok',
       trades_uploaded: 2,
+      completed_at: '2026-06-21T09:20:00Z',
       report_snapshot_id: 'snap_upload_overview_001',
       report_id: 'report_upload_overview_001',
       artifact_status: 'generated',
@@ -527,6 +630,7 @@ describe('AppendTradesPage', () => {
       firstUploadReceipt: {
         upload_transport: 'paste',
         trades_uploaded: 2,
+        completed_at: '2026-06-21T09:20:00Z',
         report_snapshot_id: 'snap_upload_overview_001',
         report_id: 'report_upload_overview_001',
         artifact_status: 'generated',
@@ -536,6 +640,7 @@ describe('AppendTradesPage', () => {
       latestUploadReceipt: {
         upload_transport: 'paste',
         trades_uploaded: 2,
+        completed_at: '2026-06-21T09:20:00Z',
         report_snapshot_id: 'snap_upload_overview_001',
         report_id: 'report_upload_overview_001',
         artifact_status: 'generated',
@@ -546,6 +651,7 @@ describe('AppendTradesPage', () => {
         {
           upload_transport: 'paste',
           trades_uploaded: 2,
+          completed_at: '2026-06-21T09:20:00Z',
           report_snapshot_id: 'snap_upload_overview_001',
           report_id: 'report_upload_overview_001',
           artifact_status: 'generated',
