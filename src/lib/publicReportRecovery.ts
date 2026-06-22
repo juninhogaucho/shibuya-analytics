@@ -4,7 +4,7 @@ import type { Market } from './market'
 import {
   buildPublicReportSession,
   getPublicReportSession,
-  persistPublicReportSession,
+  persistPublicReportSessionAliases,
   validatePublicTeaserReportResponse,
   type PublicReportSession,
 } from './publicReportSession'
@@ -112,7 +112,11 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
           signalMarkerIds,
           backendTeaser,
         })
-        persistPublicReportSession(recoveredSession)
+        persistPublicReportSessionAliases(recoveredSession, [
+          input.reportId,
+          backendTeaser.report_id,
+          backendTeaser.request_id,
+        ])
         setState({
           reportId: input.reportId,
           session: recoveredSession,

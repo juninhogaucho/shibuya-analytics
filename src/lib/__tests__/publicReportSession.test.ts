@@ -8,6 +8,7 @@ import {
   getPublicReportSession,
   hasCheckoutGradePublicReportSession,
   hasDemoLauncherSamplePacketRequest,
+  persistPublicReportSessionAliases,
   persistPublicReportSession,
   validatePublicPasteSample,
   validatePublicReportInput,
@@ -201,6 +202,47 @@ describe('public report sessions', () => {
     expect(validatePublicTeaserReportResponse({ ...validResponse, trades_analyzed: 9 })).toContain('fewer than 10 trades')
     expect(validatePublicTeaserReportResponse({ ...validResponse, receipt_hash: 'not-a-receipt' })).toContain('valid secret-free teaser receipt hash')
     expect(validatePublicTeaserReportResponse({ ...validResponse, production_artifact_proven: true })).toContain('cannot claim private production artifact proof')
+  })
+
+  test('stores recovered backend teaser sessions under canonical report id and lookup aliases', () => {
+    const session = buildPublicReportSession({
+      reportId: 'public-teaser-canonical-123',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'backend_teaser',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        report_id: 'public-teaser-canonical-123',
+        request_id: 'TEASER-canonical-123',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 'e'.repeat(64),
+        trades_analyzed: 14,
+      },
+    })
+
+    persistPublicReportSessionAliases(session, ['TEASER-canonical-123', ''])
+
+    expect(getPublicReportSession('public-teaser-canonical-123')).toMatchObject({
+      reportId: 'public-teaser-canonical-123',
+      backendTeaser: {
+        requestId: 'TEASER-canonical-123',
+      },
+    })
+    expect(getPublicReportSession('TEASER-canonical-123')).toMatchObject({
+      reportId: 'public-teaser-canonical-123',
+      backendTeaser: {
+        reportId: 'public-teaser-canonical-123',
+        requestId: 'TEASER-canonical-123',
+      },
+    })
+    expect(hasCheckoutGradePublicReportSession(getPublicReportSession('TEASER-canonical-123'))).toBe(true)
   })
 
   test('refuses to attach backend teaser receipts to sample report sessions', () => {

@@ -627,21 +627,42 @@ function readStore(): PublicReportSessionStore {
   }
 }
 
-export function persistPublicReportSession(session: PublicReportSession): void {
+function normalizeReportSessionLookupId(value?: string | null): string | null {
+  const normalized = value?.trim()
+  return normalized || null
+}
+
+export function persistPublicReportSessionAliases(
+  session: PublicReportSession,
+  aliases: Array<string | null | undefined> = [],
+): void {
   if (typeof window === 'undefined') {
     return
   }
 
   const store = readStore()
+  const sessions = {
+    ...store.sessions,
+    [session.reportId]: session,
+  }
+
+  for (const alias of aliases) {
+    const normalizedAlias = normalizeReportSessionLookupId(alias)
+    if (normalizedAlias) {
+      sessions[normalizedAlias] = session
+    }
+  }
+
   window.localStorage.setItem(
     PUBLIC_REPORT_SESSION_STORAGE_KEY,
     JSON.stringify({
-      sessions: {
-        ...store.sessions,
-        [session.reportId]: session,
-      },
+      sessions,
     }),
   )
+}
+
+export function persistPublicReportSession(session: PublicReportSession): void {
+  persistPublicReportSessionAliases(session)
 }
 
 export function getPublicReportSession(reportId?: string | null): PublicReportSession | null {

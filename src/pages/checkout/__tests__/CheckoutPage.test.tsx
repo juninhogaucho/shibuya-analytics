@@ -311,6 +311,63 @@ describe('CheckoutPage', () => {
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
   })
 
+  test('canonicalizes request-id recovery before creating paid checkout metadata', async () => {
+    const user = userEvent.setup()
+    checkoutMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-canonical-checkout',
+      request_id: 'TEASER-canonical-checkout',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'e'.repeat(64),
+      trades_analyzed: 18,
+      headline: {
+        discipline_tax: 740,
+        worst_pattern: 'Revenge Trading',
+      },
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?source=locked_insight&section=edge-decay-map&report=TEASER-canonical-checkout&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay,revenge_reentry&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Persisted public report receipt verified.')).toBeInTheDocument()
+    expect(checkoutMocks.getPublicTeaserReport).toHaveBeenCalledWith('TEASER-canonical-checkout')
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    await waitFor(() => {
+      expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
+    })
+
+    const checkoutPayload = checkoutMocks.createCheckoutSession.mock.calls[0][0]
+    expect(checkoutPayload).toMatchObject({
+      public_context_report_id: 'public-teaser-canonical-checkout',
+      public_context_teaser_request_id: 'TEASER-canonical-checkout',
+      public_context_teaser_trades_analyzed: '18',
+      public_context_teaser_worst_pattern: 'Revenge Trading',
+      public_context_report_views: '0',
+      public_context_locked_clicks: '0',
+      public_context_current_section_clicks: '0',
+      public_context_private_gate_attempts: '0',
+    })
+    expect(checkoutPayload.success_url).toContain('report=public-teaser-canonical-checkout')
+    expect(checkoutPayload.cancel_url).toContain('report=public-teaser-canonical-checkout')
+    expect(checkoutPayload.public_context_report_id).not.toBe('TEASER-canonical-checkout')
+    expect(checkoutPayload).not.toHaveProperty('public_context_teaser_receipt_hash')
+  })
+
   test('blocks URL-only locked insight checkout without a persisted teaser receipt', async () => {
     const user = userEvent.setup()
     render(

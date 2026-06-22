@@ -175,6 +175,7 @@ export default function FreeReportPage() {
   const reportSession = storedReportSession ?? demoLauncherSession
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
+  const canonicalReportId = reportSession?.reportId ?? reportId
 
   useEffect(() => {
     if (demoLauncherSession) {
@@ -186,7 +187,7 @@ export default function FreeReportPage() {
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
   const effectiveSignalMarkerIds = reportSession?.signalMarkerIds ?? urlStoryHandoff?.signalMarkerIds
   const report = buildFreeReportPreview({
-    reportId,
+    reportId: canonicalReportId,
     archetypeId: params.get('archetype'),
     axisId: params.get('axis'),
     storySource: effectiveStorySource,

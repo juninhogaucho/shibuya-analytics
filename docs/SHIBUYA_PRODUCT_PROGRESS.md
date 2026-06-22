@@ -1,6 +1,6 @@
 # Shibuya Product Progress
 
-Last updated: 2026-06-22
+Last updated: 2026-06-23
 
 Purpose: keep a durable record of what has actually moved toward the real-product path so agents do not repeat the same discovery, rebuild demo-only surfaces, or claim progress without proof.
 
@@ -288,3 +288,40 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It proves the workspace phase/readiness layer cannot promote generated-looking receipts with proof validation errors or zero uploaded trades into baseline/append proof in local code and tests.
+
+### 7. Canonical Public Teaser Identity Boundary
+
+Status: validated locally; pending push proof
+
+Files changed:
+
+- `src/lib/publicReportSession.ts`
+- `src/lib/publicReportRecovery.ts`
+- `src/pages/marketing/FreeReportPage.tsx`
+- `src/pages/marketing/LockedInsightPage.tsx`
+- `src/pages/checkout/CheckoutPage.tsx`
+- `src/lib/__tests__/publicReportSession.test.ts`
+- `src/pages/marketing/__tests__/PublicJourneyPages.test.tsx`
+- `src/pages/checkout/__tests__/CheckoutPage.test.tsx`
+
+What changed:
+
+- Recovered public teaser sessions are now persisted under the canonical backend `report_id` and lookup aliases such as the original URL id and `TEASER-*` request id.
+- Free report and locked insight pages now switch downstream links to the canonical backend report id once recovery proves a persisted backend teaser receipt.
+- Checkout now sends the canonical backend report id in paid public-context metadata after request-id recovery, while still carrying the backend teaser request id separately.
+- Sample/demo packets and URL-only routes remain non-checkout-grade and cannot use alias recovery to create paid live context.
+
+Evidence so far:
+
+- Shibuya focused canonical identity tests: `3 passed / 39 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `66 passed / 66 files`, `251 passed / 251 tests`.
+- Backend source contract inspected: Medallion `get_public_teaser_report` currently retrieves persisted teaser receipts by public report id or request id and returns the canonical stored `report_id`.
+
+Remaining gap:
+
+- Needs pushed commit proof.
+- Medallion focused pytest was attempted with system Python and bundled Codex Python, but both environments lacked `pytest`; no backend test pass is claimed for this slice.
+- This does not prove deployed live runtime. It proves the frontend stops treating request-id URL text as the paid/live report identity after backend recovery returns canonical persisted teaser evidence.

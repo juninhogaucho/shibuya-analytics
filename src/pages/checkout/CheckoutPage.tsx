@@ -52,14 +52,26 @@ const CheckoutPage: React.FC = () => {
     disabled: !checkoutIntent?.reportId || hasDemoLauncherSamplePacketRequest(location.search),
   })
   const reportSession = reportSessionRecovery.session
+  const hasVerifiedBackendTeaserReceipt = hasCheckoutGradePublicReportSession(reportSession)
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
-  const enrichedCheckoutIntent = enrichCheckoutIntent(checkoutIntent, {
-    storySource: reportSession?.storySource,
-    visitedSceneCount: reportSession?.visitedSceneCount,
-    selectedPainAxisIds: reportSession?.selectedPainAxisIds,
-    signalMarkerIds: reportSession?.signalMarkerIds,
-  })
+  const enrichedCheckoutIntent = (() => {
+    const enriched = enrichCheckoutIntent(checkoutIntent, {
+      storySource: reportSession?.storySource,
+      visitedSceneCount: reportSession?.visitedSceneCount,
+      selectedPainAxisIds: reportSession?.selectedPainAxisIds,
+      signalMarkerIds: reportSession?.signalMarkerIds,
+    })
+
+    if (enriched && hasVerifiedBackendTeaserReceipt && reportSession?.reportId) {
+      return {
+        ...enriched,
+        reportId: reportSession.reportId,
+      }
+    }
+
+    return enriched
+  })()
   const checkoutEngagementSummary = buildPublicReportEngagementSummary(
     getPublicReportEngagement(enrichedCheckoutIntent?.reportId),
     enrichedCheckoutIntent?.lockedSectionId,
@@ -67,7 +79,6 @@ const CheckoutPage: React.FC = () => {
   const hasLockedInsightCheckoutIntent =
     enrichedCheckoutIntent?.source === 'locked_insight' &&
     Boolean(enrichedCheckoutIntent.reportId && enrichedCheckoutIntent.lockedSectionId)
-  const hasVerifiedBackendTeaserReceipt = hasCheckoutGradePublicReportSession(reportSession)
   const hasRecoveredBackendTeaserReceipt =
     reportSessionRecovery.status === 'recovered' && hasVerifiedBackendTeaserReceipt
   const hasLockedSectionIntentProof =

@@ -977,6 +977,56 @@ describe('public Shibuya journey pages', () => {
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1') ?? '').not.toContain('XAUUSD')
   })
 
+  test('free report canonicalizes request-id recovery before private handoff links', async () => {
+    publicReportMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-canonical-share',
+      request_id: 'TEASER-canonical-share',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'e'.repeat(64),
+      trades_analyzed: 11,
+      headline: {
+        discipline_tax: 120,
+        worst_pattern: 'Edge Decay',
+        hook: 'Canonical report identity recovered from the request id.',
+      },
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/report/TEASER-canonical-share?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(publicReportMocks.getPublicTeaserReport).toHaveBeenCalledWith('TEASER-canonical-share')
+      expect(screen.getAllByText('Persisted backend teaser receipt').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getByText('Backend teaser recovered: report public-teaser-canonical-share; request TEASER-canonical-share; 11 trades analyzed.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
+      'href',
+      '/insight/edge-decay-map?source=guided_report&report=public-teaser-canonical-share&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+    expect(getPublicReportSession('public-teaser-canonical-share')).toMatchObject({
+      reportId: 'public-teaser-canonical-share',
+      backendTeaser: {
+        requestId: 'TEASER-canonical-share',
+      },
+    })
+    expect(getPublicReportSession('TEASER-canonical-share')).toMatchObject({
+      reportId: 'public-teaser-canonical-share',
+      backendTeaser: {
+        reportId: 'public-teaser-canonical-share',
+        requestId: 'TEASER-canonical-share',
+      },
+    })
+  })
+
   test('free report refuses weak backend teaser recovery before storing report session', async () => {
     publicReportMocks.getPublicTeaserReport.mockResolvedValue({
       status: 'success',
