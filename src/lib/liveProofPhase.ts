@@ -57,11 +57,15 @@ function toInt(value: unknown): number | null {
 
 export function hasGeneratedUploadReceipt(receipt?: UploadProofReceipt | null): receipt is UploadProofReceipt {
   const appendCount = toInt(receipt?.append_count)
+  const tradesUploaded = toInt(receipt?.trades_uploaded)
   return Boolean(
     receipt &&
+      !hasText(receipt.proof_validation_error) &&
       receipt.artifact_status === 'generated' &&
       hasText(receipt.report_snapshot_id) &&
       hasText(receipt.request_id) &&
+      tradesUploaded !== null &&
+      tradesUploaded >= 1 &&
       appendCount !== null &&
       appendCount >= 1,
   )

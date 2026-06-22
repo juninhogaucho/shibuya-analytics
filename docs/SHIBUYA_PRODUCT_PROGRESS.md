@@ -260,3 +260,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live upload. It proves the frontend cannot turn malformed, sample, or incomplete live upload responses into baseline/append proof in local code and tests.
+
+### 6. Live Proof Phase Receipt Boundary
+
+Status: validated locally; pending push proof
+
+Files changed:
+
+- `src/lib/liveProofPhase.ts`
+- `src/lib/__tests__/liveProofPhase.test.ts`
+
+What changed:
+
+- Workspace live-proof phase now rejects generated-looking upload receipts that carry `proof_validation_error`.
+- Workspace live-proof phase now requires `trades_uploaded >= 1` before a receipt can count as generated baseline or append proof.
+- This aligns dashboard phase/readiness claims with the stricter upload response contract from slice 5.
+
+Evidence so far:
+
+- Shibuya focused live-proof tests: `4 passed / 21 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `66 passed / 66 files`, `248 passed / 248 tests`.
+
+Remaining gap:
+
+- Needs pushed commit proof.
+- This does not prove deployed live runtime. It proves the workspace phase/readiness layer cannot promote generated-looking receipts with proof validation errors or zero uploaded trades into baseline/append proof in local code and tests.

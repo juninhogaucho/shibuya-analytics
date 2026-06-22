@@ -110,6 +110,46 @@ describe('live proof phase', () => {
     expect(phase.generatedUploadReceiptCount).toBe(0)
   })
 
+  test('rejects generated-looking receipts with proof validation errors or no uploaded trades', () => {
+    const unverifiedPhase = buildLiveProofPhase({
+      mode: 'live',
+      sessionMeta: {
+        market: 'global',
+        tier: 'reset_pro',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'baseline_ready',
+        latestUploadReceipt: {
+          ...generatedReceipt,
+          proof_validation_error: 'Live upload proof requires a successful Medallion upload response.',
+        },
+      },
+      profileCompleted: true,
+    })
+
+    expect(unverifiedPhase.phase).toBe('activated_awaiting_upload')
+    expect(unverifiedPhase.canClaimBaselineProof).toBe(false)
+    expect(unverifiedPhase.generatedUploadReceiptCount).toBe(0)
+
+    const emptyUploadPhase = buildLiveProofPhase({
+      mode: 'live',
+      sessionMeta: {
+        market: 'global',
+        tier: 'reset_pro',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'baseline_ready',
+        latestUploadReceipt: {
+          ...generatedReceipt,
+          trades_uploaded: 0,
+        },
+      },
+      profileCompleted: true,
+    })
+
+    expect(emptyUploadPhase.phase).toBe('activated_awaiting_upload')
+    expect(emptyUploadPhase.canClaimBaselineProof).toBe(false)
+    expect(emptyUploadPhase.generatedUploadReceiptCount).toBe(0)
+  })
+
   test('promotes a generated upload receipt to baseline proof only', () => {
     const phase = buildLiveProofPhase({
       mode: 'live',
