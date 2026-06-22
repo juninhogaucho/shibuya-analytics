@@ -291,7 +291,7 @@ Remaining gap:
 
 ### 7. Canonical Public Teaser Identity Boundary
 
-Status: validated locally; pending push proof
+Status: pushed
 
 Files changed:
 
@@ -313,6 +313,7 @@ What changed:
 
 Evidence so far:
 
+- Commit: Shibuya `04ff3ea` (`Canonicalize recovered public teaser identity`).
 - Shibuya focused canonical identity tests: `3 passed / 39 tests`.
 - Shibuya `tsc -b`: passed.
 - Shibuya `eslint .`: passed.
@@ -322,6 +323,5 @@ Evidence so far:
 
 Remaining gap:
 
-- Needs pushed commit proof.
 - Medallion focused pytest was attempted with system Python and bundled Codex Python, but both environments lacked `pytest`; no backend test pass is claimed for this slice.
 - This does not prove deployed live runtime. It proves the frontend stops treating request-id URL text as the paid/live report identity after backend recovery returns canonical persisted teaser evidence.
