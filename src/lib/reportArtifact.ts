@@ -53,8 +53,9 @@ export function buildReportArtifact({
     profile,
     market,
   })
-  const riskPoint = overview.risk_point_ruin_probability ?? overview.ruin_probability
-  const riskDecision = overview.risk_decision_ruin_probability ?? overview.ruin_probability
+  const hasRiskV2Contract = Boolean(overview.risk_model_version)
+  const riskPoint = hasRiskV2Contract ? overview.risk_point_ruin_probability : overview.ruin_probability
+  const riskDecision = hasRiskV2Contract ? overview.risk_decision_ruin_probability : overview.ruin_probability
   const riskQuality = overview.risk_evidence_quality
   const riskBound = overview.risk_conservative_bound
   const deliveryLine = [

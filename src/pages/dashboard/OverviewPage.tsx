@@ -74,6 +74,31 @@ const DAILY_PRINCIPLES = [
   'Best loser wins. Lose cleanly, recover quickly, and stop paying for preventable mistakes.',
 ]
 
+function formatRiskPercent(value: number | null | undefined): string {
+  return typeof value === 'number' && Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : 'unavailable'
+}
+
+function formatRiskEvidenceQuality(data: DashboardOverview): string {
+  const grade = data.risk_evidence_quality?.grade
+  const score = data.risk_evidence_quality?.score
+
+  if (!grade) {
+    return data.risk_model_version ? 'evidence quality unavailable' : 'legacy risk feed'
+  }
+
+  return typeof score === 'number' && Number.isFinite(score)
+    ? `${grade} evidence (${(score * 100).toFixed(0)}%)`
+    : `${grade} evidence`
+}
+
+function getRiskPointValue(data: DashboardOverview): number | null | undefined {
+  return data.risk_model_version ? data.risk_point_ruin_probability : data.ruin_probability
+}
+
+function getRiskDecisionValue(data: DashboardOverview): number | null | undefined {
+  return data.risk_model_version ? data.risk_decision_ruin_probability : data.ruin_probability
+}
+
 export function DashboardOverviewPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -1311,7 +1336,9 @@ export function DashboardOverviewPage() {
           tone={data.monte_carlo_drift > 0 ? 'success' : 'danger'}
           caption={
             <span>
-              Ruin probability: {(data.ruin_probability * 100).toFixed(1)}%
+              Point risk: {formatRiskPercent(getRiskPointValue(data))}
+              {' '}| Decision risk: {formatRiskPercent(getRiskDecisionValue(data))}
+              {' '}| {formatRiskEvidenceQuality(data)}
               <InfoTooltip content={EXPLANATIONS.ruinProbability} position="bottom" />
             </span>
           }

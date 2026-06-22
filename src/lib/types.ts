@@ -104,6 +104,13 @@ export interface TradingReportRecord {
   snapshot_bql_score?: number | null
   snapshot_behavior_share?: number | null
   snapshot_breach_risk_score?: number | null
+  snapshot_risk_model_version?: string | null
+  snapshot_risk_point_ruin_probability?: number | null
+  snapshot_risk_decision_ruin_probability?: number | null
+  snapshot_risk_evidence_quality?: {
+    grade?: string | null
+    score?: number | null
+  } | null
   upload_transport?: string | null
   trades_uploaded?: number | null
   artifact_status?: string | null
@@ -251,6 +258,26 @@ export interface TradingReportSnapshot {
   total_trades: number
   winning_trades: number
   ruin_probability: number
+  risk_model_version?: string | null
+  risk_point_ruin_probability?: number | null
+  risk_decision_ruin_probability?: number | null
+  risk_decision_policy?: string | null
+  risk_conservative_bound?: {
+    p_ruin_upper?: number | null
+    p_ruin_p95?: number | null
+    sampling_width?: number | null
+    method?: string | null
+    quantile?: number | null
+  } | null
+  risk_evidence_quality?: {
+    grade?: string | null
+    score?: number | null
+    n_trades?: number | null
+    loss_observations?: number | null
+    tail_loss_observations?: number | null
+    recommended_action?: string | null
+    reasons?: string[] | null
+  } | null
   behavior_share: number
   breach_risk_score: number
   primary_pattern?: string | null

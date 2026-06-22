@@ -157,6 +157,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getAllByText(/not proof that the sample account belongs to the visitor/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/demo data only/i).length).toBeGreaterThan(0)
     expect(screen.getByText('MARKET: INDIA')).toBeInTheDocument()
+    expect(screen.getByText(/Point risk: 3\.4% \| Decision risk: 9\.1% \| weak evidence \(41%\)/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Append Proof' })).toHaveAttribute('href', '/dashboard/upload?market=india')
     expect(screen.getAllByRole('link', { name: /Start Mission HQ/i }).length).toBeGreaterThan(0)
     expect(screen.getAllByRole('link', { name: /Inspect Slump protocol/i }).length).toBeGreaterThan(0)
@@ -270,6 +271,16 @@ describe('DashboardOverviewPage', () => {
       return {
         ...getSampleWorkspaceOverview('core'),
         data_source: 'backend',
+        risk_model_version: 'risk_v2:2.1.0',
+        risk_point_ruin_probability: 0.08,
+        risk_decision_ruin_probability: 0.19,
+        risk_evidence_quality: {
+          grade: 'usable',
+          score: 0.62,
+          n_trades: 80,
+          loss_observations: 30,
+          tail_loss_observations: 7,
+        },
         activation_origin: {
           source: 'locked_insight',
           report_id: 'public-teaser-overview',
@@ -320,6 +331,7 @@ describe('DashboardOverviewPage', () => {
     expect(screen.getByText(/2 view\(s\), 1 locked click\(s\), 1 gate attempt\(s\)/)).toBeInTheDocument()
     expect(screen.getByText('Teaser verification')).toBeInTheDocument()
     expect(screen.getByText(`verified; verified true; receipt ${'f'.repeat(64)}`)).toBeInTheDocument()
+    expect(screen.getByText(/Point risk: 8\.0% \| Decision risk: 19\.0% \| usable evidence \(62%\)/i)).toBeInTheDocument()
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 
