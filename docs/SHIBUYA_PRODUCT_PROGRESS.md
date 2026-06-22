@@ -70,11 +70,12 @@ Remaining gap:
 
 ### 2. Live Append Readiness Boundary
 
-Status: validated, pending commit/push
+Status: pushed
 
 Commit:
 
-- Pending
+- Shibuya `dcc96e6 Gate live append on Medallion readiness`
+- Medallion `99107639 Expose Shibuya live append readiness`
 
 Files changed:
 
@@ -144,4 +145,4 @@ Roadblock pattern captured:
 Remaining gap:
 
 - This does not itself prove deployed runtime readiness. It proves the local code contract and test boundary.
-- Commit and push are still pending for both repos.
+- Deployed runtime proof is still pending: the public Shibuya app needs a live `VITE_API_BASE`, authenticated account activation, readiness response, upload submit, generated artifact receipt, report snapshot id, and durable append count observed against the deployed stack.
