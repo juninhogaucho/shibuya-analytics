@@ -149,11 +149,12 @@ Remaining gap:
 
 ### 3. Activation Session Identity Boundary
 
-Status: validated, pending commit/push
+Status: pushed
 
 Commit:
 
-- Pending
+- Shibuya `2e38e29 Require backend identity for activation sessions`
+- Medallion `d3c1579c Return customer identity for Shibuya demo activation`
 
 Files changed:
 
@@ -188,5 +189,4 @@ Evidence so far:
 
 Remaining gap:
 
-- Commit and push are still pending for both repos.
 - This still does not prove a deployed live activation; it proves that the browser cannot create a live workspace session from an incomplete activation response.
