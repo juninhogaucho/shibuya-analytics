@@ -9,9 +9,11 @@ import {
   getLiveUploadAppendReadiness,
   getTradePasteMemory,
   getTradingReportComparison,
+  hasGeneratedUploadArtifactProof,
   parseTradePaste,
   submitParsedTrades,
   validateLiveUploadAppendReadiness,
+  validateGeneratedLiveUploadArtifactProof,
   uploadTradesCSV,
 } from '../../lib/api/dashboard'
 import type { LiveUploadAppendReadinessResponse, TradeUploadResponse } from '../../lib/api/dashboard'
@@ -190,21 +192,6 @@ function buildSampleNotes(tradesUploaded: number): string[] {
   ]
 }
 
-function hasText(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0
-}
-
-function hasGeneratedUploadArtifactProof(result: TradeUploadResponse): boolean {
-  return Boolean(
-    result.status !== 'sample'
-    && result.artifact_status === 'generated'
-    && hasText(result.report_snapshot_id)
-    && hasText(result.request_id)
-    && typeof result.append_count === 'number'
-    && result.append_count >= 1,
-  )
-}
-
 function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   const notes = [
     `${result.trades_uploaded} trades generated a backend account artifact.`,
@@ -238,9 +225,12 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
 }
 
 function formatIncompleteUploadProofNotes(result: TradeUploadResponse): string[] {
+  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result)
   const notes = [
     `${result.trades_uploaded} trades were received by the live upload endpoint.`,
-    'Shibuya did not receive generated artifact proof from the backend, so this upload is not baseline proof yet.',
+    proofValidationError
+      ? `Shibuya cannot treat this upload as baseline proof: ${proofValidationError}`
+      : 'Shibuya did not receive generated artifact proof from the backend, so this upload is not baseline proof yet.',
     result.report_snapshot_id
       ? `Snapshot candidate returned: ${result.report_snapshot_id}.`
       : 'Generated artifact snapshot was not returned by the backend.',
@@ -272,6 +262,7 @@ function formatIncompleteUploadProofNotes(result: TradeUploadResponse): string[]
 type LiveUploadTransport = 'paste' | 'csv'
 
 function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: LiveUploadTransport): UploadProofReceipt {
+  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result)
   const receipt: UploadProofReceipt = {
     upload_transport: uploadTransport,
     trades_uploaded: result.trades_uploaded,
@@ -287,7 +278,12 @@ function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: Li
     receipt.report_id = result.report_id
   }
   if (result.artifact_status) {
-    receipt.artifact_status = result.artifact_status
+    receipt.artifact_status = proofValidationError && result.artifact_status === 'generated'
+      ? 'unverified'
+      : result.artifact_status
+  }
+  if (proofValidationError) {
+    receipt.proof_validation_error = proofValidationError
   }
   if (typeof result.append_count === 'number') {
     receipt.append_count = result.append_count

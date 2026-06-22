@@ -402,7 +402,7 @@ describe('AppendTradesPage', () => {
       activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
     })
     submitParsedTradesMock.mockResolvedValue({
-      status: 'ok',
+      status: 'success',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_003',
@@ -579,7 +579,7 @@ describe('AppendTradesPage', () => {
       activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
     })
     submitParsedTradesMock.mockResolvedValue({
-      status: 'ok',
+      status: 'success',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_lifecycle_001',
@@ -699,7 +699,7 @@ describe('AppendTradesPage', () => {
       },
     })
     submitParsedTradesMock.mockResolvedValue({
-      status: 'ok',
+      status: 'success',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:20:00Z',
       report_snapshot_id: 'snap_upload_overview_001',
@@ -792,7 +792,7 @@ describe('AppendTradesPage', () => {
     })
   }, 15000)
 
-  test('does not mark live upload complete when backend artifact proof is missing', async () => {
+  test('does not mark live upload complete when backend proof response is malformed', async () => {
     isSampleModeMock.mockReturnValue(false)
     getShibuyaRuntimeContractMock.mockReturnValue({
       mode: 'live',
@@ -826,12 +826,12 @@ describe('AppendTradesPage', () => {
       activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
     })
     submitParsedTradesMock.mockResolvedValue({
-      status: 'ok',
+      status: 'error',
       trades_uploaded: 2,
-      report_snapshot_id: null,
-      report_id: null,
-      artifact_status: 'missing',
-      append_count: 0,
+      report_snapshot_id: 'snap_untrusted_artifact',
+      report_id: 'report_untrusted_artifact',
+      artifact_status: 'generated',
+      append_count: 1,
       request_id: 'req_missing_artifact',
     })
     const user = userEvent.setup()
@@ -847,10 +847,11 @@ describe('AppendTradesPage', () => {
     expect(await screen.findByText('Upload received, but artifact proof is still pending.')).toBeInTheDocument()
     expect(screen.getByText('Upload succeeded, but artifact proof is incomplete.')).toBeInTheDocument()
     expect(screen.getByText('2 trades were received by the live upload endpoint.')).toBeInTheDocument()
-    expect(screen.getByText('Shibuya did not receive generated artifact proof from the backend, so this upload is not baseline proof yet.')).toBeInTheDocument()
-    expect(screen.getByText('Generated artifact snapshot was not returned by the backend.')).toBeInTheDocument()
-    expect(screen.getByText('Artifact status: missing.')).toBeInTheDocument()
-    expect(screen.getByText('Durable upload count returned: 0.')).toBeInTheDocument()
+    expect(screen.getByText(/requires a successful Medallion upload response/i)).toBeInTheDocument()
+    expect(screen.getByText('Snapshot candidate returned: snap_untrusted_artifact.')).toBeInTheDocument()
+    expect(screen.getByText('Report candidate returned: report_untrusted_artifact.')).toBeInTheDocument()
+    expect(screen.getByText('Artifact status: generated.')).toBeInTheDocument()
+    expect(screen.getByText('Durable upload count returned: 1.')).toBeInTheDocument()
     expect(screen.getByText('Backend request receipt: req_missing_artifact.')).toBeInTheDocument()
     expect(screen.getByText('The workspace stays in processing until Medallion returns a generated artifact snapshot.')).toBeInTheDocument()
     expect(screen.queryByText('Uploaded 2 trades to your live account.')).not.toBeInTheDocument()
@@ -862,16 +863,22 @@ describe('AppendTradesPage', () => {
       latestUploadReceipt: {
         upload_transport: 'paste',
         trades_uploaded: 2,
-        artifact_status: 'missing',
-        append_count: 0,
+        report_snapshot_id: 'snap_untrusted_artifact',
+        report_id: 'report_untrusted_artifact',
+        artifact_status: 'unverified',
+        proof_validation_error: 'Live upload proof requires a successful Medallion upload response.',
+        append_count: 1,
         request_id: 'req_missing_artifact',
       },
       uploadReceiptHistory: [
         {
           upload_transport: 'paste',
           trades_uploaded: 2,
-          artifact_status: 'missing',
-          append_count: 0,
+          report_snapshot_id: 'snap_untrusted_artifact',
+          report_id: 'report_untrusted_artifact',
+          artifact_status: 'unverified',
+          proof_validation_error: 'Live upload proof requires a successful Medallion upload response.',
+          append_count: 1,
           request_id: 'req_missing_artifact',
         },
       ],

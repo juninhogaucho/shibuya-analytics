@@ -140,6 +140,44 @@ export function validateLiveUploadAppendReadiness(
   return null
 }
 
+function hasText(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+export function validateGeneratedLiveUploadArtifactProof(
+  result: TradeUploadResponse,
+): string | null {
+  if (result.status !== 'success') {
+    return 'Live upload proof requires a successful Medallion upload response.'
+  }
+
+  if (!Number.isFinite(result.trades_uploaded) || result.trades_uploaded < 1) {
+    return 'Live upload proof requires at least one uploaded trade.'
+  }
+
+  if (result.artifact_status !== 'generated') {
+    return 'Live upload proof requires a generated account artifact.'
+  }
+
+  if (!hasText(result.report_snapshot_id)) {
+    return 'Live upload proof requires a generated report snapshot id.'
+  }
+
+  if (!hasText(result.request_id)) {
+    return 'Live upload proof requires a backend request id.'
+  }
+
+  if (!Number.isFinite(result.append_count) || Number(result.append_count) < 1) {
+    return 'Live upload proof requires a durable append count.'
+  }
+
+  return null
+}
+
+export function hasGeneratedUploadArtifactProof(result: TradeUploadResponse): boolean {
+  return validateGeneratedLiveUploadArtifactProof(result) === null
+}
+
 export async function getLiveUploadAppendReadiness(): Promise<LiveUploadAppendReadinessResponse> {
   if (isSampleMode()) {
     return {

@@ -158,6 +158,31 @@ describe('dashboard API boundary', () => {
     expect(validateLiveUploadAppendReadiness({ ...ready, uploads_remaining: 0 })).toContain('no remaining live uploads')
   })
 
+  test('requires successful generated artifact fields before treating upload response as live proof', async () => {
+    const { hasGeneratedUploadArtifactProof, validateGeneratedLiveUploadArtifactProof } = await import('../dashboard')
+
+    const proofResponse = {
+      status: 'success',
+      trades_uploaded: 12,
+      artifact_status: 'generated',
+      report_snapshot_id: 'snap_live_001',
+      report_id: 'report_live_001',
+      request_id: 'req_live_001',
+      append_count: 1,
+    }
+
+    expect(validateGeneratedLiveUploadArtifactProof(proofResponse)).toBeNull()
+    expect(hasGeneratedUploadArtifactProof(proofResponse)).toBe(true)
+
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, status: 'error' })).toContain('successful')
+    expect(hasGeneratedUploadArtifactProof({ ...proofResponse, status: 'error' })).toBe(false)
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, trades_uploaded: 0 })).toContain('at least one')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, artifact_status: 'missing' })).toContain('generated account artifact')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, report_snapshot_id: null })).toContain('snapshot')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, request_id: '' })).toContain('request id')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, append_count: 0 })).toContain('append count')
+  })
+
   test('recovers persisted activation origin from live dashboard overview', async () => {
     const httpGet = vi.fn().mockResolvedValue({
       data: {

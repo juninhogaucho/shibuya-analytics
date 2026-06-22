@@ -225,3 +225,34 @@ Evidence:
 Remaining gap:
 
 - This still does not prove deployed live Stripe checkout. It proves the browser cannot prefill activation/login/workspace recent order access until checkout success has verified a paid/complete backend session with backend-sourced customer email, order id, and plan id.
+
+### 5. Live Upload Artifact Proof Boundary
+
+Status: validated
+
+Files changed:
+
+- `src/lib/api/dashboard.ts`
+- `src/lib/api/__tests__/dashboard.test.ts`
+- `src/pages/dashboard/AppendTradesPage.tsx`
+- `src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`
+- `src/lib/types.ts`
+
+What changed:
+
+- Generated live upload proof is now a shared dashboard API contract, not a page-local predicate.
+- Baseline proof now requires `status: success`, at least one uploaded trade, `artifact_status: generated`, a report snapshot id, a backend request id, and append count >= 1.
+- Malformed upload responses that carry generated-looking IDs are kept in processing state and persisted as `artifact_status: unverified` with a `proof_validation_error`.
+- Sample responses and incomplete live responses still cannot create first-upload proof or append proof.
+
+Evidence so far:
+
+- Shibuya focused dashboard/upload tests: `2 passed / 14 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya ESLint: passed.
+- Shibuya Vite build: passed, `2855 modules transformed`.
+- Shibuya full Vitest deterministic run: `66 passed / 247 tests`.
+
+Remaining gap:
+
+- Needs pushed commit proof.

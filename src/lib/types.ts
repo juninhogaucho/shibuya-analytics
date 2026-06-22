@@ -525,6 +525,7 @@ export interface UploadProofReceipt {
   report_snapshot_id?: string
   report_id?: string
   artifact_status?: string
+  proof_validation_error?: string
   append_count?: number
   request_id?: string
   activation_source?: string
