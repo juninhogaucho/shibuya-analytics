@@ -91,6 +91,18 @@ function isVerifiedSessionPublicContext(session: CheckoutSessionStatus): boolean
   )
 }
 
+function hasBackendActivationAccessReceipt(session: CheckoutSessionStatus): session is CheckoutSessionStatus & {
+  customer_email: string
+  order_id: string
+  plan_id: string
+} {
+  return Boolean(
+    session.customer_email?.trim() &&
+      session.order_id?.trim() &&
+      session.plan_id?.trim(),
+  )
+}
+
 function buildVerifiedCheckoutIntent(session: CheckoutSessionStatus): CheckoutIntent | null {
   if (!isVerifiedSessionPublicContext(session)) {
     return null
@@ -166,7 +178,12 @@ const CheckoutSuccessPage: React.FC = () => {
     getCheckoutSession(verificationSessionId)
       .then((session) => {
         if (session.payment_status === 'paid' || session.status === 'complete') {
-          if (initialOrder?.orderId && session.order_id && initialOrder.orderId !== session.order_id) {
+          if (!hasBackendActivationAccessReceipt(session)) {
+            setVerifyError('Payment status was verified, but the backend did not return the order, customer, and plan identifiers required for activation. Check your email order code or contact support.')
+            return
+          }
+
+          if (initialOrder?.orderId && initialOrder.orderId !== session.order_id) {
             setVerifyError('The stored checkout receipt does not match the verified backend session. Start from your email order code or contact support.')
             return
           }
@@ -176,11 +193,11 @@ const CheckoutSuccessPage: React.FC = () => {
           persistMarket(inferredMarket)
           const verifiedOrder: OrderInfo = {
             name: session.customer_name || initialOrder?.name || '',
-            email: session.customer_email || initialOrder?.email || '',
-            plan: session.plan_id || initialOrder?.plan || '',
-            planId: session.plan_id || initialOrder?.planId || '',
+            email: session.customer_email,
+            plan: session.plan_id,
+            planId: session.plan_id,
             market: inferredMarket,
-            orderId: session.order_id || initialOrder?.orderId,
+            orderId: session.order_id,
             sessionId: session.session_id,
             checkoutIntent: verifiedCheckoutIntent,
             checkoutEngagementSummary: verifiedCheckoutIntent

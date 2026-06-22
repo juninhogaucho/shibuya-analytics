@@ -156,6 +156,27 @@ describe('CheckoutSuccessPage', () => {
     expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
   })
 
+  test('does not use local checkout hints as activation access when paid session lacks backend identifiers', async () => {
+    storeCheckoutHint({
+      email: 'local-only@shibuya.test',
+      orderId: 'ord_local_only',
+      planId: 'shibuya_reset_pro_monthly',
+    })
+    checkoutMocks.getCheckoutSession.mockResolvedValue(verifiedBackendSession({
+      customer_email: undefined,
+      order_id: undefined,
+      plan_id: undefined,
+    }))
+
+    renderSuccessRoute('/checkout/success?market=global')
+
+    expect(await screen.findByText('Payment Pending')).toBeInTheDocument()
+    expect(screen.getByText(/did not return the order, customer, and plan identifiers required for activation/i)).toBeInTheDocument()
+    expect(screen.queryByText('Checkout Complete')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Activate Live Account/i })).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
+  })
+
   test('does not carry URL-only context when paid session lacks verified teaser metadata', async () => {
     checkoutMocks.getCheckoutSession.mockResolvedValue(verifiedBackendSession({
       public_context_source: null,

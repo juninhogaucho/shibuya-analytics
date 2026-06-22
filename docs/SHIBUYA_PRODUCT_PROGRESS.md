@@ -193,11 +193,12 @@ Remaining gap:
 
 ### 4. Checkout Activation Access Boundary
 
-Status: pushed
+Status: validated
 
 Commit:
 
 - Shibuya `f160482 Gate activation access on verified checkout`
+- Stricter backend identifier guard pending commit.
 
 Files changed:
 
@@ -210,15 +211,17 @@ What changed:
 - Checkout creation still stores a temporary `shibuya_order` handoff for the success route.
 - Checkout creation no longer writes `shibuya_recent_order_access`.
 - Activation/Login/Workspace recent order prefill now comes only from the verified checkout success path after the backend session reports paid/complete.
+- Checkout success now fails closed if a paid/complete backend session does not return its own customer email, order id, and plan id.
+- Customer email, order code, and plan id no longer fall back to local `shibuya_order` when creating activation-access memory.
 
 Evidence:
 
-- Shibuya focused checkout tests: `2 passed / 10 tests`.
+- Shibuya focused checkout tests: `2 passed / 11 tests`.
 - Shibuya `tsc -b`: passed.
 - Shibuya ESLint: passed.
 - Shibuya Vite build: passed, `2855 modules transformed`.
-- Shibuya full Vitest deterministic run: `66 passed / 245 tests`.
+- Shibuya full Vitest deterministic run: `66 passed / 246 tests`.
 
 Remaining gap:
 
-- This still does not prove deployed live Stripe checkout. It proves the browser cannot prefill activation/login/workspace recent order access until checkout success has verified a paid/complete backend session.
+- Needs pushed commit proof for the stricter checkout-success backend identifier guard.
