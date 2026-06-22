@@ -228,7 +228,11 @@ Remaining gap:
 
 ### 5. Live Upload Artifact Proof Boundary
 
-Status: validated
+Status: pushed
+
+Commit:
+
+- Shibuya `bd96c97 Gate live upload proof on generated artifacts`
 
 Files changed:
 
@@ -255,4 +259,4 @@ Evidence so far:
 
 Remaining gap:
 
-- Needs pushed commit proof.
+- This still does not prove deployed live upload. It proves the frontend cannot turn malformed, sample, or incomplete live upload responses into baseline/append proof in local code and tests.
