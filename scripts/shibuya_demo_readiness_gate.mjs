@@ -23,6 +23,16 @@ const REQUIRED_SURFACES = [
     markers: ['Interactive film / public mirror', 'Shibuya scene experience', 'The market did not break you.', 'Choose the frame that stings', 'CINEMATIC_CHOICES', 'STORY_REEL_BEATS', 'PUBLIC_FILM_SEQUENCE', 'Three-minute public film', 'Run it like a film, not a feature tour.', 'Opening tension', 'Mirror choice', 'Fingerprint reveal', 'Evidence handoff', 'Evidence door', 'The public film ends only when the trader chooses evidence.', 'Upload becomes the next scene', 'Public story contract', 'This is the first product surface', 'Truth ladder', 'Public story creates a provisional mirror.', 'Turn Mirror Into Evidence', 'Public handoff packet', 'Secret-free routing context', 'What survives from story into upload.', 'No raw trade rows, account id, brokerage login, P&L, or private conclusion'],
   },
   {
+    label: 'public method proof stack',
+    file: 'src/components/landing/ProofStack.tsx',
+    markers: ['Method proof, not magic', 'The public promise now has math underneath it.', 'synthetic method-validation numbers from Medallion v2 engines', 'not real-world accuracy on a live trader or firm book', 'METHOD_PROOF_CARDS', 'METHOD_PROOF_BOUNDARIES', 'Test The Mirror'],
+  },
+  {
+    label: 'method proof contract',
+    file: 'src/lib/methodProof.ts',
+    markers: ['METHOD_PROOF_CARDS', 'Shibuya Shield v2', 'Risk v2', '0.9788', '0.7759', 'Real proof', 'Pending'],
+  },
+  {
     label: 'public journey contract',
     file: 'src/lib/publicJourneyContract.ts',
     markers: ['PUBLIC_JOURNEY_CONTRACT', 'public StoryExperience -> locked upload/report/private insight -> private Reset Pro workspace demo', 'Website-level recognition only.', 'Presenter-gated sample workspace.', 'Must carry the report, section, public handoff, and evidence status', 'first meaningful upload and repeat append history'],
@@ -85,7 +95,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout evidence boundary',
     file: 'src/pages/checkout/CheckoutPage.tsx',
-    markers: ['Checkout intent', 'Checkout route integrity', 'Locked insight intent verified.', 'Locked insight intent required before payment.', 'Checkout requires a local locked-section intent receipt or controlled launcher packet.', 'A URL alone cannot start payment.', 'Open a locked private insight from the report before checkout', 'Generate Free Report First', 'Return To Pricing', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'hasLockedSectionIntentProof', 'shouldCarryDemoLauncherPacket', 'enrichedCheckoutIntent', 'checkoutRouteReady'],
+    markers: ['Checkout intent', 'Checkout route integrity', 'Persisted backend teaser receipt required before payment.', 'Checkout now requires a locked insight backed by a persisted Medallion teaser receipt.', 'Open a locked private insight from a persisted backend teaser report before checkout.', 'Local sample packets and URL-only context cannot create a paid live handoff.', 'Generate Free Report First', 'Return To Pricing', 'Checkout engagement receipt', 'Checkout handoff contract', 'Payment can carry', 'Payment cannot prove', 'Next live proof step', 'URL context only', 'public_context_source', 'public_context_report_id', 'public_context_story_source', 'public_context_report_views', 'checkoutEngagementSummary', 'hasLockedSectionIntentProof', 'hasVerifiedBackendTeaserReceipt', 'enrichedCheckoutIntent', 'checkoutRouteReady'],
   },
   {
     label: 'pricing context ladder',
@@ -105,7 +115,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'checkout success activation handoff',
     file: 'src/pages/checkout/CheckoutSuccessPage.tsx',
-    markers: ['Checkout success route integrity', 'Checkout record missing', 'cannot claim checkout completion without a stored order receipt or verified session id', 'Success route rule: order code, verified session, and activation handoff context are required', 'Carried into activation', 'Activation context not carried', 'URL-only checkout context is visible, but not trusted.', 'will not carry route text into activation', 'successContextReady', 'hasLockedSectionIntentProof', 'Activation engagement receipt', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'Activate Live Account'],
+    markers: ['Checkout success route integrity', 'Checkout record missing', 'This page cannot claim checkout completion without a verified session id.', 'Success route rule: the backend session must verify payment before this page can behave like a checkout receipt.', 'Carried into activation', 'Activation context not carried', 'URL-only checkout context is visible, but not trusted.', 'will not carry route text into activation', 'successContextReady', 'isVerifiedSessionPublicContext', 'buildVerifiedCheckoutIntent', 'Activation engagement receipt', 'Activation handoff contract', 'Order code proves', 'Activation must verify', 'Upload must prove', 'Activate Live Account'],
   },
   {
     label: 'checkout API public context payload',
@@ -125,7 +135,7 @@ const REQUIRED_SURFACES = [
   {
     label: 'live activation context',
     file: 'src/pages/marketing/ActivationPage.tsx',
-    markers: ['CONTEXT DETECTED', 'ACTIVATION CONTEXT NOT CARRIED', 'URL-only activation context is visible on this link', 'will not be written into the live workspace', 'carriedActivationIntent', 'activationContextReady', 'hasActivationLockedSectionIntentProof', 'ACTIVATION ENGAGEMENT RECEIPT', 'activationEngagementSummary', 'activationEngagementReportViewCount', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
+    markers: ['CONTEXT REQUEST ATTACHED', 'ACTIVATION CONTEXT NOT CARRIED', 'URL-only activation context is visible on this link', 'will not be written into the live workspace', 'carriedActivationIntent', 'activationContextReady', 'hasActivationLockedSectionIntentProof', 'ACTIVATION ENGAGEMENT RECEIPT', 'activationEngagementSummary', 'activationEngagementReportViewCount', 'activationStorySource', 'activationSelectedPainAxisIds', 'activationVisitedSceneCount', 'activationSignalMarkerIds', 'LIVE PROOF READINESS', 'LIVE ACTIVATION PROOF LADDER', 'First meaningful upload required', 'Append proof close required', 'APPEND PROOF CLOSE', 'Private conclusion still locked'],
   },
   {
     label: 'live workspace activation origin',
@@ -249,7 +259,7 @@ if (!apiBase) {
 }
 
 console.log('Shibuya demo readiness gate')
-console.log('Mode: public story -> upload/report -> locked insight -> checkout/activation -> private Reset Pro sample demo -> append-proof exit -> partner economics')
+console.log('Mode: public story -> method proof -> upload/report -> locked insight -> checkout/activation -> private Reset Pro sample demo -> append-proof exit -> partner economics')
 console.log('')
 
 for (const check of checks) {

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../../components/landing/Navbar';
 import StoryExperience from '../../components/landing/StoryExperience';
+import ProofStack from '../../components/landing/ProofStack';
 import Footer from '../../components/landing/Footer';
 import {
   captureAffiliateAttributionFromLocation,
@@ -36,6 +37,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-[#050505] text-white landing-page">
       <Navbar />
       <StoryExperience />
+      <ProofStack />
       <Footer />
     </div>
   );
