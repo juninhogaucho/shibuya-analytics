@@ -593,6 +593,26 @@ export interface DashboardOverview {
   bql_score: number
   monte_carlo_drift: number
   ruin_probability: number
+  risk_model_version?: string | null
+  risk_point_ruin_probability?: number | null
+  risk_decision_ruin_probability?: number | null
+  risk_decision_policy?: string | null
+  risk_conservative_bound?: {
+    p_ruin_upper?: number | null
+    p_ruin_p95?: number | null
+    sampling_width?: number | null
+    method?: string | null
+    quantile?: number | null
+  } | null
+  risk_evidence_quality?: {
+    grade?: string | null
+    score?: number | null
+    n_trades?: number | null
+    loss_observations?: number | null
+    tail_loss_observations?: number | null
+    recommended_action?: string | null
+    reasons?: string[] | null
+  } | null
   discipline_tax_30d: number
   discipline_tax_breakdown?: {
     revenge_trades: number

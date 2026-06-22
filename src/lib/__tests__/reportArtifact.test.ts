@@ -17,6 +17,25 @@ describe('buildReportArtifact', () => {
         bql_score: 0.66,
         monte_carlo_drift: 450,
         ruin_probability: 0.12,
+        risk_model_version: 'risk_v2:2.1.0',
+        risk_point_ruin_probability: 0.12,
+        risk_decision_ruin_probability: 0.27,
+        risk_decision_policy: 'Use decision_p_ruin for product gating.',
+        risk_conservative_bound: {
+          p_ruin_upper: 0.27,
+          p_ruin_p95: 0.41,
+          sampling_width: 0.15,
+          method: 'outer block-bootstrap over observed history',
+          quantile: 0.8,
+        },
+        risk_evidence_quality: {
+          grade: 'usable',
+          score: 0.77,
+          n_trades: 80,
+          loss_observations: 39,
+          tail_loss_observations: 8,
+          recommended_action: 'show bound',
+        },
         discipline_tax_30d: 825,
         discipline_tax_breakdown: {
           revenge_trades: 400,
@@ -71,6 +90,12 @@ describe('buildReportArtifact', () => {
     expect(artifact.filename).toContain('shibuya-baseline-report')
     expect(artifact.body).toContain('CURRENT STATE')
     expect(artifact.body).toContain('Trader mode: Retail F&O struggler')
+    expect(artifact.body).toContain('Risk point estimate: 12.0%')
+    expect(artifact.body).toContain('Risk decision bound: 27.0%')
+    expect(artifact.body).toContain('Risk evidence quality: usable (77%)')
+    expect(artifact.body).toContain('80 trades, 39 losses, 8 tail-loss observations')
+    expect(artifact.body).toContain('outer block-bootstrap over observed history')
+    expect(artifact.body).toContain('Use decision_p_ruin for product gating.')
     expect(artifact.body).toContain('NEXT SESSION BRIEF')
     expect(artifact.body).toContain('RECENT COSTLY MISTAKES')
   })

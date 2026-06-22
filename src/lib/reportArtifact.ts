@@ -17,6 +17,10 @@ function sanitizeDate(date = new Date()): string {
   return date.toISOString().slice(0, 10)
 }
 
+function formatPercent(value: number | null | undefined): string {
+  return typeof value === 'number' && Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : 'unavailable'
+}
+
 export function buildReportArtifact({
   overview,
   brief,
@@ -49,6 +53,10 @@ export function buildReportArtifact({
     profile,
     market,
   })
+  const riskPoint = overview.risk_point_ruin_probability ?? overview.ruin_probability
+  const riskDecision = overview.risk_decision_ruin_probability ?? overview.ruin_probability
+  const riskQuality = overview.risk_evidence_quality
+  const riskBound = overview.risk_conservative_bound
   const deliveryLine = [
     `Offer kind: ${overview.offer_kind ?? 'unknown'}`,
     `Case status: ${overview.case_status ?? 'live'}`,
@@ -77,7 +85,17 @@ export function buildReportArtifact({
     `Gross PnL: ${formatSignedMoney(overview.pnl_gross ?? 0, market)}`,
     `Net PnL: ${formatSignedMoney(overview.pnl_net ?? 0, market)}`,
     `Monte Carlo edge: ${formatSignedMoney(overview.monte_carlo_drift, market)}`,
-    `Ruin probability: ${(overview.ruin_probability * 100).toFixed(1)}%`,
+    `Ruin probability: ${formatPercent(overview.ruin_probability)}`,
+    `Risk point estimate: ${formatPercent(riskPoint)}`,
+    `Risk decision bound: ${formatPercent(riskDecision)}`,
+    `Risk evidence quality: ${riskQuality?.grade ?? 'not provided'}${typeof riskQuality?.score === 'number' ? ` (${(riskQuality.score * 100).toFixed(0)}%)` : ''}`,
+    riskQuality
+      ? `Risk evidence depth: ${riskQuality.n_trades ?? 'unknown'} trades, ${riskQuality.loss_observations ?? 'unknown'} losses, ${riskQuality.tail_loss_observations ?? 'unknown'} tail-loss observations`
+      : 'Risk evidence depth: unavailable',
+    riskBound
+      ? `Conservative risk method: ${riskBound.method ?? 'unknown'} | q${riskBound.quantile ?? 'n/a'} upper ${formatPercent(riskBound.p_ruin_upper)} | p95 ${formatPercent(riskBound.p_ruin_p95)} | sampling width ${formatPercent(riskBound.sampling_width)}`
+      : 'Conservative risk method: unavailable',
+    `Risk decision policy: ${overview.risk_decision_policy ?? 'Use the reported ruin probability only with source-data-quality context.'}`,
     '',
     'MISSION BRIEF',
     `Chapter: ${story.chapter}`,
