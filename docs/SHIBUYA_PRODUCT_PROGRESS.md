@@ -193,12 +193,12 @@ Remaining gap:
 
 ### 4. Checkout Activation Access Boundary
 
-Status: validated
+Status: pushed
 
 Commit:
 
 - Shibuya `f160482 Gate activation access on verified checkout`
-- Stricter backend identifier guard pending commit.
+- Shibuya `1f6872d Require backend checkout identifiers for activation access`
 
 Files changed:
 
@@ -224,4 +224,4 @@ Evidence:
 
 Remaining gap:
 
-- Needs pushed commit proof for the stricter checkout-success backend identifier guard.
+- This still does not prove deployed live Stripe checkout. It proves the browser cannot prefill activation/login/workspace recent order access until checkout success has verified a paid/complete backend session with backend-sourced customer email, order id, and plan id.
