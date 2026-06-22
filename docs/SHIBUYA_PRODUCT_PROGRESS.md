@@ -193,7 +193,11 @@ Remaining gap:
 
 ### 4. Checkout Activation Access Boundary
 
-Status: validated
+Status: pushed
+
+Commit:
+
+- Shibuya `f160482 Gate activation access on verified checkout`
 
 Files changed:
 
@@ -217,4 +221,4 @@ Evidence:
 
 Remaining gap:
 
-- Needs pushed commit proof.
+- This still does not prove deployed live Stripe checkout. It proves the browser cannot prefill activation/login/workspace recent order access until checkout success has verified a paid/complete backend session.
