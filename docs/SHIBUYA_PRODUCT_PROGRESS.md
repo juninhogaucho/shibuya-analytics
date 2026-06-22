@@ -263,7 +263,7 @@ Remaining gap:
 
 ### 6. Live Proof Phase Receipt Boundary
 
-Status: validated locally; pending push proof
+Status: pushed
 
 Files changed:
 
@@ -278,6 +278,7 @@ What changed:
 
 Evidence so far:
 
+- Commit: Shibuya `ef275d9` (`Gate live proof phase on verified receipts`).
 - Shibuya focused live-proof tests: `4 passed / 21 tests`.
 - Shibuya `tsc -b`: passed.
 - Shibuya `eslint .`: passed.
@@ -286,5 +287,4 @@ Evidence so far:
 
 Remaining gap:
 
-- Needs pushed commit proof.
 - This does not prove deployed live runtime. It proves the workspace phase/readiness layer cannot promote generated-looking receipts with proof validation errors or zero uploaded trades into baseline/append proof in local code and tests.
