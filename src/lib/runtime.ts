@@ -217,7 +217,17 @@ export function getStoredSessionOfferKind(): string | null {
 
 export function hasPremiumAccess(): boolean {
   const meta = getStoredSessionMeta()
-  return meta?.tier === 'reset_pro' || (getShibuyaRuntimeMode() === 'sample' && meta?.samplePreview === 'reset_pro')
+  const mode = getShibuyaRuntimeMode()
+
+  if (mode === 'sample') {
+    return hasPrivateResetProDemoReceipt(meta)
+  }
+
+  if (mode === 'live') {
+    return hasBackendVerifiedLiveSession(meta) && meta?.tier === 'reset_pro'
+  }
+
+  return false
 }
 
 export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {

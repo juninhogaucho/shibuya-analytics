@@ -121,7 +121,7 @@ describe('shibuya runtime', () => {
     })
     expect(getShibuyaRuntimeMode()).toBe('sample')
     expect(isResetProSamplePreview()).toBe(true)
-    expect(hasPremiumAccess()).toBe(true)
+    expect(hasPremiumAccess()).toBe(false)
     expect(hasPrivateResetProDemoReceipt()).toBe(false)
     expect(getWorkspaceAccessState()).toMatchObject({
       ok: false,
@@ -167,6 +167,7 @@ describe('shibuya runtime', () => {
 
     expect(getShibuyaRuntimeMode()).toBe('live')
     expect(hasBackendVerifiedLiveSession()).toBe(false)
+    expect(hasPremiumAccess()).toBe(false)
     expect(getWorkspaceAccessState()).toMatchObject({
       ok: false,
       mode: 'live',
@@ -347,6 +348,7 @@ describe('shibuya runtime', () => {
     })
 
     expect(hasPrivateResetProDemoReceipt()).toBe(true)
+    expect(hasPremiumAccess()).toBe(true)
     expect(getWorkspaceAccessState()).toMatchObject({
       ok: true,
       mode: 'sample',
