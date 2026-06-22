@@ -15,7 +15,7 @@ afterEach(() => {
 })
 
 describe('activation API boundary', () => {
-  test('does not store weak public activation context from direct activation callers', async () => {
+  test('verifyActivation is transport-only and does not create browser live state', async () => {
     const { verifyActivation } = await import('../auth')
 
     httpPostMock.mockResolvedValueOnce({
@@ -52,6 +52,69 @@ describe('activation API boundary', () => {
       activationToken: 'live-token-weak',
     })
 
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+    expect(getStoredSessionMeta()).toBeNull()
+  })
+
+  test('refuses to persist a ready activation without backend customer identity', async () => {
+    const { getActivationSessionProofError, persistVerifiedActivationSession } = await import('../auth')
+
+    const response = {
+      status: 'ready' as const,
+      message: 'Activation verified.',
+      activationToken: 'live-token-without-customer',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global' as const,
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+    }
+
+    expect(getActivationSessionProofError(response)).toContain('backend customer identity')
+    expect(() => persistVerifiedActivationSession(response, {
+      email: 'founder@shibuya.test',
+      orderCode: 'order_missing_customer',
+    })).toThrow(/backend customer identity/i)
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+    expect(getStoredSessionMeta()).toBeNull()
+  })
+
+  test('persists verified activation base state but drops weak public context', async () => {
+    const { persistVerifiedActivationSession, verifyActivation } = await import('../auth')
+
+    httpPostMock.mockResolvedValueOnce({
+      data: {
+        status: 'ready',
+        message: 'Activation verified.',
+        activationToken: 'live-token-weak',
+        customerId: 'customer-weak',
+        tier: 'reset_pro',
+        planId: 'shibuya_reset_pro_monthly',
+        market: 'global',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+        publicContextSource: 'locked_insight',
+        publicContextReportId: 'local-report-123',
+        publicContextSectionId: 'edge-decay-map',
+        publicContextArchetypeId: 'marco',
+        publicContextAxisId: 'edge_decay',
+        publicContextPacketSource: 'guided_public_report',
+        publicContextArtifactStatus: 'local_preview_only',
+        publicContextProductionArtifactProven: 'false',
+        publicContextTeaserRequestId: 'TEASER-weak',
+        publicContextTeaserTradesAnalyzed: '12',
+        publicContextTeaserWorstPattern: 'Tilt Expansion',
+        publicContextTeaserVerified: 'true',
+        publicContextTeaserVerificationStatus: 'verified',
+        publicContextTeaserReceiptHash: 'not-a-hash',
+        publicContextTeaserVerifiedAt: '2026-06-21T00:00:00Z',
+      },
+    })
+
+    const payload = { email: 'founder@shibuya.test', orderCode: 'order_weak' }
+    const response = await verifyActivation(payload)
+    expect(persistVerifiedActivationSession(response, payload)).toBe(true)
+
     expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBe('live-token-weak')
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'customer-weak',
@@ -67,8 +130,8 @@ describe('activation API boundary', () => {
     expect(getStoredSessionMeta()?.activationTeaserReceiptHash).toBeUndefined()
   })
 
-  test('stores verified persisted backend teaser activation context from direct activation callers', async () => {
-    const { verifyActivation } = await import('../auth')
+  test('persists verified backend teaser activation context', async () => {
+    const { persistVerifiedActivationSession, verifyActivation } = await import('../auth')
 
     httpPostMock.mockResolvedValueOnce({
       data: {
@@ -107,7 +170,9 @@ describe('activation API boundary', () => {
       },
     })
 
-    await verifyActivation({ email: 'founder@shibuya.test', orderCode: 'order_verified' })
+    const payload = { email: 'founder@shibuya.test', orderCode: 'order_verified' }
+    const response = await verifyActivation(payload)
+    expect(persistVerifiedActivationSession(response, payload)).toBe(true)
 
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'customer-verified',

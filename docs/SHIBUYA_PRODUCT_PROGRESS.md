@@ -146,3 +146,47 @@ Remaining gap:
 
 - This does not itself prove deployed runtime readiness. It proves the local code contract and test boundary.
 - Deployed runtime proof is still pending: the public Shibuya app needs a live `VITE_API_BASE`, authenticated account activation, readiness response, upload submit, generated artifact receipt, report snapshot id, and durable append count observed against the deployed stack.
+
+### 3. Activation Session Identity Boundary
+
+Status: validated, pending commit/push
+
+Commit:
+
+- Pending
+
+Files changed:
+
+- Medallion `app/trader_endpoints.py`
+- Medallion `tests/test_shibuya_critical_path.py`
+- Shibuya `src/lib/api/auth.ts`
+- Shibuya `src/lib/api/__tests__/auth.test.ts`
+- Shibuya `src/pages/marketing/ActivationPage.tsx`
+- Shibuya `src/pages/marketing/__tests__/ActivationPage.test.tsx`
+- Shibuya `src/pages/marketing/LoginPage.tsx`
+
+What changed:
+
+- `verifyActivation` is now transport-only; it does not write browser live state by itself.
+- Added explicit `persistVerifiedActivationSession(...)` and `getActivationSessionProofError(...)`.
+- Live activation persistence now requires both a backend activation token and backend customer identity.
+- ActivationPage blocks malformed `ready` responses before navigation, before lifecycle logging, and before local live-token storage.
+- LoginPage first-time activation uses the same persistence boundary.
+- Medallion dev/demo activation now returns the demo `customerId` so it respects the same contract as production activation.
+
+Evidence so far:
+
+- Shibuya focused tests: `auth.test.ts` and `ActivationPage.test.tsx` passed `10 passed`.
+- Shibuya paid/checkout focused tests: `PaidJourneyContract.test.tsx`, `CheckoutPage.test.tsx`, and `CheckoutSuccessPage.test.tsx` passed `11 passed`.
+- Shibuya `tsc -b`: passed.
+- Shibuya ESLint: passed.
+- Shibuya Vite build: passed.
+- Shibuya full Vitest deterministic run: `66 passed / 245 tests`.
+- Medallion `TestActivationModels`: passed `6 passed`.
+- Medallion full Shibuya critical path test file: `61 passed`.
+- Medallion py_compile: `app/trader_endpoints.py` and `tests/test_shibuya_critical_path.py` passed.
+
+Remaining gap:
+
+- Commit and push are still pending for both repos.
+- This still does not prove a deployed live activation; it proves that the browser cannot create a live workspace session from an incomplete activation response.

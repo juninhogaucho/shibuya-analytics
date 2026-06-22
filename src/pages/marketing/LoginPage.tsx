@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { login, verifyActivation } from '../../lib/api/auth'
+import { getActivationSessionProofError, login, persistVerifiedActivationSession, verifyActivation } from '../../lib/api/auth'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 
@@ -49,7 +49,16 @@ export function LoginPage() {
     try {
       const response = await verifyActivation({ email, orderCode })
       
-      if (response.status === 'ready' && response.activationToken) {
+      if (response.status === 'ready') {
+        const activationSessionProofError = getActivationSessionProofError(response)
+        if (activationSessionProofError) {
+          setError(`${activationSessionProofError} No live workspace session was created.`)
+          return
+        }
+
+        persistVerifiedActivationSession(response, { email, orderCode }, {
+          market: response.market ?? market,
+        })
         navigate(addMarketToPath(response.passwordRequired ? '/claim-account' : '/dashboard', response.market ?? market), { replace: true })
       } else if (response.status === 'pending') {
         setError('Your payment is still processing. Please check your email for confirmation.')

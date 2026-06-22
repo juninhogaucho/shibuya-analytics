@@ -2,7 +2,12 @@ import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
 import { logTraderLifecycleEvent } from '../../lib/api/trader'
-import { buildVerifiedActivationPublicContextMeta, verifyActivation } from '../../lib/api/auth'
+import {
+  buildVerifiedActivationPublicContextMeta,
+  getActivationSessionProofError,
+  persistVerifiedActivationSession,
+  verifyActivation,
+} from '../../lib/api/auth'
 import { describeCheckoutIntent, readCheckoutIntent } from '../../lib/checkoutIntent'
 import { addMarketToPath, getPlanByPlanId, resolveMarket } from '../../lib/market'
 import {
@@ -12,7 +17,6 @@ import {
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
-import { setLiveApiKey } from '../../lib/runtime'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 import {
   buildFreeReportPreview,
@@ -133,7 +137,13 @@ export function ActivationPage() {
     try {
       const response = await verifyActivation({ email, orderCode })
 
-      if (response.status === 'ready' && response.activationToken) {
+      if (response.status === 'ready') {
+        const activationSessionProofError = getActivationSessionProofError(response)
+        if (activationSessionProofError) {
+          setError(`${activationSessionProofError} No live workspace session was created.`)
+          return
+        }
+
         const verifiedActivationContext = buildVerifiedActivationPublicContextMeta(response)
         const backendPainAxisIds = verifiedActivationContext.activationSelectedPainAxisIds
         const backendSignalMarkerIds = verifiedActivationContext.activationSignalMarkerIds
@@ -180,9 +190,7 @@ export function ActivationPage() {
         const activationEngagementCurrentSectionClickCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementCurrentSectionClickCount : undefined
         const activationEngagementPrivateDemoIntentCountForStorage = hasBackendActivationContext ? verifiedActivationContext.activationEngagementPrivateDemoIntentCount : undefined
 
-        // Store the activation token BEFORE redirect so AuthGuard recognises the session.
-        setLiveApiKey(response.activationToken, {
-          customerId: response.customerId ?? undefined,
+        persistVerifiedActivationSession(response, { email, orderCode }, {
           tier: response.tier ?? undefined,
           planId: response.planId ?? undefined,
           market: (response.market as 'global' | 'india') ?? market,

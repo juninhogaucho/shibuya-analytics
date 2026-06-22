@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
-import { SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
+import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { ActivationPage } from '../ActivationPage'
 
 const apiMocks = vi.hoisted(() => ({
@@ -225,6 +225,41 @@ describe('ActivationPage', () => {
     expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
     expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
     expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
+  })
+
+  test('blocks ready activation responses that lack backend customer identity', async () => {
+    const user = userEvent.setup()
+    apiMocks.verifyActivation.mockResolvedValue({
+      status: 'ready',
+      activationToken: 'live-token-without-customer',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      passwordRequired: false,
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/activate?market=global']}>
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText(/EMAIL_ADDRESS/i), 'founder@shibuya.test')
+    await user.type(screen.getByLabelText(/ORDER_CODE/i), 'order_missing_customer')
+    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
+
+    expect(await screen.findByText(/backend customer identity/i)).toBeInTheDocument()
+    expect(screen.getByText(/No live workspace session was created/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/activate?market=global')
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+    expect(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY)).toBeNull()
+    expect(apiMocks.logTraderLifecycleEvent).not.toHaveBeenCalled()
   })
 
   test('drops unverified backend public checkout context when local report receipt is absent', async () => {

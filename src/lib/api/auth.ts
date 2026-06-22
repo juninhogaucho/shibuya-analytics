@@ -31,6 +31,55 @@ export function buildVerifiedActivationPublicContextMeta(data: ActivationRespons
   return buildActivationResponsePublicContextMeta(data)
 }
 
+export function getActivationSessionProofError(data: ActivationResponse): string | null {
+  if (data.status !== 'ready') {
+    return null
+  }
+
+  if (!data.activationToken?.trim()) {
+    return 'Medallion verified the order but did not return an activation token.'
+  }
+
+  if (!data.customerId?.trim()) {
+    return 'Medallion verified the order but did not return a backend customer identity.'
+  }
+
+  return null
+}
+
+export function persistVerifiedActivationSession(
+  data: ActivationResponse,
+  payload: ActivationPayload,
+  metaOverrides: Partial<ShibuyaSessionMeta> = {},
+): boolean {
+  const proofError = getActivationSessionProofError(data)
+  if (proofError) {
+    throw new Error(proofError)
+  }
+
+  if (data.status !== 'ready' || !data.activationToken || !data.customerId) {
+    return false
+  }
+
+  const verifiedActivationContext = buildVerifiedActivationPublicContextMeta(data)
+
+  setLiveApiKey(data.activationToken, {
+    customerId: data.customerId,
+    tier: data.tier,
+    planId: data.planId,
+    market: data.market,
+    orderId: payload.orderCode,
+    offerKind: data.offerKind,
+    caseStatus: data.caseStatus,
+    accessExpiresAt: data.accessExpiresAt ?? null,
+    dataSource: data.dataSource ?? null,
+    ...verifiedActivationContext,
+    ...metaOverrides,
+  })
+
+  return true
+}
+
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
   if (data.success && data.api_key) {
@@ -52,22 +101,6 @@ export async function register(payload: LoginRequest & { name?: string }): Promi
 
 export async function verifyActivation(payload: ActivationPayload): Promise<ActivationResponse> {
   const { data } = await http.post<ActivationResponse>('/v1/trader/activations/verify', payload)
-  if (data.activationToken) {
-    const verifiedActivationContext = buildVerifiedActivationPublicContextMeta(data)
-
-    setLiveApiKey(data.activationToken, {
-      customerId: data.customerId,
-      tier: data.tier,
-      planId: data.planId,
-      market: data.market,
-      orderId: payload.orderCode,
-      offerKind: data.offerKind,
-      caseStatus: data.caseStatus,
-      accessExpiresAt: data.accessExpiresAt ?? null,
-      dataSource: data.dataSource ?? null,
-      ...verifiedActivationContext,
-    })
-  }
   return data
 }
 
