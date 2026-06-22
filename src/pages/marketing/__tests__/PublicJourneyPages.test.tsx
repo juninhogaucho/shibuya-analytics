@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import StoryExperience from '../../../components/landing/StoryExperience'
 import { getPublicReportEngagement } from '../../../lib/publicReportEngagement'
 import { getPublicReportSession, hasCheckoutGradePublicReportSession } from '../../../lib/publicReportSession'
@@ -15,12 +15,19 @@ import PublicUploadPage from '../PublicUploadPage'
 const publicReportMocks = vi.hoisted(() => ({
   generatePublicTeaserReport: vi.fn(),
   getPublicTeaserReport: vi.fn(),
+  getPublicTeaserReportReadiness: vi.fn(),
 }))
 
-vi.mock('../../../lib/api/publicReport', () => ({
-  generatePublicTeaserReport: publicReportMocks.generatePublicTeaserReport,
-  getPublicTeaserReport: publicReportMocks.getPublicTeaserReport,
-}))
+vi.mock('../../../lib/api/publicReport', async () => {
+  const actual = await vi.importActual<typeof import('../../../lib/api/publicReport')>('../../../lib/api/publicReport')
+
+  return {
+    ...actual,
+    generatePublicTeaserReport: publicReportMocks.generatePublicTeaserReport,
+    getPublicTeaserReport: publicReportMocks.getPublicTeaserReport,
+    getPublicTeaserReportReadiness: publicReportMocks.getPublicTeaserReportReadiness,
+  }
+})
 
 function LocationProbe() {
   const location = useLocation()
@@ -31,10 +38,30 @@ afterEach(() => {
   window.localStorage.clear()
   publicReportMocks.generatePublicTeaserReport.mockReset()
   publicReportMocks.getPublicTeaserReport.mockReset()
+  publicReportMocks.getPublicTeaserReportReadiness.mockReset()
   vi.unstubAllEnvs()
 })
 
 describe('public Shibuya journey pages', () => {
+  beforeEach(() => {
+    publicReportMocks.getPublicTeaserReportReadiness.mockResolvedValue({
+      status: 'ready',
+      service: 'shibuya-public-teaser-report',
+      accepts_csv_upload: true,
+      persists_teaser_receipts: true,
+      retrieves_teaser_receipts: true,
+      report_type: 'teaser',
+      artifact_status_required: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      raw_trade_rows_stored: false,
+      live_private_artifact_proven: false,
+      min_trade_rows: 10,
+      max_file_size_mb: 5,
+      retrieval_identity: ['report_id', 'request_id'],
+      blockers: [],
+    })
+  })
+
   test('full public story flow can unlock a private Reset Pro demo with report context', async () => {
     const user = userEvent.setup()
     vi.stubEnv('VITE_PRIVATE_DEMO_ACCESS_CODE', 'founder-only')
@@ -475,6 +502,62 @@ describe('public Shibuya journey pages', () => {
     })
 
     expect(publicReportMocks.generatePublicTeaserReport).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
+  })
+
+  test('eligible public paste blocks report creation when backend readiness is not proven', async () => {
+    const user = userEvent.setup()
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const pnl = index % 2 === 0 ? 35 + index : -20 - index
+      return `2026-06-${String(10 + index).padStart(2, '0')},XAUUSD,${index % 2 === 0 ? 'buy' : 'sell'},1,2300,2310,${pnl}`
+    })
+    const pasteBody = ['date,symbol,side,size,entry,exit,pnl', ...rows].join('\n')
+
+    publicReportMocks.getPublicTeaserReportReadiness.mockResolvedValue({
+      status: 'blocked',
+      service: 'shibuya-public-teaser-report',
+      accepts_csv_upload: true,
+      persists_teaser_receipts: false,
+      retrieves_teaser_receipts: false,
+      report_type: 'teaser',
+      artifact_status_required: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      raw_trade_rows_stored: false,
+      live_private_artifact_proven: false,
+      min_trade_rows: 10,
+      max_file_size_mb: 5,
+      retrieval_identity: ['report_id', 'request_id'],
+      blockers: ['storage_missing_methods:store_public_teaser_report'],
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Medallion public report boundary is blocked.')).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText(/Or paste a small trade sample/i), {
+      target: { value: pasteBody },
+    })
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/Medallion public report service is not ready to persist teaser receipts/i).length).toBeGreaterThan(1)
+    })
+
+    expect(publicReportMocks.getPublicTeaserReportReadiness).toHaveBeenCalled()
+    expect(publicReportMocks.generatePublicTeaserReport).not.toHaveBeenCalled()
+    expect(screen.getByText(/Blockers: storage_missing_methods:store_public_teaser_report/i)).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
     expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()

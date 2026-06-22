@@ -1,9 +1,14 @@
-import { type FormEvent, useMemo, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { ArrowRight, FileUp, ShieldCheck } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PublicJourneySpine } from '../../components/landing/PublicJourneySpine'
 import { addMarketToPath, getMarketHomePath, resolveMarket } from '../../lib/market'
-import { generatePublicTeaserReport } from '../../lib/api/publicReport'
+import {
+  generatePublicTeaserReport,
+  getPublicTeaserReportReadiness,
+  validatePublicTeaserReportReadiness,
+  type PublicTeaserReportReadinessResponse,
+} from '../../lib/api/publicReport'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
 import {
@@ -43,11 +48,62 @@ interface LocalFileValidationState {
   error?: string | null
 }
 
+interface PublicReportReadinessState {
+  status: 'checking' | 'ready' | 'blocked'
+  headline: string
+  detail: string
+  minTradeRows?: number
+  maxFileSizeMb?: number
+  blockers: string[]
+}
+
 const EMPTY_FILE_VALIDATION: LocalFileValidationState = {
   status: 'idle',
   message: 'CSV, TXT, and spreadsheet exports are accepted in the public preview surface.',
   facts: [],
   error: null,
+}
+
+const CHECKING_PUBLIC_REPORT_READINESS: PublicReportReadinessState = {
+  status: 'checking',
+  headline: 'Checking Medallion report persistence.',
+  detail: 'Generate Free Report waits for the backend to prove it can persist and retrieve a public teaser receipt.',
+  blockers: [],
+}
+
+function summarizePublicReportReadiness(readiness: PublicTeaserReportReadinessResponse): PublicReportReadinessState {
+  const readinessError = validatePublicTeaserReportReadiness(readiness)
+
+  if (readinessError) {
+    return {
+      status: 'blocked',
+      headline: 'Medallion public report boundary is blocked.',
+      detail: readinessError,
+      minTradeRows: readiness.min_trade_rows,
+      maxFileSizeMb: readiness.max_file_size_mb,
+      blockers: readiness.blockers ?? [],
+    }
+  }
+
+  return {
+    status: 'ready',
+    headline: 'Medallion can persist public teaser receipts.',
+    detail: `Real free reports require at least ${readiness.min_trade_rows ?? MIN_BACKEND_TEASER_TRADE_ROWS} validated rows and return a persisted backend teaser receipt before the report route opens.`,
+    minTradeRows: readiness.min_trade_rows,
+    maxFileSizeMb: readiness.max_file_size_mb,
+    blockers: [],
+  }
+}
+
+function summarizePublicReportReadinessFailure(error: unknown): PublicReportReadinessState {
+  const message = error instanceof Error ? error.message : 'Medallion public report readiness check failed.'
+
+  return {
+    status: 'blocked',
+    headline: 'Medallion public report readiness could not be verified.',
+    detail: `${message} Generate Free Report will not create a report packet until readiness is proven.`,
+    blockers: ['readiness_check_failed'],
+  }
 }
 
 function getUploadFileExtension(fileName: string): string {
@@ -91,6 +147,9 @@ export default function PublicUploadPage() {
   const [pasteBody, setPasteBody] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [reportGenerating, setReportGenerating] = useState(false)
+  const [publicReportReadiness, setPublicReportReadiness] = useState<PublicReportReadinessState>(
+    CHECKING_PUBLIC_REPORT_READINESS,
+  )
 
   const archetype = useMemo(() => getTraderArchetype(archetypeId), [archetypeId])
   const axis = useMemo(() => getFingerprintAxis(axisId), [axisId])
@@ -182,6 +241,39 @@ export default function PublicUploadPage() {
     },
   ]
 
+  const refreshPublicReportReadiness = async (): Promise<string | null> => {
+    try {
+      const readiness = await getPublicTeaserReportReadiness()
+      const nextReadiness = summarizePublicReportReadiness(readiness)
+      setPublicReportReadiness(nextReadiness)
+      return nextReadiness.status === 'ready' ? null : nextReadiness.detail
+    } catch (caughtError) {
+      const nextReadiness = summarizePublicReportReadinessFailure(caughtError)
+      setPublicReportReadiness(nextReadiness)
+      return nextReadiness.detail
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false
+
+    void getPublicTeaserReportReadiness()
+      .then((readiness) => {
+        if (!cancelled) {
+          setPublicReportReadiness(summarizePublicReportReadiness(readiness))
+        }
+      })
+      .catch((caughtError) => {
+        if (!cancelled) {
+          setPublicReportReadiness(summarizePublicReportReadinessFailure(caughtError))
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const buildReportSearch = (source: 'upload' | 'sample') => {
     const reportSearchParams = appendDemoLauncherSamplePacketParam(
       appendPublicStoryHandoffParams(
@@ -240,6 +332,12 @@ export default function PublicUploadPage() {
       setReportGenerating(true)
 
       try {
+        const readinessError = await refreshPublicReportReadiness()
+        if (readinessError) {
+          setError(`${readinessError} No report packet was created; use Sample History only for a non-product walkthrough.`)
+          return
+        }
+
         const backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
         const receiptError = validatePublicTeaserReportResponse(backendTeaser)
 
@@ -593,6 +691,51 @@ export default function PublicUploadPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div
+              className={`mb-6 rounded-3xl border p-5 ${
+                publicReportReadiness.status === 'ready'
+                  ? 'border-emerald-300/20 bg-emerald-300/[0.06]'
+                  : publicReportReadiness.status === 'checking'
+                    ? 'border-sky-300/20 bg-sky-300/[0.055]'
+                    : 'border-rose-300/25 bg-rose-300/[0.06]'
+              }`}
+            >
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">Backend report boundary</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{publicReportReadiness.headline}</h3>
+                </div>
+                <span className="w-fit rounded-full border border-white/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/80">
+                  {publicReportReadiness.status}
+                </span>
+              </div>
+              <p className="text-sm leading-6 text-white/75">{publicReportReadiness.detail}</p>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <article className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Receipt persistence</span>
+                  <strong className="mt-2 block text-sm text-white">
+                    {publicReportReadiness.status === 'ready' ? 'Required and proven ready' : 'Not proven ready'}
+                  </strong>
+                  <span className="mt-2 block text-xs leading-5 text-white/55">A real report route opens only after Medallion returns a persisted teaser receipt.</span>
+                </article>
+                <article className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Minimum rows</span>
+                  <strong className="mt-2 block text-sm text-white">{publicReportReadiness.minTradeRows ?? MIN_BACKEND_TEASER_TRADE_ROWS}</strong>
+                  <span className="mt-2 block text-xs leading-5 text-white/55">Below this, the public route stays sample/local only.</span>
+                </article>
+                <article className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Private proof</span>
+                  <strong className="mt-2 block text-sm text-white">Private proof remains locked</strong>
+                  <span className="mt-2 block text-xs leading-5 text-white/55">Teaser readiness never proves payment, live upload, generated artifacts, or append history.</span>
+                </article>
+              </div>
+              {publicReportReadiness.blockers.length > 0 ? (
+                <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-xs leading-5 text-white/60">
+                  Blockers: {publicReportReadiness.blockers.join(', ')}
+                </p>
+              ) : null}
             </div>
 
             <div className="mb-6 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-5">
