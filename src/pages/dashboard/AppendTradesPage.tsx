@@ -6,13 +6,15 @@ import {
 } from '../../lib/api/trader'
 import {
   getDashboardOverview,
+  getLiveUploadAppendReadiness,
   getTradePasteMemory,
   getTradingReportComparison,
   parseTradePaste,
   submitParsedTrades,
+  validateLiveUploadAppendReadiness,
   uploadTradesCSV,
 } from '../../lib/api/dashboard'
-import type { TradeUploadResponse } from '../../lib/api/dashboard'
+import type { LiveUploadAppendReadinessResponse, TradeUploadResponse } from '../../lib/api/dashboard'
 import { JourneyProgressCard } from '../../components/dashboard/JourneyProgressCard'
 import { ImportConciergeCard } from '../../components/dashboard/ImportConciergeCard'
 import { LiveProofReadinessCard } from '../../components/dashboard/LiveProofReadinessCard'
@@ -44,6 +46,17 @@ interface ParsePreview {
   symbols: string[]
   issues?: string[]
   trades?: ParsedTrade[]
+}
+
+interface LiveUploadReadinessState {
+  status: 'checking' | 'ready' | 'blocked'
+  headline: string
+  detail: string
+  uploadCount?: number
+  uploadLimit?: number | null
+  uploadsRemaining?: number | null
+  lastReportSnapshotId?: string | null
+  blockers: string[]
 }
 
 const SAMPLE_PLACEHOLDER = `2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20
@@ -79,9 +92,55 @@ const ANONYMOUS_RUNTIME_CONTRACT: ShibuyaRuntimeContract = {
   proofBoundary: 'Anonymous visitors can inspect the public product story but cannot access account analytics.',
 }
 
+const CHECKING_LIVE_UPLOAD_READINESS: LiveUploadReadinessState = {
+  status: 'checking',
+  headline: 'Checking live append readiness.',
+  detail: 'Shibuya is asking Medallion whether this account can write uploads, persist receipts, and generate account artifacts before append.',
+  blockers: [],
+}
+
 function readRuntimeContract(): ShibuyaRuntimeContract {
   const runtimeContract: ShibuyaRuntimeContract | undefined = getShibuyaRuntimeContract()
   return runtimeContract ?? ANONYMOUS_RUNTIME_CONTRACT
+}
+
+function summarizeLiveUploadReadiness(readiness: LiveUploadAppendReadinessResponse): LiveUploadReadinessState {
+  const readinessError = validateLiveUploadAppendReadiness(readiness)
+
+  if (readinessError) {
+    return {
+      status: 'blocked',
+      headline: 'Live append boundary is blocked.',
+      detail: readinessError,
+      uploadCount: readiness.upload_count,
+      uploadLimit: readiness.upload_limit,
+      uploadsRemaining: readiness.uploads_remaining,
+      lastReportSnapshotId: readiness.last_report_snapshot_id,
+      blockers: readiness.blockers ?? [],
+    }
+  }
+
+  return {
+    status: 'ready',
+    headline: 'Medallion can accept a live append.',
+    detail: 'A live upload can be submitted, but Shibuya will only call it proof after Medallion returns request id, generated artifact snapshot, and durable append count.',
+    uploadCount: readiness.upload_count,
+    uploadLimit: readiness.upload_limit,
+    uploadsRemaining: readiness.uploads_remaining,
+    lastReportSnapshotId: readiness.last_report_snapshot_id,
+    blockers: [],
+  }
+}
+
+function summarizeLiveUploadReadinessFailure(error: unknown): LiveUploadReadinessState {
+  const message = error instanceof Error ? error.message : 'Live append readiness check failed.'
+
+  return {
+    status: 'blocked',
+    headline: 'Live append readiness could not be verified.',
+    detail: `${message} No live upload should be submitted until Medallion readiness is proven.`,
+    blockers: ['live_append_readiness_check_failed'],
+  }
 }
 
 function formatMemoryDelta(memory: TradePasteMemoryResponse): string[] {
@@ -497,6 +556,9 @@ export function AppendTradesPage() {
   const [profileContext, setProfileContext] = useState<TraderProfileContext | null>(null)
   const [dashboardOverview, setDashboardOverview] = useState<DashboardOverview | null>(null)
   const [liveUploadProof, setLiveUploadProof] = useState<TradeUploadResponse | null>(null)
+  const [liveUploadReadiness, setLiveUploadReadiness] = useState<LiveUploadReadinessState>(
+    CHECKING_LIVE_UPLOAD_READINESS,
+  )
   const [tradingReportComparison, setTradingReportComparison] = useState<TradingReportComparisonResponse | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const runtimeContract = readRuntimeContract()
@@ -581,9 +643,10 @@ export function AppendTradesPage() {
     let active = true
 
     async function loadLiveContext() {
-      const [profileResult, overviewResult] = await Promise.allSettled([
+      const [profileResult, overviewResult, readinessResult] = await Promise.allSettled([
         getTraderProfileContext(),
         getDashboardOverview(),
+        getLiveUploadAppendReadiness(),
       ])
 
       if (!active) {
@@ -598,6 +661,12 @@ export function AppendTradesPage() {
 
       if (overviewResult.status === 'fulfilled') {
         setDashboardOverview(overviewResult.value)
+      }
+
+      if (readinessResult.status === 'fulfilled') {
+        setLiveUploadReadiness(summarizeLiveUploadReadiness(readinessResult.value))
+      } else {
+        setLiveUploadReadiness(summarizeLiveUploadReadinessFailure(readinessResult.reason))
       }
     }
 
@@ -636,6 +705,23 @@ export function AppendTradesPage() {
   const resetFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
+    }
+  }
+
+  const refreshLiveUploadReadiness = async (): Promise<string | null> => {
+    if (sampleMode) {
+      return null
+    }
+
+    try {
+      const readiness = await getLiveUploadAppendReadiness()
+      const nextReadiness = summarizeLiveUploadReadiness(readiness)
+      setLiveUploadReadiness(nextReadiness)
+      return nextReadiness.status === 'ready' ? null : nextReadiness.detail
+    } catch (caughtError) {
+      const nextReadiness = summarizeLiveUploadReadinessFailure(caughtError)
+      setLiveUploadReadiness(nextReadiness)
+      return nextReadiness.detail
     }
   }
 
@@ -689,6 +775,12 @@ export function AppendTradesPage() {
     try {
       setLoading(true)
       setError(null)
+
+      const readinessError = await refreshLiveUploadReadiness()
+      if (readinessError) {
+        setError(`${readinessError} No live append was submitted.`)
+        return
+      }
 
       const result = await submitParsedTrades({
         trades: parsedPreview.trades || [],
@@ -789,6 +881,13 @@ export function AppendTradesPage() {
       setSuccess(null)
       const rescued = await rescueCsvForUpload(file)
       rescuedNotes = rescued.notes
+
+      const readinessError = await refreshLiveUploadReadiness()
+      if (readinessError) {
+        setError(`${readinessError} No live CSV append was submitted.`)
+        return
+      }
+
       const result = await uploadTradesCSV(rescued.file)
 
       if (sampleMode || result.status === 'sample') {
@@ -904,6 +1003,60 @@ export function AppendTradesPage() {
           appendProof={sampleMode ? null : tradingReportComparison?.append_proof ?? null}
         />
       </div>
+
+      {!sampleMode ? (
+        <section
+          className="glass-panel"
+          aria-label="LIVE APPEND READINESS boundary"
+          style={{
+            marginBottom: '1.5rem',
+            borderColor:
+              liveUploadReadiness.status === 'ready'
+                ? 'rgba(16,185,129,0.24)'
+                : liveUploadReadiness.status === 'checking'
+                  ? 'rgba(14,165,233,0.22)'
+                  : 'rgba(244,63,94,0.28)',
+            background:
+              liveUploadReadiness.status === 'ready'
+                ? 'rgba(16,185,129,0.07)'
+                : liveUploadReadiness.status === 'checking'
+                  ? 'rgba(14,165,233,0.06)'
+                  : 'rgba(244,63,94,0.08)',
+          }}
+        >
+          <div className="section-header-inline" style={{ alignItems: 'flex-start', gap: '1rem' }}>
+            <div>
+              <p className="badge" style={{ marginBottom: '0.5rem' }}>LIVE APPEND WRITE BOUNDARY</p>
+              <h3 style={{ marginBottom: '0.5rem' }}>{liveUploadReadiness.headline}</h3>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadReadiness.detail}</p>
+            </div>
+            <span className="badge">{liveUploadReadiness.status}</span>
+          </div>
+          <div className="grid-responsive four" style={{ marginTop: '1rem' }}>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Uploads used</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadReadiness.uploadCount ?? 'Not returned'}</p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Upload limit</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadReadiness.uploadLimit ?? 'Live/unbounded'}</p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Remaining</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadReadiness.uploadsRemaining ?? 'Not capped'}</p>
+            </article>
+            <article className="glass-panel" style={{ background: 'rgba(0,0,0,0.14)', borderColor: 'rgba(255,255,255,0.08)' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Last snapshot</h4>
+              <p className="text-muted" style={{ marginBottom: 0 }}>{liveUploadReadiness.lastReportSnapshotId ?? 'None yet'}</p>
+            </article>
+          </div>
+          {liveUploadReadiness.blockers.length > 0 ? (
+            <p className="text-muted" style={{ marginTop: '1rem', marginBottom: 0 }}>
+              Blockers: {liveUploadReadiness.blockers.join(', ')}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
 
       {liveActivationProofTarget ? (
         <section

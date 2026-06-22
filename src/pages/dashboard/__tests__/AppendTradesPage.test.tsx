@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 const parseTradePasteMock = vi.fn()
 const submitParsedTradesMock = vi.fn()
 const uploadTradesCSVMock = vi.fn()
+const getLiveUploadAppendReadinessMock = vi.fn()
 const getDashboardOverviewMock = vi.fn()
 const getTradePasteMemoryMock = vi.fn()
 const getTradingReportComparisonMock = vi.fn()
@@ -23,14 +24,20 @@ vi.mock('../../../lib/api/trader', () => ({
   logTraderLifecycleEvent: (...args: unknown[]) => logTraderLifecycleEventMock(...args),
 }))
 
-vi.mock('../../../lib/api/dashboard', () => ({
-  getDashboardOverview: (...args: unknown[]) => getDashboardOverviewMock(...args),
-  parseTradePaste: (...args: unknown[]) => parseTradePasteMock(...args),
-  submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
-  uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
-  getTradePasteMemory: (...args: unknown[]) => getTradePasteMemoryMock(...args),
-  getTradingReportComparison: (...args: unknown[]) => getTradingReportComparisonMock(...args),
-}))
+vi.mock('../../../lib/api/dashboard', async () => {
+  const actual = await vi.importActual<typeof import('../../../lib/api/dashboard')>('../../../lib/api/dashboard')
+
+  return {
+    ...actual,
+    getDashboardOverview: (...args: unknown[]) => getDashboardOverviewMock(...args),
+    getLiveUploadAppendReadiness: (...args: unknown[]) => getLiveUploadAppendReadinessMock(...args),
+    parseTradePaste: (...args: unknown[]) => parseTradePasteMock(...args),
+    submitParsedTrades: (...args: unknown[]) => submitParsedTradesMock(...args),
+    uploadTradesCSV: (...args: unknown[]) => uploadTradesCSVMock(...args),
+    getTradePasteMemory: (...args: unknown[]) => getTradePasteMemoryMock(...args),
+    getTradingReportComparison: (...args: unknown[]) => getTradingReportComparisonMock(...args),
+  }
+})
 
 vi.mock('../../../lib/runtime', () => ({
   isSampleMode: () => isSampleModeMock(),
@@ -62,6 +69,25 @@ describe('AppendTradesPage', () => {
       trades: [{ symbol: 'NIFTY24JAN22500CE' }, { symbol: 'BANKNIFTY24JAN48200PE' }],
     })
     getDashboardOverviewMock.mockRejectedValue(new Error('Dashboard overview unavailable in this focused test.'))
+    getLiveUploadAppendReadinessMock.mockResolvedValue({
+      status: 'ready',
+      service: 'shibuya-live-upload-append',
+      customer_id: 'cust_live_append_123',
+      accepts_csv_upload: true,
+      accepts_trade_paste_submit: true,
+      persists_upload_receipts: true,
+      generates_account_artifacts: true,
+      artifact_status_required: 'generated',
+      append_count_required: 1,
+      request_id_required: true,
+      report_snapshot_required: true,
+      read_only: false,
+      upload_count: 0,
+      upload_limit: null,
+      uploads_remaining: null,
+      last_report_snapshot_id: null,
+      blockers: [],
+    })
     submitParsedTradesMock.mockResolvedValue({ status: 'sample', trades_uploaded: 2 })
     uploadTradesCSVMock.mockResolvedValue({ status: 'sample', trades_uploaded: 0, report: {} })
     getTradingReportComparisonMock.mockResolvedValue({
@@ -259,6 +285,79 @@ describe('AppendTradesPage', () => {
     expect(screen.getByRole('link', { name: /Activate Live Reset Pro/i })).toHaveAttribute('href', '/pricing?upgrade=reset-pro&market=india')
     expect(getTradePasteMemoryMock).not.toHaveBeenCalled()
     expect(updateSessionMetaMock).not.toHaveBeenCalled()
+  }, 15000)
+
+  test('blocks live append submission when Medallion readiness is not proven', async () => {
+    isSampleModeMock.mockReturnValue(false)
+    getShibuyaRuntimeContractMock.mockReturnValue({
+      mode: 'live',
+      label: 'Live trader account',
+      canUseSampleData: false,
+      canPersistTrades: true,
+      persistence: 'backend',
+      requiresBackend: true,
+      proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
+    })
+    getStoredSessionMetaMock.mockReturnValue({
+      caseStatus: 'awaiting_upload',
+      market: 'india',
+      offerKind: 'psych_audit',
+      activationSource: 'locked_insight',
+      activationReportId: 'public-teaser-append',
+      activationArchetypeId: 'marco',
+      activationAxisId: 'edge_decay',
+      activationStorySource: 'guided',
+      activationSelectedPainAxisIds: ['edge_decay'],
+      activationVisitedSceneCount: 6,
+      activationSignalMarkerIds: ['mirror_selected', 'upload_intent'],
+      activationLockedSectionId: 'edge-decay-map',
+      activationLockedSectionTitle: 'Edge Decay Map',
+      activationTeaserRequestId: 'TEASER-route-123',
+      activationTeaserTradesAnalyzed: 10,
+      activationTeaserWorstPattern: 'Revenge Trading',
+      activationTeaserVerified: 'true',
+      activationTeaserVerificationStatus: 'verified',
+      activationTeaserReceiptHash: 'e'.repeat(64),
+      activationTeaserVerifiedAt: '2026-06-20T00:03:00Z',
+    })
+    getLiveUploadAppendReadinessMock.mockResolvedValue({
+      status: 'blocked',
+      service: 'shibuya-live-upload-append',
+      customer_id: 'cust_live_append_123',
+      accepts_csv_upload: false,
+      accepts_trade_paste_submit: false,
+      persists_upload_receipts: true,
+      generates_account_artifacts: true,
+      artifact_status_required: 'generated',
+      append_count_required: 1,
+      request_id_required: true,
+      report_snapshot_required: true,
+      read_only: true,
+      upload_count: 1,
+      upload_limit: 1,
+      uploads_remaining: 0,
+      last_report_snapshot_id: 'snap_upload_001',
+      blockers: ['reset_window_read_only', 'upload_limit_reached'],
+    })
+    const user = userEvent.setup()
+
+    renderPage()
+
+    expect(await screen.findByText('Live append boundary is blocked.')).toBeInTheDocument()
+    expect(screen.getByText(/Medallion live append service is not ready to persist upload receipts/i)).toBeInTheDocument()
+    expect(screen.getByText('Blockers: reset_window_read_only, upload_limit_reached')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Trades'), {
+      target: { value: '2024-01-15 09:32 NIFTY24JAN22500CE BUY 2 125.40 148.20' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Parse and preview trades' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm upload (2 trades)' }))
+
+    expect(await screen.findByText(/No live append was submitted/i)).toBeInTheDocument()
+    expect(submitParsedTradesMock).not.toHaveBeenCalled()
+    expect(uploadTradesCSVMock).not.toHaveBeenCalled()
+    expect(updateSessionMetaMock).not.toHaveBeenCalled()
+    expect(logTraderLifecycleEventMock).not.toHaveBeenCalled()
   }, 15000)
 
   test('shows real trade-paste-memory deltas in live mode', async () => {

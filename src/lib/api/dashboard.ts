@@ -24,6 +24,7 @@ import type {
   TradingReportResponse,
   TradingReportComparisonResponse,
   TradingReportsResponse,
+  UploadProofReceipt,
 } from '../types'
 import { http, withRetry } from './httpClient'
 
@@ -55,6 +56,28 @@ export interface TradeUploadResponse {
   activation_teaser_verified_at?: string
 }
 
+export interface LiveUploadAppendReadinessResponse {
+  status: 'ready' | 'blocked' | string
+  service?: string
+  customer_id?: string
+  accepts_csv_upload?: boolean
+  accepts_trade_paste_submit?: boolean
+  persists_upload_receipts?: boolean
+  generates_account_artifacts?: boolean
+  artifact_status_required?: 'generated' | string
+  append_count_required?: number
+  request_id_required?: boolean
+  report_snapshot_required?: boolean
+  read_only?: boolean
+  upload_count?: number
+  upload_limit?: number | null
+  uploads_remaining?: number | null
+  last_report_snapshot_id?: string | null
+  first_upload_receipt?: UploadProofReceipt | null
+  latest_upload_receipt?: UploadProofReceipt | null
+  blockers?: string[]
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -77,6 +100,72 @@ export function assertDashboardBackendReady(featureName: string): void {
       `${featureName} requires backend-verified live session identity. Re-activate or sign in before using account persistence.`,
     )
   }
+}
+
+export function validateLiveUploadAppendReadiness(
+  readiness: LiveUploadAppendReadinessResponse,
+): string | null {
+  if (readiness.status !== 'ready') {
+    return 'Medallion live append service is not ready to persist upload receipts.'
+  }
+
+  if (readiness.accepts_csv_upload !== true || readiness.accepts_trade_paste_submit !== true) {
+    return 'This live account is not currently allowed to submit CSV or pasted trade history.'
+  }
+
+  if (readiness.persists_upload_receipts !== true || readiness.generates_account_artifacts !== true) {
+    return 'Medallion live append service cannot persist upload receipts and generate account artifacts.'
+  }
+
+  if (readiness.artifact_status_required !== 'generated') {
+    return 'Medallion live append service did not require generated account artifacts.'
+  }
+
+  if (readiness.request_id_required !== true || readiness.report_snapshot_required !== true) {
+    return 'Medallion live append service did not require request and report snapshot receipts.'
+  }
+
+  if (!Number.isFinite(readiness.append_count_required) || Number(readiness.append_count_required) < 1) {
+    return 'Medallion live append service did not publish a durable append-count requirement.'
+  }
+
+  if (readiness.read_only === true) {
+    return 'This reset window is read only. Start a new package or live tier to upload fresh trades.'
+  }
+
+  if (typeof readiness.uploads_remaining === 'number' && readiness.uploads_remaining < 1) {
+    return 'This package has no remaining live uploads.'
+  }
+
+  return null
+}
+
+export async function getLiveUploadAppendReadiness(): Promise<LiveUploadAppendReadinessResponse> {
+  if (isSampleMode()) {
+    return {
+      status: 'blocked',
+      service: 'shibuya-live-upload-append',
+      accepts_csv_upload: false,
+      accepts_trade_paste_submit: false,
+      persists_upload_receipts: false,
+      generates_account_artifacts: false,
+      artifact_status_required: 'generated',
+      append_count_required: 1,
+      request_id_required: true,
+      report_snapshot_required: true,
+      read_only: false,
+      upload_count: 0,
+      upload_limit: null,
+      uploads_remaining: null,
+      blockers: ['sample_mode_no_live_persistence'],
+    }
+  }
+
+  assertDashboardBackendReady('Live append readiness')
+  const { data } = await http.get<LiveUploadAppendReadinessResponse>('/v1/dashboard/upload/readiness', {
+    validateStatus: (status) => (status >= 200 && status < 300) || status === 503,
+  })
+  return data
 }
 
 function buildSampleTradePastePreview(body: string): TradePastePreview {

@@ -12,6 +12,7 @@ describe('dashboard API boundary', () => {
     const { enterSampleMode } = await import('../../runtime')
     const {
       getDashboardOverview,
+      getLiveUploadAppendReadiness,
       getTradeHistory,
       getTradingReportComparison,
       parseTradePaste,
@@ -45,6 +46,13 @@ describe('dashboard API boundary', () => {
         message: expect.stringContaining('Upload disabled in sample workspace'),
       },
     })
+    await expect(getLiveUploadAppendReadiness()).resolves.toMatchObject({
+      status: 'blocked',
+      service: 'shibuya-live-upload-append',
+      persists_upload_receipts: false,
+      generates_account_artifacts: false,
+      blockers: ['sample_mode_no_live_persistence'],
+    })
     await expect(getTradingReportComparison()).resolves.toMatchObject({
       has_comparison: true,
     })
@@ -61,6 +69,7 @@ describe('dashboard API boundary', () => {
       getDashboardAlerts,
       getDashboardOverview,
       getEdgePortfolio,
+      getLiveUploadAppendReadiness,
       getShadowBoxing,
       getSlumpPrescription,
       getTradeHistory,
@@ -84,6 +93,7 @@ describe('dashboard API boundary', () => {
     await expect(getTradingReport('report_live_123')).rejects.toThrow(missingBackendError)
     await expect(getTradingReportComparison()).rejects.toThrow(missingBackendError)
     await expect(getDashboardOverview()).rejects.toThrow(missingBackendError)
+    await expect(getLiveUploadAppendReadiness()).rejects.toThrow(missingBackendError)
     await expect(getDashboardAlerts()).rejects.toThrow(missingBackendError)
     await expect(getEdgePortfolio()).rejects.toThrow(missingBackendError)
     await expect(getSlumpPrescription()).rejects.toThrow(missingBackendError)
@@ -103,16 +113,49 @@ describe('dashboard API boundary', () => {
     }))
 
     const { setLiveApiKey } = await import('../../runtime')
-    const { getDashboardOverview, submitParsedTrades, uploadTradesCSV } = await import('../dashboard')
+    const { getDashboardOverview, getLiveUploadAppendReadiness, submitParsedTrades, uploadTradesCSV } = await import('../dashboard')
 
     setLiveApiKey('live_local_only', { tier: 'reset_pro', market: 'global' })
 
     const unverifiedSessionError = /backend-verified live session identity/
     await expect(getDashboardOverview()).rejects.toThrow(unverifiedSessionError)
+    await expect(getLiveUploadAppendReadiness()).rejects.toThrow(unverifiedSessionError)
     await expect(uploadTradesCSV(new File(['date,symbol,pnl\n2024-01-01,NIFTY,100'], 'trades.csv'))).rejects.toThrow(
       unverifiedSessionError,
     )
     await expect(submitParsedTrades({ trades: [], rawText: 'row' })).rejects.toThrow(unverifiedSessionError)
+  })
+
+  test('validates live append readiness before treating uploads as writable', async () => {
+    const { validateLiveUploadAppendReadiness } = await import('../dashboard')
+
+    const ready = {
+      status: 'ready',
+      service: 'shibuya-live-upload-append',
+      accepts_csv_upload: true,
+      accepts_trade_paste_submit: true,
+      persists_upload_receipts: true,
+      generates_account_artifacts: true,
+      artifact_status_required: 'generated',
+      append_count_required: 1,
+      request_id_required: true,
+      report_snapshot_required: true,
+      read_only: false,
+      upload_count: 1,
+      upload_limit: 3,
+      uploads_remaining: 2,
+      blockers: [],
+    }
+
+    expect(validateLiveUploadAppendReadiness(ready)).toBeNull()
+    expect(validateLiveUploadAppendReadiness({ ...ready, status: 'blocked' })).toContain('not ready')
+    expect(validateLiveUploadAppendReadiness({ ...ready, accepts_csv_upload: false })).toContain('not currently allowed')
+    expect(validateLiveUploadAppendReadiness({ ...ready, persists_upload_receipts: false })).toContain('persist upload receipts')
+    expect(validateLiveUploadAppendReadiness({ ...ready, artifact_status_required: 'missing' })).toContain('generated account artifacts')
+    expect(validateLiveUploadAppendReadiness({ ...ready, request_id_required: false })).toContain('request and report snapshot')
+    expect(validateLiveUploadAppendReadiness({ ...ready, append_count_required: 0 })).toContain('append-count')
+    expect(validateLiveUploadAppendReadiness({ ...ready, read_only: true })).toContain('read only')
+    expect(validateLiveUploadAppendReadiness({ ...ready, uploads_remaining: 0 })).toContain('no remaining live uploads')
   })
 
   test('recovers persisted activation origin from live dashboard overview', async () => {
