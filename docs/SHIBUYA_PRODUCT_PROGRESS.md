@@ -328,7 +328,7 @@ Remaining gap:
 
 ### 8. Checkout Success Activation Handoff Boundary
 
-Status: validated locally; pending push proof
+Status: pushed
 
 Files changed:
 
@@ -348,6 +348,7 @@ What changed:
 
 Evidence so far:
 
+- Commit: Shibuya `308483e` (`Carry verified checkout context into activation preview`).
 - Shibuya focused checkout-success/activation handoff tests: `4 passed / 14 tests`.
 - Shibuya `tsc -b`: passed.
 - Shibuya `eslint .`: passed.
@@ -356,5 +357,4 @@ Evidence so far:
 
 Remaining gap:
 
-- Needs pushed commit proof.
 - This does not prove deployed live runtime. It proves the frontend preserves a backend-verified checkout-success public-context handoff into activation preview without letting that local handoff become live activation proof.
