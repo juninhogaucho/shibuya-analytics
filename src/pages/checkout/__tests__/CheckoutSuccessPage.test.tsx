@@ -126,6 +126,12 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText(/Story handoff: guided; scenes 6; pain axes Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
     expect(screen.getByText(/Views 2; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
     expect(screen.queryByText('Report: sample-free-report')).not.toBeInTheDocument()
+    expect(JSON.parse(window.localStorage.getItem('shibuya_recent_order_access') ?? '{}')).toMatchObject({
+      email: 'founder@shibuya.test',
+      orderCode: 'ord_success_123',
+      market: 'global',
+      planId: 'shibuya_reset_pro_monthly',
+    })
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?source=locked_insight&report=public-teaser-success-123&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
@@ -147,6 +153,7 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByRole('link', { name: /Return To Pricing/i })).toHaveAttribute('href', '/pricing?market=global')
     expect(screen.queryByText('Checkout Complete')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /Activate Live Account/i })).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
   })
 
   test('does not carry URL-only context when paid session lacks verified teaser metadata', async () => {

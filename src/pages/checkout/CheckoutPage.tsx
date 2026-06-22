@@ -22,7 +22,6 @@ import {
 } from '../../lib/publicReportSession'
 import { usePublicReportSessionRecovery } from '../../lib/publicReportRecovery'
 import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
-import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 import { getFingerprintAxis, getTraderArchetype } from '../../lib/storyExperience'
 
 interface CheckoutForm {
@@ -245,14 +244,6 @@ const CheckoutPage: React.FC = () => {
         checkoutEngagementSummary,
         timestamp: new Date().toISOString(),
       }))
-
-      rememberRecentOrderAccess({
-        email: form.email.trim(),
-        orderCode: session.order_id,
-        market,
-        planId: currentPlan.planId,
-        planName: currentPlan.name,
-      })
 
       redirectBrowser(session.checkout_url)
     } catch (error) {

@@ -232,6 +232,7 @@ describe('CheckoutPage', () => {
       public_context_private_gate_attempts: '0',
     })
     expect(checkoutPayload).not.toHaveProperty('public_context_teaser_receipt_hash')
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
   })
 
@@ -306,6 +307,7 @@ describe('CheckoutPage', () => {
       public_context_private_gate_attempts: '0',
     })
     expect(checkoutPayload).not.toHaveProperty('public_context_teaser_receipt_hash')
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
   })
 

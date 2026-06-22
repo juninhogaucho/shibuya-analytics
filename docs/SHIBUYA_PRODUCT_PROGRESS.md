@@ -190,3 +190,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove a deployed live activation; it proves that the browser cannot create a live workspace session from an incomplete activation response.
+
+### 4. Checkout Activation Access Boundary
+
+Status: validated
+
+Files changed:
+
+- `src/pages/checkout/CheckoutPage.tsx`
+- `src/pages/checkout/__tests__/CheckoutPage.test.tsx`
+- `src/pages/checkout/__tests__/CheckoutSuccessPage.test.tsx`
+
+What changed:
+
+- Checkout creation still stores a temporary `shibuya_order` handoff for the success route.
+- Checkout creation no longer writes `shibuya_recent_order_access`.
+- Activation/Login/Workspace recent order prefill now comes only from the verified checkout success path after the backend session reports paid/complete.
+
+Evidence:
+
+- Shibuya focused checkout tests: `2 passed / 10 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya ESLint: passed.
+- Shibuya Vite build: passed, `2855 modules transformed`.
+- Shibuya full Vitest deterministic run: `66 passed / 245 tests`.
+
+Remaining gap:
+
+- Needs pushed commit proof.
