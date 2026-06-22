@@ -189,6 +189,12 @@ const CheckoutSuccessPage: React.FC = () => {
           }
 
           const verifiedCheckoutIntent = buildVerifiedCheckoutIntent(session)
+          const verifiedEngagementSummary = verifiedCheckoutIntent
+            ? buildVerifiedEngagementSummary(session)
+            : undefined
+          const verifiedContextReceipt = verifiedCheckoutIntent
+            ? buildVerifiedContextReceipt(session)
+            : undefined
           const inferredMarket = initialOrder?.market ?? inferMarketFromPlanId(session.plan_id) ?? urlMarket
           persistMarket(inferredMarket)
           const verifiedOrder: OrderInfo = {
@@ -200,12 +206,8 @@ const CheckoutSuccessPage: React.FC = () => {
             orderId: session.order_id,
             sessionId: session.session_id,
             checkoutIntent: verifiedCheckoutIntent,
-            checkoutEngagementSummary: verifiedCheckoutIntent
-              ? buildVerifiedEngagementSummary(session)
-              : undefined,
-            verifiedContext: verifiedCheckoutIntent
-              ? buildVerifiedContextReceipt(session)
-              : undefined,
+            checkoutEngagementSummary: verifiedEngagementSummary,
+            verifiedContext: verifiedContextReceipt,
             timestamp: new Date().toISOString(),
           }
           rememberRecentOrderAccess({
@@ -214,6 +216,16 @@ const CheckoutSuccessPage: React.FC = () => {
             market: verifiedOrder.market,
             planId: verifiedOrder.planId,
             planName: verifiedOrder.plan,
+            activationHandoff:
+              verifiedCheckoutIntent && verifiedContextReceipt
+                ? {
+                    source: 'checkout_success',
+                    verifiedAt: new Date().toISOString(),
+                    checkoutIntent: verifiedCheckoutIntent,
+                    engagementSummary: verifiedEngagementSummary,
+                    contextReceipt: verifiedContextReceipt,
+                  }
+                : undefined,
           })
           setOrder(verifiedOrder)
         } else {

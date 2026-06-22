@@ -17,7 +17,7 @@ import {
   persistPublicReportSession,
 } from '../../lib/publicReportSession'
 import { buildPublicReportEngagementSummary, getPublicReportEngagement } from '../../lib/publicReportEngagement'
-import { readRecentOrderAccess } from '../../lib/recentAccess'
+import { getRecentActivationHandoffForIntent, readRecentOrderAccess } from '../../lib/recentAccess'
 import {
   buildFreeReportPreview,
   findLockedReportSectionBySlug,
@@ -36,6 +36,7 @@ export function ActivationPage() {
   const location = useLocation()
   const market = resolveMarket(location.pathname, location.search)
   const checkoutIntent = readCheckoutIntent(location.search)
+  const recentActivationHandoff = getRecentActivationHandoffForIntent(checkoutIntent, recentAccess)
   const storedActivationReportSession = getPublicReportSession(checkoutIntent?.reportId)
   const hasStoredActivationReportSession = Boolean(storedActivationReportSession)
   const demoLauncherActivationSession =
@@ -52,14 +53,17 @@ export function ActivationPage() {
         signalMarkerIds: checkoutIntent.signalMarkerIds,
       })
   const activationReportSession = storedActivationReportSession ?? demoLauncherActivationSession
-  const activationEngagementSummary = buildPublicReportEngagementSummary(
+  const localActivationEngagementSummary = buildPublicReportEngagementSummary(
     getPublicReportEngagement(checkoutIntent?.reportId),
     checkoutIntent?.lockedSectionId,
   )
+  const activationEngagementSummary =
+    recentActivationHandoff?.engagementSummary ?? localActivationEngagementSummary
   const hasActivationLockedInsightIntent =
     checkoutIntent?.source === 'locked_insight' &&
     Boolean(checkoutIntent.reportId && checkoutIntent.lockedSectionId)
-  const hasActivationLockedSectionIntentProof = activationEngagementSummary.currentSectionClickCount > 0
+  const hasActivationLockedSectionIntentProof =
+    localActivationEngagementSummary.currentSectionClickCount > 0 || Boolean(recentActivationHandoff)
   const shouldCarryDemoLauncherActivationPacket = hasDemoLauncherSamplePacketRequest(location.search)
   const activationContextReady =
     hasActivationLockedInsightIntent &&
@@ -89,6 +93,9 @@ export function ActivationPage() {
   const activationSelectedPainAxisIds = carriedActivationReportSession?.selectedPainAxisIds ?? carriedActivationIntent?.selectedPainAxisIds ?? []
   const activationStorySource = carriedActivationReportSession?.storySource ?? carriedActivationIntent?.storySource
   const activationVisitedSceneCount = carriedActivationReportSession?.visitedSceneCount ?? carriedActivationIntent?.visitedSceneCount
+  const activationContextReceipt = recentActivationHandoff?.contextReceipt
+  const activationEvidenceLabel =
+    carriedActivationReportSession?.evidenceLabel ?? activationContextReceipt?.evidenceLabel ?? 'URL context only'
   const activationSignalMarkerLabels = activationReport?.storyHandoff.signalMarkers.map((marker) => marker.label) ?? []
   const activationPainAxisLabels = activationSelectedPainAxisIds
     .map((axisId) => getFingerprintAxis(axisId))
@@ -99,7 +106,9 @@ export function ActivationPage() {
       label: 'Payment context requested',
       status: 'pending',
       detail: carriedActivationIntent
-        ? `${describeCheckoutIntent(carriedActivationIntent)} is attached to this route; backend order metadata must verify it before live storage.`
+        ? recentActivationHandoff
+          ? `${describeCheckoutIntent(carriedActivationIntent)} came from a verified checkout-success handoff; activation backend must reverify the order before live storage.`
+          : `${describeCheckoutIntent(carriedActivationIntent)} is attached to this route; backend order metadata must verify it before live storage.`
         : checkoutIntent
           ? 'URL-only checkout context is attached, but activation will not carry it without verified backend teaser metadata from the order.'
         : 'No checkout context is attached to this activation route.',
@@ -334,6 +343,11 @@ export function ActivationPage() {
                   <p className="terminal-muted">
                     This is routing context only. It is stored after submit only if the backend order verifies a persisted teaser receipt.
                   </p>
+                  {recentActivationHandoff ? (
+                    <p className="terminal-muted">
+                      Checkout success verified this public teaser handoff at {recentActivationHandoff.verifiedAt}. Activation will still reverify the order before live storage.
+                    </p>
+                  ) : null}
                   <p className="terminal-muted">
                     Private claims still require live activation, upload proof, generated workspace evidence, and append history.
                   </p>
@@ -341,8 +355,13 @@ export function ActivationPage() {
                     Report: {carriedActivationIntent.reportId ?? 'not provided'} | Archetype: {activationReport?.archetype.name ?? 'not provided'} | Axis: {activationReport?.dominantAxis.label ?? 'not provided'}
                   </p>
                   <p className="terminal-muted">
-                    Public packet: {activationReportSession?.evidenceLabel ?? 'URL context only'} | Story: {activationStorySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
+                    Public packet: {activationEvidenceLabel} | Story: {activationStorySource ?? activationContextReceipt?.storySource ?? 'not available'} | Scenes: {activationVisitedSceneCount ?? activationContextReceipt?.visitedSceneCount ?? 'not available'} | Pain axes: {activationPainAxisLabels.length ? activationPainAxisLabels.join(', ') : 'none captured'}
                   </p>
+                  {activationContextReceipt?.validationSummary ? (
+                    <p className="terminal-muted">
+                      Checkout context receipt: {activationContextReceipt.validationSummary}
+                    </p>
+                  ) : null}
                   {activationSignalMarkerLabels.length ? (
                     <p className="terminal-muted">
                       Public signal markers: {activationSignalMarkerLabels.join(', ')}

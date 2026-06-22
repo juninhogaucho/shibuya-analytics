@@ -325,3 +325,36 @@ Remaining gap:
 
 - Medallion focused pytest was attempted with system Python and bundled Codex Python, but both environments lacked `pytest`; no backend test pass is claimed for this slice.
 - This does not prove deployed live runtime. It proves the frontend stops treating request-id URL text as the paid/live report identity after backend recovery returns canonical persisted teaser evidence.
+
+### 8. Checkout Success Activation Handoff Boundary
+
+Status: validated locally; pending push proof
+
+Files changed:
+
+- `src/lib/recentAccess.ts`
+- `src/lib/__tests__/recentAccess.test.ts`
+- `src/pages/checkout/CheckoutSuccessPage.tsx`
+- `src/pages/checkout/__tests__/CheckoutSuccessPage.test.tsx`
+- `src/pages/marketing/ActivationPage.tsx`
+- `src/pages/marketing/__tests__/ActivationPage.test.tsx`
+
+What changed:
+
+- Verified checkout success now stores a minimized, secret-free activation handoff in recent order access when the backend checkout session returns verified public teaser context.
+- Activation reads that handoff only when the current activation route matches the verified report id and locked section.
+- Activation can preview the checkout-verified public question even when local report engagement/session state is absent.
+- The handoff remains preview/routing context only. Live workspace metadata still comes only from the activation backend response.
+
+Evidence so far:
+
+- Shibuya focused checkout-success/activation handoff tests: `4 passed / 14 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `253 passed / 253 tests`.
+
+Remaining gap:
+
+- Needs pushed commit proof.
+- This does not prove deployed live runtime. It proves the frontend preserves a backend-verified checkout-success public-context handoff into activation preview without letting that local handoff become live activation proof.

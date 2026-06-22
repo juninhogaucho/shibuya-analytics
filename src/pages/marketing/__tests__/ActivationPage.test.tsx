@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { recordLockedSectionIntent, recordPrivateDemoIntent, recordPublicReportView } from '../../../lib/publicReportEngagement'
 import { buildPublicReportSession, getPublicReportSession, persistPublicReportSession } from '../../../lib/publicReportSession'
+import { rememberRecentOrderAccess } from '../../../lib/recentAccess'
 import { SHIBUYA_API_KEY_STORAGE_KEY, SHIBUYA_SESSION_META_STORAGE_KEY } from '../../../lib/runtime'
 import { ActivationPage } from '../ActivationPage'
 
@@ -225,6 +226,101 @@ describe('ActivationPage', () => {
     expect(storedSessionMeta).not.toHaveProperty('activationStorySource')
     expect(storedSessionMeta).not.toHaveProperty('activationLockedSectionId')
     expect(storedSessionMeta).not.toHaveProperty('activationBridgeDecisionQuestion')
+  })
+
+  test('previews checkout-success handoff without using it as live activation proof', async () => {
+    const user = userEvent.setup()
+    rememberRecentOrderAccess({
+      email: 'founder@shibuya.test',
+      orderCode: 'order_verified_checkout',
+      market: 'global',
+      planId: 'shibuya_reset_pro_monthly',
+      planName: 'shibuya_reset_pro_monthly',
+      activationHandoff: {
+        source: 'checkout_success',
+        verifiedAt: '2026-06-23T00:00:00.000Z',
+        checkoutIntent: {
+          source: 'locked_insight',
+          reportId: 'public-teaser-success-123',
+          lockedSectionId: 'edge-decay-map',
+          archetypeId: 'marco',
+          axisId: 'edge_decay',
+          storySource: 'guided',
+          visitedSceneCount: 6,
+          selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
+        },
+        engagementSummary: {
+          reportViewCount: 2,
+          lockedSectionClickCount: 1,
+          currentSectionClickCount: 1,
+          privateDemoIntentCount: 1,
+          boundary: 'Checkout engagement came from verified backend order metadata. It still does not prove live upload, generated artifacts, or account-specific improvement.',
+        },
+        contextReceipt: {
+          evidenceLabel: 'Backend verified public teaser receipt',
+          artifactStatusLabel: 'Backend teaser persisted',
+          productionArtifactProven: false,
+          validationSummary: 'Medallion verified teaser TEASER-verified before checkout success carried context forward. 12 trades analyzed. Worst pattern: Tilt Spiral. This proves public teaser continuity only; live private conclusions still require activation and upload.',
+          storySource: 'guided',
+          visitedSceneCount: 6,
+        },
+      },
+    })
+    apiMocks.verifyActivation.mockResolvedValue({
+      status: 'ready',
+      activationToken: 'live-token-verified-checkout-preview',
+      customerId: 'customer-preview',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      passwordRequired: false,
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/activate?source=locked_insight&report=public-teaser-success-123&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay,revenge_reentry&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('LOCKED PRIVATE INSIGHT CONTEXT REQUEST ATTACHED')).toBeInTheDocument()
+    expect(screen.getByText(/Checkout success verified this public teaser handoff at 2026-06-23T00:00:00.000Z/i)).toBeInTheDocument()
+    expect(screen.getByText(/Public packet: Backend verified public teaser receipt \| Story: guided \| Scenes: 6 \| Pain axes: Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
+    expect(screen.getByText(/Checkout context receipt: Medallion verified teaser TEASER-verified/i)).toBeInTheDocument()
+    expect(screen.getByText(/Views 2; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
+    expect(screen.getByText(/verified checkout-success handoff; activation backend must reverify/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /UNLOCK LIVE WORKSPACE/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard?market=global')
+    })
+
+    const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
+    expect(storedSessionMeta).toMatchObject({
+      customerId: 'customer-preview',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+      orderId: 'order_verified_checkout',
+    })
+    expect(storedSessionMeta).not.toHaveProperty('activationSource')
+    expect(storedSessionMeta).not.toHaveProperty('activationReportId')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserRequestId')
+    expect(storedSessionMeta).not.toHaveProperty('activationTeaserReceiptHash')
+    expect(apiMocks.logTraderLifecycleEvent.mock.calls[0][0].metadata.activationReportId).toBeUndefined()
   })
 
   test('blocks ready activation responses that lack backend customer identity', async () => {

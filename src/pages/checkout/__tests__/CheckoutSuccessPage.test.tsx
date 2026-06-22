@@ -126,12 +126,42 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText(/Story handoff: guided; scenes 6; pain axes Edge Decay, Revenge Re-entry/i)).toBeInTheDocument()
     expect(screen.getByText(/Views 2; locked clicks 1; this module 1; private gate attempts 1/i)).toBeInTheDocument()
     expect(screen.queryByText('Report: sample-free-report')).not.toBeInTheDocument()
-    expect(JSON.parse(window.localStorage.getItem('shibuya_recent_order_access') ?? '{}')).toMatchObject({
+    const recentOrderAccess = JSON.parse(window.localStorage.getItem('shibuya_recent_order_access') ?? '{}')
+    expect(recentOrderAccess).toMatchObject({
       email: 'founder@shibuya.test',
       orderCode: 'ord_success_123',
       market: 'global',
       planId: 'shibuya_reset_pro_monthly',
+      activationHandoff: {
+        source: 'checkout_success',
+        checkoutIntent: {
+          source: 'locked_insight',
+          reportId: 'public-teaser-success-123',
+          lockedSectionId: 'edge-decay-map',
+          archetypeId: 'marco',
+          axisId: 'edge_decay',
+          storySource: 'guided',
+          visitedSceneCount: 6,
+          selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
+        },
+        engagementSummary: {
+          reportViewCount: 2,
+          lockedSectionClickCount: 1,
+          currentSectionClickCount: 1,
+          privateDemoIntentCount: 1,
+        },
+        contextReceipt: {
+          evidenceLabel: 'Backend verified public teaser receipt',
+          artifactStatusLabel: 'Backend teaser persisted',
+          productionArtifactProven: false,
+          storySource: 'guided',
+          visitedSceneCount: 6,
+        },
+      },
     })
+    expect(recentOrderAccess.activationHandoff.verifiedAt).toEqual(expect.any(String))
+    expect(recentOrderAccess.activationHandoff.contextReceipt.validationSummary).toContain('Medallion verified teaser TEASER-verified')
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?source=locked_insight&report=public-teaser-success-123&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
@@ -197,6 +227,7 @@ describe('CheckoutSuccessPage', () => {
     expect(screen.getByText(/will not carry route text into activation/i)).toBeInTheDocument()
     expect(screen.getByText(/Blocked route context: report url-report; section url-section; source locked_insight/i)).toBeInTheDocument()
     expect(screen.queryByText('Carried into activation')).not.toBeInTheDocument()
+    expect(JSON.parse(window.localStorage.getItem('shibuya_recent_order_access') ?? '{}')).not.toHaveProperty('activationHandoff')
     expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
       'href',
       '/activate?market=global',
