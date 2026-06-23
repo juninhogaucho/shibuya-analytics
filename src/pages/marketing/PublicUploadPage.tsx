@@ -338,7 +338,15 @@ export default function PublicUploadPage() {
           return
         }
 
-        const backendTeaser = await generatePublicTeaserReport(backendTeaserFile)
+        const backendTeaser = await generatePublicTeaserReport(backendTeaserFile, {
+          market,
+          storySource,
+          archetypeId: archetype.id,
+          axisId: axis.id,
+          selectedPainAxisIds,
+          visitedSceneCount,
+          signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+        })
         const receiptError = validatePublicTeaserReportResponse(backendTeaser)
 
         if (receiptError) {

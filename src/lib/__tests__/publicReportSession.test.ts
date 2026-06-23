@@ -19,6 +19,18 @@ afterEach(() => {
   window.localStorage.clear()
 })
 
+const BACKEND_PUBLIC_CONTEXT = {
+  public_context: {
+    market: 'global',
+    story_source: 'guided',
+    archetype_id: 'marco',
+    axis_id: 'edge_decay',
+    pain_axes: 'edge_decay,revenge_reentry',
+    story_scene_count: '6',
+    signal_markers: 'mirror_selected,upload_intent',
+  },
+}
+
 describe('public report sessions', () => {
   test('rejects malformed pasted samples before report creation', () => {
     expect(validatePublicReportInput({ source: 'upload', pasteBody: 'too short' })).toContain('Paste a table-like sample')
@@ -129,6 +141,7 @@ describe('public report sessions', () => {
           avg_win: 85,
           avg_loss: -42.5,
           max_loss_streak: 3,
+          ...BACKEND_PUBLIC_CONTEXT,
         },
         patterns_detected: [
           { pattern: 'Revenge Trading', count: 2, cost: 84 },
@@ -172,6 +185,15 @@ describe('public report sessions', () => {
           { pattern: 'Overtrading', count: 1, cost: 0 },
         ],
         processingTimeSeconds: 0.42,
+        publicContext: {
+          market: 'global',
+          storySource: 'guided',
+          archetypeId: 'marco',
+          axisId: 'edge_decay',
+          selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+          visitedSceneCount: 6,
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
+        },
       },
     })
     expect(hasCheckoutGradePublicReportSession(stored)).toBe(true)
@@ -182,6 +204,7 @@ describe('public report sessions', () => {
     expect(stored?.validationFacts).toContain('Backend teaser aggregate split: 6 winners / 4 losers.')
     expect(stored?.validationFacts).toContain('Backend teaser average win/loss: 85 / -42.5.')
     expect(stored?.validationFacts).toContain('Backend teaser detected patterns: Revenge Trading, Overtrading.')
+    expect(stored?.validationFacts).toContain('Backend teaser story identity: guided; marco / edge_decay; scenes 6.')
     expect(stored?.boundary).toContain('stores only the persisted backend teaser receipt')
   })
 
@@ -195,6 +218,7 @@ describe('public report sessions', () => {
       production_artifact_proven: false,
       receipt_hash: 'b'.repeat(64),
       trades_analyzed: 10,
+      metrics: BACKEND_PUBLIC_CONTEXT,
     }
 
     expect(validatePublicTeaserReportResponse(validResponse)).toBeNull()
@@ -202,6 +226,7 @@ describe('public report sessions', () => {
     expect(validatePublicTeaserReportResponse({ ...validResponse, trades_analyzed: 9 })).toContain('fewer than 10 trades')
     expect(validatePublicTeaserReportResponse({ ...validResponse, receipt_hash: 'not-a-receipt' })).toContain('valid secret-free teaser receipt hash')
     expect(validatePublicTeaserReportResponse({ ...validResponse, production_artifact_proven: true })).toContain('cannot claim private production artifact proof')
+    expect(validatePublicTeaserReportResponse({ ...validResponse, metrics: {} })).toContain('hash-covered public story identity')
   })
 
   test('stores recovered backend teaser sessions under canonical report id and lookup aliases', () => {
@@ -224,6 +249,7 @@ describe('public report sessions', () => {
         production_artifact_proven: false,
         receipt_hash: 'e'.repeat(64),
         trades_analyzed: 14,
+        metrics: BACKEND_PUBLIC_CONTEXT,
       },
     })
 

@@ -29,6 +29,18 @@ vi.mock('../../../lib/api/publicReport', async () => {
   }
 })
 
+const BACKEND_PUBLIC_CONTEXT = {
+  public_context: {
+    market: 'global',
+    story_source: 'guided',
+    archetype_id: 'marco',
+    axis_id: 'edge_decay',
+    pain_axes: 'edge_decay,revenge_reentry',
+    story_scene_count: '6',
+    signal_markers: 'mirror_selected,upload_intent',
+  },
+}
+
 function LocationProbe() {
   const location = useLocation()
   return <div data-testid="location">{`${location.pathname}${location.search}`}</div>
@@ -55,6 +67,8 @@ describe('public Shibuya journey pages', () => {
       production_artifact_proven: false,
       raw_trade_rows_stored: false,
       live_private_artifact_proven: false,
+      persists_story_identity: true,
+      story_identity_fields: ['market', 'story_source', 'archetype_id', 'axis_id', 'pain_axes', 'story_scene_count', 'signal_markers'],
       min_trade_rows: 10,
       max_file_size_mb: 5,
       retrieval_identity: ['report_id', 'request_id'],
@@ -382,6 +396,7 @@ describe('public Shibuya journey pages', () => {
           avg_win: 85,
           avg_loss: -42.5,
           max_loss_streak: 3,
+          ...BACKEND_PUBLIC_CONTEXT,
         },
         patterns_detected: [
           { pattern: 'Revenge Trading', count: 2, cost: 84 },
@@ -920,6 +935,7 @@ describe('public Shibuya journey pages', () => {
         avg_win: 72,
         avg_loss: -30,
         max_loss_streak: 2,
+        ...BACKEND_PUBLIC_CONTEXT,
       },
       patterns_detected: [
         { pattern: 'Revenge Trading', count: 1, cost: 30 },
@@ -953,7 +969,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getAllByText(/Backend teaser receipt recovered from Medallion/i).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
       'href',
-      '/insight/edge-decay-map?source=guided_report&report=public-teaser-share-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=public-teaser-share-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
     )
 
     expect(getPublicReportSession('public-teaser-share-123')).toMatchObject({
@@ -992,6 +1008,7 @@ describe('public Shibuya journey pages', () => {
         worst_pattern: 'Edge Decay',
         hook: 'Canonical report identity recovered from the request id.',
       },
+      metrics: BACKEND_PUBLIC_CONTEXT,
     })
 
     render(
@@ -1010,7 +1027,7 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText('Backend teaser recovered: report public-teaser-canonical-share; request TEASER-canonical-share; 11 trades analyzed.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Continue Guided Storyline/i })).toHaveAttribute(
       'href',
-      '/insight/edge-decay-map?source=guided_report&report=public-teaser-canonical-share&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+      '/insight/edge-decay-map?source=guided_report&report=public-teaser-canonical-share&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
     )
     expect(getPublicReportSession('public-teaser-canonical-share')).toMatchObject({
       reportId: 'public-teaser-canonical-share',
@@ -1212,6 +1229,7 @@ describe('public Shibuya journey pages', () => {
         worst_pattern: 'Tilt Spirals',
         hook: '$125 discipline tax recovered before private handoff.',
       },
+      metrics: BACKEND_PUBLIC_CONTEXT,
       processing_time_seconds: 0.28,
     })
 
@@ -1235,11 +1253,11 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/Paid activation can carry this persisted backend teaser receipt into checkout/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
       'href',
-      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
     )
     expect(screen.getByRole('link', { name: /Start Psych Audit/i })).toHaveAttribute(
       'href',
-      '/checkout/psych-audit-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+      '/checkout/psych-audit-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
     )
     expect(getPublicReportSession('public-teaser-lock-123')).toMatchObject({
       source: 'backend_teaser',

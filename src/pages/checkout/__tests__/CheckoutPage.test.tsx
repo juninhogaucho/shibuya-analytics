@@ -28,6 +28,18 @@ vi.mock('../../../lib/api/publicReport', () => ({
   getPublicTeaserReport: (...args: unknown[]) => checkoutMocks.getPublicTeaserReport(...args),
 }))
 
+const BACKEND_PUBLIC_CONTEXT = {
+  public_context: {
+    market: 'global',
+    story_source: 'guided',
+    archetype_id: 'marco',
+    axis_id: 'edge_decay',
+    pain_axes: 'edge_decay,revenge_reentry',
+    story_scene_count: '6',
+    signal_markers: 'mirror_selected,upload_intent',
+  },
+}
+
 describe('CheckoutPage', () => {
   beforeEach(() => {
     window.localStorage.clear()
@@ -176,6 +188,7 @@ describe('CheckoutPage', () => {
           discipline_tax: 510,
           worst_pattern: 'Tilt Spiral',
         },
+        metrics: BACKEND_PUBLIC_CONTEXT,
       },
     }))
     recordPublicReportView('public-teaser-checkout-123')
@@ -251,6 +264,7 @@ describe('CheckoutPage', () => {
         discipline_tax: 630,
         worst_pattern: 'Edge Decay',
       },
+      metrics: BACKEND_PUBLIC_CONTEXT,
     })
 
     render(
@@ -326,6 +340,7 @@ describe('CheckoutPage', () => {
         discipline_tax: 740,
         worst_pattern: 'Revenge Trading',
       },
+      metrics: BACKEND_PUBLIC_CONTEXT,
     })
 
     render(

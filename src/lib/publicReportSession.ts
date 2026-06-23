@@ -4,6 +4,7 @@ import { buildLiveProofReadinessContract, type LiveProofReadinessRow } from './l
 import {
   getFingerprintAxis,
   getPublicStorySignalMarkers,
+  getTraderArchetype,
   normalizePublicStorySignalMarkerIds,
   type FingerprintAxisId,
   type PublicStorySignalMarkerId,
@@ -84,6 +85,7 @@ export interface PublicTeaserReportReceipt {
   patternsDetected?: PublicTeaserDetectedPattern[]
   processingTimeSeconds?: number
   createdAt?: string
+  publicContext?: PublicTeaserReportReceiptContext | null
 }
 
 export interface PublicReportLiveProofGap {
@@ -93,8 +95,30 @@ export interface PublicReportLiveProofGap {
   boundary: string
 }
 
+export interface PublicTeaserReportReceiptContext {
+  market?: Market
+  storySource: 'guided' | 'direct'
+  archetypeId: StoryArchetypeId
+  axisId: FingerprintAxisId
+  selectedPainAxisIds: FingerprintAxisId[]
+  visitedSceneCount: number
+  signalMarkerIds: PublicStorySignalMarkerId[]
+}
+
 const RECEIPT_HASH_PATTERN = /^[a-f0-9]{64}$/i
 const MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES = 10
+
+function getRawBackendPublicContext(response: PublicTeaserReportResponse): Record<string, unknown> | null {
+  const rawContext = response.metrics?.public_context
+  return rawContext && typeof rawContext === 'object' && !Array.isArray(rawContext)
+    ? rawContext as Record<string, unknown>
+    : null
+}
+
+function getPublicContextText(context: Record<string, unknown>, key: string): string {
+  const value = context[key]
+  return typeof value === 'string' ? value.trim() : ''
+}
 
 export function validatePublicTeaserReportResponse(response: PublicTeaserReportResponse): string | null {
   if (response.status !== 'success') {
@@ -129,6 +153,15 @@ export function validatePublicTeaserReportResponse(response: PublicTeaserReportR
     return 'Public teaser reports cannot claim private production artifact proof. No report packet was created.'
   }
 
+  const publicContext = getRawBackendPublicContext(response)
+  if (!publicContext) {
+    return 'Medallion did not return hash-covered public story identity. No checkout-grade report packet was created.'
+  }
+
+  if (!getPublicContextText(publicContext, 'archetype_id') || !getPublicContextText(publicContext, 'axis_id')) {
+    return 'Medallion public story identity is missing archetype or axis. No checkout-grade report packet was created.'
+  }
+
   return null
 }
 
@@ -142,6 +175,8 @@ export function hasCheckoutGradePublicReportSession(session?: PublicReportSessio
       receipt.reportId === session.reportId &&
       receipt.requestId &&
       receipt.artifactStatus === 'backend_teaser_persisted' &&
+      receipt.publicContext?.archetypeId === session.archetypeId &&
+      receipt.publicContext?.axisId === session.axisId &&
       typeof receipt.tradesAnalyzed === 'number' &&
       receipt.tradesAnalyzed >= MIN_CHECKOUT_GRADE_PUBLIC_TEASER_TRADES &&
       receipt.receiptHash &&
@@ -233,6 +268,51 @@ function normalizePainAxes(axisIds?: string[]): FingerprintAxisId[] {
   }
 
   return [...seen]
+}
+
+function readPublicContextList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean)
+  }
+  if (typeof value === 'string') {
+    return value.split(',').map((item) => item.trim()).filter(Boolean)
+  }
+  return []
+}
+
+function readBackendTeaserPublicContext(
+  response?: PublicTeaserReportResponse | null,
+): PublicTeaserReportReceiptContext | null {
+  if (!response) {
+    return null
+  }
+
+  const rawContext = getRawBackendPublicContext(response)
+  if (!rawContext) {
+    return null
+  }
+
+  const rawArchetypeId = getPublicContextText(rawContext, 'archetype_id')
+  const rawAxisId = getPublicContextText(rawContext, 'axis_id')
+  const archetype = getTraderArchetype(rawArchetypeId)
+  const axis = getFingerprintAxis(rawAxisId)
+
+  if (archetype.id !== rawArchetypeId || axis.id !== rawAxisId) {
+    return null
+  }
+
+  const rawStorySource = getPublicContextText(rawContext, 'story_source')
+  const rawMarket = getPublicContextText(rawContext, 'market')
+
+  return {
+    market: rawMarket === 'global' || rawMarket === 'india' ? rawMarket : undefined,
+    storySource: rawStorySource === 'guided' ? 'guided' : 'direct',
+    archetypeId: archetype.id,
+    axisId: axis.id,
+    selectedPainAxisIds: normalizePainAxes(readPublicContextList(rawContext.pain_axes)),
+    visitedSceneCount: normalizeVisitedSceneCount(toFiniteNumber(rawContext.story_scene_count)),
+    signalMarkerIds: normalizePublicStorySignalMarkerIds(readPublicContextList(rawContext.signal_markers)),
+  }
 }
 
 function toFiniteNumber(value: unknown): number | undefined {
@@ -349,10 +429,13 @@ export function validatePublicPasteSample(pasteBody?: string): string | null {
 export function buildPublicReportSession(params: PublicReportValidationInput): PublicReportSession {
   const pasteLength = params.pasteBody?.trim().length ?? 0
   const extension = params.fileName ? getFileExtension(params.fileName) : null
-  const storySource = params.storySource === 'guided' ? 'guided' : 'direct'
-  const selectedPainAxisIds = normalizePainAxes(params.selectedPainAxisIds)
-  const visitedSceneCount = normalizeVisitedSceneCount(params.visitedSceneCount)
-  const signalMarkerIds = normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
+  const backendPublicContext = readBackendTeaserPublicContext(params.backendTeaser)
+  const storySource = backendPublicContext?.storySource ?? (params.storySource === 'guided' ? 'guided' : 'direct')
+  const archetypeId = backendPublicContext?.archetypeId ?? params.archetypeId
+  const axisId = backendPublicContext?.axisId ?? params.axisId
+  const selectedPainAxisIds = backendPublicContext?.selectedPainAxisIds ?? normalizePainAxes(params.selectedPainAxisIds)
+  const visitedSceneCount = backendPublicContext?.visitedSceneCount ?? normalizeVisitedSceneCount(params.visitedSceneCount)
+  const signalMarkerIds = backendPublicContext?.signalMarkerIds ?? normalizePublicStorySignalMarkerIds(params.signalMarkerIds)
   const signalMarkers = getPublicStorySignalMarkers(signalMarkerIds)
   const liveProofGap = buildLiveProofReadinessContract()
   const hasCheckoutGradeBackendTeaser =
@@ -379,6 +462,7 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
         patternsDetected: sanitizeBackendTeaserPatterns(params.backendTeaser.patterns_detected),
         processingTimeSeconds: params.backendTeaser.processing_time_seconds,
         createdAt: params.backendTeaser.created_at,
+        publicContext: backendPublicContext,
       }
     : null
   const backendTeaserPersisted = backendTeaser?.artifactStatus === 'backend_teaser_persisted'
@@ -454,6 +538,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
             backendTeaserRecovered
               ? 'Recovered from Medallion by report id/request id; no raw trade rows or local file metadata are stored in this browser packet.'
               : 'Persisted by Medallion from this public upload; no raw trade rows or local file metadata are stored in this browser packet.',
+            backendTeaser?.publicContext
+              ? `Backend teaser story identity: ${backendTeaser.publicContext.storySource}; ${backendTeaser.publicContext.archetypeId} / ${backendTeaser.publicContext.axisId}; scenes ${backendTeaser.publicContext.visitedSceneCount}.`
+              : null,
             'Private conclusions still require activation, live upload, generated artifacts, and append history.',
           ].filter((fact): fact is string => Boolean(fact))
       : [
@@ -473,6 +560,9 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
           backendTeaser?.patternsDetected?.length
             ? `Backend teaser detected patterns: ${backendTeaser.patternsDetected.map((pattern) => pattern.pattern).join(', ')}.`
             : null,
+          backendTeaser?.publicContext
+            ? `Backend teaser story identity: ${backendTeaser.publicContext.storySource}; ${backendTeaser.publicContext.archetypeId} / ${backendTeaser.publicContext.axisId}; scenes ${backendTeaser.publicContext.visitedSceneCount}.`
+            : null,
           params.fileName ? `Detected local file extension: ${extension}` : 'No local file selected.',
           ...(params.fileValidationFacts ?? []),
           pasteLength > 0 ? `Pasted sample length: ${pasteLength} characters.` : 'No pasted trade sample included.',
@@ -485,8 +575,8 @@ export function buildPublicReportSession(params: PublicReportValidationInput): P
   return {
     reportId: params.reportId,
     market: params.market,
-    archetypeId: params.archetypeId,
-    axisId: params.axisId,
+    archetypeId,
+    axisId,
     source,
     createdAt: new Date().toISOString(),
     evidenceLabel,
