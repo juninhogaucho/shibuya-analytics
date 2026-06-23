@@ -983,3 +983,29 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the frontend parsing gap where malformed numeric backend proof fields could be treated as activation-grade public-context evidence.
+
+### 29. Backend Public-Context Counts Must Be Canonical Integers
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_public_context.py`
+- Medallion backend tests: `tests/test_shibuya_public_context_contract.py`
+
+What changed:
+
+- Shared backend public-context integer parsing now accepts only digit-only non-negative integer strings or integers.
+- Signed, decimal, or otherwise non-canonical proof counts can no longer verify persisted public teaser metadata.
+- Negative public story scene counts are no longer carried into private activation receipts, even when the surrounding public teaser context is otherwise verified.
+- This aligns the backend source-of-truth contract with the frontend strict activation-context count guard from slice 28.
+
+Evidence so far:
+
+- Medallion `py_compile app\shibuya_public_context.py tests\test_shibuya_public_context_contract.py`: passed.
+- Medallion focused public-context/checkout/activation/teaser/fulfillment tests: `31 passed / 31 tests`.
+- Medallion broader Shibuya backend proof suite: `125 passed / 125 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, activation public context, checkout public context, teaser endpoint, public context contract, and Stripe fulfillment public context.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend proof-normalization gap where non-canonical numeric public-context fields could cross checkout, activation, dashboard-origin, or upload-receipt boundaries.
