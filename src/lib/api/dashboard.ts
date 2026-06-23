@@ -1,6 +1,6 @@
 import { isApiBaseConfiguredForLive } from '../constants'
 import {
-  EMPTY_ACTIVATION_ORIGIN_META,
+  buildDashboardActivationOriginFailureMeta,
   buildDashboardActivationOriginMeta,
   hasVerifiedDashboardActivationOrigin,
 } from '../activationOrigin'
@@ -332,7 +332,7 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
     if (hasVerifiedDashboardActivationOrigin(data.activation_origin)) {
       Object.assign(nextSessionMeta, buildDashboardActivationOriginMeta(data.activation_origin))
     } else {
-      Object.assign(nextSessionMeta, EMPTY_ACTIVATION_ORIGIN_META)
+      Object.assign(nextSessionMeta, buildDashboardActivationOriginFailureMeta(data.activation_origin))
     }
 
     updateSessionMeta(nextSessionMeta)

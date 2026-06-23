@@ -286,6 +286,8 @@ describe('shibuya runtime', () => {
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Old route continuity only.',
+      activationOriginSyncStatus: 'dashboard_origin_verified',
+      activationOriginSyncBoundary: 'Old dashboard sync only.',
     })
 
     setLiveApiKey('live_new', { tier: 'psych_audit' })
@@ -309,6 +311,8 @@ describe('shibuya runtime', () => {
     expect(session?.activationTeaserReceiptHash).toBeUndefined()
     expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
     expect(session?.activationEngagementReportViewCount).toBeUndefined()
+    expect(session?.activationOriginSyncStatus).toBeUndefined()
+    expect(session?.activationOriginSyncBoundary).toBeUndefined()
   })
 
   test('preserves live session context when only the api key is refreshed', () => {

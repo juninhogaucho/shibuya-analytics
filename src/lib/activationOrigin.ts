@@ -1,4 +1,4 @@
-import type { ShibuyaSessionMeta } from './runtime'
+import type { ShibuyaActivationOriginSyncStatus, ShibuyaSessionMeta } from './runtime'
 import type { ActivationResponse, DashboardActivationOrigin } from './types'
 
 export const EMPTY_ACTIVATION_ORIGIN_META: Partial<ShibuyaSessionMeta> = {
@@ -30,6 +30,8 @@ export const EMPTY_ACTIVATION_ORIGIN_META: Partial<ShibuyaSessionMeta> = {
   activationEngagementCurrentSectionClickCount: undefined,
   activationEngagementPrivateDemoIntentCount: undefined,
   activationEngagementBoundary: undefined,
+  activationOriginSyncStatus: undefined,
+  activationOriginSyncBoundary: undefined,
 }
 
 function splitOverviewContextList(value?: string | null): string[] | undefined {
@@ -90,6 +92,10 @@ interface ActivationOriginCandidate {
 
 const DASHBOARD_ACTIVATION_ORIGIN_BOUNDARY = 'Activation context came from verified backend dashboard metadata.'
 const ORDER_ACTIVATION_ORIGIN_BOUNDARY = 'Activation context came from verified backend order metadata.'
+const DASHBOARD_ACTIVATION_ORIGIN_MISSING_BOUNDARY =
+  'Dashboard overview did not return verified activation origin metadata, so local activation-origin details were cleared until backend sync proves them.'
+const DASHBOARD_ACTIVATION_ORIGIN_REJECTED_BOUNDARY =
+  'Dashboard overview returned activation origin metadata, but it failed the backend proof checks, so local activation-origin details were cleared.'
 
 function hasVerifiedActivationOriginCandidate(candidate?: ActivationOriginCandidate | null): candidate is ActivationOriginCandidate {
   const tradesAnalyzed = parseOverviewContextCount(candidate?.teaserTradesAnalyzed)
@@ -116,6 +122,7 @@ function hasVerifiedActivationOriginCandidate(candidate?: ActivationOriginCandid
 function buildActivationOriginMeta(
   candidate?: ActivationOriginCandidate | null,
   boundary = ORDER_ACTIVATION_ORIGIN_BOUNDARY,
+  syncStatus: ShibuyaActivationOriginSyncStatus = 'activation_order_verified',
 ): Partial<ShibuyaSessionMeta> {
   if (!hasVerifiedActivationOriginCandidate(candidate)) {
     return {}
@@ -145,6 +152,8 @@ function buildActivationOriginMeta(
     activationEngagementCurrentSectionClickCount: parseOverviewContextCount(candidate.currentSectionClicks),
     activationEngagementPrivateDemoIntentCount: parseOverviewContextCount(candidate.privateGateAttempts),
     activationEngagementBoundary: boundary,
+    activationOriginSyncStatus: syncStatus,
+    activationOriginSyncBoundary: boundary,
   }
 }
 
@@ -221,7 +230,25 @@ export function hasVerifiedDashboardActivationOrigin(
 export function buildDashboardActivationOriginMeta(
   origin?: DashboardActivationOrigin | null,
 ): Partial<ShibuyaSessionMeta> {
-  return buildActivationOriginMeta(dashboardOriginToCandidate(origin), DASHBOARD_ACTIVATION_ORIGIN_BOUNDARY)
+  return buildActivationOriginMeta(
+    dashboardOriginToCandidate(origin),
+    DASHBOARD_ACTIVATION_ORIGIN_BOUNDARY,
+    'dashboard_origin_verified',
+  )
+}
+
+export function buildDashboardActivationOriginFailureMeta(
+  origin?: DashboardActivationOrigin | null,
+): Partial<ShibuyaSessionMeta> {
+  const hasAnyOrigin = Boolean(origin && Object.keys(origin).length > 0)
+
+  return {
+    ...EMPTY_ACTIVATION_ORIGIN_META,
+    activationOriginSyncStatus: hasAnyOrigin ? 'dashboard_origin_rejected' : 'dashboard_origin_missing',
+    activationOriginSyncBoundary: hasAnyOrigin
+      ? DASHBOARD_ACTIVATION_ORIGIN_REJECTED_BOUNDARY
+      : DASHBOARD_ACTIVATION_ORIGIN_MISSING_BOUNDARY,
+  }
 }
 
 export function hasVerifiedActivationResponsePublicContext(data?: ActivationResponse | null): boolean {

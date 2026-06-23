@@ -192,6 +192,8 @@ describe('activation API boundary', () => {
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Activation context came from verified backend order metadata.',
+      activationOriginSyncStatus: 'activation_order_verified',
+      activationOriginSyncBoundary: 'Activation context came from verified backend order metadata.',
       activationTeaserRequestId: 'TEASER-verified',
       activationTeaserTradesAnalyzed: 12,
       activationTeaserWorstPattern: 'Tilt Expansion',

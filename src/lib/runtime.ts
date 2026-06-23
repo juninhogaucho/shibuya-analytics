@@ -9,6 +9,11 @@ export type ShibuyaRuntimeMode = 'anonymous' | 'sample' | 'live'
 export type ShibuyaRuntimePersistence = 'none' | 'local_only' | 'backend'
 export type ShibuyaSamplePreview = 'core' | 'reset_pro'
 export type ShibuyaDemoEntryMode = 'mission_hq' | 'append_proof_shortcut'
+export type ShibuyaActivationOriginSyncStatus =
+  | 'activation_order_verified'
+  | 'dashboard_origin_verified'
+  | 'dashboard_origin_missing'
+  | 'dashboard_origin_rejected'
 export type ShibuyaWorkspaceAccessReason =
   | 'anonymous'
   | 'live_session'
@@ -100,6 +105,8 @@ export interface ShibuyaSessionMeta {
   activationEngagementCurrentSectionClickCount?: number
   activationEngagementPrivateDemoIntentCount?: number
   activationEngagementBoundary?: string
+  activationOriginSyncStatus?: ShibuyaActivationOriginSyncStatus
+  activationOriginSyncBoundary?: string
 }
 
 export interface ShibuyaWorkspaceAccessState {
@@ -185,6 +192,8 @@ const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'activationEngagementCurrentSectionClickCount',
   'activationEngagementPrivateDemoIntentCount',
   'activationEngagementBoundary',
+  'activationOriginSyncStatus',
+  'activationOriginSyncBoundary',
 ]
 
 function parseSessionMeta(raw: string | null): ShibuyaSessionMeta | null {

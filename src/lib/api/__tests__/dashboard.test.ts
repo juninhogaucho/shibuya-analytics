@@ -334,6 +334,8 @@ describe('dashboard API boundary', () => {
       activationEngagementCurrentSectionClickCount: 1,
       activationEngagementPrivateDemoIntentCount: 1,
       activationEngagementBoundary: 'Activation context came from verified backend dashboard metadata.',
+      activationOriginSyncStatus: 'dashboard_origin_verified',
+      activationOriginSyncBoundary: 'Activation context came from verified backend dashboard metadata.',
       activationTeaserRequestId: 'TEASER-dashboard-123',
       activationTeaserTradesAnalyzed: 10,
       activationTeaserWorstPattern: 'Revenge Trading',
@@ -413,6 +415,10 @@ describe('dashboard API boundary', () => {
     expect(session?.activationTeaserRequestId).toBeUndefined()
     expect(session?.activationTeaserVerificationStatus).toBeUndefined()
     expect(session?.activationTeaserReceiptHash).toBeUndefined()
+    expect(session?.activationOriginSyncStatus).toBe('dashboard_origin_rejected')
+    expect(session?.activationOriginSyncBoundary).toBe(
+      'Dashboard overview returned activation origin metadata, but it failed the backend proof checks, so local activation-origin details were cleared.',
+    )
   })
 
   test('clears stale activation origin when live dashboard overview omits it', async () => {
@@ -509,6 +515,10 @@ describe('dashboard API boundary', () => {
     expect(session?.activationBridgeDecisionQuestion).toBeUndefined()
     expect(session?.activationEngagementReportViewCount).toBeUndefined()
     expect(session?.activationEngagementBoundary).toBeUndefined()
+    expect(session?.activationOriginSyncStatus).toBe('dashboard_origin_missing')
+    expect(session?.activationOriginSyncBoundary).toBe(
+      'Dashboard overview did not return verified activation origin metadata, so local activation-origin details were cleared until backend sync proves them.',
+    )
     expect(session?.lastReportSnapshotId).toBeNull()
     expect(session?.firstUploadReceipt).toBeNull()
     expect(session?.latestUploadReceipt).toBeNull()

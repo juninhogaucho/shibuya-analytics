@@ -358,3 +358,39 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It proves the frontend preserves a backend-verified checkout-success public-context handoff into activation preview without letting that local handoff become live activation proof.
+
+### 9. Dashboard Activation-Origin Sync Boundary
+
+Status: pushed
+
+Files changed:
+
+- `src/lib/activationOrigin.ts`
+- `src/lib/runtime.ts`
+- `src/lib/api/dashboard.ts`
+- `src/pages/dashboard/AppendTradesPage.tsx`
+- `src/pages/dashboard/OverviewPage.tsx`
+- `src/lib/api/__tests__/dashboard.test.ts`
+- `src/lib/api/__tests__/auth.test.ts`
+- `src/lib/__tests__/runtime.test.ts`
+- `src/pages/dashboard/__tests__/OverviewPage.test.tsx`
+
+What changed:
+
+- Live activation-origin metadata now carries an explicit sync status: order verified, dashboard verified, dashboard missing, or dashboard rejected.
+- Dashboard overview remains authoritative: verified dashboard metadata hydrates live origin; weak or omitted dashboard metadata clears stale activation-origin details.
+- Missing or rejected dashboard origin now leaves a visible, fail-closed explanation in Mission HQ instead of silently disappearing.
+- Append preflight uses the same dashboard-origin sync boundary before first live upload.
+
+Evidence so far:
+
+- Commit: Shibuya `e46fc9c` (`Expose dashboard activation origin sync state`).
+- Shibuya focused activation-origin sync tests: `5 passed / 5 files`, `34 passed / 34 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `254 passed / 254 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime or backend dashboard origin persistence. It proves the frontend now fails closed with an auditable sync reason when the dashboard endpoint omits or rejects activation-origin metadata.

@@ -186,6 +186,19 @@ export function DashboardOverviewPage() {
         engagementBoundary: sessionMeta.activationEngagementBoundary,
       }
     : undefined
+  const activationOriginSyncNotice = !sampleActive && !liveActivationOrigin
+    && (
+      sessionMeta?.activationOriginSyncStatus === 'dashboard_origin_missing'
+      || sessionMeta?.activationOriginSyncStatus === 'dashboard_origin_rejected'
+    )
+    ? {
+        title: sessionMeta.activationOriginSyncStatus === 'dashboard_origin_rejected'
+          ? 'Dashboard rejected activation origin'
+          : 'Dashboard origin sync pending',
+        body: sessionMeta.activationOriginSyncBoundary
+          ?? 'Dashboard overview did not return verified activation origin metadata, so no public-origin context is shown until backend sync proves it.',
+      }
+    : null
   const liveFirstUploadContractRows = liveActivationOrigin
     ? [
         {
@@ -630,6 +643,22 @@ export function DashboardOverviewPage() {
         <ResetProDemoCommandCenter market={market} overview={data} origin={resetProDemoOrigin} />
       ) : null}
       <JourneyProgressCard state={journeyState} />
+      {activationOriginSyncNotice ? (
+        <section
+          className="glass-panel"
+          style={{
+            borderColor: 'rgba(245, 158, 11, 0.26)',
+            background: 'rgba(245, 158, 11, 0.07)',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <p className="badge" style={{ marginBottom: '0.5rem' }}>ACTIVATION ORIGIN CHECK</p>
+          <h3 style={{ marginBottom: '0.5rem' }}>{activationOriginSyncNotice.title}</h3>
+          <p className="text-muted" style={{ marginBottom: 0, maxWidth: '58rem' }}>
+            {activationOriginSyncNotice.body}
+          </p>
+        </section>
+      ) : null}
       {liveActivationOrigin ? (
         <section
           className="glass-panel"

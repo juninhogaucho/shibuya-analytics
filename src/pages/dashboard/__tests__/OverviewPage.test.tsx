@@ -335,6 +335,52 @@ describe('DashboardOverviewPage', () => {
     expect(screen.queryByText('PRIVATE RESET PRO DEMO')).not.toBeInTheDocument()
   })
 
+  test('renders a fail-closed dashboard origin sync notice without stale activation details', async () => {
+    apiMocks.getDashboardOverview.mockImplementation(async () => {
+      updateSessionMeta({
+        customerId: 'cust-live-missing-origin',
+        tier: 'reset_pro',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+        dataSource: 'backend',
+        activationOriginSyncStatus: 'dashboard_origin_missing',
+        activationOriginSyncBoundary:
+          'Dashboard overview did not return verified activation origin metadata, so local activation-origin details were cleared until backend sync proves them.',
+      })
+
+      return {
+        ...getSampleWorkspaceOverview('core'),
+        customer_id: 'cust-live-missing-origin',
+        access_tier: 'reset_pro',
+        offer_kind: 'reset_pro_live',
+        case_status: 'awaiting_upload',
+        data_source: 'backend',
+      }
+    })
+    window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token-missing-origin')
+    window.localStorage.setItem(
+      SHIBUYA_SESSION_META_STORAGE_KEY,
+      JSON.stringify({
+        tier: 'reset_pro',
+        market: 'global',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+      }),
+    )
+
+    render(
+      <MemoryRouter>
+        <DashboardOverviewPage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('ACTIVATION ORIGIN CHECK')).toBeInTheDocument()
+    expect(screen.getByText('Dashboard origin sync pending')).toBeInTheDocument()
+    expect(screen.getByText(/local activation-origin details were cleared until backend sync proves them/i)).toBeInTheDocument()
+    expect(screen.queryByText('LIVE ACTIVATION ORIGIN')).not.toBeInTheDocument()
+    expect(screen.queryByText('Activated from locked private insight')).not.toBeInTheDocument()
+  })
+
   test('preserves live activation bridge context when backend overview is unavailable', async () => {
     apiMocks.getDashboardOverview.mockRejectedValue(new Error('Dashboard overview requires a configured Shibuya backend.'))
     window.localStorage.setItem(SHIBUYA_API_KEY_STORAGE_KEY, 'live-token-123')
