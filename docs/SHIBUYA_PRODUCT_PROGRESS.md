@@ -1061,3 +1061,29 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend allowlist gap where arbitrary public story IDs could be minted into a persisted teaser receipt or order metadata.
+
+### 32. Public Teaser Generation Rejects Invalid Story Identity
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_report_endpoint.py`
+- Medallion backend tests: `tests/test_shibuya_teaser_report_endpoint.py`
+
+What changed:
+
+- Public teaser generation now validates StoryExperience identity before file validation, CSV parsing, behavioral analysis, receipt hashing, or storage.
+- Unknown public axis IDs and non-canonical story scene counts return `422` immediately.
+- Invalid story context can no longer mint a persisted public teaser receipt that later fails retrieval, checkout, or activation boundaries.
+- The endpoint reuses the same backend public-context validator used by persisted receipt validation, keeping generation and retrieval on the same truth contract.
+
+Evidence so far:
+
+- Medallion `py_compile app\shibuya_report_endpoint.py tests\test_shibuya_teaser_report_endpoint.py`: passed.
+- Medallion focused teaser/public-context/checkout tests: `37 passed / 37 tests`.
+- Medallion broader Shibuya backend proof suite: `137 passed / 137 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, activation public context, checkout public context, teaser endpoint, public context contract, Stripe fulfillment public context, and dashboard overview runtime.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the generation-time gap where malformed StoryExperience identity could consume backend work or persist an unusable teaser receipt before the backend rejected it downstream.
