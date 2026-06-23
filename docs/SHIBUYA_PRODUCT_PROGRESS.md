@@ -611,3 +611,31 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime or Stripe webhook completion. It closes the frontend success-route leak where an incomplete or unpaid session could become local activation access.
+
+### 17. Backend Checkout Session Public Context Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/stripe_checkout.py`
+- Medallion backend tests: `tests/test_shibuya_checkout_public_context.py`
+
+What changed:
+
+- `/v1/checkout/session/{session_id}` now only attaches verified public StoryExperience context when the session response is both `status: complete` and `payment_status: paid`.
+- Pending/open/unpaid checkout sessions can still return order recovery fields, but can no longer carry activation-grade public teaser context downstream.
+- The guard sits in the shared session-response attachment helper, so it covers local mock mode, Stripe-authoritative status mode, and Stripe-fallback-to-DB mode.
+- Added a regression test with checkout-grade public teaser metadata on a pending order; the endpoint returns `open`/`unpaid` and strips all public context fields.
+
+Evidence so far:
+
+- Commit: Medallion `51dbfc04` (`Gate public context by paid checkout status`).
+- Medallion `py_compile app\stripe_checkout.py tests\test_shibuya_checkout_public_context.py`: passed.
+- Medallion checkout public-context tests: `9 passed / 9 tests`.
+- Medallion activation public-context tests: `2 passed / 2 tests`.
+- Medallion Shibuya critical-path tests: `62 passed / 62 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live Stripe webhook completion. It closes the backend source-of-truth leak where verified public context could leave the session-status API before payment was actually complete and paid.
