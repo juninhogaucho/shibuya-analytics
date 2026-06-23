@@ -33,6 +33,7 @@ export interface ShibuyaRuntimeContract {
 
 export interface ShibuyaSessionMeta {
   customerId?: string
+  authMode?: string | null
   tier?: string
   planId?: string
   market?: Market
@@ -152,6 +153,7 @@ export interface EnterSampleModeOptions {
 
 const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'customerId',
+  'authMode',
   'tier',
   'planId',
   'orderId',
@@ -253,7 +255,7 @@ export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = 
 }
 
 export function hasBackendVerifiedLiveSession(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
-  return Boolean(meta?.customerId?.trim() && meta.activationMode !== 'dev_demo')
+  return Boolean(meta?.customerId?.trim() && meta.activationMode !== 'dev_demo' && meta.authMode !== 'dev_demo')
 }
 
 export function getWorkspaceAccessState(): ShibuyaWorkspaceAccessState {

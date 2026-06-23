@@ -15,12 +15,52 @@ export interface LoginResponse {
   success: boolean
   api_key?: string
   customer_id?: string
+  authMode?: 'password' | 'self_register' | 'dev_demo' | string | null
   email?: string
   name?: string
   tier?: string
   prop_firm_id?: string | null
   prop_firm_name?: string | null
   error?: string
+}
+
+export function getLoginSessionProofError(data: LoginResponse): string | null {
+  if (!data.success) {
+    return null
+  }
+
+  if (!data.api_key?.trim()) {
+    return 'Medallion signed in but did not return an API key.'
+  }
+
+  if (!data.customer_id?.trim()) {
+    return 'Medallion signed in but did not return a backend customer identity.'
+  }
+
+  if (data.authMode === 'dev_demo') {
+    return 'Medallion returned a dev/demo login, not live account proof.'
+  }
+
+  return null
+}
+
+export function persistVerifiedLoginSession(data: LoginResponse): boolean {
+  const proofError = getLoginSessionProofError(data)
+  if (proofError) {
+    throw new Error(proofError)
+  }
+
+  if (!data.success || !data.api_key || !data.customer_id) {
+    return false
+  }
+
+  setLiveApiKey(data.api_key, {
+    tier: data.tier,
+    customerId: data.customer_id,
+    authMode: data.authMode ?? null,
+  })
+
+  return true
 }
 
 export function hasVerifiedActivationPublicContext(data: ActivationResponse): boolean {
@@ -91,20 +131,13 @@ export function persistVerifiedActivationSession(
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/login', payload)
-  if (data.success && data.api_key) {
-    setLiveApiKey(data.api_key, {
-      tier: data.tier,
-      customerId: data.customer_id,
-    })
-  }
+  persistVerifiedLoginSession(data)
   return data
 }
 
 export async function register(payload: LoginRequest & { name?: string }): Promise<LoginResponse> {
   const { data } = await http.post<LoginResponse>('/v1/auth/register', payload)
-  if (data.success && data.api_key) {
-    setLiveApiKey(data.api_key, { tier: data.tier })
-  }
+  persistVerifiedLoginSession(data)
   return data
 }
 
