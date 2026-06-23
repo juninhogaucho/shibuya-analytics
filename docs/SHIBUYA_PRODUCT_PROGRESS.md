@@ -1009,3 +1009,29 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend proof-normalization gap where non-canonical numeric public-context fields could cross checkout, activation, dashboard-origin, or upload-receipt boundaries.
+
+### 30. Public Teaser Receipts Require Story Identity At Retrieval
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_public_context.py`
+- Medallion backend tests: `tests/test_shibuya_teaser_report_endpoint.py`, `tests/test_shibuya_checkout_public_context.py`
+
+What changed:
+
+- Persisted public teaser receipt validation now requires hash-covered `metrics.public_context`.
+- The backend rejects otherwise valid-looking teaser receipts when public story identity is missing.
+- `archetype_id` and `axis_id` are now required at receipt validation, not only later in frontend recovery or checkout verification.
+- Public teaser retrieval returns `409` for corrupted receipts missing story identity, and checkout refuses those receipts before order creation.
+
+Evidence so far:
+
+- Medallion `py_compile app\shibuya_public_context.py tests\test_shibuya_teaser_report_endpoint.py tests\test_shibuya_checkout_public_context.py`: passed.
+- Medallion focused teaser/checkout/public-context tests: `30 passed / 30 tests`.
+- Medallion broader Shibuya backend proof suite: `128 passed / 128 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, activation public context, checkout public context, teaser endpoint, public context contract, and Stripe fulfillment public context.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend retrieval gap where a persisted teaser with a valid hash but missing public StoryExperience identity could be returned or used as paid checkout evidence.
