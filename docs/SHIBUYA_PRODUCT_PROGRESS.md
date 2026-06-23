@@ -582,3 +582,32 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime or completed payment activation. It closes an upstream offer-boundary leak where Locked Insight could advertise paid activation before a persisted backend teaser receipt existed.
+
+### 16. Checkout Success Paid Session Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/pages/checkout/CheckoutSuccessPage.tsx`
+- Shibuya frontend tests: `src/pages/checkout/__tests__/CheckoutSuccessPage.test.tsx`
+
+What changed:
+
+- Checkout success now requires both `status: complete` and `payment_status: paid` from the backend session before it renders checkout completion.
+- `status: complete` with unpaid payment can no longer expose activation access or store recent order access.
+- `payment_status: paid` with an open session can no longer expose activation access or store recent order access.
+- Existing backend identifier checks still apply after the paid+complete gate: customer email, order id, and plan id must be returned before activation can continue.
+
+Evidence so far:
+
+- Commit: Shibuya `de90555` (`Require paid complete checkout sessions for activation access`).
+- Shibuya focused checkout/activation tests: `5 passed / 5 files`, `23 passed / 23 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `263 passed / 263 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime or Stripe webhook completion. It closes the frontend success-route leak where an incomplete or unpaid session could become local activation access.
