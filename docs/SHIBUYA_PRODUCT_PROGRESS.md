@@ -841,3 +841,34 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the public report recovery truth gap where stale local/sample state could block recovery of stronger backend teaser evidence.
+
+### 24. Runtime Live Session Requires Positive Backend Proof Mode
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/runtime.ts`
+- Shibuya frontend: `src/lib/api/auth.ts`
+- Shibuya frontend tests: runtime, auth API, dashboard API, and AuthGuard tests
+
+What changed:
+
+- Live workspace proof now requires a backend customer id plus a positive backend-issued proof mode.
+- Accepted proof modes are paid activation (`activationMode: paid_order`) or backend auth (`authMode: password` / `authMode: self_register`).
+- A partial local packet with `customerId` but no verified proof mode is treated as an unverified live token and redirected back to activation before dashboard access or persistence.
+- Login persistence now rejects successful-looking payloads that include an API key and customer id but omit a verified auth mode or return an unknown legacy/dev mode.
+- Existing sample/private-demo access remains allowed only through the sample receipt boundary; it still cannot create live persistence.
+
+Evidence so far:
+
+- Commit: Shibuya `50a28e5` (`Require positive backend proof for live sessions`).
+- Shibuya focused runtime/auth/dashboard/AuthGuard tests: `4 passed / 4 files`, `38 passed / 38 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `270 passed / 270 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the frontend runtime identity leak where a stale or hand-written local customer id could be treated as enough to enter live workspace/persistence paths.
