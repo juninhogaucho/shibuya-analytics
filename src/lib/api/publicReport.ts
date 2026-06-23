@@ -34,6 +34,15 @@ export interface PublicTeaserReportContextInput {
   signalMarkerIds?: string[]
 }
 
+export interface PublicTeaserStoryIdentityAllowedValues {
+  markets?: string[]
+  story_sources?: string[]
+  archetype_ids?: string[]
+  axis_ids?: string[]
+  pain_axis_ids?: string[]
+  signal_marker_ids?: string[]
+}
+
 export interface PublicTeaserReportReadinessResponse {
   status: 'ready' | 'blocked' | string
   service?: string
@@ -47,10 +56,15 @@ export interface PublicTeaserReportReadinessResponse {
   live_private_artifact_proven?: boolean
   persists_story_identity?: boolean
   story_identity_fields?: string[]
+  story_identity_allowed_values?: PublicTeaserStoryIdentityAllowedValues
   min_trade_rows?: number
   max_file_size_mb?: number
   retrieval_identity?: string[]
   blockers?: string[]
+}
+
+function allowedValueSet(values?: string[]): Set<string> {
+  return new Set((values ?? []).map((value) => String(value).trim()).filter(Boolean))
 }
 
 export function validatePublicTeaserReportReadiness(
@@ -93,6 +107,24 @@ export function validatePublicTeaserReportReadiness(
     return 'Medallion public report service did not publish archetype and axis story identity fields.'
   }
 
+  const allowedValues = readiness.story_identity_allowed_values
+  if (!allowedValues) {
+    return 'Medallion public report service did not publish canonical story identity allowed values.'
+  }
+
+  const requiredAllowedValueKeys: Array<keyof PublicTeaserStoryIdentityAllowedValues> = [
+    'markets',
+    'story_sources',
+    'archetype_ids',
+    'axis_ids',
+    'pain_axis_ids',
+    'signal_marker_ids',
+  ]
+  const missingAllowedValueKey = requiredAllowedValueKeys.find((key) => allowedValueSet(allowedValues[key]).size === 0)
+  if (missingAllowedValueKey) {
+    return `Medallion public report service did not publish allowed values for ${missingAllowedValueKey}.`
+  }
+
   if (!Number.isFinite(readiness.min_trade_rows) || Number(readiness.min_trade_rows) < 10) {
     return 'Medallion public report service did not publish a checkout-grade minimum trade-row requirement.'
   }
@@ -100,6 +132,69 @@ export function validatePublicTeaserReportReadiness(
   const retrievalIdentity = new Set(readiness.retrieval_identity ?? [])
   if (!retrievalIdentity.has('report_id') || !retrievalIdentity.has('request_id')) {
     return 'Medallion public report service did not publish report-id and request-id retrieval identity.'
+  }
+
+  return null
+}
+
+export function validatePublicTeaserStoryContextAgainstReadiness(
+  readiness: PublicTeaserReportReadinessResponse,
+  context: PublicTeaserReportContextInput,
+): string | null {
+  const readinessError = validatePublicTeaserReportReadiness(readiness)
+  if (readinessError) {
+    return readinessError
+  }
+
+  const allowedValues = readiness.story_identity_allowed_values ?? {}
+  const markets = allowedValueSet(allowedValues.markets)
+  const storySources = allowedValueSet(allowedValues.story_sources)
+  const archetypeIds = allowedValueSet(allowedValues.archetype_ids)
+  const axisIds = allowedValueSet(allowedValues.axis_ids)
+  const painAxisIds = allowedValueSet(allowedValues.pain_axis_ids)
+  const signalMarkerIds = allowedValueSet(allowedValues.signal_marker_ids)
+  const market = context.market?.trim() ?? ''
+  const storySource = context.storySource?.trim() || 'direct'
+  const archetypeId = context.archetypeId?.trim() ?? ''
+  const axisId = context.axisId?.trim() ?? ''
+
+  if (market && !markets.has(market)) {
+    return `Medallion public report service does not allow public story market "${market}".`
+  }
+
+  if (!storySources.has(storySource)) {
+    return `Medallion public report service does not allow public story source "${storySource}".`
+  }
+
+  if (!archetypeId || !archetypeIds.has(archetypeId)) {
+    return `Medallion public report service does not allow public story archetype_id "${archetypeId || 'missing'}".`
+  }
+
+  if (!axisId || !axisIds.has(axisId)) {
+    return `Medallion public report service does not allow public story axis_id "${axisId || 'missing'}".`
+  }
+
+  if (
+    context.visitedSceneCount !== undefined
+    && (!Number.isInteger(context.visitedSceneCount) || context.visitedSceneCount < 0)
+  ) {
+    return 'Medallion public report service requires a canonical non-negative public story scene count.'
+  }
+
+  const unknownPainAxis = (context.selectedPainAxisIds ?? [])
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .find((painAxisId) => !painAxisIds.has(painAxisId))
+  if (unknownPainAxis) {
+    return `Medallion public report service does not allow public story pain axis "${unknownPainAxis}".`
+  }
+
+  const unknownSignalMarker = (context.signalMarkerIds ?? [])
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .find((signalMarkerId) => !signalMarkerIds.has(signalMarkerId))
+  if (unknownSignalMarker) {
+    return `Medallion public report service does not allow public story signal marker "${unknownSignalMarker}".`
   }
 
   return null

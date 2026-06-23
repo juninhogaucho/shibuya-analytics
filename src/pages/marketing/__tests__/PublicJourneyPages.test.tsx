@@ -46,6 +46,40 @@ const BACKEND_PUBLIC_CONTEXT = {
   },
 }
 
+const STORY_IDENTITY_ALLOWED_VALUES = {
+  markets: ['global', 'india'],
+  story_sources: ['direct', 'guided'],
+  archetype_ids: ['john', 'marco', 'priya'],
+  axis_ids: [
+    'discipline_tax',
+    'drawdown_pressure',
+    'early_exit_bias',
+    'edge_decay',
+    'revenge_reentry',
+    'session_fatigue',
+    'size_escalation',
+    'tilt_susceptibility',
+  ],
+  pain_axis_ids: [
+    'discipline_tax',
+    'drawdown_pressure',
+    'early_exit_bias',
+    'edge_decay',
+    'revenge_reentry',
+    'session_fatigue',
+    'size_escalation',
+    'tilt_susceptibility',
+  ],
+  signal_marker_ids: [
+    'mirror_selected',
+    'pain_axis_selected',
+    'pricing_curiosity',
+    'scene_depth_deep',
+    'scene_depth_light',
+    'upload_intent',
+  ],
+}
+
 function LocationProbe() {
   const location = useLocation()
   return <div data-testid="location">{`${location.pathname}${location.search}`}</div>
@@ -74,6 +108,7 @@ describe('public Shibuya journey pages', () => {
       live_private_artifact_proven: false,
       persists_story_identity: true,
       story_identity_fields: ['market', 'story_source', 'archetype_id', 'axis_id', 'pain_axes', 'story_scene_count', 'signal_markers'],
+      story_identity_allowed_values: STORY_IDENTITY_ALLOWED_VALUES,
       min_trade_rows: 10,
       max_file_size_mb: 5,
       retrieval_identity: ['report_id', 'request_id'],
@@ -578,6 +613,68 @@ describe('public Shibuya journey pages', () => {
     expect(publicReportMocks.getPublicTeaserReportReadiness).toHaveBeenCalled()
     expect(publicReportMocks.generatePublicTeaserReport).not.toHaveBeenCalled()
     expect(screen.getByText(/Blockers: storage_missing_methods:store_public_teaser_report/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
+    expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()
+  })
+
+  test('eligible public paste blocks report creation when backend readiness disallows the story identity', async () => {
+    const user = userEvent.setup()
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const pnl = index % 2 === 0 ? 38 + index : -22 - index
+      return `2026-06-${String(10 + index).padStart(2, '0')},XAUUSD,${index % 2 === 0 ? 'buy' : 'sell'},1,2300,2310,${pnl}`
+    })
+    const pasteBody = ['date,symbol,side,size,entry,exit,pnl', ...rows].join('\n')
+
+    publicReportMocks.getPublicTeaserReportReadiness.mockResolvedValue({
+      status: 'ready',
+      service: 'shibuya-public-teaser-report',
+      accepts_csv_upload: true,
+      persists_teaser_receipts: true,
+      retrieves_teaser_receipts: true,
+      report_type: 'teaser',
+      artifact_status_required: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      raw_trade_rows_stored: false,
+      live_private_artifact_proven: false,
+      persists_story_identity: true,
+      story_identity_fields: ['market', 'story_source', 'archetype_id', 'axis_id', 'pain_axes', 'story_scene_count', 'signal_markers'],
+      story_identity_allowed_values: {
+        ...STORY_IDENTITY_ALLOWED_VALUES,
+        axis_ids: ['drawdown_pressure'],
+        pain_axis_ids: ['drawdown_pressure'],
+      },
+      min_trade_rows: 10,
+      max_file_size_mb: 5,
+      retrieval_identity: ['report_id', 'request_id'],
+      blockers: [],
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/upload?market=global&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected,upload_intent']}>
+        <Routes>
+          <Route path="/upload" element={<PublicUploadPage />} />
+          <Route path="/report/:id" element={<FreeReportPage />} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Medallion public story identity contract is blocked.')).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText(/Or paste a small trade sample/i), {
+      target: { value: pasteBody },
+    })
+    await user.click(screen.getByRole('button', { name: /Generate Free Report/i }))
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/does not allow public story axis_id "edge_decay"/i).length).toBeGreaterThan(1)
+    })
+
+    expect(publicReportMocks.generatePublicTeaserReport).not.toHaveBeenCalled()
+    expect(screen.getByText(/Blockers: story_identity_context_not_allowed/i)).toBeInTheDocument()
     expect(screen.getByTestId('location')).toHaveTextContent('/upload?market=global&archetype=marco&axis=edge_decay&story=guided')
     expect(screen.queryByText('Public report packet')).not.toBeInTheDocument()
     expect(window.localStorage.getItem('shibuya_public_report_sessions_v1')).toBeNull()

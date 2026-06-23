@@ -7,7 +7,9 @@ import {
   generatePublicTeaserReport,
   getPublicTeaserReportReadiness,
   validatePublicTeaserReportReadiness,
+  validatePublicTeaserStoryContextAgainstReadiness,
   type PublicTeaserReportReadinessResponse,
+  type PublicTeaserReportContextInput,
 } from '../../lib/api/publicReport'
 import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../lib/publicStoryHandoff'
 import { buildLiveProofReadinessContract } from '../../lib/liveProofReadiness'
@@ -71,7 +73,10 @@ const CHECKING_PUBLIC_REPORT_READINESS: PublicReportReadinessState = {
   blockers: [],
 }
 
-function summarizePublicReportReadiness(readiness: PublicTeaserReportReadinessResponse): PublicReportReadinessState {
+function summarizePublicReportReadiness(
+  readiness: PublicTeaserReportReadinessResponse,
+  context?: PublicTeaserReportContextInput,
+): PublicReportReadinessState {
   const readinessError = validatePublicTeaserReportReadiness(readiness)
 
   if (readinessError) {
@@ -82,6 +87,21 @@ function summarizePublicReportReadiness(readiness: PublicTeaserReportReadinessRe
       minTradeRows: readiness.min_trade_rows,
       maxFileSizeMb: readiness.max_file_size_mb,
       blockers: readiness.blockers ?? [],
+    }
+  }
+
+  if (context) {
+    const storyContextError = validatePublicTeaserStoryContextAgainstReadiness(readiness, context)
+
+    if (storyContextError) {
+      return {
+        status: 'blocked',
+        headline: 'Medallion public story identity contract is blocked.',
+        detail: storyContextError,
+        minTradeRows: readiness.min_trade_rows,
+        maxFileSizeMb: readiness.max_file_size_mb,
+        blockers: ['story_identity_context_not_allowed', ...(readiness.blockers ?? [])],
+      }
     }
   }
 
@@ -127,13 +147,16 @@ export default function PublicUploadPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const market = resolveMarket(location.pathname, location.search)
-  const params = new URLSearchParams(location.search)
+  const params = useMemo(() => new URLSearchParams(location.search), [location.search])
   const initialArchetype = getTraderArchetype(params.get('archetype'))
   const initialAxis = getFingerprintAxis(params.get('axis'))
   const storySource = params.get('story')
-  const selectedPainAxisIds = (params.get('pain_axes') ?? '').split(',').filter(Boolean)
+  const selectedPainAxisIds = useMemo(
+    () => (params.get('pain_axes') ?? '').split(',').filter(Boolean),
+    [params],
+  )
   const visitedSceneCount = Number(params.get('scene_count') ?? 0)
-  const publicStoryHandoff = readPublicStoryHandoff(location.search)
+  const publicStoryHandoff = useMemo(() => readPublicStoryHandoff(location.search), [location.search])
   const shouldUseDemoLauncherSamplePacket = hasDemoLauncherSamplePacketRequest(location.search)
   const signalMarkers = useMemo(
     () => getPublicStorySignalMarkers(publicStoryHandoff?.signalMarkerIds),
@@ -154,6 +177,23 @@ export default function PublicUploadPage() {
   const archetype = useMemo(() => getTraderArchetype(archetypeId), [archetypeId])
   const axis = useMemo(() => getFingerprintAxis(axisId), [axisId])
   const liveProofGap = useMemo(() => buildLiveProofReadinessContract(), [])
+  const backendStoryContext = useMemo(() => ({
+    market,
+    storySource,
+    archetypeId: archetype.id,
+    axisId: axis.id,
+    selectedPainAxisIds,
+    visitedSceneCount,
+    signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+  }), [
+    archetype.id,
+    axis.id,
+    market,
+    publicStoryHandoff?.signalMarkerIds,
+    selectedPainAxisIds,
+    storySource,
+    visitedSceneCount,
+  ])
   const selectedPainAxes = useMemo(
     () => selectedPainAxisIds
       .map((candidate) => getFingerprintAxis(candidate))
@@ -244,7 +284,7 @@ export default function PublicUploadPage() {
   const refreshPublicReportReadiness = async (): Promise<string | null> => {
     try {
       const readiness = await getPublicTeaserReportReadiness()
-      const nextReadiness = summarizePublicReportReadiness(readiness)
+      const nextReadiness = summarizePublicReportReadiness(readiness, backendStoryContext)
       setPublicReportReadiness(nextReadiness)
       return nextReadiness.status === 'ready' ? null : nextReadiness.detail
     } catch (caughtError) {
@@ -260,7 +300,7 @@ export default function PublicUploadPage() {
     void getPublicTeaserReportReadiness()
       .then((readiness) => {
         if (!cancelled) {
-          setPublicReportReadiness(summarizePublicReportReadiness(readiness))
+          setPublicReportReadiness(summarizePublicReportReadiness(readiness, backendStoryContext))
         }
       })
       .catch((caughtError) => {
@@ -272,7 +312,7 @@ export default function PublicUploadPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [backendStoryContext])
 
   const buildReportSearch = (source: 'upload' | 'sample') => {
     const reportSearchParams = appendDemoLauncherSamplePacketParam(
@@ -339,13 +379,7 @@ export default function PublicUploadPage() {
         }
 
         const backendTeaser = await generatePublicTeaserReport(backendTeaserFile, {
-          market,
-          storySource,
-          archetypeId: archetype.id,
-          axisId: axis.id,
-          selectedPainAxisIds,
-          visitedSceneCount,
-          signalMarkerIds: publicStoryHandoff?.signalMarkerIds,
+          ...backendStoryContext,
         })
         const receiptError = validatePublicTeaserReportResponse(backendTeaser)
 

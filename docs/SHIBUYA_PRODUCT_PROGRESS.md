@@ -1087,3 +1087,36 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the generation-time gap where malformed StoryExperience identity could consume backend work or persist an unusable teaser receipt before the backend rejected it downstream.
+
+### 33. Public Upload Readiness Publishes And Enforces Story Allowlists
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_report_endpoint.py`
+- Medallion backend tests: `tests/test_shibuya_teaser_report_endpoint.py`
+- Shibuya frontend: `src/lib/api/publicReport.ts`, `src/pages/marketing/PublicUploadPage.tsx`
+- Shibuya frontend tests: `src/lib/api/__tests__/publicReport.test.ts`, `src/pages/marketing/__tests__/PublicJourneyPages.test.tsx`
+
+What changed:
+
+- Medallion public teaser readiness now publishes canonical allowed values for markets, story sources, archetypes, axes, pain axes, and public signal markers.
+- Shibuya frontend readiness validation now requires those allowlists before treating the public report service as checkout-grade.
+- The upload page validates the current route/selection story identity against Medallion readiness before calling teaser generation.
+- Eligible pasted trade data can no longer create a local/public report packet when the backend says the current StoryExperience identity is outside its canonical allowlist.
+
+Evidence so far:
+
+- Medallion `py_compile app\shibuya_report_endpoint.py tests\test_shibuya_teaser_report_endpoint.py`: passed.
+- Medallion focused teaser/public-context/checkout tests: `37 passed / 37 tests`.
+- Medallion broader Shibuya backend proof suite: `137 passed / 137 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, activation public context, checkout public context, teaser endpoint, public context contract, Stripe fulfillment public context, and dashboard overview runtime.
+- Shibuya focused public report/public journey tests: `2 passed / 2 files`, `28 passed / 28 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `275 passed / 275 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the readiness-contract gap where the frontend knew Medallion could store story identity fields, but not whether the current public StoryExperience IDs matched Medallion canon before report generation.
