@@ -901,3 +901,30 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the workspace hydration identity leak where a bad dashboard overview response could switch the local live customer before append proof validation runs.
+
+### 26. Upload Readiness Exposes Only Customer-Bound Receipts
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/main.py`
+- Medallion backend tests: `tests/test_shibuya_upload_artifact_receipts.py`
+
+What changed:
+
+- `/v1/dashboard/upload/readiness` now strips `first_upload_receipt`, `latest_upload_receipt`, and `last_report_snapshot_id` unless the receipt belongs to the authenticated customer.
+- Polluted customer metadata with a foreign generated upload receipt can no longer cross the readiness API as append-proof context.
+- Readiness can still report live upload counts, limits, read-only state, and blockers, but receipt/snapshot proof stays empty until it is customer-bound.
+- Existing upload responses, lifecycle events, report enrichment, and append comparison guards remain in place.
+
+Evidence so far:
+
+- Commit: Medallion `dc52a77a` (`Sanitize Shibuya upload readiness receipts`).
+- Medallion `py_compile app\main.py tests\test_shibuya_upload_artifact_receipts.py`: passed.
+- Medallion focused upload/readiness tests: `15 passed / 15 tests`.
+- Medallion focused Shibuya backend proof suite: `96 passed / 96 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, and activation public context.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend readiness leak where a foreign persisted upload receipt could be exposed before the frontend append proof path validates customer continuity.
