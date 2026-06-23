@@ -928,3 +928,30 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend readiness leak where a foreign persisted upload receipt could be exposed before the frontend append proof path validates customer continuity.
+
+### 27. First Upload Lifecycle Requires Customer-Bound Receipt
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/trader_endpoints.py`
+- Medallion backend tests: `tests/test_shibuya_lifecycle_upload_receipt.py`
+
+What changed:
+
+- `first_upload_completed` now accepts only a generated persisted upload receipt owned by the authenticated customer.
+- Matching `request_id` and `report_snapshot_id` alone is no longer enough to promote lifecycle state.
+- Polluted customer metadata with a foreign generated receipt is blocked with `409` and leaves `case_status`, `first_upload_receipt`, and baseline readiness proof unchanged.
+- The successful same-customer path still persists the generated receipt into `first_upload_receipt` and `latest_upload_receipt`.
+
+Evidence so far:
+
+- Commit: Medallion `d79441bb` (`Bind first upload lifecycle to customer receipt`).
+- Medallion `py_compile app\trader_endpoints.py tests\test_shibuya_lifecycle_upload_receipt.py`: passed.
+- Medallion lifecycle upload receipt tests: `4 passed / 4 tests`.
+- Medallion focused Shibuya backend proof suite: `97 passed / 97 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, and activation public context.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the lifecycle promotion leak where a foreign persisted generated receipt could be used to mark a customer baseline-ready after a matching client lifecycle event.
