@@ -518,3 +518,38 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It proves the public upload/report recovery endpoint no longer emits malformed persisted teaser receipts as report-grade product state.
+
+### 14. Upload Attempt vs Proof Receipt Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/main.py`
+- Medallion backend tests: `tests/test_shibuya_upload_artifact_receipts.py`
+- Shibuya frontend: `src/lib/runtime.ts`, `src/pages/dashboard/AppendTradesPage.tsx`
+- Shibuya frontend tests: `src/pages/dashboard/__tests__/AppendTradesPage.test.tsx`
+
+What changed:
+
+- Missing generated artifacts are now upload attempts, not proof receipts.
+- Medallion only updates `latest_upload_receipt` and `upload_receipt_history` when the upload has a generated artifact, report snapshot id, request id, and durable append count.
+- Medallion stores missing-artifact writes in `latest_upload_attempt` and `upload_attempt_history`, and returns `status: processing` instead of `status: success`.
+- A missing-artifact append after an existing baseline no longer overwrites the latest generated proof receipt or generated receipt history.
+- Shibuya frontend session metadata mirrors the same split: pending or untrusted upload responses update `latestUploadAttempt` and `uploadAttemptHistory`, not `latestUploadReceipt` or `uploadReceiptHistory`.
+
+Evidence so far:
+
+- Commit: Medallion `1fef9ca1` (`Split Shibuya upload attempts from proof receipts`).
+- Commit: Shibuya `2e4c969` (`Store pending Shibuya uploads as attempts`).
+- Medallion `py_compile app\main.py tests\test_shibuya_upload_artifact_receipts.py tests\test_shibuya_lifecycle_upload_receipt.py tests\test_shibuya_append_proof_comparison.py`: passed.
+- Medallion upload/lifecycle/append proof focused tests: `24 passed / 24 tests`.
+- Shibuya focused upload/runtime tests: `4 passed / 4 files`, `37 passed / 37 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `261 passed / 261 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime or real customer data. It closes a local/backend truth leak where processing attempts without generated artifacts could be cached as latest proof receipts.
