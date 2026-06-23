@@ -4,6 +4,7 @@ import type { Market } from './market'
 import {
   buildPublicReportSession,
   getPublicReportSession,
+  hasCheckoutGradePublicReportSession,
   persistPublicReportSessionAliases,
   validatePublicTeaserReportResponse,
   type PublicReportSession,
@@ -70,7 +71,7 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
 
   useEffect(() => {
     const existingSession = getPublicReportSession(input.reportId)
-    if (existingSession) {
+    if (hasCheckoutGradePublicReportSession(existingSession)) {
       return
     }
 
@@ -91,7 +92,7 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
         if (receiptError) {
           setState({
             reportId: input.reportId,
-            session: null,
+            session: existingSession,
             status: 'failed',
             error: receiptError,
             attemptedBackendRecovery: true,
@@ -132,7 +133,7 @@ export function usePublicReportSessionRecovery(input: PublicReportRecoveryInput)
 
         setState({
           reportId: input.reportId,
-          session: null,
+          session: existingSession,
           status: 'failed',
           error: error instanceof Error ? error.message : 'Backend teaser receipt recovery failed.',
           attemptedBackendRecovery: true,
