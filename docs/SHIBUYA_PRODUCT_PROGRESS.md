@@ -492,3 +492,29 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It closes the sign-in truth leak where a partial or dev/demo auth response could create browser live state.
+
+### 13. Persisted Public Teaser Retrieval Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_report_endpoint.py`
+- Medallion backend tests: `tests/test_shibuya_teaser_report_endpoint.py`
+
+What changed:
+
+- Public teaser generation already stored secret-free persisted receipts.
+- Public teaser retrieval now revalidates the stored receipt with the shared checkout-grade receipt contract before returning it.
+- Corrupted/stale persisted receipts now fail closed with `409` instead of being recoverable by frontend report/session recovery.
+- Checkout public-context validation remains the later paid-boundary guard, but invalid teaser receipts are now blocked one step earlier at report recovery.
+
+Evidence so far:
+
+- Commit: Medallion `a3f9a147` (`Validate persisted teaser report retrieval`).
+- Medallion `py_compile app\shibuya_report_endpoint.py tests\test_shibuya_teaser_report_endpoint.py`: passed.
+- Medallion public teaser + checkout context tests: `18 passed / 18 tests` across `tests\test_shibuya_teaser_report_endpoint.py` and `tests\test_shibuya_checkout_public_context.py`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime. It proves the public upload/report recovery endpoint no longer emits malformed persisted teaser receipts as report-grade product state.
