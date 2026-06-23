@@ -872,3 +872,32 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the frontend runtime identity leak where a stale or hand-written local customer id could be treated as enough to enter live workspace/persistence paths.
+
+### 25. Dashboard Overview Must Match Verified Customer
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/api/dashboard.ts`
+- Shibuya frontend tests: `src/lib/api/__tests__/dashboard.test.ts`
+
+What changed:
+
+- Live dashboard overview now fails closed if Medallion omits `customer_id` for a backend-verified live session.
+- Live dashboard overview now fails closed if the returned `customer_id` differs from the verified live session customer.
+- Foreign or malformed overview packets can no longer overwrite local session metadata, tier, offer kind, case status, activation origin, or upload receipt state.
+- Existing cross-customer upload receipt filtering still applies after the overview itself passes customer identity validation.
+
+Evidence so far:
+
+- Commit: Shibuya `63b84e6` (`Require dashboard overview customer match`).
+- Shibuya focused dashboard API tests: `1 passed / 1 file`, `10 passed / 10 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `271 passed / 271 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the workspace hydration identity leak where a bad dashboard overview response could switch the local live customer before append proof validation runs.
