@@ -734,3 +734,42 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime, live Stripe payment completion, or live dashboard append proof. It closes the public upload -> report -> locked insight -> paid checkout identity-forgery gap by making the backend teaser receipt the source of truth for public story identity.
+
+### 21. Live Append Customer Identity Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/main.py`
+- Medallion backend tests: `tests/test_shibuya_upload_artifact_receipts.py`
+- Shibuya frontend: `src/lib/api/dashboard.ts`
+- Shibuya frontend: `src/lib/types.ts`
+- Shibuya frontend: `src/pages/dashboard/AppendTradesPage.tsx`
+- Shibuya frontend tests: dashboard API and append page tests
+
+What changed:
+
+- Medallion live upload receipts now include the authenticated `customer_id`.
+- Medallion no longer treats a generated-looking upload receipt as generated live proof unless it is customer-bound.
+- CSV upload and manual/paste submit responses now return the same top-level `customer_id` that the backend used to write the receipt.
+- Shibuya live append readiness validation now rejects ready-looking responses that omit `customer_id` or return a different customer than the backend-verified session.
+- Shibuya generated upload proof validation now rejects success/generated/snapshot/request/append-count responses when the upload receipt is missing `customer_id` or belongs to another customer.
+- Stored frontend upload receipts now carry `customer_id`, so `latestUploadReceipt`, `firstUploadReceipt`, and append history remain tied to the verified live account.
+
+Evidence so far:
+
+- Commit: Medallion `bdb2c89b` (`Bind live upload receipts to customer identity`).
+- Commit: Shibuya `78efec5` (`Require customer-bound live append proof`).
+- Medallion `py_compile app\main.py tests\test_shibuya_upload_artifact_receipts.py`: passed.
+- Medallion focused upload/lifecycle/append proof tests: `24 passed / 24 tests`.
+- Medallion Shibuya critical/env/upload/lifecycle/append suite: `97 passed / 97 tests`.
+- Shibuya focused dashboard/upload tests: `3 passed / 3 files`, `16 passed / 16 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `263 passed / 263 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime or a real trader account append in production. It closes the local/live identity boundary where structurally valid upload proof could be accepted without proving it belonged to the same backend-verified customer session.
