@@ -520,6 +520,7 @@ export interface ShibuyaAffiliateReportResponse {
 
 // Dashboard Types
 export interface UploadProofReceipt {
+  customer_id?: string
   completed_at?: string
   upload_transport?: string
   trades_uploaded?: number

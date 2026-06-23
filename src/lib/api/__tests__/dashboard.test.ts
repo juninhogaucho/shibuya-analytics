@@ -132,6 +132,7 @@ describe('dashboard API boundary', () => {
     const ready = {
       status: 'ready',
       service: 'shibuya-live-upload-append',
+      customer_id: 'cust_live_123',
       accepts_csv_upload: true,
       accepts_trade_paste_submit: true,
       persists_upload_receipts: true,
@@ -148,6 +149,9 @@ describe('dashboard API boundary', () => {
     }
 
     expect(validateLiveUploadAppendReadiness(ready)).toBeNull()
+    expect(validateLiveUploadAppendReadiness(ready, 'cust_live_123')).toBeNull()
+    expect(validateLiveUploadAppendReadiness({ ...ready, customer_id: undefined }, 'cust_live_123')).toContain('verified customer id')
+    expect(validateLiveUploadAppendReadiness({ ...ready, customer_id: 'cust_other' }, 'cust_live_123')).toContain('different customer id')
     expect(validateLiveUploadAppendReadiness({ ...ready, status: 'blocked' })).toContain('not ready')
     expect(validateLiveUploadAppendReadiness({ ...ready, accepts_csv_upload: false })).toContain('not currently allowed')
     expect(validateLiveUploadAppendReadiness({ ...ready, persists_upload_receipts: false })).toContain('persist upload receipts')
@@ -163,6 +167,7 @@ describe('dashboard API boundary', () => {
 
     const proofResponse = {
       status: 'success',
+      customer_id: 'cust_live_123',
       trades_uploaded: 12,
       artifact_status: 'generated',
       report_snapshot_id: 'snap_live_001',
@@ -172,11 +177,15 @@ describe('dashboard API boundary', () => {
     }
 
     expect(validateGeneratedLiveUploadArtifactProof(proofResponse)).toBeNull()
+    expect(validateGeneratedLiveUploadArtifactProof(proofResponse, 'cust_live_123')).toBeNull()
     expect(hasGeneratedUploadArtifactProof(proofResponse)).toBe(true)
+    expect(hasGeneratedUploadArtifactProof(proofResponse, 'cust_live_123')).toBe(true)
 
     expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, status: 'error' })).toContain('successful')
     expect(hasGeneratedUploadArtifactProof({ ...proofResponse, status: 'error' })).toBe(false)
     expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, trades_uploaded: 0 })).toContain('at least one')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, customer_id: undefined }, 'cust_live_123')).toContain('backend customer id')
+    expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, customer_id: 'cust_other' }, 'cust_live_123')).toContain('does not match')
     expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, artifact_status: 'missing' })).toContain('generated account artifact')
     expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, report_snapshot_id: null })).toContain('snapshot')
     expect(validateGeneratedLiveUploadArtifactProof({ ...proofResponse, request_id: '' })).toContain('request id')

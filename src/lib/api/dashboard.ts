@@ -30,6 +30,7 @@ import { http, withRetry } from './httpClient'
 
 export interface TradeUploadResponse {
   status: string
+  customer_id?: string
   trades_uploaded: number
   message?: string
   request_id?: string
@@ -104,9 +105,21 @@ export function assertDashboardBackendReady(featureName: string): void {
 
 export function validateLiveUploadAppendReadiness(
   readiness: LiveUploadAppendReadinessResponse,
+  expectedCustomerId?: string | null,
 ): string | null {
   if (readiness.status !== 'ready') {
     return 'Medallion live append service is not ready to persist upload receipts.'
+  }
+
+  const expectedCustomer = getExpectedLiveCustomerId(expectedCustomerId)
+  if (expectedCustomer) {
+    const readinessCustomer = normalizeCustomerId(readiness.customer_id)
+    if (!readinessCustomer) {
+      return 'Medallion live append service did not return the verified customer id.'
+    }
+    if (readinessCustomer !== expectedCustomer) {
+      return 'Medallion live append service returned a different customer id than the verified session.'
+    }
   }
 
   if (readiness.accepts_csv_upload !== true || readiness.accepts_trade_paste_submit !== true) {
@@ -144,8 +157,17 @@ function hasText(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+function normalizeCustomerId(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function getExpectedLiveCustomerId(explicitCustomerId?: string | null): string {
+  return normalizeCustomerId(explicitCustomerId) || normalizeCustomerId(getStoredSessionMeta()?.customerId)
+}
+
 export function validateGeneratedLiveUploadArtifactProof(
   result: TradeUploadResponse,
+  expectedCustomerId?: string | null,
 ): string | null {
   if (result.status !== 'success') {
     return 'Live upload proof requires a successful Medallion upload response.'
@@ -153,6 +175,17 @@ export function validateGeneratedLiveUploadArtifactProof(
 
   if (!Number.isFinite(result.trades_uploaded) || result.trades_uploaded < 1) {
     return 'Live upload proof requires at least one uploaded trade.'
+  }
+
+  const expectedCustomer = getExpectedLiveCustomerId(expectedCustomerId)
+  if (expectedCustomer) {
+    const receiptCustomer = normalizeCustomerId(result.customer_id)
+    if (!receiptCustomer) {
+      return 'Live upload proof requires a backend customer id.'
+    }
+    if (receiptCustomer !== expectedCustomer) {
+      return 'Live upload proof customer id does not match the verified session.'
+    }
   }
 
   if (result.artifact_status !== 'generated') {
@@ -174,8 +207,8 @@ export function validateGeneratedLiveUploadArtifactProof(
   return null
 }
 
-export function hasGeneratedUploadArtifactProof(result: TradeUploadResponse): boolean {
-  return validateGeneratedLiveUploadArtifactProof(result) === null
+export function hasGeneratedUploadArtifactProof(result: TradeUploadResponse, expectedCustomerId?: string | null): boolean {
+  return validateGeneratedLiveUploadArtifactProof(result, expectedCustomerId) === null
 }
 
 export async function getLiveUploadAppendReadiness(): Promise<LiveUploadAppendReadinessResponse> {

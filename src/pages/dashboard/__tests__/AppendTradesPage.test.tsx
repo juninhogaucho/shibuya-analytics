@@ -372,6 +372,7 @@ describe('AppendTradesPage', () => {
       proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
     })
     getStoredSessionMetaMock.mockReturnValue({
+      customerId: 'cust_live_append_123',
       caseStatus: 'awaiting_upload',
       market: 'india',
       offerKind: 'psych_audit',
@@ -403,6 +404,7 @@ describe('AppendTradesPage', () => {
     })
     submitParsedTradesMock.mockResolvedValue({
       status: 'success',
+      customer_id: 'cust_live_append_123',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_003',
@@ -468,6 +470,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Generated artifact snapshot: snap_upload_003.')).toBeInTheDocument()
     expect(screen.getByText('Report artifact: report_upload_003.')).toBeInTheDocument()
     expect(screen.getByText('Durable upload count for this account: 3.')).toBeInTheDocument()
+    expect(screen.getByText('Backend customer receipt: cust_live_append_123.')).toBeInTheDocument()
     expect(screen.getByText('Backend request receipt: req_live_123.')).toBeInTheDocument()
     expect(screen.getByText('Upload completed at: 2026-06-21T09:15:00Z.')).toBeInTheDocument()
     expect(screen.getByText('Upload response carried activation teaser: TEASER-route-123; 10 trades; Revenge Trading; verification verified.')).toBeInTheDocument()
@@ -514,6 +517,7 @@ describe('AppendTradesPage', () => {
       },
     })
     const expectedReceipt = {
+      customer_id: 'cust_live_append_123',
       upload_transport: 'paste',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:15:00Z',
@@ -559,6 +563,7 @@ describe('AppendTradesPage', () => {
       proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
     })
     getStoredSessionMetaMock.mockReturnValue({
+      customerId: 'cust_live_append_123',
       caseStatus: 'awaiting_upload',
       market: 'india',
       offerKind: 'psych_audit',
@@ -580,6 +585,7 @@ describe('AppendTradesPage', () => {
     })
     submitParsedTradesMock.mockResolvedValue({
       status: 'success',
+      customer_id: 'cust_live_append_123',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:15:00Z',
       report_snapshot_id: 'snap_upload_lifecycle_001',
@@ -603,6 +609,7 @@ describe('AppendTradesPage', () => {
     expect(screen.getByText('Backend artifact generated for this account.')).toBeInTheDocument()
     expect(screen.getByText('Generated artifact snapshot: snap_upload_lifecycle_001.')).toBeInTheDocument()
     expect(screen.getByText('Report artifact: report_upload_lifecycle_001.')).toBeInTheDocument()
+    expect(screen.getByText('Backend customer receipt: cust_live_append_123.')).toBeInTheDocument()
     expect(screen.getByText('Upload completed at: 2026-06-21T09:15:00Z.')).toBeInTheDocument()
     expect(screen.getByText(/Lifecycle receipt sync failed after upload/i)).toBeInTheDocument()
     expect(screen.queryByText(/Failed to upload trades/i)).not.toBeInTheDocument()
@@ -612,6 +619,7 @@ describe('AppendTradesPage', () => {
       caseStatus: 'baseline_ready',
       lastReportSnapshotId: 'snap_upload_lifecycle_001',
       firstUploadReceipt: {
+        customer_id: 'cust_live_append_123',
         upload_transport: 'paste',
         trades_uploaded: 2,
         completed_at: '2026-06-21T09:15:00Z',
@@ -622,6 +630,7 @@ describe('AppendTradesPage', () => {
         request_id: 'req_lifecycle_failed',
       },
       latestUploadReceipt: {
+        customer_id: 'cust_live_append_123',
         upload_transport: 'paste',
         trades_uploaded: 2,
         completed_at: '2026-06-21T09:15:00Z',
@@ -633,6 +642,7 @@ describe('AppendTradesPage', () => {
       },
       uploadReceiptHistory: [
         {
+          customer_id: 'cust_live_append_123',
           upload_transport: 'paste',
           trades_uploaded: 2,
           completed_at: '2026-06-21T09:15:00Z',
@@ -698,8 +708,28 @@ describe('AppendTradesPage', () => {
         teaser_verified_at: '2026-06-21T08:00:00Z',
       },
     })
+    getLiveUploadAppendReadinessMock.mockResolvedValue({
+      status: 'ready',
+      service: 'shibuya-live-upload-append',
+      customer_id: 'cust_from_overview',
+      accepts_csv_upload: true,
+      accepts_trade_paste_submit: true,
+      persists_upload_receipts: true,
+      generates_account_artifacts: true,
+      artifact_status_required: 'generated',
+      append_count_required: 1,
+      request_id_required: true,
+      report_snapshot_required: true,
+      read_only: false,
+      upload_count: 0,
+      upload_limit: null,
+      uploads_remaining: null,
+      last_report_snapshot_id: null,
+      blockers: [],
+    })
     submitParsedTradesMock.mockResolvedValue({
       status: 'success',
+      customer_id: 'cust_from_overview',
       trades_uploaded: 2,
       completed_at: '2026-06-21T09:20:00Z',
       report_snapshot_id: 'snap_upload_overview_001',
@@ -758,6 +788,7 @@ describe('AppendTradesPage', () => {
       caseStatus: 'baseline_ready',
       lastReportSnapshotId: 'snap_upload_overview_001',
       firstUploadReceipt: {
+        customer_id: 'cust_from_overview',
         upload_transport: 'paste',
         trades_uploaded: 2,
         completed_at: '2026-06-21T09:20:00Z',
@@ -768,6 +799,7 @@ describe('AppendTradesPage', () => {
         request_id: 'req_overview_001',
       },
       latestUploadReceipt: {
+        customer_id: 'cust_from_overview',
         upload_transport: 'paste',
         trades_uploaded: 2,
         completed_at: '2026-06-21T09:20:00Z',
@@ -779,6 +811,7 @@ describe('AppendTradesPage', () => {
       },
       uploadReceiptHistory: [
         {
+          customer_id: 'cust_from_overview',
           upload_transport: 'paste',
           trades_uploaded: 2,
           completed_at: '2026-06-21T09:20:00Z',
@@ -804,6 +837,7 @@ describe('AppendTradesPage', () => {
       proofBoundary: 'Live account data must come from the Medallion API and durable account records.',
     })
     getStoredSessionMetaMock.mockReturnValue({
+      customerId: 'cust_live_append_123',
       caseStatus: 'awaiting_upload',
       market: 'india',
       offerKind: 'psych_audit',
@@ -827,6 +861,7 @@ describe('AppendTradesPage', () => {
     })
     submitParsedTradesMock.mockResolvedValue({
       status: 'error',
+      customer_id: 'cust_live_append_123',
       trades_uploaded: 2,
       report_snapshot_id: 'snap_untrusted_artifact',
       report_id: 'report_untrusted_artifact',
@@ -861,6 +896,7 @@ describe('AppendTradesPage', () => {
     expect(updateSessionMetaMock).toHaveBeenCalledWith({
       caseStatus: 'processing',
       latestUploadAttempt: {
+        customer_id: 'cust_live_append_123',
         upload_transport: 'paste',
         trades_uploaded: 2,
         report_snapshot_id: 'snap_untrusted_artifact',
@@ -872,6 +908,7 @@ describe('AppendTradesPage', () => {
       },
       uploadAttemptHistory: [
         {
+          customer_id: 'cust_live_append_123',
           upload_transport: 'paste',
           trades_uploaded: 2,
           report_snapshot_id: 'snap_untrusted_artifact',

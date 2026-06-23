@@ -110,8 +110,11 @@ function readRuntimeContract(): ShibuyaRuntimeContract {
   return runtimeContract ?? ANONYMOUS_RUNTIME_CONTRACT
 }
 
-function summarizeLiveUploadReadiness(readiness: LiveUploadAppendReadinessResponse): LiveUploadReadinessState {
-  const readinessError = validateLiveUploadAppendReadiness(readiness)
+function summarizeLiveUploadReadiness(
+  readiness: LiveUploadAppendReadinessResponse,
+  expectedCustomerId?: string | null,
+): LiveUploadReadinessState {
+  const readinessError = validateLiveUploadAppendReadiness(readiness, expectedCustomerId)
 
   if (readinessError) {
     return {
@@ -212,6 +215,10 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
     notes.push(`Durable upload count for this account: ${result.append_count}.`)
   }
 
+  if (result.customer_id) {
+    notes.push(`Backend customer receipt: ${result.customer_id}.`)
+  }
+
   if (result.request_id) {
     notes.push(`Backend request receipt: ${result.request_id}.`)
   }
@@ -228,8 +235,11 @@ function formatLiveUploadProofNotes(result: TradeUploadResponse): string[] {
   return notes
 }
 
-function formatIncompleteUploadProofNotes(result: TradeUploadResponse): string[] {
-  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result)
+function formatIncompleteUploadProofNotes(
+  result: TradeUploadResponse,
+  expectedCustomerId?: string | null,
+): string[] {
+  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result, expectedCustomerId)
   const notes = [
     `${result.trades_uploaded} trades were received by the live upload endpoint.`,
     proofValidationError
@@ -265,11 +275,19 @@ function formatIncompleteUploadProofNotes(result: TradeUploadResponse): string[]
 
 type LiveUploadTransport = 'paste' | 'csv'
 
-function buildLiveUploadReceipt(result: TradeUploadResponse, uploadTransport: LiveUploadTransport): UploadProofReceipt {
-  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result)
+function buildLiveUploadReceipt(
+  result: TradeUploadResponse,
+  uploadTransport: LiveUploadTransport,
+  expectedCustomerId?: string | null,
+): UploadProofReceipt {
+  const proofValidationError = validateGeneratedLiveUploadArtifactProof(result, expectedCustomerId)
   const receipt: UploadProofReceipt = {
     upload_transport: uploadTransport,
     trades_uploaded: result.trades_uploaded,
+  }
+
+  if (result.customer_id) {
+    receipt.customer_id = result.customer_id
   }
 
   if (result.completed_at) {
@@ -361,8 +379,8 @@ function buildLiveUploadSessionPatch(
   sessionMeta: ShibuyaSessionMeta | null,
   uploadTransport: LiveUploadTransport,
 ): Partial<ShibuyaSessionMeta> {
-  const receipt = buildLiveUploadReceipt(result, uploadTransport)
-  const hasArtifactProof = hasGeneratedUploadArtifactProof(result)
+  const receipt = buildLiveUploadReceipt(result, uploadTransport, sessionMeta?.customerId)
+  const hasArtifactProof = hasGeneratedUploadArtifactProof(result, sessionMeta?.customerId)
   const patch: Partial<ShibuyaSessionMeta> = {
     caseStatus: hasArtifactProof ? 'baseline_ready' : 'processing',
   }
@@ -581,7 +599,9 @@ export function AppendTradesPage() {
   const uploadPlaybook = useMemo(() => buildUploadPlaybook(profileContext), [profileContext])
   const traderMode = profileContext?.trader_mode ?? effectiveSessionMeta?.traderMode
   const liveActivationProofTarget = sampleMode ? null : buildLiveActivationProofTarget(effectiveSessionMeta)
-  const liveUploadHasGeneratedArtifactProof = liveUploadProof ? hasGeneratedUploadArtifactProof(liveUploadProof) : false
+  const liveUploadHasGeneratedArtifactProof = liveUploadProof
+    ? hasGeneratedUploadArtifactProof(liveUploadProof, effectiveSessionMeta?.customerId)
+    : false
   const resetProEngagementReceipt = formatEngagementReceipt(
     effectiveSessionMeta?.demoEngagementReportViewCount,
     effectiveSessionMeta?.demoEngagementLockedSectionClickCount,
@@ -667,7 +687,7 @@ export function AppendTradesPage() {
       }
 
       if (readinessResult.status === 'fulfilled') {
-        setLiveUploadReadiness(summarizeLiveUploadReadiness(readinessResult.value))
+        setLiveUploadReadiness(summarizeLiveUploadReadiness(readinessResult.value, sessionMeta?.customerId))
       } else {
         setLiveUploadReadiness(summarizeLiveUploadReadinessFailure(readinessResult.reason))
       }
@@ -677,7 +697,7 @@ export function AppendTradesPage() {
     return () => {
       active = false
     }
-  }, [sampleMode])
+  }, [sampleMode, sessionMeta?.customerId])
 
   useEffect(() => {
     if (!success || sampleMode) {
@@ -718,7 +738,7 @@ export function AppendTradesPage() {
 
     try {
       const readiness = await getLiveUploadAppendReadiness()
-      const nextReadiness = summarizeLiveUploadReadiness(readiness)
+      const nextReadiness = summarizeLiveUploadReadiness(readiness, effectiveSessionMeta?.customerId)
       setLiveUploadReadiness(nextReadiness)
       return nextReadiness.status === 'ready' ? null : nextReadiness.detail
     } catch (caughtError) {
@@ -798,11 +818,11 @@ export function AppendTradesPage() {
       } else {
         setLiveUploadProof(result)
         const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'paste')
-        if (!hasGeneratedUploadArtifactProof(result)) {
+        if (!hasGeneratedUploadArtifactProof(result, effectiveSessionMeta?.customerId)) {
           updateSessionMeta(liveUploadSessionPatch)
           setTradingReportComparison(null)
           setSuccess('Upload received, but artifact proof is still pending.')
-          setNotes(formatIncompleteUploadProofNotes(result))
+          setNotes(formatIncompleteUploadProofNotes(result, effectiveSessionMeta?.customerId))
         } else {
           updateSessionMeta(liveUploadSessionPatch)
           const lifecycleWarning = await tryLogFirstUploadLifecycleReceipt(result, effectiveSessionMeta, 'paste', market)
@@ -904,12 +924,12 @@ export function AppendTradesPage() {
       } else {
         setLiveUploadProof(result)
         const liveUploadSessionPatch = buildLiveUploadSessionPatch(result, effectiveSessionMeta, 'csv')
-        if (!hasGeneratedUploadArtifactProof(result)) {
+        if (!hasGeneratedUploadArtifactProof(result, effectiveSessionMeta?.customerId)) {
           updateSessionMeta(liveUploadSessionPatch)
           setTradingReportComparison(null)
           setSuccess('Upload received, but artifact proof is still pending.')
           setNotes([
-            ...formatIncompleteUploadProofNotes(result),
+            ...formatIncompleteUploadProofNotes(result, effectiveSessionMeta?.customerId),
             ...(rescued.applied ? rescued.notes : []),
           ])
         } else {
