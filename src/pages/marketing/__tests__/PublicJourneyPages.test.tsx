@@ -1372,6 +1372,52 @@ describe('public Shibuya journey pages', () => {
     })
   })
 
+  test('locked insight uses recovered backend teaser identity instead of tampered URL identity', async () => {
+    publicReportMocks.getPublicTeaserReport.mockResolvedValue({
+      status: 'success',
+      report_type: 'teaser',
+      report_id: 'public-teaser-lock-identity-123',
+      request_id: 'TEASER-lock-identity-123',
+      artifact_status: 'backend_teaser_persisted',
+      production_artifact_proven: false,
+      receipt_hash: 'f'.repeat(64),
+      trades_analyzed: 15,
+      headline: {
+        discipline_tax: 145,
+        worst_pattern: 'Edge Decay',
+        hook: '$145 discipline tax recovered before private handoff.',
+      },
+      metrics: BACKEND_PUBLIC_CONTEXT,
+      processing_time_seconds: 0.31,
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/insight/highest-cost-state?market=global&source=locked_report&report=public-teaser-lock-identity-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=2&pain_axes=drawdown_pressure&signals=mirror_selected']}>
+        <Routes>
+          <Route path="/insight/:section" element={<LockedInsightPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(publicReportMocks.getPublicTeaserReport).toHaveBeenCalledWith('public-teaser-lock-identity-123')
+      expect(screen.getAllByText('Persisted backend teaser receipt').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getByText('archetype=marco; axis=edge_decay')).toBeInTheDocument()
+    expect(screen.queryByText('archetype=priya; axis=drawdown_pressure')).not.toBeInTheDocument()
+    expect(screen.getByText('story=guided; scene_count=6; pain_axes=edge_decay,revenge_reentry; signals=mirror_selected,upload_intent')).toBeInTheDocument()
+    expect(screen.getByText(/Paid activation can carry this persisted backend teaser receipt into checkout/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
+      'href',
+      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-identity-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Start Psych Audit/i })).toHaveAttribute(
+      'href',
+      '/checkout/psych-audit-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-identity-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay%2Crevenge_reentry&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+  })
+
   test('locked insight upgrades stale local report session with recovered backend teaser evidence', async () => {
     persistPublicReportSession(
       buildPublicReportSession({

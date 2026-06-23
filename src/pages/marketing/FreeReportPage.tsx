@@ -186,10 +186,12 @@ export default function FreeReportPage() {
   const effectiveSelectedPainAxisIds = reportSession?.selectedPainAxisIds ?? urlStoryHandoff?.selectedPainAxisIds
   const effectiveVisitedSceneCount = reportSession?.visitedSceneCount ?? urlStoryHandoff?.visitedSceneCount
   const effectiveSignalMarkerIds = reportSession?.signalMarkerIds ?? urlStoryHandoff?.signalMarkerIds
+  const effectiveArchetypeId = reportSession?.archetypeId ?? params.get('archetype')
+  const effectiveAxisId = reportSession?.axisId ?? params.get('axis')
   const report = buildFreeReportPreview({
     reportId: canonicalReportId,
-    archetypeId: params.get('archetype'),
-    axisId: params.get('axis'),
+    archetypeId: effectiveArchetypeId,
+    axisId: effectiveAxisId,
     storySource: effectiveStorySource,
     selectedPainAxisIds: effectiveSelectedPainAxisIds,
     visitedSceneCount: effectiveVisitedSceneCount,

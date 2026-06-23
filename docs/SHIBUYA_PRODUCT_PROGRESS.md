@@ -1176,3 +1176,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the browser-local replay gap where stale checkout-success local storage could make activation display a verified public-context preview for the wrong StoryExperience question.
+
+### 36. Backend Teaser Identity Overrides Mutable Route Identity
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/pages/marketing/FreeReportPage.tsx`, `src/pages/marketing/LockedInsightPage.tsx`, `src/pages/checkout/CheckoutPage.tsx`
+- Shibuya frontend tests: `src/pages/checkout/__tests__/CheckoutPage.test.tsx`, `src/pages/marketing/__tests__/PublicJourneyPages.test.tsx`
+
+What changed:
+
+- Free report and locked insight rendering now use the stored/recovered report session identity before mutable URL archetype and axis params.
+- Paid checkout now treats a verified backend teaser receipt as the authoritative source for report id, archetype, axis, story source, scene count, pain axes, and signal markers.
+- Tampered checkout URLs can no longer override canonical backend teaser identity in paid public-context metadata, success URLs, or cancel URLs.
+- Locked insight recovery now proves the same behavior before the paid path is offered: a recovered `marco / edge_decay` receipt still links to checkout as `marco / edge_decay` even when the URL tried to say `priya / drawdown_pressure`.
+
+Evidence so far:
+
+- Shibuya focused checkout/public-journey tests: `2 passed / 2 files`, `35 passed / 35 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `68 passed / 68 files`, `284 passed / 284 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the report-to-checkout identity-confusion gap where a valid backend teaser receipt could be paired with changed URL story identity before paid activation.

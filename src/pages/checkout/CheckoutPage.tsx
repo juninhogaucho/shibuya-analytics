@@ -55,6 +55,17 @@ const CheckoutPage: React.FC = () => {
   const hasVerifiedBackendTeaserReceipt = hasCheckoutGradePublicReportSession(reportSession)
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
+  const verifiedReportSessionContext = hasVerifiedBackendTeaserReceipt && reportSession
+    ? {
+        reportId: reportSession.reportId,
+        archetypeId: reportSession.archetypeId,
+        axisId: reportSession.axisId,
+        storySource: reportSession.storySource,
+        visitedSceneCount: reportSession.visitedSceneCount,
+        selectedPainAxisIds: reportSession.selectedPainAxisIds,
+        signalMarkerIds: reportSession.signalMarkerIds,
+      }
+    : null
   const enrichedCheckoutIntent = (() => {
     const enriched = enrichCheckoutIntent(checkoutIntent, {
       storySource: reportSession?.storySource,
@@ -63,10 +74,10 @@ const CheckoutPage: React.FC = () => {
       signalMarkerIds: reportSession?.signalMarkerIds,
     })
 
-    if (enriched && hasVerifiedBackendTeaserReceipt && reportSession?.reportId) {
+    if (enriched && verifiedReportSessionContext) {
       return {
         ...enriched,
-        reportId: reportSession.reportId,
+        ...verifiedReportSessionContext,
       }
     }
 

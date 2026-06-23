@@ -249,6 +249,89 @@ describe('CheckoutPage', () => {
     expect(checkoutMocks.redirectBrowser).toHaveBeenCalledWith('https://checkout.stripe.test/session_123')
   })
 
+  test('uses verified backend teaser identity instead of tampered checkout route params', async () => {
+    const user = userEvent.setup()
+    persistPublicReportSession(buildPublicReportSession({
+      reportId: 'public-teaser-checkout-identity-123',
+      market: 'global',
+      archetypeId: 'marco',
+      axisId: 'edge_decay',
+      source: 'backend_teaser',
+      storySource: 'guided',
+      selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+      visitedSceneCount: 6,
+      signalMarkerIds: ['mirror_selected', 'upload_intent'],
+      backendTeaser: {
+        status: 'success',
+        report_type: 'teaser',
+        report_id: 'public-teaser-checkout-identity-123',
+        request_id: 'TEASER-checkout-identity-123',
+        artifact_status: 'backend_teaser_persisted',
+        production_artifact_proven: false,
+        receipt_hash: 'f'.repeat(64),
+        trades_analyzed: 15,
+        headline: {
+          discipline_tax: 440,
+          worst_pattern: 'Edge Decay',
+        },
+        metrics: BACKEND_PUBLIC_CONTEXT,
+      },
+    }))
+    recordPublicReportView('public-teaser-checkout-identity-123')
+    recordLockedSectionIntent('public-teaser-checkout-identity-123', 'edge-decay-map')
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/checkout/reset-pro-live?source=locked_insight&section=edge-decay-map&report=public-teaser-checkout-identity-123&archetype=priya&axis=drawdown_pressure&story=guided&scene_count=2&pain_axes=drawdown_pressure&signals=mirror_selected&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/checkout/:plan" element={<CheckoutPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Persisted public report receipt verified.')).toBeInTheDocument()
+    expect(screen.getByText('Archetype: marco')).toBeInTheDocument()
+    expect(screen.getByText('Axis: edge_decay')).toBeInTheDocument()
+    expect(screen.getByText('Scenes: 6')).toBeInTheDocument()
+    expect(screen.getByText('Pain axes: edge_decay, revenge_reentry')).toBeInTheDocument()
+    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
+    expect(screen.queryByText('Archetype: priya')).not.toBeInTheDocument()
+    expect(screen.queryByText('Axis: drawdown_pressure')).not.toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
+    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
+    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+
+    await waitFor(() => {
+      expect(checkoutMocks.createCheckoutSession).toHaveBeenCalledTimes(1)
+    })
+
+    const checkoutPayload = checkoutMocks.createCheckoutSession.mock.calls[0][0]
+    expect(checkoutPayload).toMatchObject({
+      public_context_report_id: 'public-teaser-checkout-identity-123',
+      public_context_section_id: 'edge-decay-map',
+      public_context_archetype_id: 'marco',
+      public_context_axis_id: 'edge_decay',
+      public_context_teaser_request_id: 'TEASER-checkout-identity-123',
+      public_context_teaser_trades_analyzed: '15',
+      public_context_story_source: 'guided',
+      public_context_story_scene_count: '6',
+      public_context_pain_axes: 'edge_decay,revenge_reentry',
+      public_context_signal_markers: 'mirror_selected,upload_intent',
+    })
+    expect(checkoutPayload.success_url).toContain('archetype=marco')
+    expect(checkoutPayload.success_url).toContain('axis=edge_decay')
+    expect(checkoutPayload.success_url).toContain('pain_axes=edge_decay%2Crevenge_reentry')
+    expect(checkoutPayload.cancel_url).toContain('archetype=marco')
+    expect(checkoutPayload.cancel_url).toContain('axis=edge_decay')
+    expect(checkoutPayload.cancel_url).toContain('pain_axes=edge_decay%2Crevenge_reentry')
+    expect(checkoutPayload.public_context_archetype_id).not.toBe('priya')
+    expect(checkoutPayload.public_context_axis_id).not.toBe('drawdown_pressure')
+  })
+
   test('recovers a persisted backend teaser receipt before checkout when local report storage is missing', async () => {
     const user = userEvent.setup()
     checkoutMocks.getPublicTeaserReport.mockResolvedValue({
