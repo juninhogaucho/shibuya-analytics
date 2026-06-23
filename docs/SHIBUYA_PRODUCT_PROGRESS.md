@@ -384,7 +384,7 @@ What changed:
 
 Evidence so far:
 
-- Commit: Shibuya `e46fc9c` (`Expose dashboard activation origin sync state`).
+- Commit: Shibuya `116512b` (`Expose dashboard activation origin sync state`).
 - Shibuya focused activation-origin sync tests: `5 passed / 5 files`, `34 passed / 34 tests`.
 - Shibuya `tsc -b`: passed.
 - Shibuya `eslint .`: passed.
