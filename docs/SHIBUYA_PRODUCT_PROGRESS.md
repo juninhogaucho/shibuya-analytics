@@ -694,3 +694,43 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live webhook delivery. It closes the local backend continuity gap where a paid webhook-created customer could lose the verified StoryExperience origin until a later activation pass.
+
+### 20. Public Teaser Receipt Story Identity Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_report_endpoint.py`
+- Medallion backend: `app/stripe_checkout.py`
+- Medallion backend tests: `tests/test_shibuya_teaser_report_endpoint.py`
+- Medallion backend tests: `tests/test_shibuya_checkout_public_context.py`
+- Shibuya frontend: `src/lib/api/publicReport.ts`
+- Shibuya frontend: `src/lib/publicReportSession.ts`
+- Shibuya frontend: `src/pages/marketing/PublicUploadPage.tsx`
+- Shibuya frontend tests: public report API/session, public journey, and checkout tests
+
+What changed:
+
+- Public teaser uploads now send secret-free StoryExperience identity into Medallion: market, story source, archetype, axis, selected pain axes, visited scene count, and signal markers.
+- Medallion persists that identity inside `metrics.public_context`, which is included in the deterministic public teaser receipt hash payload.
+- Medallion checkout verification now rejects persisted teaser receipts that are missing story identity and rejects mismatches between checkout context and the stored receipt identity.
+- Checkout metadata is overwritten from the persisted receipt identity after verification, so URL/local state can no longer forge archetype, axis, story source, pain axes, scenes, or signal markers.
+- Shibuya frontend now refuses checkout-grade teaser receipts unless Medallion returns hash-covered story identity, and recovered report/checkout routes prefer the persisted backend identity over URL identity.
+
+Evidence so far:
+
+- Commit: Medallion `50fe5f7b` (`Bind teaser receipts to public story identity`).
+- Commit: Shibuya `eb4f534` (`Trust backend teaser story identity`).
+- Medallion `py_compile app\shibuya_report_endpoint.py app\stripe_checkout.py tests\test_shibuya_teaser_report_endpoint.py tests\test_shibuya_checkout_public_context.py`: passed.
+- Medallion focused teaser/checkout public-context tests: `20 passed / 20 tests`.
+- Medallion Shibuya critical/env/fulfillment checks: `74 passed / 74 tests`.
+- Shibuya focused public report/session/journey/checkout tests: `4 passed / 4 files`, `40 passed / 40 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `263 passed / 263 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime, live Stripe payment completion, or live dashboard append proof. It closes the public upload -> report -> locked insight -> paid checkout identity-forgery gap by making the backend teaser receipt the source of truth for public story identity.
