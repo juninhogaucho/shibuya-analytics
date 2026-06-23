@@ -365,13 +365,16 @@ function buildLiveUploadSessionPatch(
   const hasArtifactProof = hasGeneratedUploadArtifactProof(result)
   const patch: Partial<ShibuyaSessionMeta> = {
     caseStatus: hasArtifactProof ? 'baseline_ready' : 'processing',
-    latestUploadReceipt: receipt,
-    uploadReceiptHistory: appendLiveUploadReceiptHistory(sessionMeta?.uploadReceiptHistory, receipt),
   }
 
   if (hasArtifactProof) {
+    patch.latestUploadReceipt = receipt
+    patch.uploadReceiptHistory = appendLiveUploadReceiptHistory(sessionMeta?.uploadReceiptHistory, receipt)
     patch.lastReportSnapshotId = result.report_snapshot_id ?? sessionMeta?.lastReportSnapshotId ?? null
     patch.firstUploadReceipt = sessionMeta?.firstUploadReceipt ?? receipt
+  } else {
+    patch.latestUploadAttempt = receipt
+    patch.uploadAttemptHistory = appendLiveUploadReceiptHistory(sessionMeta?.uploadAttemptHistory, receipt)
   }
 
   return patch

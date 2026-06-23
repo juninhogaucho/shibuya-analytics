@@ -49,6 +49,8 @@ export interface ShibuyaSessionMeta {
   firstUploadReceipt?: UploadProofReceipt | null
   latestUploadReceipt?: UploadProofReceipt | null
   uploadReceiptHistory?: UploadProofReceipt[]
+  latestUploadAttempt?: UploadProofReceipt | null
+  uploadAttemptHistory?: UploadProofReceipt[]
   affiliateSlug?: string
   refCode?: string
   samplePreview?: ShibuyaSamplePreview
@@ -168,6 +170,8 @@ const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'firstUploadReceipt',
   'latestUploadReceipt',
   'uploadReceiptHistory',
+  'latestUploadAttempt',
+  'uploadAttemptHistory',
   'activationSource',
   'activationReportId',
   'activationArchetypeId',
