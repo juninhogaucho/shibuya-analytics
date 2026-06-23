@@ -812,3 +812,32 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the customer-continuity proof gap between backend report comparison, report artifact enrichment, frontend overview persistence, live proof phase, and workspace display.
+
+### 23. Backend Teaser Recovery Overrides Weak Local Packets
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/publicReportRecovery.ts`
+- Shibuya frontend tests: `src/pages/marketing/__tests__/PublicJourneyPages.test.tsx`
+
+What changed:
+
+- Public report recovery now skips backend recovery only when the existing local public report session is already checkout-grade.
+- Weak local/sample packets can no longer shadow a persisted backend teaser receipt for the same recoverable `public-teaser-*` or `TEASER-*` report id.
+- Failed backend recovery still preserves the weak local packet for context, but it does not upgrade that packet into paid-checkout proof.
+- Locked Insight now upgrades stale local sample context into a checkout-grade backend teaser session when Medallion has a persisted receipt, restoring the Reset Pro paid path from the stronger source of truth.
+
+Evidence so far:
+
+- Commit: Shibuya `5959a93` (`Recover backend teaser over weak local report`).
+- Shibuya focused checkout and public journey tests: `2 passed / 2 files`, `32 passed / 32 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `268 passed / 268 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the public report recovery truth gap where stale local/sample state could block recovery of stronger backend teaser evidence.
