@@ -1120,3 +1120,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the readiness-contract gap where the frontend knew Medallion could store story identity fields, but not whether the current public StoryExperience IDs matched Medallion canon before report generation.
+
+### 34. Activation Origin Requires Canonical Story Identity
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/activationOrigin.ts`, `src/pages/checkout/CheckoutSuccessPage.tsx`
+- Shibuya frontend tests: `src/lib/__tests__/activationOrigin.test.ts`, `src/pages/checkout/__tests__/CheckoutSuccessPage.test.tsx`
+
+What changed:
+
+- Shared activation-origin validation now rejects paid/order/dashboard public context unless archetype, axis, pain axes, signal markers, and optional story source/scene count are canonical Shibuya StoryExperience values.
+- Checkout success now maps Stripe session public context into the shared activation-origin validator instead of maintaining a weaker duplicate proof check.
+- A paid backend session with valid receipt mechanics but stale story IDs no longer creates a recent-order activation handoff or trusted activation query context.
+- Dashboard-origin sync and activation-response sync now use the same canonical story identity boundary before writing live session metadata.
+
+Evidence so far:
+
+- Shibuya focused activation/checkout/dashboard boundary tests: `4 passed / 4 files`, `32 passed / 32 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `68 passed / 68 files`, `278 passed / 278 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the paid/live handoff gap where verified-looking backend session metadata could carry non-canonical StoryExperience IDs into activation or dashboard-origin local state.

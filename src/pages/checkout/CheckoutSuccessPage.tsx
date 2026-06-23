@@ -10,6 +10,10 @@ import { getPublicReportSession } from '../../lib/publicReportSession'
 import type { PublicReportEngagementSummary } from '../../lib/publicReportEngagement'
 import { rememberRecentOrderAccess } from '../../lib/recentAccess'
 import { getFingerprintAxis } from '../../lib/storyExperience'
+import {
+  hasVerifiedActivationOriginCandidate,
+  type ActivationOriginCandidate,
+} from '../../lib/activationOrigin'
 
 interface VerifiedPublicContextReceipt {
   evidenceLabel: string
@@ -49,8 +53,6 @@ function loadStoredOrder(): OrderInfo | null {
   return JSON.parse(storedOrder) as OrderInfo
 }
 
-const RECEIPT_HASH_PATTERN = /^[a-f0-9]{64}$/i
-
 function splitSessionList(value?: string | null): string[] {
   return (value ?? '')
     .split(',')
@@ -72,28 +74,36 @@ function parseSessionCount(value?: string | null): number | undefined {
   return Number.isSafeInteger(parsed) ? parsed : undefined
 }
 
-function isFalseString(value?: string | null): boolean {
-  return ['', '0', 'false', 'f', 'no', 'none', 'null'].includes((value ?? '').trim().toLowerCase())
+function checkoutSessionToActivationOriginCandidate(session: CheckoutSessionStatus): ActivationOriginCandidate {
+  return {
+    source: session.public_context_source,
+    reportId: session.public_context_report_id,
+    sectionId: session.public_context_section_id,
+    archetypeId: session.public_context_archetype_id,
+    axisId: session.public_context_axis_id,
+    packetSource: session.public_context_packet_source,
+    artifactStatus: session.public_context_artifact_status,
+    productionArtifactProven: session.public_context_production_artifact_proven,
+    teaserRequestId: session.public_context_teaser_request_id,
+    teaserTradesAnalyzed: session.public_context_teaser_trades_analyzed,
+    teaserWorstPattern: session.public_context_teaser_worst_pattern,
+    teaserVerified: session.public_context_teaser_verified,
+    teaserVerificationStatus: session.public_context_teaser_verification_status,
+    teaserReceiptHash: session.public_context_teaser_receipt_hash,
+    teaserVerifiedAt: session.public_context_teaser_verified_at,
+    storySource: session.public_context_story_source,
+    storySceneCount: session.public_context_story_scene_count,
+    painAxes: session.public_context_pain_axes,
+    signalMarkers: session.public_context_signal_markers,
+    reportViews: session.public_context_report_views,
+    lockedClicks: session.public_context_locked_clicks,
+    currentSectionClicks: session.public_context_current_section_clicks,
+    privateGateAttempts: session.public_context_private_gate_attempts,
+  }
 }
 
 function isVerifiedSessionPublicContext(session: CheckoutSessionStatus): boolean {
-  const tradesAnalyzed = parseSessionCount(session.public_context_teaser_trades_analyzed)
-  return Boolean(
-    session.public_context_source === 'locked_insight' &&
-      session.public_context_packet_source === 'backend_teaser' &&
-      session.public_context_artifact_status === 'backend_teaser_persisted' &&
-      isFalseString(session.public_context_production_artifact_proven) &&
-      session.public_context_report_id?.trim() &&
-      session.public_context_section_id?.trim() &&
-      session.public_context_teaser_request_id?.trim() &&
-      typeof tradesAnalyzed === 'number' &&
-      tradesAnalyzed >= 10 &&
-      session.public_context_teaser_verified === 'true' &&
-      session.public_context_teaser_verification_status === 'verified' &&
-      session.public_context_teaser_receipt_hash &&
-      RECEIPT_HASH_PATTERN.test(session.public_context_teaser_receipt_hash) &&
-      session.public_context_teaser_verified_at?.trim(),
-  )
+  return hasVerifiedActivationOriginCandidate(checkoutSessionToActivationOriginCandidate(session))
 }
 
 function hasBackendActivationAccessReceipt(session: CheckoutSessionStatus): session is CheckoutSessionStatus & {

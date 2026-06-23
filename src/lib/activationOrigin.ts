@@ -1,5 +1,6 @@
 import type { ShibuyaActivationOriginSyncStatus, ShibuyaSessionMeta } from './runtime'
 import type { ActivationResponse, DashboardActivationOrigin } from './types'
+import { FINGERPRINT_AXES, PUBLIC_STORY_SIGNAL_MARKERS, TRADER_ARCHETYPES } from './storyExperience'
 
 export const EMPTY_ACTIVATION_ORIGIN_META: Partial<ShibuyaSessionMeta> = {
   activationSource: undefined,
@@ -73,7 +74,7 @@ function hasValidReceiptHash(value?: string | null): boolean {
   return Boolean(value && /^[a-f0-9]{64}$/i.test(value.trim()))
 }
 
-interface ActivationOriginCandidate {
+export interface ActivationOriginCandidate {
   source?: string | null
   reportId?: string | null
   sectionId?: string | null
@@ -105,8 +106,48 @@ const DASHBOARD_ACTIVATION_ORIGIN_MISSING_BOUNDARY =
   'Dashboard overview did not return verified activation origin metadata, so local activation-origin details were cleared until backend sync proves them.'
 const DASHBOARD_ACTIVATION_ORIGIN_REJECTED_BOUNDARY =
   'Dashboard overview returned activation origin metadata, but it failed the backend proof checks, so local activation-origin details were cleared.'
+const PUBLIC_STORY_SOURCES = new Set<string>(['direct', 'guided'])
+const PUBLIC_STORY_ARCHETYPE_IDS = new Set<string>(TRADER_ARCHETYPES.map((archetype) => archetype.id))
+const PUBLIC_STORY_AXIS_IDS = new Set<string>(FINGERPRINT_AXES.map((axis) => axis.id))
+const PUBLIC_STORY_SIGNAL_MARKER_IDS = new Set<string>(PUBLIC_STORY_SIGNAL_MARKERS.map((marker) => marker.id))
 
-function hasVerifiedActivationOriginCandidate(candidate?: ActivationOriginCandidate | null): candidate is ActivationOriginCandidate {
+function hasKnownPublicStoryIdentity(candidate?: ActivationOriginCandidate | null): boolean {
+  const storySource = candidate?.storySource?.trim()
+  const archetypeId = candidate?.archetypeId?.trim()
+  const axisId = candidate?.axisId?.trim()
+  const storySceneCount = candidate?.storySceneCount
+  const painAxes = splitOverviewContextList(candidate?.painAxes) ?? []
+  const signalMarkers = splitOverviewContextList(candidate?.signalMarkers) ?? []
+
+  if (storySource && !PUBLIC_STORY_SOURCES.has(storySource)) {
+    return false
+  }
+
+  if (!archetypeId || !PUBLIC_STORY_ARCHETYPE_IDS.has(archetypeId)) {
+    return false
+  }
+
+  if (!axisId || !PUBLIC_STORY_AXIS_IDS.has(axisId)) {
+    return false
+  }
+
+  const hasStorySceneCount = storySceneCount !== null && storySceneCount !== undefined && storySceneCount !== ''
+  if (hasStorySceneCount && parseOverviewContextCount(storySceneCount) === undefined) {
+    return false
+  }
+
+  if (painAxes.some((axis) => !PUBLIC_STORY_AXIS_IDS.has(axis))) {
+    return false
+  }
+
+  if (signalMarkers.some((marker) => !PUBLIC_STORY_SIGNAL_MARKER_IDS.has(marker))) {
+    return false
+  }
+
+  return true
+}
+
+export function hasVerifiedActivationOriginCandidate(candidate?: ActivationOriginCandidate | null): candidate is ActivationOriginCandidate {
   const tradesAnalyzed = parseOverviewContextCount(candidate?.teaserTradesAnalyzed)
 
   return Boolean(
@@ -116,8 +157,7 @@ function hasVerifiedActivationOriginCandidate(candidate?: ActivationOriginCandid
       isFalseString(candidate.productionArtifactProven) &&
       candidate.reportId?.trim() &&
       candidate.sectionId?.trim() &&
-      candidate.archetypeId?.trim() &&
-      candidate.axisId?.trim() &&
+      hasKnownPublicStoryIdentity(candidate) &&
       candidate.teaserRequestId?.trim() &&
       Number.isFinite(tradesAnalyzed) &&
       (tradesAnalyzed ?? 0) >= 10 &&
