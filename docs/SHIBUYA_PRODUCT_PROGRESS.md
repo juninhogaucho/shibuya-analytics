@@ -639,3 +639,30 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live Stripe webhook completion. It closes the backend source-of-truth leak where verified public context could leave the session-status API before payment was actually complete and paid.
+
+### 18. Backend Activation Paid Context Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/trader_endpoints.py`
+- Medallion backend tests: `tests/test_shibuya_activation_public_context.py`
+
+What changed:
+
+- `/v1/trader/activations/verify` now returns `activationMode: paid_order` only for a ready dashboard activation, not for pending payment.
+- Verified public StoryExperience context is only extracted and returned when the activation match is `status: ready` and `next_step: dashboard`.
+- Pending payment can still return a pending activation response, but it can no longer leak paid-mode semantics or backend teaser context into the private activation contract.
+- Added a regression test where a pending order carries otherwise checkout-grade public teaser metadata; the activation endpoint returns no activation token, no customer id, no paid mode, no public context, and performs no customer upsert/metadata write.
+
+Evidence so far:
+
+- Commit: Medallion `4ff57665` (`Require ready activation before paid context`).
+- Medallion `py_compile app\trader_endpoints.py tests\test_shibuya_activation_public_context.py`: passed.
+- Medallion activation public-context tests: `3 passed / 3 tests`.
+- Medallion Shibuya critical-path tests: `62 passed / 62 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live activation. It closes the backend activation leak where pending payment could still be labelled as paid activation mode and return public StoryExperience context.
