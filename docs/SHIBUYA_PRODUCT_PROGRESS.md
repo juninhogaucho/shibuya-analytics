@@ -666,3 +666,31 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live activation. It closes the backend activation leak where pending payment could still be labelled as paid activation mode and return public StoryExperience context.
+
+### 19. Stripe Fulfillment Story Context Continuity
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/stripe_checkout.py`
+- Medallion backend tests: `tests/test_shibuya_stripe_fulfillment_public_context.py`
+
+What changed:
+
+- `fulfill_stripe_order(...)` now carries verified public StoryExperience metadata into the Shibuya customer metadata created during Stripe webhook fulfillment.
+- The fulfillment path uses the existing `extract_verified_public_context_metadata(...)` contract, so weak/local/legacy public context is not copied.
+- This preserves the trader's public story/report origin even when webhook fulfillment creates the customer before the activation form is submitted.
+- Added a focused fake-storage test proving verified public teaser metadata is present in customer metadata after fulfillment.
+
+Evidence so far:
+
+- Commit: Medallion `e3c6c437` (`Preserve public context during Stripe fulfillment`).
+- Medallion `py_compile app\stripe_checkout.py tests\test_shibuya_stripe_fulfillment_public_context.py`: passed.
+- Medallion Stripe fulfillment public-context test: `1 passed / 1 test`.
+- Medallion checkout + activation public-context tests: `12 passed / 12 tests`.
+- Medallion Shibuya critical-path tests: `62 passed / 62 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live webhook delivery. It closes the local backend continuity gap where a paid webhook-created customer could lose the verified StoryExperience origin until a later activation pass.
