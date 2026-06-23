@@ -122,7 +122,7 @@ describe('paid Shibuya journey contract', () => {
     vi.resetModules()
   })
 
-  test('sample public story context reaches checkout boundary but cannot create paid handoff', async () => {
+  test('sample public story context cannot open paid checkout from locked insight', async () => {
     const user = userEvent.setup()
     const {
       CheckoutPage,
@@ -165,22 +165,11 @@ describe('paid Shibuya journey contract', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/insight/highest-cost-state')
     expect(screen.getByText('Sample history packet')).toBeInTheDocument()
     expect(screen.getAllByText(/Demo packet accepted/i).length).toBeGreaterThan(0)
-
-    await user.click(screen.getByRole('link', { name: /Unlock with Reset Pro/i }))
-    expect(screen.getByText('Checkout intent')).toBeInTheDocument()
-    expect(screen.getByText('Persisted backend teaser receipt required before payment.')).toBeInTheDocument()
-    expect(screen.getByText(/Local sample packets, URL context, and presenter demo packets cannot create paid live context/i)).toBeInTheDocument()
-    expect(screen.getByText('Locked private insight')).toBeInTheDocument()
-    expect(screen.getByText('Module: highest-cost-state')).toBeInTheDocument()
-    expect(screen.getByText('Signals: mirror_selected, upload_intent')).toBeInTheDocument()
-    expect(screen.getByText(/Story handoff: guided; scenes 6; axes 1/i)).toBeInTheDocument()
-    expect(screen.getByText('Checkout-grade receipt: missing')).toBeInTheDocument()
-    expect(screen.getByText(/shown for continuity only/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Continue to Secure Checkout/i })).toBeDisabled()
-
-    await user.type(screen.getByLabelText(/Full Name/i), 'Luis Shibuya')
-    await user.type(screen.getByLabelText(/Email Address/i), 'founder@shibuya.test')
-    await user.click(screen.getByRole('button', { name: /Continue to Secure Checkout/i }))
+    expect(screen.getByText('Paid activation boundary')).toBeInTheDocument()
+    expect(screen.getByText(/Paid activation is blocked on this page until the locked insight is backed by a persisted Medallion teaser receipt/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Unlock with Reset Pro/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Unlock with Reset Pro requires backend teaser receipt/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Start Psych Audit requires backend teaser receipt/i })).toBeDisabled()
 
     expect(journeyMocks.createCheckoutSession).not.toHaveBeenCalled()
     expect(journeyMocks.redirectBrowser).not.toHaveBeenCalled()

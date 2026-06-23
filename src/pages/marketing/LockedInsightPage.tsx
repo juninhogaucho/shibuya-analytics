@@ -7,6 +7,7 @@ import { appendPublicStoryHandoffParams, readPublicStoryHandoff } from '../../li
 import {
   appendDemoLauncherSamplePacketParam,
   buildDemoLauncherSampleReportSession,
+  hasCheckoutGradePublicReportSession,
   hasDemoLauncherSamplePacketRequest,
   isDemoLauncherSampleReportSession,
   persistPublicReportSession,
@@ -125,6 +126,8 @@ export default function LockedInsightPage() {
   const reportSession = storedReportSession ?? demoLauncherSession
   const shouldCarryDemoLauncherPacket =
     isDemoLauncherSampleReportSession(reportSession) || hasDemoLauncherSamplePacketRequest(location.search)
+  const paidActivationReady =
+    hasCheckoutGradePublicReportSession(reportSession) && !shouldCarryDemoLauncherPacket
   const canonicalReportId = reportSession?.reportId ?? reportId
 
   useEffect(() => {
@@ -269,6 +272,12 @@ export default function LockedInsightPage() {
     reportSessionRecovery.attemptedBackendRecovery && reportSessionRecovery.status === 'failed'
       ? 'Medallion recovery failed for this report id/request id. Use the upload page to generate or recover a stronger public report packet before presenting the report-to-private-insight transition.'
       : 'Use the upload page to generate a stronger public report packet before presenting the report-to-private-insight transition.'
+  const paidActivationBoundary =
+    reportSessionRecovery.status === 'loading'
+      ? 'Checking Medallion for a persisted backend teaser receipt before paid activation can be offered.'
+      : paidActivationReady
+        ? 'Paid activation can carry this persisted backend teaser receipt into checkout; activation and live upload still have to prove the private answer.'
+        : 'Paid activation is blocked on this page until the locked insight is backed by a persisted Medallion teaser receipt. URL-only, local sample, and presenter-demo packets can continue to the private demo gate only.'
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#030304] px-4 pb-20 pt-14 text-white sm:px-6 md:px-12">
@@ -632,14 +641,31 @@ export default function LockedInsightPage() {
               </div>
             </div>
 
+            <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-4 text-sm leading-6 text-neutral-300">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">
+                Paid activation boundary
+              </p>
+              <p className="mt-2 text-neutral-200">{paidActivationBoundary}</p>
+            </div>
+
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <Link
-                to={checkoutPath}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
-              >
-                Unlock with {resetPlan.name}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              {paidActivationReady ? (
+                <Link
+                  to={checkoutPath}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-black transition hover:bg-indigo-200"
+                >
+                  Unlock with {resetPlan.name}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-amber-300/25 bg-amber-300/[0.08] px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-amber-100/70"
+                >
+                  Unlock with {resetPlan.name} requires backend teaser receipt
+                </button>
+              )}
               <Link
                 to={privateDemoPath}
                 onClick={markPrivateDemoIntent}
@@ -647,12 +673,22 @@ export default function LockedInsightPage() {
               >
                 Open Private Demo Gate
               </Link>
-              <Link
-                to={auditCheckoutPath}
-                className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
-              >
-                Start {auditPlan.name}
-              </Link>
+              {paidActivationReady ? (
+                <Link
+                  to={auditCheckoutPath}
+                  className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
+                >
+                  Start {auditPlan.name}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex cursor-not-allowed items-center justify-center rounded-xl border border-white/10 px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-neutral-500"
+                >
+                  Start {auditPlan.name} requires backend teaser receipt
+                </button>
+              )}
               <Link
                 to={reportPath}
                 className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-4 text-center text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"

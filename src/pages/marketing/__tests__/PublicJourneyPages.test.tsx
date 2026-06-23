@@ -1152,10 +1152,11 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/private-demo?source=locked_insight&report=sample-free-report&archetype=marco&axis=edge_decay&section=highest-cost-state&market=global',
     )
-    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
-      'href',
-      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=sample-free-report&archetype=marco&axis=edge_decay&market=global',
-    )
+    expect(screen.getByText('Paid activation boundary')).toBeInTheDocument()
+    expect(screen.getByText(/Paid activation is blocked on this page until the locked insight is backed by a persisted Medallion teaser receipt/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Unlock with Reset Pro/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Unlock with Reset Pro requires backend teaser receipt/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Start Psych Audit requires backend teaser receipt/i })).toBeDisabled()
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
       '/private-demo?source=locked_insight&report=sample-free-report&archetype=marco&axis=edge_decay&section=highest-cost-state&market=global',
@@ -1185,10 +1186,11 @@ describe('public Shibuya journey pages', () => {
       'href',
       '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
     )
-    expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
-      'href',
-      '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=shareable-report&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
-    )
+    expect(screen.getByText('Paid activation boundary')).toBeInTheDocument()
+    expect(screen.getByText(/Paid activation is blocked on this page until the locked insight is backed by a persisted Medallion teaser receipt/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Unlock with Reset Pro/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Unlock with Reset Pro requires backend teaser receipt/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Start Psych Audit requires backend teaser receipt/i })).toBeDisabled()
     expect(screen.getByRole('link', { name: /Open Private Demo Gate/i })).toHaveAttribute(
       'href',
       '/private-demo?source=locked_insight&report=shareable-report&archetype=marco&axis=edge_decay&section=highest-cost-state&story=guided&scene_count=6&pain_axes=edge_decay&market=global',
@@ -1230,9 +1232,14 @@ describe('public Shibuya journey pages', () => {
     expect(screen.getByText(/persisted backend teaser receipt and secret-free handoff metadata/i)).toBeInTheDocument()
     expect(screen.getByText('Evidence status: Persisted backend teaser receipt.')).toBeInTheDocument()
     expect(screen.getByText(/source=locked_insight; report=public-teaser-lock-123; section=highest-cost-state/i)).toBeInTheDocument()
+    expect(screen.getByText(/Paid activation can carry this persisted backend teaser receipt into checkout/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Unlock with Reset Pro/i })).toHaveAttribute(
       'href',
       '/checkout/reset-pro-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
+    )
+    expect(screen.getByRole('link', { name: /Start Psych Audit/i })).toHaveAttribute(
+      'href',
+      '/checkout/psych-audit-live?source=locked_insight&section=highest-cost-state&report=public-teaser-lock-123&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay&signals=mirror_selected%2Cupload_intent&market=global',
     )
     expect(getPublicReportSession('public-teaser-lock-123')).toMatchObject({
       source: 'backend_teaser',
