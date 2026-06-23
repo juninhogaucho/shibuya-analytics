@@ -186,6 +186,38 @@ describe('CheckoutSuccessPage', () => {
     expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
   })
 
+  test('does not show checkout success when checkout is complete but payment is unpaid', async () => {
+    storeCheckoutHint()
+    checkoutMocks.getCheckoutSession.mockResolvedValue(verifiedBackendSession({
+      status: 'complete',
+      payment_status: 'unpaid',
+    }))
+
+    renderSuccessRoute('/checkout/success?market=global&session_id=cs_test_123')
+
+    expect(await screen.findByText('Payment Pending')).toBeInTheDocument()
+    expect(screen.getByText(/Payment has not completed yet/i)).toBeInTheDocument()
+    expect(screen.queryByText('Checkout Complete')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Activate Live Account/i })).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
+  })
+
+  test('does not show checkout success when payment is paid but checkout session is still open', async () => {
+    storeCheckoutHint()
+    checkoutMocks.getCheckoutSession.mockResolvedValue(verifiedBackendSession({
+      status: 'open',
+      payment_status: 'paid',
+    }))
+
+    renderSuccessRoute('/checkout/success?market=global&session_id=cs_test_123')
+
+    expect(await screen.findByText('Payment Pending')).toBeInTheDocument()
+    expect(screen.getByText(/Payment has not completed yet/i)).toBeInTheDocument()
+    expect(screen.queryByText('Checkout Complete')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Activate Live Account/i })).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('shibuya_recent_order_access')).toBeNull()
+  })
+
   test('does not use local checkout hints as activation access when paid session lacks backend identifiers', async () => {
     storeCheckoutHint({
       email: 'local-only@shibuya.test',

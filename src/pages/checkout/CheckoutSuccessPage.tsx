@@ -177,7 +177,7 @@ const CheckoutSuccessPage: React.FC = () => {
 
     getCheckoutSession(verificationSessionId)
       .then((session) => {
-        if (session.payment_status === 'paid' || session.status === 'complete') {
+        if (session.payment_status === 'paid' && session.status === 'complete') {
           if (!hasBackendActivationAccessReceipt(session)) {
             setVerifyError('Payment status was verified, but the backend did not return the order, customer, and plan identifiers required for activation. Check your email order code or contact support.')
             return
