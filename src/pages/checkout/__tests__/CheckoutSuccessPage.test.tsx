@@ -265,4 +265,22 @@ describe('CheckoutSuccessPage', () => {
       '/activate?market=global',
     )
   })
+
+  test('does not carry backend teaser context when proof counts are malformed', async () => {
+    checkoutMocks.getCheckoutSession.mockResolvedValue(verifiedBackendSession({
+      public_context_teaser_trades_analyzed: '12abc',
+    }))
+
+    renderSuccessRoute('/checkout/success?market=global&session_id=cs_test_123&source=locked_insight&report=url-report&section=url-section')
+
+    expect(await screen.findByText('Checkout Complete')).toBeInTheDocument()
+    expect(screen.getByText('Activation context not carried')).toBeInTheDocument()
+    expect(screen.getByText('URL-only checkout context is visible, but not trusted.')).toBeInTheDocument()
+    expect(screen.queryByText('Carried into activation')).not.toBeInTheDocument()
+    expect(JSON.parse(window.localStorage.getItem('shibuya_recent_order_access') ?? '{}')).not.toHaveProperty('activationHandoff')
+    expect(screen.getByRole('link', { name: /Activate Live Account/i })).toHaveAttribute(
+      'href',
+      '/activate?market=global',
+    )
+  })
 })

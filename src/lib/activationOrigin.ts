@@ -44,12 +44,21 @@ function splitOverviewContextList(value?: string | null): string[] | undefined {
 }
 
 function parseOverviewContextCount(value?: number | string | null): number | undefined {
-  if (!value) {
+  if (value === null || value === undefined || value === '') {
     return undefined
   }
 
-  const parsed = typeof value === 'number' ? value : Number.parseInt(value, 10)
-  return Number.isFinite(parsed) ? parsed : undefined
+  if (typeof value === 'number') {
+    return Number.isInteger(value) && value >= 0 ? value : undefined
+  }
+
+  const normalized = value.trim()
+  if (!/^\d+$/.test(normalized)) {
+    return undefined
+  }
+
+  const parsed = Number(normalized)
+  return Number.isSafeInteger(parsed) ? parsed : undefined
 }
 
 function isTrueString(value?: string | null): boolean {

@@ -955,3 +955,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the lifecycle promotion leak where a foreign persisted generated receipt could be used to mark a customer baseline-ready after a matching client lifecycle event.
+
+### 28. Activation Public-Context Counts Must Be Strict Integers
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/activationOrigin.ts`
+- Shibuya frontend: `src/pages/checkout/CheckoutSuccessPage.tsx`
+- Shibuya frontend tests: `src/lib/api/__tests__/auth.test.ts`, `src/pages/checkout/__tests__/CheckoutSuccessPage.test.tsx`
+
+What changed:
+
+- Activation-origin proof counts now require finite non-negative integers instead of accepting `parseInt`-style prefixes such as `12abc`.
+- Checkout-success public teaser metadata now applies the same strict integer rule before carrying context into activation preview.
+- Verified-looking backend public context with malformed trade-count proof can still create the base paid live activation session, but it cannot carry public report, teaser receipt, or StoryExperience context forward.
+
+Evidence so far:
+
+- Shibuya focused auth/checkout-success tests: `2 passed / 2 files`, `19 passed / 19 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `273 passed / 273 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the frontend parsing gap where malformed numeric backend proof fields could be treated as activation-grade public-context evidence.

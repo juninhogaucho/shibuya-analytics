@@ -160,6 +160,61 @@ describe('activation API boundary', () => {
     expect(getStoredSessionMeta()?.activationTeaserReceiptHash).toBeUndefined()
   })
 
+  test('drops verified-looking public context with malformed numeric proof fields', async () => {
+    const { persistVerifiedActivationSession, verifyActivation } = await import('../auth')
+
+    httpPostMock.mockResolvedValueOnce({
+      data: {
+        status: 'ready',
+        message: 'Activation verified.',
+        activationToken: 'live-token-malformed-count',
+        customerId: 'customer-malformed-count',
+        activationMode: 'paid_order',
+        tier: 'reset_pro',
+        planId: 'shibuya_reset_pro_monthly',
+        market: 'global',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'awaiting_upload',
+        publicContextSource: 'locked_insight',
+        publicContextReportId: 'public-teaser-malformed-count',
+        publicContextSectionId: 'edge-decay-map',
+        publicContextArchetypeId: 'marco',
+        publicContextAxisId: 'edge_decay',
+        publicContextPacketSource: 'backend_teaser',
+        publicContextArtifactStatus: 'backend_teaser_persisted',
+        publicContextProductionArtifactProven: 'false',
+        publicContextStorySource: 'guided',
+        publicContextStorySceneCount: '6',
+        publicContextPainAxes: 'edge_decay,revenge_reentry',
+        publicContextSignalMarkers: 'mirror_selected,upload_intent',
+        publicContextReportViews: '2',
+        publicContextLockedClicks: '1',
+        publicContextCurrentSectionClicks: '1',
+        publicContextPrivateGateAttempts: '1',
+        publicContextTeaserRequestId: 'TEASER-malformed-count',
+        publicContextTeaserTradesAnalyzed: '12abc',
+        publicContextTeaserWorstPattern: 'Tilt Expansion',
+        publicContextTeaserVerified: 'true',
+        publicContextTeaserVerificationStatus: 'verified',
+        publicContextTeaserReceiptHash: 'b'.repeat(64),
+        publicContextTeaserVerifiedAt: '2026-06-21T00:00:00Z',
+      },
+    })
+
+    const payload = { email: 'founder@shibuya.test', orderCode: 'order_malformed_count' }
+    const response = await verifyActivation(payload)
+    expect(persistVerifiedActivationSession(response, payload)).toBe(true)
+
+    expect(getStoredSessionMeta()).toMatchObject({
+      customerId: 'customer-malformed-count',
+      orderId: 'order_malformed_count',
+      activationMode: 'paid_order',
+    })
+    expect(getStoredSessionMeta()?.activationReportId).toBeUndefined()
+    expect(getStoredSessionMeta()?.activationTeaserRequestId).toBeUndefined()
+    expect(getStoredSessionMeta()?.activationTeaserReceiptHash).toBeUndefined()
+  })
+
   test('persists verified backend teaser activation context', async () => {
     const { persistVerifiedActivationSession, verifyActivation } = await import('../auth')
 

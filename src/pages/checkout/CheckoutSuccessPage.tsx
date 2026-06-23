@@ -63,8 +63,13 @@ function parseSessionCount(value?: string | null): number | undefined {
     return undefined
   }
 
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
+  const normalized = value.trim()
+  if (!/^\d+$/.test(normalized)) {
+    return undefined
+  }
+
+  const parsed = Number(normalized)
+  return Number.isSafeInteger(parsed) ? parsed : undefined
 }
 
 function isFalseString(value?: string | null): boolean {
