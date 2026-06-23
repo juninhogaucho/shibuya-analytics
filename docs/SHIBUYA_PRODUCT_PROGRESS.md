@@ -457,3 +457,38 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It closes a local/dev truth leak where a demo activation could look like a paid activation session.
+
+### 12. Login Session Proof Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/main.py`
+- Medallion backend tests: `tests/test_shibuya_critical_path.py`
+- Shibuya frontend: `src/lib/api/auth.ts`, `src/lib/runtime.ts`
+- Shibuya frontend tests: `src/lib/api/__tests__/auth.test.ts`, `src/lib/__tests__/runtime.test.ts`
+
+What changed:
+
+- Login/register responses now expose an explicit `authMode`.
+- Password sign-in returns `password`; self-register returns `self_register`; development demo login returns `dev_demo`.
+- The frontend refuses to persist successful-looking login payloads unless Medallion returns both an API key and backend customer identity.
+- The frontend refuses `dev_demo` login as live account proof even when it contains a token and customer id.
+- Runtime access also fails closed if stale or hand-written session metadata contains `authMode: dev_demo`.
+
+Evidence so far:
+
+- Commit: Medallion `aac69331` (`Classify Shibuya login session mode`).
+- Commit: Shibuya `151cc8a` (`Require verified login session identity`).
+- Medallion `py_compile app\main.py tests\test_shibuya_critical_path.py`: passed.
+- Medallion focused Shibuya critical path tests: `62 passed / 62 tests`.
+- Shibuya focused auth/runtime tests: `2 passed / 2 files`, `22 passed / 22 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `261 passed / 261 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime. It closes the sign-in truth leak where a partial or dev/demo auth response could create browser live state.
