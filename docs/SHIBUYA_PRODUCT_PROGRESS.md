@@ -553,3 +553,32 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime or real customer data. It closes a local/backend truth leak where processing attempts without generated artifacts could be cached as latest proof receipts.
+
+### 15. Locked Insight Paid Activation Offer Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/pages/marketing/LockedInsightPage.tsx`
+- Shibuya frontend tests: `src/pages/marketing/__tests__/PublicJourneyPages.test.tsx`, `src/pages/marketing/__tests__/PaidJourneyContract.test.tsx`
+
+What changed:
+
+- Locked Insight no longer renders paid checkout links from URL-only context, local sample report packets, or presenter-demo packets.
+- Paid activation actions on Locked Insight now require a checkout-grade public report session: persisted backend teaser receipt, valid receipt hash, minimum row threshold, and no private production-artifact claim.
+- When the proof is missing, Locked Insight shows disabled paid actions and keeps only the private demo gate available as sample/demo continuity.
+- When Medallion recovery returns a persisted backend teaser receipt, Locked Insight restores the Reset Pro and Psych Audit checkout links with the canonical report context.
+
+Evidence so far:
+
+- Commit: Shibuya `7628fef` (`Gate locked insight checkout offers by backend teaser proof`).
+- Shibuya focused public journey / paid journey / checkout tests: `3 passed / 3 files`, `32 passed / 32 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `261 passed / 261 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime or completed payment activation. It closes an upstream offer-boundary leak where Locked Insight could advertise paid activation before a persisted backend teaser receipt existed.
