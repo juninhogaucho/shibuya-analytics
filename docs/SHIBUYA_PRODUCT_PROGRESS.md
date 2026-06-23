@@ -1035,3 +1035,29 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend retrieval gap where a persisted teaser with a valid hash but missing public StoryExperience identity could be returned or used as paid checkout evidence.
+
+### 31. Public Teaser Story Identity Must Use Known Shibuya IDs
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/shibuya_public_context.py`
+- Medallion backend tests: `tests/test_shibuya_public_context_contract.py`, `tests/test_shibuya_teaser_report_endpoint.py`, `tests/test_shibuya_checkout_public_context.py`, `tests/test_shibuya_activation_public_context.py`
+
+What changed:
+
+- Public teaser receipt validation now restricts public story identity to known Shibuya markets, story sources, archetypes, axes, and signal markers.
+- Public context metadata extraction now rejects unknown archetype/axis/pain-axis/signal-marker/story-count values instead of passing them into checkout, activation, dashboard-origin, or upload-receipt paths.
+- Stale fixture IDs were corrected from `revenge` to the actual product axis id `revenge_reentry`.
+- Unknown story IDs are now rejected at receipt retrieval and checkout before order creation, even when the receipt hash matches the corrupted payload.
+
+Evidence so far:
+
+- Medallion `py_compile app\shibuya_public_context.py tests\test_shibuya_public_context_contract.py tests\test_shibuya_teaser_report_endpoint.py tests\test_shibuya_checkout_public_context.py tests\test_shibuya_activation_public_context.py`: passed.
+- Medallion focused public-context/teaser/checkout/activation tests: `38 passed / 38 tests`.
+- Medallion broader Shibuya backend proof suite: `135 passed / 135 tests` across critical path, upload receipts, lifecycle upload receipt, append proof comparison, report artifact enrichment, activation public context, checkout public context, teaser endpoint, public context contract, Stripe fulfillment public context, and dashboard overview runtime.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the backend allowlist gap where arbitrary public story IDs could be minted into a persisted teaser receipt or order metadata.
