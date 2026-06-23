@@ -1148,3 +1148,31 @@ Evidence so far:
 Remaining gap:
 
 - This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the paid/live handoff gap where verified-looking backend session metadata could carry non-canonical StoryExperience IDs into activation or dashboard-origin local state.
+
+### 35. Recent Checkout Handoff Requires Verified Canonical Receipt
+
+Status: pushed
+
+Repos changed:
+
+- Shibuya frontend: `src/lib/recentAccess.ts`
+- Shibuya frontend tests: `src/lib/__tests__/recentAccess.test.ts`, `src/pages/marketing/__tests__/ActivationPage.test.tsx`
+
+What changed:
+
+- Local `shibuya_recent_order_access.activationHandoff` is no longer trusted from shape alone.
+- A recent checkout-success handoff must now carry canonical Shibuya story IDs, a backend public-teaser receipt label/status, non-production-proof boundary, and non-empty validation summary.
+- Activation URLs that carry a different archetype, axis, story source, scene count, pain-axis set, or signal-marker set no longer reuse an older local checkout handoff.
+- The activation page now falls back to `ACTIVATION CONTEXT NOT CARRIED` for stale local handoffs instead of previewing them as verified checkout-success context.
+
+Evidence so far:
+
+- Shibuya focused recent-access/activation tests: `2 passed / 2 files`, `12 passed / 12 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `68 passed / 68 files`, `282 passed / 282 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the browser-local replay gap where stale checkout-success local storage could make activation display a verified public-context preview for the wrong StoryExperience question.

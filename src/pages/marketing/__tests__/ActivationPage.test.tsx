@@ -330,6 +330,59 @@ describe('ActivationPage', () => {
     expect(apiMocks.logTraderLifecycleEvent.mock.calls[0][0].metadata.activationReportId).toBeUndefined()
   })
 
+  test('rejects stale checkout-success handoff when route identity changed before activation preview', () => {
+    rememberRecentOrderAccess({
+      email: 'founder@shibuya.test',
+      orderCode: 'order_verified_checkout',
+      market: 'global',
+      planId: 'shibuya_reset_pro_monthly',
+      planName: 'shibuya_reset_pro_monthly',
+      activationHandoff: {
+        source: 'checkout_success',
+        verifiedAt: '2026-06-23T00:00:00.000Z',
+        checkoutIntent: {
+          source: 'locked_insight',
+          reportId: 'public-teaser-success-123',
+          lockedSectionId: 'edge-decay-map',
+          archetypeId: 'marco',
+          axisId: 'revenge_reentry',
+          storySource: 'guided',
+          visitedSceneCount: 6,
+          selectedPainAxisIds: ['edge_decay', 'revenge_reentry'],
+          signalMarkerIds: ['mirror_selected', 'upload_intent'],
+        },
+        contextReceipt: {
+          evidenceLabel: 'Backend verified public teaser receipt',
+          artifactStatusLabel: 'Backend teaser persisted',
+          productionArtifactProven: false,
+          validationSummary: 'Medallion verified teaser TEASER-verified before checkout success carried context forward.',
+          storySource: 'guided',
+          visitedSceneCount: 6,
+        },
+      },
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/activate?source=locked_insight&report=public-teaser-success-123&section=edge-decay-map&archetype=marco&axis=edge_decay&story=guided&scene_count=6&pain_axes=edge_decay,revenge_reentry&signals=mirror_selected,upload_intent&market=global',
+        ]}
+      >
+        <Routes>
+          <Route path="/activate" element={<ActivationPage />} />
+          <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        </Routes>
+        <LocationProbe />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('ACTIVATION CONTEXT NOT CARRIED')).toBeInTheDocument()
+    expect(screen.getByText(/URL-only activation context is visible on this link/i)).toBeInTheDocument()
+    expect(screen.queryByText('LOCKED PRIVATE INSIGHT CONTEXT REQUEST ATTACHED')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Checkout success verified this public teaser handoff/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/verified checkout-success handoff; activation backend must reverify/i)).not.toBeInTheDocument()
+  })
+
   test('blocks ready activation responses that lack backend customer identity', async () => {
     const user = userEvent.setup()
     apiMocks.verifyActivation.mockResolvedValue({
