@@ -1,4 +1,10 @@
-import { clearShibuyaSession, getStoredApiKey, setLiveApiKey, type ShibuyaSessionMeta } from '../runtime'
+import {
+  clearShibuyaSession,
+  getStoredApiKey,
+  isBackendVerifiedAuthMode,
+  setLiveApiKey,
+  type ShibuyaSessionMeta,
+} from '../runtime'
 import type { ActivationPayload, ActivationResponse } from '../types'
 import {
   buildActivationResponsePublicContextMeta,
@@ -39,6 +45,10 @@ export function getLoginSessionProofError(data: LoginResponse): string | null {
 
   if (data.authMode === 'dev_demo') {
     return 'Medallion returned a dev/demo login, not live account proof.'
+  }
+
+  if (!isBackendVerifiedAuthMode(data.authMode)) {
+    return 'Medallion signed in but did not return a backend-verified login mode.'
   }
 
   return null

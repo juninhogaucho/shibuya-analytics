@@ -301,6 +301,7 @@ describe('dashboard API boundary', () => {
 
     setLiveApiKey('live-token-123', {
       customerId: 'cust_live_123',
+      authMode: 'password',
       tier: 'reset_pro',
       market: 'global',
       offerKind: 'reset_pro_live',
@@ -408,6 +409,7 @@ describe('dashboard API boundary', () => {
 
     setLiveApiKey('live-token-123', {
       customerId: 'cust_live_123',
+      authMode: 'password',
       tier: 'reset_pro',
       market: 'global',
       offerKind: 'reset_pro_live',
@@ -470,6 +472,7 @@ describe('dashboard API boundary', () => {
 
     setLiveApiKey('live-token-weak', {
       customerId: 'cust_live_weak',
+      authMode: 'password',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
@@ -540,6 +543,7 @@ describe('dashboard API boundary', () => {
 
     setLiveApiKey('live-token-456', {
       customerId: 'cust_live_456',
+      authMode: 'password',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',

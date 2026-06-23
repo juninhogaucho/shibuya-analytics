@@ -314,6 +314,27 @@ describe('login API boundary', () => {
     expect(getStoredSessionMeta()).toBeNull()
   })
 
+  test('refuses successful login payload without a backend-verified login mode', async () => {
+    const { getLoginSessionProofError, login } = await import('../auth')
+
+    const response = {
+      success: true,
+      api_key: 'live-login-unknown-mode',
+      customer_id: 'customer-login-unknown-mode',
+      authMode: 'legacy_token',
+      tier: 'reset_pro',
+    }
+
+    expect(getLoginSessionProofError(response)).toContain('backend-verified login mode')
+    httpPostMock.mockResolvedValueOnce({ data: response })
+
+    await expect(login({ email: 'founder@shibuya.test', password: 'StrongPassword123!' })).rejects.toThrow(
+      /backend-verified login mode/i,
+    )
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+    expect(getStoredSessionMeta()).toBeNull()
+  })
+
   test('refuses dev demo login as live account proof', async () => {
     const { getLoginSessionProofError, login } = await import('../auth')
 

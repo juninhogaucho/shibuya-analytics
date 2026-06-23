@@ -15,6 +15,7 @@ describe('AuthGuard', () => {
       SHIBUYA_SESSION_META_STORAGE_KEY,
       JSON.stringify({
         customerId: 'customer-live-123',
+        authMode: 'password',
         tier: 'reset_pro',
         market: 'global',
       }),

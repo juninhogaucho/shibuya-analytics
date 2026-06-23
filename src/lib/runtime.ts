@@ -21,6 +21,9 @@ export type ShibuyaWorkspaceAccessReason =
   | 'private_demo_receipt'
   | 'sample_without_private_gate'
 
+const BACKEND_VERIFIED_ACTIVATION_MODES = new Set(['paid_order'])
+const BACKEND_VERIFIED_AUTH_MODES = new Set(['password', 'self_register'])
+
 export interface ShibuyaRuntimeContract {
   mode: ShibuyaRuntimeMode
   label: string
@@ -258,8 +261,24 @@ export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = 
   )
 }
 
+function normalizeProofMode(value?: string | null): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : ''
+}
+
+export function isBackendVerifiedActivationMode(value?: string | null): boolean {
+  return BACKEND_VERIFIED_ACTIVATION_MODES.has(normalizeProofMode(value))
+}
+
+export function isBackendVerifiedAuthMode(value?: string | null): boolean {
+  return BACKEND_VERIFIED_AUTH_MODES.has(normalizeProofMode(value))
+}
+
+export function hasBackendVerifiedSessionMode(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
+  return Boolean(isBackendVerifiedActivationMode(meta?.activationMode) || isBackendVerifiedAuthMode(meta?.authMode))
+}
+
 export function hasBackendVerifiedLiveSession(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
-  return Boolean(meta?.customerId?.trim() && meta.activationMode !== 'dev_demo' && meta.authMode !== 'dev_demo')
+  return Boolean(meta?.customerId?.trim() && hasBackendVerifiedSessionMode(meta))
 }
 
 export function getWorkspaceAccessState(): ShibuyaWorkspaceAccessState {

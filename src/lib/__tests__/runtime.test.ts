@@ -138,12 +138,12 @@ describe('shibuya runtime', () => {
     })
   })
 
-  test('switches to live when a real api key is stored', () => {
+  test('switches to verified live when a backend-authenticated api key is stored', () => {
     enterSampleMode({ preview: 'reset_pro' })
-    setLiveApiKey('live_123', { customerId: 'customer_live_123', tier: 'psych_audit' })
+    setLiveApiKey('live_123', { customerId: 'customer_live_123', authMode: 'password', tier: 'psych_audit' })
 
     expect(getStoredApiKey()).toBe('live_123')
-    expect(getStoredSessionMeta()).toMatchObject({ customerId: 'customer_live_123', tier: 'psych_audit' })
+    expect(getStoredSessionMeta()).toMatchObject({ customerId: 'customer_live_123', authMode: 'password', tier: 'psych_audit' })
     expect(getStoredSessionMeta()?.samplePreview).toBeUndefined()
     expect(getShibuyaRuntimeMode()).toBe('live')
     expect(hasBackendVerifiedLiveSession()).toBe(true)
@@ -182,6 +182,32 @@ describe('shibuya runtime', () => {
       canPersistTrades: false,
       persistence: 'none',
       requiresBackend: true,
+    })
+    expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
+  })
+
+  test('keeps partial live customer identity out of workspace access and persistence', () => {
+    setLiveApiKey('live_partial_customer', {
+      customerId: 'customer_live_partial',
+      tier: 'reset_pro',
+      market: 'global',
+    })
+
+    expect(getShibuyaRuntimeMode()).toBe('live')
+    expect(hasBackendVerifiedLiveSession()).toBe(false)
+    expect(hasPremiumAccess()).toBe(false)
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: false,
+      mode: 'live',
+      market: 'global',
+      reason: 'live_without_verified_session',
+      redirectPath: '/activate?market=global&reason=verify-live-session',
+    })
+    expect(getShibuyaRuntimeContract()).toMatchObject({
+      mode: 'live',
+      label: 'Unverified live token',
+      canPersistTrades: false,
+      persistence: 'none',
     })
     expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
   })
@@ -377,6 +403,7 @@ describe('shibuya runtime', () => {
   test('preserves live session context when only the api key is refreshed', () => {
     setLiveApiKey('live_old', {
       customerId: 'customer_old',
+      authMode: 'password',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
@@ -390,6 +417,7 @@ describe('shibuya runtime', () => {
     expect(getStoredApiKey()).toBe('live_refreshed')
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'customer_old',
+      authMode: 'password',
       tier: 'reset_pro',
       activationSource: 'locked_insight',
       activationReportId: 'old-report',
@@ -438,6 +466,9 @@ describe('shibuya runtime', () => {
     expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
 
     setLiveApiKey('live_123', { customerId: 'customer_live_123' })
+    expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
+
+    setLiveApiKey('live_123', { customerId: 'customer_live_123', authMode: 'password' })
     expect(() => requireLiveRuntime('Persistent upload')).not.toThrow()
   })
 })
