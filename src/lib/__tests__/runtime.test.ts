@@ -186,6 +186,36 @@ describe('shibuya runtime', () => {
     expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
   })
 
+  test('does not treat dev demo activation identity as live backend proof', () => {
+    setLiveApiKey('shibuya_demo_dev_token', {
+      customerId: 'shibuya_demo_001',
+      activationMode: 'dev_demo',
+      tier: 'reset_pro',
+      market: 'global',
+      offerKind: 'dev_demo',
+      caseStatus: 'dev_demo_only',
+      dataSource: 'demo_activation',
+    })
+
+    expect(getShibuyaRuntimeMode()).toBe('live')
+    expect(hasBackendVerifiedLiveSession()).toBe(false)
+    expect(hasPremiumAccess()).toBe(false)
+    expect(getWorkspaceAccessState()).toMatchObject({
+      ok: false,
+      mode: 'live',
+      market: 'global',
+      reason: 'live_without_verified_session',
+      redirectPath: '/activate?market=global&reason=verify-live-session',
+    })
+    expect(getShibuyaRuntimeContract()).toMatchObject({
+      mode: 'live',
+      label: 'Unverified live token',
+      canPersistTrades: false,
+      persistence: 'none',
+    })
+    expect(() => requireLiveRuntime('Persistent upload')).toThrow(/backend-verified live trader session/)
+  })
+
   test('strips sample-only metadata when a live key is stored without fresh metadata', () => {
     enterSampleMode({
       market: 'global',
@@ -248,6 +278,7 @@ describe('shibuya runtime', () => {
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       orderId: 'order_old',
+      activationMode: 'paid_order',
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       traderMode: 'profitable_refiner',
@@ -298,6 +329,7 @@ describe('shibuya runtime', () => {
     expect(session?.customerId).toBeUndefined()
     expect(session?.planId).toBeUndefined()
     expect(session?.orderId).toBeUndefined()
+    expect(session?.activationMode).toBeUndefined()
     expect(session?.offerKind).toBeUndefined()
     expect(session?.caseStatus).toBeUndefined()
     expect(session?.lastReportSnapshotId).toBeUndefined()

@@ -88,6 +88,7 @@ describe('paid Shibuya journey contract', () => {
       status: 'ready',
       activationToken: 'live-token-123',
       customerId: 'customer-123',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',

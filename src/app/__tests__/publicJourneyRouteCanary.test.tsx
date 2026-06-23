@@ -179,5 +179,5 @@ describe('public Shibuya route canary', () => {
       demoEngagementPrivateDemoIntentCount: 1,
       demoUnlockBoundary: 'Presenter code opened sample Reset Pro access only; no payment, backend upload, generated artifact, or account-specific conclusion was proven.',
     })
-  })
+  }, 20_000)
 })

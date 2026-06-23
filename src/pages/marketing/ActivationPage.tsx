@@ -244,6 +244,7 @@ export function ActivationPage() {
           tier: response.tier,
           metadata: {
             orderCode,
+            activationMode: response.activationMode,
             passwordRequired: response.passwordRequired ?? false,
             activationSource: activationSourceForStorage,
             activationReportId: activationReportIdForStorage,

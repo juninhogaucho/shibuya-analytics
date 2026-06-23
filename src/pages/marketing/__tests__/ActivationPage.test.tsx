@@ -44,6 +44,7 @@ describe('ActivationPage', () => {
       status: 'ready',
       activationToken: 'live-token-123',
       customerId: 'customer-123',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -134,6 +135,7 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_123',
+      activationMode: 'paid_order',
     })
     const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
     expect(storedSessionMeta).not.toHaveProperty('activationSource')
@@ -151,6 +153,7 @@ describe('ActivationPage', () => {
       expect.objectContaining({
         metadata: expect.objectContaining({
           orderCode: 'order_123',
+          activationMode: 'paid_order',
           passwordRequired: false,
         }),
       }),
@@ -174,6 +177,7 @@ describe('ActivationPage', () => {
       status: 'ready',
       activationToken: 'live-token-123',
       customerId: 'customer-123',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -220,6 +224,7 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_123',
+      activationMode: 'paid_order',
     })
     expect(storedSessionMeta).not.toHaveProperty('activationSource')
     expect(storedSessionMeta).not.toHaveProperty('activationReportId')
@@ -271,6 +276,7 @@ describe('ActivationPage', () => {
       status: 'ready',
       activationToken: 'live-token-verified-checkout-preview',
       customerId: 'customer-preview',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -315,6 +321,7 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_verified_checkout',
+      activationMode: 'paid_order',
     })
     expect(storedSessionMeta).not.toHaveProperty('activationSource')
     expect(storedSessionMeta).not.toHaveProperty('activationReportId')
@@ -328,6 +335,7 @@ describe('ActivationPage', () => {
     apiMocks.verifyActivation.mockResolvedValue({
       status: 'ready',
       activationToken: 'live-token-without-customer',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -364,6 +372,7 @@ describe('ActivationPage', () => {
       status: 'ready',
       activationToken: 'live-token-456',
       customerId: 'customer-456',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -420,6 +429,7 @@ describe('ActivationPage', () => {
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
       orderId: 'order_456',
+      activationMode: 'paid_order',
     })
     const storedSessionMeta = JSON.parse(window.localStorage.getItem(SHIBUYA_SESSION_META_STORAGE_KEY) ?? '{}')
     expect(storedSessionMeta).not.toHaveProperty('activationSource')
@@ -453,6 +463,7 @@ describe('ActivationPage', () => {
       status: 'ready',
       activationToken: 'live-token-authoritative',
       customerId: 'customer-authoritative',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
@@ -525,6 +536,7 @@ describe('ActivationPage', () => {
     expect(storedSessionMeta).toMatchObject({
       customerId: 'customer-authoritative',
       orderId: 'order_authoritative',
+      activationMode: 'paid_order',
       activationSource: 'locked_insight',
       activationReportId: 'backend-report-authoritative',
       activationArchetypeId: 'marco',

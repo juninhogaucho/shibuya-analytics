@@ -9,6 +9,7 @@ export interface ActivationResponse {
   nextStep?: 'baseline' | 'dashboard'
   activationToken?: string
   customerId?: string
+  activationMode?: 'paid_order' | 'dev_demo' | string | null
   passwordRequired?: boolean
   tier?: string
   planId?: string

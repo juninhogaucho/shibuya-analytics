@@ -24,6 +24,7 @@ describe('activation API boundary', () => {
         message: 'Activation verified.',
         activationToken: 'live-token-weak',
         customerId: 'customer-weak',
+        activationMode: 'paid_order',
         tier: 'reset_pro',
         planId: 'shibuya_reset_pro_monthly',
         market: 'global',
@@ -63,6 +64,7 @@ describe('activation API boundary', () => {
       status: 'ready' as const,
       message: 'Activation verified.',
       activationToken: 'live-token-without-customer',
+      activationMode: 'paid_order',
       tier: 'reset_pro',
       planId: 'shibuya_reset_pro_monthly',
       market: 'global' as const,
@@ -79,6 +81,32 @@ describe('activation API boundary', () => {
     expect(getStoredSessionMeta()).toBeNull()
   })
 
+  test('refuses to persist dev demo activation as paid live proof', async () => {
+    const { getActivationSessionProofError, persistVerifiedActivationSession } = await import('../auth')
+
+    const response = {
+      status: 'ready' as const,
+      message: 'Demo activation successful.',
+      activationToken: 'shibuya_demo_mode',
+      customerId: 'shibuya_demo_001',
+      activationMode: 'dev_demo',
+      tier: 'reset_pro',
+      planId: 'shibuya_reset_pro_monthly',
+      market: 'global' as const,
+      offerKind: 'dev_demo',
+      caseStatus: 'dev_demo_only',
+      dataSource: 'demo_activation',
+    }
+
+    expect(getActivationSessionProofError(response)).toContain('dev/demo activation')
+    expect(() => persistVerifiedActivationSession(response, {
+      email: 'demo@shibuya.trading',
+      orderCode: 'shibuya_demo_mode',
+    })).toThrow(/dev\/demo activation/i)
+    expect(window.localStorage.getItem(SHIBUYA_API_KEY_STORAGE_KEY)).toBeNull()
+    expect(getStoredSessionMeta()).toBeNull()
+  })
+
   test('persists verified activation base state but drops weak public context', async () => {
     const { persistVerifiedActivationSession, verifyActivation } = await import('../auth')
 
@@ -88,6 +116,7 @@ describe('activation API boundary', () => {
         message: 'Activation verified.',
         activationToken: 'live-token-weak',
         customerId: 'customer-weak',
+        activationMode: 'paid_order',
         tier: 'reset_pro',
         planId: 'shibuya_reset_pro_monthly',
         market: 'global',
@@ -122,6 +151,7 @@ describe('activation API boundary', () => {
       planId: 'shibuya_reset_pro_monthly',
       market: 'global',
       orderId: 'order_weak',
+      activationMode: 'paid_order',
       offerKind: 'reset_pro_live',
       caseStatus: 'awaiting_upload',
     })
@@ -139,6 +169,7 @@ describe('activation API boundary', () => {
         message: 'Activation verified.',
         activationToken: 'live-token-verified',
         customerId: 'customer-verified',
+        activationMode: 'paid_order',
         tier: 'reset_pro',
         planId: 'shibuya_reset_pro_monthly',
         market: 'global',
@@ -177,6 +208,7 @@ describe('activation API boundary', () => {
     expect(getStoredSessionMeta()).toMatchObject({
       customerId: 'customer-verified',
       orderId: 'order_verified',
+      activationMode: 'paid_order',
       activationSource: 'locked_insight',
       activationReportId: 'public-teaser-verified',
       activationArchetypeId: 'marco',

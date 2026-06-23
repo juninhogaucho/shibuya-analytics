@@ -44,6 +44,14 @@ export function getActivationSessionProofError(data: ActivationResponse): string
     return 'Medallion verified the order but did not return a backend customer identity.'
   }
 
+  if (data.activationMode !== 'paid_order') {
+    if (data.activationMode === 'dev_demo') {
+      return 'Medallion returned a dev/demo activation, not paid live activation proof.'
+    }
+
+    return 'Medallion verified the order but did not return paid activation proof.'
+  }
+
   return null
 }
 
@@ -69,6 +77,7 @@ export function persistVerifiedActivationSession(
     planId: data.planId,
     market: data.market,
     orderId: payload.orderCode,
+    activationMode: data.activationMode,
     offerKind: data.offerKind,
     caseStatus: data.caseStatus,
     accessExpiresAt: data.accessExpiresAt ?? null,

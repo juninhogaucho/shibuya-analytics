@@ -37,6 +37,7 @@ export interface ShibuyaSessionMeta {
   planId?: string
   market?: Market
   orderId?: string
+  activationMode?: string | null
   offerKind?: string
   caseStatus?: string
   traderMode?: TraderMode
@@ -154,6 +155,7 @@ const LIVE_SESSION_DERIVED_META_KEYS: Array<keyof ShibuyaSessionMeta> = [
   'tier',
   'planId',
   'orderId',
+  'activationMode',
   'offerKind',
   'caseStatus',
   'traderMode',
@@ -251,7 +253,7 @@ export function hasPrivateResetProDemoReceipt(meta: ShibuyaSessionMeta | null = 
 }
 
 export function hasBackendVerifiedLiveSession(meta: ShibuyaSessionMeta | null = getStoredSessionMeta()): boolean {
-  return Boolean(meta?.customerId?.trim())
+  return Boolean(meta?.customerId?.trim() && meta.activationMode !== 'dev_demo')
 }
 
 export function getWorkspaceAccessState(): ShibuyaWorkspaceAccessState {
