@@ -394,3 +394,30 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime or backend dashboard origin persistence. It proves the frontend now fails closed with an auditable sync reason when the dashboard endpoint omits or rejects activation-origin metadata.
+
+### 10. Live Append Write Readiness Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/main.py`
+- Medallion backend tests: `tests/test_shibuya_upload_artifact_receipts.py`
+
+What changed:
+
+- Medallion live upload writes now enforce the same `/v1/dashboard/upload/readiness` contract before mutating upload state.
+- CSV upload and trade-paste submit now block before processing when the account is read only, over its upload limit, missing customer identity, or missing required storage capabilities.
+- Trade-paste submit now rejects raw text that cannot produce any valid live trades instead of returning `status: success` with `trades_uploaded: 0`.
+- Frontend proof validation already rejected zero-trade/no-artifact responses; the backend now prevents that fake-success response at the source.
+
+Evidence so far:
+
+- Commit: Medallion `33206644` (`Enforce Shibuya live append write readiness`).
+- Medallion `py_compile app\main.py tests\test_shibuya_upload_artifact_receipts.py`: passed.
+- Medallion focused upload receipt tests: `14 passed / 14 tests`.
+- Medallion adjacent Shibuya backend tests: `71 passed / 71 tests` across `tests\test_shibuya_critical_path.py`, `tests\test_shibuya_lifecycle_upload_receipt.py`, and `tests\test_shibuya_append_proof_comparison.py`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime. It proves the backend write layer no longer accepts a live append unless readiness is currently true, and it no longer emits a zero-trade live append success response.
