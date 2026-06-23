@@ -44,6 +44,10 @@ function hasText(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+function normalizeCustomerId(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
 function toInt(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return Math.trunc(value)
@@ -55,12 +59,30 @@ function toInt(value: unknown): number | null {
   return null
 }
 
-export function hasGeneratedUploadReceipt(receipt?: UploadProofReceipt | null): receipt is UploadProofReceipt {
+function expectedLiveCustomerId(
+  overview?: DashboardOverview | null,
+  sessionMeta?: ShibuyaSessionMeta | null,
+): string {
+  return normalizeCustomerId(overview?.customer_id) || normalizeCustomerId(sessionMeta?.customerId)
+}
+
+function receiptBelongsToExpectedCustomer(receipt: UploadProofReceipt | null | undefined, expectedCustomerId: string): boolean {
+  if (!expectedCustomerId) {
+    return true
+  }
+  return normalizeCustomerId(receipt?.customer_id) === expectedCustomerId
+}
+
+export function hasGeneratedUploadReceipt(
+  receipt?: UploadProofReceipt | null,
+  expectedCustomerId = '',
+): receipt is UploadProofReceipt {
   const appendCount = toInt(receipt?.append_count)
   const tradesUploaded = toInt(receipt?.trades_uploaded)
   return Boolean(
     receipt &&
       !hasText(receipt.proof_validation_error) &&
+      receiptBelongsToExpectedCustomer(receipt, expectedCustomerId) &&
       receipt.artifact_status === 'generated' &&
       hasText(receipt.report_snapshot_id) &&
       hasText(receipt.request_id) &&
@@ -71,12 +93,15 @@ export function hasGeneratedUploadReceipt(receipt?: UploadProofReceipt | null): 
   )
 }
 
-function generatedReceipts(receipts: Array<UploadProofReceipt | null | undefined>): UploadProofReceipt[] {
+function generatedReceipts(
+  receipts: Array<UploadProofReceipt | null | undefined>,
+  expectedCustomerId = '',
+): UploadProofReceipt[] {
   const seen = new Set<string>()
   const generated: UploadProofReceipt[] = []
 
   for (const receipt of receipts) {
-    if (!hasGeneratedUploadReceipt(receipt)) {
+    if (!hasGeneratedUploadReceipt(receipt, expectedCustomerId)) {
       continue
     }
 
@@ -96,19 +121,20 @@ function collectGeneratedReceipts(
   overview?: DashboardOverview | null,
   sessionMeta?: ShibuyaSessionMeta | null,
 ): { receipts: UploadProofReceipt[]; source: LiveProofEvidenceSource } {
+  const expectedCustomerId = expectedLiveCustomerId(overview, sessionMeta)
   const overviewReceipts = generatedReceipts([
     ...(overview?.upload_receipt_history ?? []),
     overview?.first_upload_receipt,
     overview?.latest_upload_receipt,
-  ])
+  ], expectedCustomerId)
   const sessionReceipts = generatedReceipts([
     ...(sessionMeta?.uploadReceiptHistory ?? []),
     sessionMeta?.firstUploadReceipt,
     sessionMeta?.latestUploadReceipt,
-  ])
+  ], expectedCustomerId)
 
   if (overviewReceipts.length && sessionReceipts.length) {
-    return { receipts: generatedReceipts([...overviewReceipts, ...sessionReceipts]), source: 'mixed' }
+    return { receipts: generatedReceipts([...overviewReceipts, ...sessionReceipts], expectedCustomerId), source: 'mixed' }
   }
   if (overviewReceipts.length) {
     return { receipts: overviewReceipts, source: 'overview' }
@@ -130,11 +156,16 @@ function hasAppendProof(receipts: UploadProofReceipt[]): boolean {
   return latestAppendCount !== null && latestAppendCount >= 2
 }
 
-function hasGeneratedAppendProofSummary(proof?: AppendProofSummary | null): proof is AppendProofSummary {
+function hasGeneratedAppendProofSummary(
+  proof?: AppendProofSummary | null,
+  expectedCustomerId = '',
+): proof is AppendProofSummary {
   const uploadCount = toInt(proof?.upload_count)
+  const latestCustomerId = normalizeCustomerId(proof?.latest_customer_id)
   return Boolean(
     proof &&
       proof.status === 'comparison_ready' &&
+      (!expectedCustomerId || latestCustomerId === expectedCustomerId) &&
       uploadCount !== null &&
       uploadCount >= 2 &&
       proof.latest_artifact_status === 'generated' &&
@@ -154,6 +185,9 @@ function appendProofUploadReceipt(proof: AppendProofSummary): UploadProofReceipt
     append_count: appendCount,
   }
 
+  if (hasText(proof.latest_customer_id)) {
+    receipt.customer_id = proof.latest_customer_id.trim()
+  }
   if (hasText(proof.latest_report_id)) {
     receipt.report_id = proof.latest_report_id.trim()
   }
@@ -230,11 +264,12 @@ export function buildLiveProofPhase(options: BuildLiveProofPhaseOptions = {}): L
   const market = options.market ?? options.sessionMeta?.market ?? 'india'
   const caseStatus = options.overview?.case_status ?? options.sessionMeta?.caseStatus ?? null
   const profileCompleted = options.profileCompleted ?? options.overview?.profile_completed ?? null
+  const expectedCustomerId = expectedLiveCustomerId(options.overview, options.sessionMeta)
   const collectedProof = collectGeneratedReceipts(options.overview, options.sessionMeta)
-  const appendProof = hasGeneratedAppendProofSummary(options.appendProof) ? options.appendProof : null
+  const appendProof = hasGeneratedAppendProofSummary(options.appendProof, expectedCustomerId) ? options.appendProof : null
   const appendProofReceipt = appendProof ? appendProofUploadReceipt(appendProof) : null
   const receipts = appendProofReceipt
-    ? generatedReceipts([...collectedProof.receipts, appendProofReceipt])
+    ? generatedReceipts([...collectedProof.receipts, appendProofReceipt], expectedCustomerId)
     : collectedProof.receipts
   const source: LiveProofEvidenceSource = appendProof ? 'append_proof' : collectedProof.source
   const latestGeneratedReceipt = appendProofReceipt ?? receipts[receipts.length - 1] ?? null

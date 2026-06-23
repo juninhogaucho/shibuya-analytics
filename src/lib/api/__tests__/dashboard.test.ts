@@ -205,6 +205,7 @@ describe('dashboard API boundary', () => {
         data_source: 'backend',
         last_report_snapshot_id: 'snap_dashboard_002',
         first_upload_receipt: {
+          customer_id: 'cust_live_123',
           completed_at: '2026-06-20T09:00:00Z',
           upload_transport: 'api',
           trades_uploaded: 10,
@@ -215,6 +216,7 @@ describe('dashboard API boundary', () => {
           request_id: 'req_dashboard_001',
         },
         latest_upload_receipt: {
+          customer_id: 'cust_live_123',
           completed_at: '2026-06-21T09:00:00Z',
           upload_transport: 'api',
           trades_uploaded: 14,
@@ -226,6 +228,7 @@ describe('dashboard API boundary', () => {
         },
         upload_receipt_history: [
           {
+            customer_id: 'cust_live_123',
             completed_at: '2026-06-20T09:00:00Z',
             upload_transport: 'api',
             trades_uploaded: 10,
@@ -236,6 +239,7 @@ describe('dashboard API boundary', () => {
             request_id: 'req_dashboard_001',
           },
           {
+            customer_id: 'cust_live_123',
             completed_at: '2026-06-21T09:00:00Z',
             upload_transport: 'api',
             trades_uploaded: 14,
@@ -353,6 +357,75 @@ describe('dashboard API boundary', () => {
       activationTeaserReceiptHash: 'b'.repeat(64),
       activationTeaserVerifiedAt: '2026-06-20T00:01:00Z',
     })
+  })
+
+  test('drops cross-customer upload receipts from live dashboard overview', async () => {
+    const foreignReceipt = {
+      customer_id: 'cust_other',
+      completed_at: '2026-06-21T09:00:00Z',
+      upload_transport: 'api',
+      trades_uploaded: 14,
+      report_snapshot_id: 'snap_foreign_002',
+      report_id: 'report_foreign_002',
+      artifact_status: 'generated',
+      append_count: 2,
+      request_id: 'req_foreign_002',
+    }
+    const httpGet = vi.fn().mockResolvedValue({
+      data: {
+        customer_id: 'cust_live_123',
+        access_tier: 'reset_pro',
+        offer_kind: 'reset_pro_live',
+        case_status: 'baseline_ready',
+        data_source: 'backend',
+        last_report_snapshot_id: 'snap_dashboard_002',
+        first_upload_receipt: foreignReceipt,
+        latest_upload_receipt: foreignReceipt,
+        upload_receipt_history: [foreignReceipt],
+        bql_state: 'Unknown',
+        bql_score: 0,
+        monte_carlo_drift: 0,
+        ruin_probability: 0,
+        discipline_tax_30d: 0,
+        sharpe_scenario: 0,
+        edge_portfolio: [],
+        loyalty_unlock: null,
+        next_coach_date: '2026-04-05T19:00:00Z',
+      },
+    })
+
+    vi.doMock('../../constants', () => ({
+      API_BASE_URL: 'https://api.shibuya.example',
+      isApiBaseConfiguredForLive: () => true,
+    }))
+    vi.doMock('../httpClient', () => ({
+      http: { get: httpGet },
+      withRetry: <T>(fn: () => Promise<T>) => fn(),
+    }))
+
+    const { getStoredSessionMeta, setLiveApiKey } = await import('../../runtime')
+    const { getDashboardOverview } = await import('../dashboard')
+
+    setLiveApiKey('live-token-123', {
+      customerId: 'cust_live_123',
+      tier: 'reset_pro',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'baseline_ready',
+    })
+
+    await expect(getDashboardOverview()).resolves.toMatchObject({
+      customer_id: 'cust_live_123',
+      first_upload_receipt: null,
+      latest_upload_receipt: null,
+      upload_receipt_history: [],
+    })
+
+    const session = getStoredSessionMeta()
+    expect(session?.customerId).toBe('cust_live_123')
+    expect(session?.firstUploadReceipt).toBeNull()
+    expect(session?.latestUploadReceipt).toBeNull()
+    expect(session?.uploadReceiptHistory).toEqual([])
   })
 
   test('drops weak activation origin from live dashboard overview', async () => {

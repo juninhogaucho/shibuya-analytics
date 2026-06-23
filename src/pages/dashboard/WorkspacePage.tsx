@@ -9,7 +9,7 @@ import { buildLiveProofPhase } from '../../lib/liveProofPhase'
 import { readRecentOrderAccess } from '../../lib/recentAccess'
 import { getSessionDaysRemaining, getStoredSessionMeta, hasPremiumAccess, isOneTimeOffer, isReadOnlySession, isSampleMode } from '../../lib/runtime'
 import { describeTraderMode, humanizeTraderMode } from '../../lib/traderMode'
-import type { DashboardOverview, TraderProfileContext } from '../../lib/types'
+import type { DashboardOverview, TraderProfileContext, UploadProofReceipt } from '../../lib/types'
 
 function humanizeCaseStatus(caseStatus?: string | null): string {
   switch (caseStatus) {
@@ -111,6 +111,37 @@ function proofValue(value: unknown, fallback = 'Not recorded'): string {
     return value.length ? value.join(', ') : fallback
   }
   return String(value)
+}
+
+function normalizeCustomerId(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function receiptBelongsToCustomer(receipt: UploadProofReceipt | null | undefined, expectedCustomerId: string): boolean {
+  if (!receipt) {
+    return false
+  }
+  if (!expectedCustomerId) {
+    return true
+  }
+  return normalizeCustomerId(receipt.customer_id) === expectedCustomerId
+}
+
+function customerBoundReceipt(
+  receipt: UploadProofReceipt | null | undefined,
+  expectedCustomerId: string,
+): UploadProofReceipt | null {
+  return receiptBelongsToCustomer(receipt, expectedCustomerId) ? receipt ?? null : null
+}
+
+function customerBoundReceiptHistory(
+  receipts: UploadProofReceipt[] | undefined,
+  expectedCustomerId: string,
+): UploadProofReceipt[] {
+  if (!Array.isArray(receipts)) {
+    return []
+  }
+  return receipts.filter((receipt) => receiptBelongsToCustomer(receipt, expectedCustomerId))
 }
 
 function humanizeEvidenceSource(source: string): string {
@@ -295,13 +326,20 @@ export function WorkspacePage() {
   const effectiveCaseStatus = overview?.case_status ?? sessionMeta?.caseStatus
   const effectiveTraderMode = overview?.trader_mode ?? profile?.trader_mode ?? sessionMeta?.traderMode ?? null
   const effectiveExpiry = overview?.access_expires_at ?? sessionMeta?.accessExpiresAt ?? null
-  const overviewUploadReceipt = overview?.latest_upload_receipt ?? overview?.first_upload_receipt ?? null
-  const sessionUploadReceipt = sessionMeta?.latestUploadReceipt ?? sessionMeta?.firstUploadReceipt ?? null
+  const expectedCustomerId = normalizeCustomerId(overview?.customer_id) || normalizeCustomerId(sessionMeta?.customerId)
+  const overviewUploadReceipt = (
+    customerBoundReceipt(overview?.latest_upload_receipt, expectedCustomerId)
+    ?? customerBoundReceipt(overview?.first_upload_receipt, expectedCustomerId)
+  )
+  const sessionUploadReceipt = (
+    customerBoundReceipt(sessionMeta?.latestUploadReceipt, expectedCustomerId)
+    ?? customerBoundReceipt(sessionMeta?.firstUploadReceipt, expectedCustomerId)
+  )
   const latestUploadReceipt = overviewUploadReceipt ?? sessionUploadReceipt
   const uploadReceiptSource = overviewUploadReceipt ? 'overview' : sessionUploadReceipt ? 'upload_response' : null
-  const uploadReceiptHistory = overview?.upload_receipt_history?.length
-    ? overview.upload_receipt_history
-    : sessionMeta?.uploadReceiptHistory ?? []
+  const overviewReceiptHistory = customerBoundReceiptHistory(overview?.upload_receipt_history, expectedCustomerId)
+  const sessionReceiptHistory = customerBoundReceiptHistory(sessionMeta?.uploadReceiptHistory, expectedCustomerId)
+  const uploadReceiptHistory = overviewReceiptHistory.length ? overviewReceiptHistory : sessionReceiptHistory
   const effectiveReadOnly = readOnly || effectiveCaseStatus === 'read_only'
   const effectiveDaysRemaining = getSessionDaysRemaining({
     ...sessionMeta,

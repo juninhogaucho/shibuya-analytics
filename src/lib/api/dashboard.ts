@@ -165,6 +165,33 @@ function getExpectedLiveCustomerId(explicitCustomerId?: string | null): string {
   return normalizeCustomerId(explicitCustomerId) || normalizeCustomerId(getStoredSessionMeta()?.customerId)
 }
 
+function receiptBelongsToCustomer(receipt: UploadProofReceipt | null | undefined, expectedCustomerId: string): boolean {
+  if (!receipt) {
+    return false
+  }
+  if (!expectedCustomerId) {
+    return true
+  }
+  return normalizeCustomerId(receipt.customer_id) === expectedCustomerId
+}
+
+function verifiedUploadReceipt(
+  receipt: UploadProofReceipt | null | undefined,
+  expectedCustomerId: string,
+): UploadProofReceipt | null {
+  return receiptBelongsToCustomer(receipt, expectedCustomerId) ? receipt ?? null : null
+}
+
+function verifiedUploadReceiptHistory(
+  receipts: UploadProofReceipt[] | null | undefined,
+  expectedCustomerId: string,
+): UploadProofReceipt[] {
+  if (!Array.isArray(receipts)) {
+    return []
+  }
+  return receipts.filter((receipt) => receiptBelongsToCustomer(receipt, expectedCustomerId))
+}
+
 export function validateGeneratedLiveUploadArtifactProof(
   result: TradeUploadResponse,
   expectedCustomerId?: string | null,
@@ -347,29 +374,39 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
   assertDashboardBackendReady('Dashboard overview')
   return withRetry(async () => {
     const { data } = await http.get<DashboardOverview>('/v1/dashboard/overview')
+    const dashboardCustomerId = normalizeCustomerId(data.customer_id)
+    const firstUploadReceipt = verifiedUploadReceipt(data.first_upload_receipt, dashboardCustomerId)
+    const latestUploadReceipt = verifiedUploadReceipt(data.latest_upload_receipt, dashboardCustomerId)
+    const uploadReceiptHistory = verifiedUploadReceiptHistory(data.upload_receipt_history, dashboardCustomerId)
+    const sanitizedData: DashboardOverview = {
+      ...data,
+      first_upload_receipt: firstUploadReceipt,
+      latest_upload_receipt: latestUploadReceipt,
+      upload_receipt_history: uploadReceiptHistory,
+    }
     const nextSessionMeta = {
-      customerId: data.customer_id,
-      tier: data.access_tier,
-      offerKind: data.offer_kind,
-      caseStatus: data.case_status,
-      traderMode: data.trader_mode,
-      nextAction: data.next_action,
-      accessExpiresAt: data.access_expires_at ?? null,
-      dataSource: data.data_source ?? null,
-      lastReportSnapshotId: data.last_report_snapshot_id ?? null,
-      firstUploadReceipt: data.first_upload_receipt ?? null,
-      latestUploadReceipt: data.latest_upload_receipt ?? null,
-      uploadReceiptHistory: Array.isArray(data.upload_receipt_history) ? data.upload_receipt_history : [],
+      customerId: sanitizedData.customer_id,
+      tier: sanitizedData.access_tier,
+      offerKind: sanitizedData.offer_kind,
+      caseStatus: sanitizedData.case_status,
+      traderMode: sanitizedData.trader_mode,
+      nextAction: sanitizedData.next_action,
+      accessExpiresAt: sanitizedData.access_expires_at ?? null,
+      dataSource: sanitizedData.data_source ?? null,
+      lastReportSnapshotId: sanitizedData.last_report_snapshot_id ?? null,
+      firstUploadReceipt,
+      latestUploadReceipt,
+      uploadReceiptHistory,
     }
 
-    if (hasVerifiedDashboardActivationOrigin(data.activation_origin)) {
-      Object.assign(nextSessionMeta, buildDashboardActivationOriginMeta(data.activation_origin))
+    if (hasVerifiedDashboardActivationOrigin(sanitizedData.activation_origin)) {
+      Object.assign(nextSessionMeta, buildDashboardActivationOriginMeta(sanitizedData.activation_origin))
     } else {
-      Object.assign(nextSessionMeta, buildDashboardActivationOriginFailureMeta(data.activation_origin))
+      Object.assign(nextSessionMeta, buildDashboardActivationOriginFailureMeta(sanitizedData.activation_origin))
     }
 
     updateSessionMeta(nextSessionMeta)
-    return data
+    return sanitizedData
   })
 }
 

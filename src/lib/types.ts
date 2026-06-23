@@ -301,6 +301,7 @@ export interface AppendProofSummary {
   latest_snapshot_id?: string | null
   baseline_report_id?: string | null
   latest_report_id?: string | null
+  latest_customer_id?: string | null
   latest_append_count?: number | null
   latest_request_id?: string | null
   latest_artifact_status?: string | null

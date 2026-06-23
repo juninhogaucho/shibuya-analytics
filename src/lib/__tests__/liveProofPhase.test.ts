@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { buildLiveProofPhase } from '../liveProofPhase'
 
 const generatedReceipt = {
+  customer_id: 'cust_live_123',
   upload_transport: 'paste',
   trades_uploaded: 18,
   report_snapshot_id: 'snap_live_018',
@@ -18,6 +19,7 @@ const backendAppendProof = {
   latest_snapshot_id: 'snap_live_019',
   baseline_report_id: 'report_live_018',
   latest_report_id: 'report_live_019',
+  latest_customer_id: 'cust_live_123',
   latest_append_count: 2,
   latest_request_id: 'req_live_019',
   latest_artifact_status: 'generated',
@@ -212,6 +214,11 @@ describe('live proof phase', () => {
     const phase = buildLiveProofPhase({
       mode: 'live',
       appendProof: backendAppendProof,
+      sessionMeta: {
+        customerId: 'cust_live_123',
+        market: 'global',
+        tier: 'reset_pro',
+      },
       profileCompleted: true,
     })
 
@@ -226,9 +233,70 @@ describe('live proof phase', () => {
       report_id: 'report_live_019',
       append_count: 2,
       request_id: 'req_live_019',
+      customer_id: 'cust_live_123',
       activation_teaser_request_id: 'teaser_req_123',
       activation_teaser_verification_status: 'verified',
     })
+  })
+
+  test('rejects generated receipts from another live customer', () => {
+    const phase = buildLiveProofPhase({
+      mode: 'live',
+      overview: {
+        customer_id: 'cust_live_123',
+        bql_state: 'in_control',
+        bql_score: 0.45,
+        monte_carlo_drift: 0.12,
+        ruin_probability: 0.04,
+        discipline_tax_30d: 180,
+        sharpe_scenario: 1.2,
+        edge_portfolio: [],
+        loyalty_unlock: null,
+        next_coach_date: '2026-06-21',
+        access_tier: 'reset_pro',
+        offer_kind: 'reset_pro_live',
+        case_status: 'baseline_ready',
+        upload_receipt_history: [
+          {
+            ...generatedReceipt,
+            customer_id: 'cust_other',
+            report_snapshot_id: 'snap_live_019',
+            report_id: 'report_live_019',
+            append_count: 2,
+            request_id: 'req_live_019',
+          },
+        ],
+      },
+      profileCompleted: true,
+    })
+
+    expect(phase.phase).toBe('activated_awaiting_upload')
+    expect(phase.canClaimBaselineProof).toBe(false)
+    expect(phase.canClaimAppendProof).toBe(false)
+    expect(phase.generatedUploadReceiptCount).toBe(0)
+  })
+
+  test('rejects backend append proof packets from another live customer', () => {
+    const phase = buildLiveProofPhase({
+      mode: 'live',
+      appendProof: {
+        ...backendAppendProof,
+        latest_customer_id: 'cust_other',
+      },
+      sessionMeta: {
+        customerId: 'cust_live_123',
+        market: 'global',
+        tier: 'reset_pro',
+        offerKind: 'reset_pro_live',
+        caseStatus: 'baseline_ready',
+      },
+      profileCompleted: true,
+    })
+
+    expect(phase.phase).toBe('activated_awaiting_upload')
+    expect(phase.canClaimBaselineProof).toBe(false)
+    expect(phase.canClaimAppendProof).toBe(false)
+    expect(phase.evidenceSource).toBe('none')
   })
 
   test('does not promote incomplete backend append proof packets', () => {

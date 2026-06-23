@@ -75,6 +75,7 @@ describe('WorkspacePage', () => {
       case_status: 'baseline_ready',
       upload_count: 1,
       latest_upload_receipt: {
+        customer_id: 'cust_1',
         completed_at: '2026-06-20T09:15:00Z',
         upload_transport: 'api',
         trades_uploaded: 24,
@@ -86,6 +87,7 @@ describe('WorkspacePage', () => {
       },
       upload_receipt_history: [
         {
+          customer_id: 'cust_1',
           completed_at: '2026-06-19T09:15:00Z',
           upload_transport: 'manual',
           trades_uploaded: 12,
@@ -96,6 +98,7 @@ describe('WorkspacePage', () => {
           request_id: 'req_live_012',
         },
         {
+          customer_id: 'cust_1',
           completed_at: '2026-06-20T09:15:00Z',
           upload_transport: 'api',
           trades_uploaded: 24,
@@ -139,10 +142,12 @@ describe('WorkspacePage', () => {
   test('falls back to the latest upload response receipt while overview sync catches up', async () => {
     runtimeMocks.getStoredSessionMeta.mockReturnValue({
       tier: 'reset_pro',
+      customerId: 'cust_1',
       market: 'global',
       offerKind: 'reset_pro_live',
       caseStatus: 'baseline_ready',
       latestUploadReceipt: {
+        customer_id: 'cust_1',
         upload_transport: 'paste',
         trades_uploaded: 19,
         report_snapshot_id: 'snap_session_019',
@@ -153,6 +158,7 @@ describe('WorkspacePage', () => {
       },
       uploadReceiptHistory: [
         {
+          customer_id: 'cust_1',
           upload_transport: 'paste',
           trades_uploaded: 19,
           report_snapshot_id: 'snap_session_019',
@@ -191,5 +197,52 @@ describe('WorkspacePage', () => {
     expect(screen.getByText('report_session_019')).toBeInTheDocument()
     expect(screen.getByText('req_session_019')).toBeInTheDocument()
     expect(screen.getByText('Snapshot: snap_session_019')).toBeInTheDocument()
+  })
+
+  test('does not render upload proof from another customer', async () => {
+    apiMocks.getDashboardOverview.mockResolvedValue({
+      ...getSampleWorkspaceOverview('reset_pro'),
+      customer_id: 'cust_1',
+      access_tier: 'reset_pro',
+      offer_kind: 'reset_pro_live',
+      case_status: 'baseline_ready',
+      latest_upload_receipt: {
+        customer_id: 'cust_other',
+        completed_at: '2026-06-20T09:15:00Z',
+        upload_transport: 'api',
+        trades_uploaded: 24,
+        report_snapshot_id: 'snap_other_024',
+        report_id: 'report_other_024',
+        artifact_status: 'generated',
+        append_count: 2,
+        request_id: 'req_other_123',
+      },
+      upload_receipt_history: [
+        {
+          customer_id: 'cust_other',
+          completed_at: '2026-06-20T09:15:00Z',
+          upload_transport: 'api',
+          trades_uploaded: 24,
+          report_snapshot_id: 'snap_other_024',
+          report_id: 'report_other_024',
+          artifact_status: 'generated',
+          append_count: 2,
+          request_id: 'req_other_123',
+        },
+      ],
+    })
+
+    render(
+      <MemoryRouter>
+        <WorkspacePage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByTestId('live-proof-phase')).toBeInTheDocument()
+    expect(screen.getByText('Activated, awaiting first upload')).toBeInTheDocument()
+    expect(screen.queryByText('snap_other_024')).not.toBeInTheDocument()
+    expect(screen.queryByText('req_other_123')).not.toBeInTheDocument()
+    expect(screen.getByText(/No backend upload receipt yet/i)).toBeInTheDocument()
+    expect(screen.getByText(/No append history yet/i)).toBeInTheDocument()
   })
 })
