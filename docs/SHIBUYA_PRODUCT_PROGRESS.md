@@ -421,3 +421,39 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime. It proves the backend write layer no longer accepts a live append unless readiness is currently true, and it no longer emits a zero-trade live append success response.
+
+### 11. Activation Proof Mode Boundary
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/trader_endpoints.py`
+- Medallion backend tests: `tests/test_shibuya_critical_path.py`, `tests/test_shibuya_activation_public_context.py`
+- Shibuya frontend: `src/lib/api/auth.ts`, `src/lib/runtime.ts`, `src/lib/types.ts`, `src/pages/marketing/ActivationPage.tsx`
+- Shibuya frontend tests: `src/lib/api/__tests__/auth.test.ts`, `src/lib/__tests__/runtime.test.ts`, `src/pages/marketing/__tests__/ActivationPage.test.tsx`, `src/pages/marketing/__tests__/PaidJourneyContract.test.tsx`, `src/app/__tests__/publicJourneyRouteCanary.test.tsx`
+
+What changed:
+
+- Activation responses now expose an explicit `activationMode`.
+- Paid order activations return `paid_order`; development demo activations return `dev_demo`.
+- The frontend refuses to persist `dev_demo` activations as paid/live activation proof even when the backend returns a customer id and token.
+- Runtime access still supports ordinary backend-authenticated login sessions, but a stored dev/demo activation identity cannot unlock persistence or premium live proof.
+- The long public route canary now has a per-test timeout budget so the full deterministic suite does not fail the real story-to-demo flow under slower suite load.
+
+Evidence so far:
+
+- Commit: Medallion `6a5906c3` (`Classify Shibuya activation proof mode`).
+- Commit: Shibuya `a616e75` (`Reject demo activation as live proof`).
+- Medallion `py_compile app\trader_endpoints.py tests\test_shibuya_critical_path.py tests\test_shibuya_activation_public_context.py`: passed.
+- Medallion focused activation tests: `63 passed / 63 tests` across `tests\test_shibuya_critical_path.py` and `tests\test_shibuya_activation_public_context.py`.
+- Shibuya focused activation/runtime route tests: `4 passed / 4 files`, `25 passed / 25 tests`.
+- Shibuya public route canary: `1 passed / 1 test`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `256 passed / 256 tests`.
+
+Remaining gap:
+
+- This does not prove deployed live runtime. It closes a local/dev truth leak where a demo activation could look like a paid activation session.
