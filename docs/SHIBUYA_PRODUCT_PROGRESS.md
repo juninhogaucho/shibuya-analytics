@@ -773,3 +773,42 @@ Evidence so far:
 Remaining gap:
 
 - This does not prove deployed live runtime or a real trader account append in production. It closes the local/live identity boundary where structurally valid upload proof could be accepted without proving it belonged to the same backend-verified customer session.
+
+### 22. Report And Append Proof Customer Continuity
+
+Status: pushed
+
+Repos changed:
+
+- Medallion backend: `app/trader_endpoints.py`
+- Medallion backend: `app/main.py`
+- Medallion backend tests: append proof comparison and report artifact enrichment
+- Shibuya frontend: `src/lib/liveProofPhase.ts`
+- Shibuya frontend: `src/lib/api/dashboard.ts`
+- Shibuya frontend: `src/pages/dashboard/WorkspacePage.tsx`
+- Shibuya frontend tests: live proof phase, dashboard API, and workspace page
+
+What changed:
+
+- Medallion append-proof comparison now refuses `comparison_ready` when the latest generated upload receipt is missing the authenticated `customer_id` or belongs to another customer.
+- Medallion report list/detail enrichment now copies receipt proof fields only when the durable upload receipt belongs to the requested customer, and its proof boundary now requires both a report snapshot and a matching receipt.
+- Shibuya dashboard overview sanitation now strips cross-customer `first_upload_receipt`, `latest_upload_receipt`, and `upload_receipt_history` before returning overview data or updating local session metadata.
+- Shibuya live proof phase and workspace display now ignore generated-looking receipts and backend append-proof packets unless they match the current live customer when that customer is known.
+
+Evidence so far:
+
+- Commit: Medallion `f53d7005` (`Bind report proof to live customer`).
+- Commit: Shibuya `03bdea7` (`Bind dashboard proof to live customer`).
+- Medallion `py_compile app\main.py app\trader_endpoints.py tests\test_shibuya_append_proof_comparison.py tests\test_shibuya_report_artifact_enrichment.py`: passed.
+- Medallion focused append/report tests: `13 passed / 13 tests`.
+- Medallion focused upload/lifecycle/append/report tests: `30 passed / 30 tests`.
+- Medallion Shibuya critical/env/upload/lifecycle/append/report suite: `103 passed / 103 tests`.
+- Shibuya focused live-proof/dashboard/workspace tests: `3 passed / 3 files`, `24 passed / 24 tests`.
+- Shibuya `tsc -b`: passed.
+- Shibuya `eslint .`: passed.
+- Shibuya full deterministic Vitest: `67 passed / 67 files`, `267 passed / 267 tests`.
+- Shibuya `vite build`: passed; `2855 modules transformed`.
+
+Remaining gap:
+
+- This still does not prove deployed live runtime, real Stripe payment completion, or a production trader append. It closes the customer-continuity proof gap between backend report comparison, report artifact enrichment, frontend overview persistence, live proof phase, and workspace display.
