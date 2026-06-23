@@ -165,6 +165,25 @@ function getExpectedLiveCustomerId(explicitCustomerId?: string | null): string {
   return normalizeCustomerId(explicitCustomerId) || normalizeCustomerId(getStoredSessionMeta()?.customerId)
 }
 
+function validateDashboardOverviewCustomerIdentity(data: DashboardOverview): string {
+  const expectedCustomerId = getExpectedLiveCustomerId()
+  const dashboardCustomerId = normalizeCustomerId(data.customer_id)
+
+  if (!expectedCustomerId) {
+    return dashboardCustomerId
+  }
+
+  if (!dashboardCustomerId) {
+    throw new Error('Dashboard overview did not return the verified customer id.')
+  }
+
+  if (dashboardCustomerId !== expectedCustomerId) {
+    throw new Error('Dashboard overview returned a different customer id than the verified live session.')
+  }
+
+  return dashboardCustomerId
+}
+
 function receiptBelongsToCustomer(receipt: UploadProofReceipt | null | undefined, expectedCustomerId: string): boolean {
   if (!receipt) {
     return false
@@ -374,7 +393,7 @@ export async function getDashboardOverview(): Promise<DashboardOverview> {
   assertDashboardBackendReady('Dashboard overview')
   return withRetry(async () => {
     const { data } = await http.get<DashboardOverview>('/v1/dashboard/overview')
-    const dashboardCustomerId = normalizeCustomerId(data.customer_id)
+    const dashboardCustomerId = validateDashboardOverviewCustomerIdentity(data)
     const firstUploadReceipt = verifiedUploadReceipt(data.first_upload_receipt, dashboardCustomerId)
     const latestUploadReceipt = verifiedUploadReceipt(data.latest_upload_receipt, dashboardCustomerId)
     const uploadReceiptHistory = verifiedUploadReceiptHistory(data.upload_receipt_history, dashboardCustomerId)

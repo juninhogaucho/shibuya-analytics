@@ -430,6 +430,70 @@ describe('dashboard API boundary', () => {
     expect(session?.uploadReceiptHistory).toEqual([])
   })
 
+  test('rejects live dashboard overview customer identity mismatches before local sync', async () => {
+    const httpGet = vi.fn()
+      .mockResolvedValueOnce({
+        data: {
+          access_tier: 'psych_audit',
+          offer_kind: 'psych_audit_live',
+          case_status: 'baseline_ready',
+          data_source: 'backend',
+          first_upload_receipt: null,
+          latest_upload_receipt: null,
+          upload_receipt_history: [],
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          customer_id: 'cust_other',
+          access_tier: 'psych_audit',
+          offer_kind: 'psych_audit_live',
+          case_status: 'baseline_ready',
+          data_source: 'backend',
+          first_upload_receipt: null,
+          latest_upload_receipt: null,
+          upload_receipt_history: [],
+        },
+      })
+
+    vi.doMock('../../constants', () => ({
+      API_BASE_URL: 'https://api.shibuya.example',
+      isApiBaseConfiguredForLive: () => true,
+    }))
+    vi.doMock('../httpClient', () => ({
+      http: { get: httpGet },
+      withRetry: <T>(fn: () => Promise<T>) => fn(),
+    }))
+
+    const { getStoredSessionMeta, setLiveApiKey } = await import('../../runtime')
+    const { getDashboardOverview } = await import('../dashboard')
+
+    setLiveApiKey('live-token-123', {
+      customerId: 'cust_live_123',
+      authMode: 'password',
+      tier: 'reset_pro',
+      market: 'global',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+    })
+
+    await expect(getDashboardOverview()).rejects.toThrow(/did not return the verified customer id/i)
+    expect(getStoredSessionMeta()).toMatchObject({
+      customerId: 'cust_live_123',
+      tier: 'reset_pro',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+    })
+
+    await expect(getDashboardOverview()).rejects.toThrow(/different customer id than the verified live session/i)
+    expect(getStoredSessionMeta()).toMatchObject({
+      customerId: 'cust_live_123',
+      tier: 'reset_pro',
+      offerKind: 'reset_pro_live',
+      caseStatus: 'awaiting_upload',
+    })
+  })
+
   test('drops weak activation origin from live dashboard overview', async () => {
     const httpGet = vi.fn().mockResolvedValue({
       data: {
